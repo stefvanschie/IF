@@ -1,0 +1,6 @@
+#################
+out
+.idea
+target
+*.iml
+*.txt
