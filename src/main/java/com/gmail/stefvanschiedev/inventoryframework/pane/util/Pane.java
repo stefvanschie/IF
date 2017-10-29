@@ -130,12 +130,11 @@ public abstract class Pane {
      * An enum representing the rendering priorities for the panes
      */
     public enum Priority {
-
         LOWEST,
         LOW,
         NORMAL,
         HIGH,
         HIGHEST,
-        MODERATE
+        MONITOR
     }
 }
