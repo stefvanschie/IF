@@ -9,8 +9,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -21,7 +19,7 @@ public class OutlinePane extends Pane {
     /**
      * A set of items inside this pane
      */
-    private GUIItem[] items;
+    private final GUIItem[] items;
 
     /**
      * Constructs a new default pane
@@ -83,6 +81,9 @@ public class OutlinePane extends Pane {
      */
     @Override
     public boolean click(@NotNull InventoryClickEvent event) {
+        if (listener != null)
+            listener.accept(event);
+
         int slot = event.getSlot();
 
         //correct coordinates

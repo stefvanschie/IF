@@ -11,7 +11,7 @@ public class PaginatedPane extends Pane {
     /**
      * A set of panes for the different pages
      */
-    private Pane[] panes;
+    private final Pane[] panes;
 
     /**
      * The current page
@@ -74,6 +74,9 @@ public class PaginatedPane extends Pane {
      */
     @Override
     public boolean click(@NotNull InventoryClickEvent event) {
+        if (listener != null)
+            listener.accept(event);
+
         return this.panes[page].click(event);
     }
 }

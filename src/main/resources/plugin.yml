@@ -1,6 +1,6 @@
 main: com.gmail.stefvanschiedev.inventoryframework.test.GUITest
 name: GUITest
-version: 0.0.1
+version: 1.0.1
 
 commands:
   inv:

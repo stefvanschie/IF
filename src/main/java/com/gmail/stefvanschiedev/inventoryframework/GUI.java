@@ -7,14 +7,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 /**
  * The base class of all GUIs
  */
-public class GUI implements Listener {
+public class GUI implements Listener, InventoryHolder {
 
     /**
      * A set of all panes in this inventory
@@ -36,7 +38,7 @@ public class GUI implements Listener {
         assert rows >= 1 && rows <= 6 : "amount of rows outside range";
 
         this.panes = new ArrayList<>();
-        this.inventory = Bukkit.createInventory(null, rows * 9, title);
+        this.inventory = Bukkit.createInventory(this, rows * 9, title);
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
@@ -76,9 +78,18 @@ public class GUI implements Listener {
         new HashSet<>(inventory.getViewers()).forEach(this::show);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @NotNull
+    @Override
+    public Inventory getInventory() {
+        return inventory;
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getCurrentItem() == null || !event.getClickedInventory().getName().equals(inventory.getName()))
+        if (event.getCurrentItem() == null || !this.equals(event.getClickedInventory().getHolder()))
             return;
 
         //loop through the panes reverse, because the pane with the highest priority (last in list) is most likely to have the correct item

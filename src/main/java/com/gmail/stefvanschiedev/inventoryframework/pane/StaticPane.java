@@ -19,7 +19,7 @@ public class StaticPane extends Pane {
     /**
      * A set of items inside this pane
      */
-    private GUIItem[] items;
+    private final GUIItem[] items;
 
     /**
      * Constructs a new default pane
@@ -79,6 +79,9 @@ public class StaticPane extends Pane {
      */
     @Override
     public boolean click(@NotNull InventoryClickEvent event) {
+        if (listener != null)
+            listener.accept(event);
+
         int slot = event.getSlot();
 
         //correct coordinates

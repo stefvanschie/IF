@@ -1,11 +1,11 @@
 package com.gmail.stefvanschiedev.inventoryframework.pane.util;
 
-import com.gmail.stefvanschiedev.inventoryframework.GUIItem;
 import com.gmail.stefvanschiedev.inventoryframework.GUILocation;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -30,9 +30,15 @@ public abstract class Pane {
     @NotNull private Priority priority;
 
     /**
-     * THe visibility state of the pane
+     * The visibility state of the pane
      */
     private boolean visible;
+
+    /**
+     * An additional click listener
+     */
+    @Nullable
+    protected Consumer<InventoryClickEvent> listener;
 
     /**
      * Constructs a new default pane
@@ -116,6 +122,15 @@ public abstract class Pane {
      */
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    /**
+     * Sets a listener to listen for clicks in this pane
+     *
+     * @param listener the listener to attach
+     */
+    public void setClickListener(@NotNull Consumer<InventoryClickEvent> listener) {
+        this.listener = listener;
     }
 
     /**

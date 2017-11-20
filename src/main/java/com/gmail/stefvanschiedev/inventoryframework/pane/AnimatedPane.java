@@ -14,7 +14,7 @@ public class AnimatedPane extends Pane {
     /**
      * A set of frames for the different pages
      */
-    private Pane[] frames;
+    private final Pane[] frames;
 
     /**
      * The current frame
@@ -93,6 +93,9 @@ public class AnimatedPane extends Pane {
      */
     @Override
     public boolean click(@NotNull InventoryClickEvent event) {
+        if (listener != null)
+            listener.accept(event);
+
         return frames[frame].click(event);
     }
 }
