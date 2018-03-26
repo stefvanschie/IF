@@ -2,13 +2,15 @@ package com.gmail.stefvanschiedev.inventoryframework;
 
 /**
  * A location inside a GUI
+ *
+ * @since 5.6.0
  */
-public class GUILocation {
+public class GuiLocation {
 
     /**
      * The x and y coordinate
      */
-    private int x, y;
+    private final int x, y;
 
     /**
      * Creates a new location for in a gui
@@ -16,7 +18,7 @@ public class GUILocation {
      * @param x the x coordinate
      * @param y the y coordinate
      */
-    public GUILocation(int x, int y) {
+    public GuiLocation(int x, int y) {
         assert x >= 0 && x <= 9 : "x coordinate outside GUI";
         assert y >= 0 && y <= 9 : "y coordinate outside GUI";
 
@@ -25,6 +27,8 @@ public class GUILocation {
     }
 
     /**
+     * Returns the x coordinate
+     *
      * @return the x coordinate
      */
     public int getX() {
@@ -32,6 +36,8 @@ public class GUILocation {
     }
 
     /**
+     * Returns the y coordinate
+     *
      * @return the y coordinate
      */
     public int getY() {
