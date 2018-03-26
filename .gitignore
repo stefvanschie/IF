@@ -2,5 +2,6 @@
 out
 .idea
 target
+test
 *.iml
 *.txt
