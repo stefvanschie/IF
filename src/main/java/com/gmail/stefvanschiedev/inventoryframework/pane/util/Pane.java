@@ -3,13 +3,7 @@ package com.gmail.stefvanschiedev.inventoryframework.pane.util;
 import com.gmail.stefvanschiedev.inventoryframework.GuiItem;
 import com.gmail.stefvanschiedev.inventoryframework.GuiLocation;
 import com.google.common.primitives.Primitives;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import org.apache.commons.codec.binary.Base64;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.block.Biome;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -22,13 +16,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -204,11 +196,14 @@ public abstract class Pane {
                     continue;
 
                 Element firstChild = (Element) item;
+                String attributeType;
 
-                //TODO: Add string type as default
+                if (!firstChild.hasAttribute("type"))
+                    attributeType = "string";
+                else
+                    attributeType = firstChild.getAttribute("type");
 
-                attribute =
-                    ATTRIBUTE_MAPPINGS.get(firstChild.getAttribute("type")).apply(firstChild.getTextContent());
+                attribute = ATTRIBUTE_MAPPINGS.get(attributeType).apply(firstChild.getTextContent());
                 break;
             }
         }
@@ -246,7 +241,7 @@ public abstract class Pane {
                                 e.printStackTrace();
                             }
                         };
-                    else if (parameterCount == 2 && ((parameterTypes[1].isPrimitive() &&
+                    else if (parameterCount == 2 && attribute != null && ((parameterTypes[1].isPrimitive() &&
                         Primitives.unwrap(attribute.getClass()).isAssignableFrom(parameterTypes[1])) ||
                         attribute.getClass().isAssignableFrom(parameterTypes[1])))
                         action = event -> {
@@ -279,5 +274,6 @@ public abstract class Pane {
         ATTRIBUTE_MAPPINGS.put("integer", Integer::parseInt);
         ATTRIBUTE_MAPPINGS.put("long", Long::parseLong);
         ATTRIBUTE_MAPPINGS.put("short", Short::parseShort);
+        ATTRIBUTE_MAPPINGS.put("string", value -> value);
     }
 }

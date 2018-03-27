@@ -139,7 +139,7 @@ public class Gui implements Listener, InventoryHolder {
      */
     @Nullable
     @Contract("_, _, null -> fail")
-    public static Gui load(Object instance, Plugin plugin, InputStream inputStream) {
+    public static Gui load(Plugin plugin, Object instance, InputStream inputStream) {
         try {
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
             Element documentElement = document.getDocumentElement();
