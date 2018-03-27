@@ -18,9 +18,7 @@ import org.w3c.dom.NodeList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -184,7 +182,7 @@ public abstract class Pane {
         if (element.hasAttribute("tag"))
             tag = element.getAttribute("tag");
 
-        Object attribute = null;
+        List<Object> attributes = new ArrayList<>();
 
         if (element.hasChildNodes()) {
             NodeList childNodes = element.getChildNodes();
@@ -192,19 +190,28 @@ public abstract class Pane {
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node item = childNodes.item(i);
 
-                if (item.getNodeType() != Node.ELEMENT_NODE)
+                if (item.getNodeType() != Node.ELEMENT_NODE || !item.getNodeName().equals("attributes"))
                     continue;
 
-                Element firstChild = (Element) item;
-                String attributeType;
+                Element attributeList = (Element) item;
 
-                if (!firstChild.hasAttribute("type"))
-                    attributeType = "string";
-                else
-                    attributeType = firstChild.getAttribute("type");
+                for (int j = 0; j < attributeList.getChildNodes().getLength(); j++) {
+                    Node attributeNode = attributeList.getChildNodes().item(j);
 
-                attribute = ATTRIBUTE_MAPPINGS.get(attributeType).apply(firstChild.getTextContent());
-                break;
+                    if (attributeNode.getNodeType() != Node.ELEMENT_NODE ||
+                            !attributeNode.getNodeName().equals("attribute"))
+                        continue;
+
+                    Element attribute = (Element) attributeNode;
+                    String attributeType;
+
+                    if (!attribute.hasAttribute("type"))
+                        attributeType = "string";
+                    else
+                        attributeType = attribute.getAttribute("type");
+
+                    attributes.add(ATTRIBUTE_MAPPINGS.get(attributeType).apply(attribute.getTextContent()));
+                }
             }
         }
 
@@ -217,7 +224,6 @@ public abstract class Pane {
 
                 int parameterCount = method.getParameterCount();
                 Class<?>[] parameterTypes = method.getParameterTypes();
-                Object finalAttribute = attribute;
 
                 if (parameterCount == 0)
                     action = event -> {
@@ -241,18 +247,33 @@ public abstract class Pane {
                                 e.printStackTrace();
                             }
                         };
-                    else if (parameterCount == 2 && attribute != null && ((parameterTypes[1].isPrimitive() &&
-                        Primitives.unwrap(attribute.getClass()).isAssignableFrom(parameterTypes[1])) ||
-                        attribute.getClass().isAssignableFrom(parameterTypes[1])))
-                        action = event -> {
-                            try {
-                                //because reflection with lambdas is stupid
-                                method.setAccessible(true);
-                                method.invoke(instance, event, finalAttribute);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        };
+                    else if (parameterCount == attributes.size() + 1) {
+                        boolean correct = true;
+
+                        for (int i = 0; i < attributes.size(); i++) {
+                            Object attribute = attributes.get(i);
+
+                            if (!(parameterTypes[1 + i].isPrimitive() &&
+                                    Primitives.unwrap(attribute.getClass()).isAssignableFrom(parameterTypes[1 + i])) &&
+                                    !attribute.getClass().isAssignableFrom(parameterTypes[1 + i]))
+                                correct = false;
+                        }
+
+                        if (correct) {
+                            action = event -> {
+                                try {
+                                    //don't ask me why we need to do this, just roll with it (actually I do know why, but it's stupid)
+                                    attributes.add(0, event);
+
+                                    //because reflection with lambdas is stupid
+                                    method.setAccessible(true);
+                                    method.invoke(instance, attributes.toArray(new Object[0]));
+                                } catch (IllegalAccessException | InvocationTargetException e) {
+                                    e.printStackTrace();
+                                }
+                            };
+                        }
+                    }
                 }
 
                 break;
