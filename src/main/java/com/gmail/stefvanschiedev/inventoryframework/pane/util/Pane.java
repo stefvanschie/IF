@@ -286,6 +286,17 @@ public abstract class Pane {
         return item;
     }
 
+    /**
+     * Returns the attribute mappings used when loading attributes from an XML file.
+     *
+     * @return the attribute mappings
+     */
+    @NotNull
+    @Contract(pure = true)
+    public static Map<String, Function<String, Object>> getAttributeMappings() {
+        return ATTRIBUTE_MAPPINGS;
+    }
+
     static {
         ATTRIBUTE_MAPPINGS.put("boolean", Boolean::parseBoolean);
         ATTRIBUTE_MAPPINGS.put("byte", Byte::parseByte);

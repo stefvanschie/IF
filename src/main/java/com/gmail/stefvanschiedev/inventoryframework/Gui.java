@@ -26,6 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * The base class of all GUIs
@@ -189,6 +190,21 @@ public class Gui implements Listener, InventoryHolder {
         }
 
         return null;
+    }
+
+    /**
+     * Registers an attribute that can be used inside an XML file to add additional new attributes.
+     *
+     * @param attributeName the name of the attribute. This is the same name you'll be using to specify the attribute
+     *                      type in the XML file.
+     * @param function how the attribute should be processed. This converts the raw text input from the XML node value
+     *                 into the correct object type.
+     * @throws AssertionError when an attribute with this name is already registered.
+     */
+    public static void registerAttribute(String attributeName, Function<String, Object> function) {
+        assert !Pane.getAttributeMappings().containsKey(attributeName) : "attribute is already registered";
+
+        Pane.getAttributeMappings().put(attributeName, function);
     }
 
     /**
