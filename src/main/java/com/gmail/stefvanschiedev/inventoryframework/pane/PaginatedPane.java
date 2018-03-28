@@ -15,6 +15,11 @@ import org.w3c.dom.NodeList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * A pane for panes that should be spread out over multiple pages
@@ -24,7 +29,7 @@ public class PaginatedPane extends Pane {
     /**
      * A set of panes for the different pages
      */
-    private final Pane[] panes;
+    private final List<Pane>[] panes;
 
     /**
      * The current page
@@ -37,7 +42,13 @@ public class PaginatedPane extends Pane {
     public PaginatedPane(@NotNull GuiLocation start, int length, int height, int pages) {
         super(start, length, height);
 
-        this.panes = new Pane[pages];
+        //we do this because java is weird, but don't worry if it fails to work, just yell at me
+        //noinspection unchecked
+        this.panes = (List<Pane>[]) new ArrayList[pages];
+
+        //declare all arrays, so we don't have to check for this every time
+        for (int i = 0; i < panes.length; i++)
+            panes[i] = new ArrayList<>();
     }
 
     /**
@@ -63,8 +74,8 @@ public class PaginatedPane extends Pane {
      * @param page the page to assign the pane to
      * @param pane the new pane
      */
-    public void setPane(int page, Pane pane) {
-        this.panes[page] = pane;
+    public void addPane(int page, Pane pane) {
+        this.panes[page].add(pane);
     }
 
     /**
@@ -83,7 +94,7 @@ public class PaginatedPane extends Pane {
      */
     @Override
     public void display(Inventory inventory) {
-        this.panes[page].display(inventory);
+        this.panes[page].forEach(pane -> pane.display(inventory));
     }
 
     /**
@@ -91,7 +102,12 @@ public class PaginatedPane extends Pane {
      */
     @Override
     public boolean click(@NotNull InventoryClickEvent event) {
-        return this.panes[page].click(event);
+        boolean success = false;
+
+        for (Pane pane : this.panes[page])
+            success = success || pane.click(event);
+
+        return success;
     }
 
     /**
@@ -99,14 +115,12 @@ public class PaginatedPane extends Pane {
      */
     @Override
     public GuiItem getItem(@NotNull String tag) {
-        for (Pane pane : panes) {
-            GuiItem item = pane.getItem(tag);
-
-            if (item != null)
-                return item;
-        }
-
-        return null;
+        return Stream.of(panes)
+                .flatMap(Collection::stream)
+                .map(pane -> pane.getItem(tag))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
     }
 
     /**
@@ -169,15 +183,19 @@ public class PaginatedPane extends Pane {
 
                 NodeList innerNodes = item.getChildNodes();
 
+                List<Pane> panes = new ArrayList<>();
+
                 for (int j = 0; j < innerNodes.getLength(); j++) {
                     Node pane = innerNodes.item(j);
 
                     if (pane.getNodeType() != Node.ELEMENT_NODE)
                         continue;
 
-                    paginatedPane.setPane(pageCount, Gui.loadPane(instance, pane));
-                    break;
+                    panes.add(Gui.loadPane(instance, pane));
                 }
+
+                for (Pane pane : panes)
+                    paginatedPane.addPane(pageCount, pane);
 
                 pageCount++;
             }
