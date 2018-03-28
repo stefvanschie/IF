@@ -9,6 +9,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
@@ -25,7 +26,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -44,6 +48,11 @@ public class Gui implements Listener, InventoryHolder {
      * The inventory of this gui
      */
     private final Inventory inventory;
+
+    /**
+     * the consumer that will be called once a player closes the gui
+     */
+    private Consumer<InventoryCloseEvent> onClose;
 
     /**
      * Constructs a new GUI
@@ -121,6 +130,15 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     /**
+     * Set the consumer that should be called whenever this gui is closed.
+     *
+     * @param onClose the consumer that gets called
+     */
+    public void setOnClose(Consumer<InventoryCloseEvent> onClose) {
+        this.onClose = onClose;
+    }
+
+    /**
      * {@inheritDoc}
      * 
      * @since 5.6.0
@@ -147,9 +165,38 @@ public class Gui implements Listener, InventoryHolder {
 
             documentElement.normalize();
 
-            String title = documentElement.getAttribute("title");
+            Gui gui = new Gui(plugin, Integer.parseInt(documentElement.getAttribute("rows")),
+                    documentElement.getAttribute("title"));
 
-            Gui gui = new Gui(plugin, Integer.parseInt(documentElement.getAttribute("rows")), title);
+            if (documentElement.hasAttribute("onClose")) {
+                for (Method method : instance.getClass().getMethods()) {
+                    if (!method.getName().equals(documentElement.getAttribute("onClose")))
+                        continue;
+
+                    int parameterCount = method.getParameterCount();
+
+                    if (parameterCount == 0) {
+                        gui.setOnClose(event -> {
+                            try {
+                                method.setAccessible(true);
+                                method.invoke(instance);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    } else if (parameterCount == 1 &&
+                            InventoryCloseEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
+                        gui.setOnClose(event -> {
+                            try {
+                                method.setAccessible(true);
+                                method.invoke(instance, event);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+                }
+            }
 
             NodeList childNodes = documentElement.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
@@ -211,7 +258,6 @@ public class Gui implements Listener, InventoryHolder {
      * Handles clicks in inventories
      * 
      * @param event the event fired
-     * @since 5.6.0
      */
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
@@ -223,5 +269,18 @@ public class Gui implements Listener, InventoryHolder {
             if (panes.get(i).click(event))
                 break;
         }
+    }
+
+    /**
+     * Handles closing in inventories
+     *
+     * @param event the event fired
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (onClose == null)
+            return;
+
+        onClose.accept(event);
     }
 }
