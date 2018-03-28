@@ -240,18 +240,18 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     /**
-     * Registers an attribute that can be used inside an XML file to add additional new attributes.
+     * Registers a property that can be used inside an XML file to add additional new properties.
      *
-     * @param attributeName the name of the attribute. This is the same name you'll be using to specify the attribute
+     * @param attributeName the name of the property. This is the same name you'll be using to specify the property
      *                      type in the XML file.
-     * @param function how the attribute should be processed. This converts the raw text input from the XML node value
+     * @param function how the property should be processed. This converts the raw text input from the XML node value
      *                 into the correct object type.
-     * @throws AssertionError when an attribute with this name is already registered.
+     * @throws AssertionError when a property with this name is already registered.
      */
-    public static void registerAttribute(String attributeName, Function<String, Object> function) {
-        assert !Pane.getAttributeMappings().containsKey(attributeName) : "attribute is already registered";
+    public static void registerProperty(String attributeName, Function<String, Object> function) {
+        assert !Pane.getPropertyMappings().containsKey(attributeName) : "property is already registered";
 
-        Pane.getAttributeMappings().put(attributeName, function);
+        Pane.getPropertyMappings().put(attributeName, function);
     }
 
     /**

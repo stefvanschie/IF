@@ -48,9 +48,9 @@ public abstract class Pane {
     private String tag;
 
     /**
-     * A map containing the mappings for attributes for items
+     * A map containing the mappings for properties for items
      */
-    private static final Map<String, Function<String, Object>> ATTRIBUTE_MAPPINGS = new HashMap<>();
+    private static final Map<String, Function<String, Object>> PROPERTY_MAPPINGS = new HashMap<>();
 
     /**
      * Constructs a new default pane
@@ -182,7 +182,7 @@ public abstract class Pane {
         if (element.hasAttribute("tag"))
             tag = element.getAttribute("tag");
 
-        List<Object> attributes = new ArrayList<>();
+        List<Object> properties = new ArrayList<>();
 
         if (element.hasChildNodes()) {
             NodeList childNodes = element.getChildNodes();
@@ -190,27 +190,27 @@ public abstract class Pane {
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node item = childNodes.item(i);
 
-                if (item.getNodeType() != Node.ELEMENT_NODE || !item.getNodeName().equals("attributes"))
+                if (item.getNodeType() != Node.ELEMENT_NODE || !item.getNodeName().equals("properties"))
                     continue;
 
-                Element attributeList = (Element) item;
+                Element propertyList = (Element) item;
 
-                for (int j = 0; j < attributeList.getChildNodes().getLength(); j++) {
-                    Node attributeNode = attributeList.getChildNodes().item(j);
+                for (int j = 0; j < propertyList.getChildNodes().getLength(); j++) {
+                    Node propertyNode = propertyList.getChildNodes().item(j);
 
-                    if (attributeNode.getNodeType() != Node.ELEMENT_NODE ||
-                            !attributeNode.getNodeName().equals("attribute"))
+                    if (propertyNode.getNodeType() != Node.ELEMENT_NODE ||
+                            !propertyNode.getNodeName().equals("property"))
                         continue;
 
-                    Element attribute = (Element) attributeNode;
-                    String attributeType;
+                    Element property = (Element) propertyNode;
+                    String propertyType;
 
-                    if (!attribute.hasAttribute("type"))
-                        attributeType = "string";
+                    if (!property.hasAttribute("type"))
+                        propertyType = "string";
                     else
-                        attributeType = attribute.getAttribute("type");
+                        propertyType = property.getAttribute("type");
 
-                    attributes.add(ATTRIBUTE_MAPPINGS.get(attributeType).apply(attribute.getTextContent()));
+                    properties.add(PROPERTY_MAPPINGS.get(propertyType).apply(property.getTextContent()));
                 }
             }
         }
@@ -247,11 +247,11 @@ public abstract class Pane {
                                 e.printStackTrace();
                             }
                         };
-                    else if (parameterCount == attributes.size() + 1) {
+                    else if (parameterCount == properties.size() + 1) {
                         boolean correct = true;
 
-                        for (int i = 0; i < attributes.size(); i++) {
-                            Object attribute = attributes.get(i);
+                        for (int i = 0; i < properties.size(); i++) {
+                            Object attribute = properties.get(i);
 
                             if (!(parameterTypes[1 + i].isPrimitive() &&
                                     Primitives.unwrap(attribute.getClass()).isAssignableFrom(parameterTypes[1 + i])) &&
@@ -263,11 +263,11 @@ public abstract class Pane {
                             action = event -> {
                                 try {
                                     //don't ask me why we need to do this, just roll with it (actually I do know why, but it's stupid)
-                                    attributes.add(0, event);
+                                    properties.add(0, event);
 
                                     //because reflection with lambdas is stupid
                                     method.setAccessible(true);
-                                    method.invoke(instance, attributes.toArray(new Object[0]));
+                                    method.invoke(instance, properties.toArray(new Object[0]));
                                 } catch (IllegalAccessException | InvocationTargetException e) {
                                     e.printStackTrace();
                                 }
@@ -287,25 +287,25 @@ public abstract class Pane {
     }
 
     /**
-     * Returns the attribute mappings used when loading attributes from an XML file.
+     * Returns the property mappings used when loading properties from an XML file.
      *
-     * @return the attribute mappings
+     * @return the property mappings
      */
     @NotNull
     @Contract(pure = true)
-    public static Map<String, Function<String, Object>> getAttributeMappings() {
-        return ATTRIBUTE_MAPPINGS;
+    public static Map<String, Function<String, Object>> getPropertyMappings() {
+        return PROPERTY_MAPPINGS;
     }
 
     static {
-        ATTRIBUTE_MAPPINGS.put("boolean", Boolean::parseBoolean);
-        ATTRIBUTE_MAPPINGS.put("byte", Byte::parseByte);
-        ATTRIBUTE_MAPPINGS.put("character", value -> value.charAt(0));
-        ATTRIBUTE_MAPPINGS.put("double", Double::parseDouble);
-        ATTRIBUTE_MAPPINGS.put("float", Float::parseFloat);
-        ATTRIBUTE_MAPPINGS.put("integer", Integer::parseInt);
-        ATTRIBUTE_MAPPINGS.put("long", Long::parseLong);
-        ATTRIBUTE_MAPPINGS.put("short", Short::parseShort);
-        ATTRIBUTE_MAPPINGS.put("string", value -> value);
+        PROPERTY_MAPPINGS.put("boolean", Boolean::parseBoolean);
+        PROPERTY_MAPPINGS.put("byte", Byte::parseByte);
+        PROPERTY_MAPPINGS.put("character", value -> value.charAt(0));
+        PROPERTY_MAPPINGS.put("double", Double::parseDouble);
+        PROPERTY_MAPPINGS.put("float", Float::parseFloat);
+        PROPERTY_MAPPINGS.put("integer", Integer::parseInt);
+        PROPERTY_MAPPINGS.put("long", Long::parseLong);
+        PROPERTY_MAPPINGS.put("short", Short::parseShort);
+        PROPERTY_MAPPINGS.put("string", value -> value);
     }
 }
