@@ -50,7 +50,12 @@ public class Gui implements Listener, InventoryHolder {
     private final Inventory inventory;
 
     /**
-     * the consumer that will be called once a player closes the gui
+     * The consumer that will be called once a players clicks in the gui
+     */
+    private Consumer<InventoryClickEvent> onClick;
+
+    /**
+     * The consumer that will be called once a player closes the gui
      */
     private Consumer<InventoryCloseEvent> onClose;
 
@@ -130,6 +135,15 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     /**
+     * Set the consumer that should be called whenever this gui is clicked in.
+     *
+     * @param onClick the consumer that gets called
+     */
+    public void setOnClick(Consumer<InventoryClickEvent> onClick) {
+        this.onClick = onClick;
+    }
+
+    /**
      * Set the consumer that should be called whenever this gui is closed.
      *
      * @param onClose the consumer that gets called
@@ -167,6 +181,36 @@ public class Gui implements Listener, InventoryHolder {
 
             Gui gui = new Gui(plugin, Integer.parseInt(documentElement.getAttribute("rows")),
                     documentElement.getAttribute("title"));
+
+            if (documentElement.hasAttribute("onClick")) {
+                for (Method method : instance.getClass().getMethods()) {
+                    if (!method.getName().equals(documentElement.getAttribute("onClick")))
+                        continue;
+
+                    int parameterCount = method.getParameterCount();
+
+                    if (parameterCount == 0) {
+                        gui.setOnClick(event -> {
+                            try {
+                                method.setAccessible(true);
+                                method.invoke(instance);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    } else if (parameterCount == 1 &&
+                            InventoryClickEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
+                        gui.setOnClick(event -> {
+                            try {
+                                method.setAccessible(true);
+                                method.invoke(instance, event);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+                }
+            }
 
             if (documentElement.hasAttribute("onClose")) {
                 for (Method method : instance.getClass().getMethods()) {
@@ -263,6 +307,9 @@ public class Gui implements Listener, InventoryHolder {
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getCurrentItem() == null || !this.equals(event.getClickedInventory().getHolder()))
             return;
+
+        if (onClick != null)
+            onClick.accept(event);
 
         //loop through the panes reverse, because the pane with the highest priority (last in list) is most likely to have the correct item
         for (int i = panes.size() - 1; i >= 0; i--) {

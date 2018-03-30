@@ -102,6 +102,17 @@ public class PaginatedPane extends Pane {
      */
     @Override
     public boolean click(@NotNull InventoryClickEvent event) {
+        int slot = event.getSlot();
+
+        int x = (slot % 9) - start.getX();
+        int y = (slot / 9) - start.getY();
+
+        if (x >= 0 && x <= length && y >= 0 && y <= height)
+            return false;
+
+        if (onClick != null)
+            onClick.accept(event);
+
         boolean success = false;
 
         for (Pane pane : this.panes[page])
@@ -157,6 +168,36 @@ public class PaginatedPane extends Pane {
 
             if (element.hasAttribute("visible"))
                 paginatedPane.setVisible(Boolean.parseBoolean(element.getAttribute("visible")));
+
+            if (element.hasAttribute("onClick")) {
+                for (Method method : instance.getClass().getMethods()) {
+                    if (!method.getName().equals(element.getAttribute("onClick")))
+                        continue;
+
+                    int parameterCount = method.getParameterCount();
+
+                    if (parameterCount == 0) {
+                        paginatedPane.setOnClick(event -> {
+                            try {
+                                method.setAccessible(true);
+                                method.invoke(instance);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    } else if (parameterCount == 1 &&
+                            InventoryClickEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
+                        paginatedPane.setOnClick(event -> {
+                            try {
+                                method.setAccessible(true);
+                                method.invoke(instance, event);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+                }
+            }
 
             if (element.hasAttribute("populate")) {
                 for (Method method : instance.getClass().getMethods()) {

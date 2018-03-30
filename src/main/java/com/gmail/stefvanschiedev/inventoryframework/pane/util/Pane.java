@@ -48,6 +48,11 @@ public abstract class Pane {
     private String tag;
 
     /**
+     * The consumer that will be called once a players clicks in the gui
+     */
+    protected Consumer<InventoryClickEvent> onClick;
+
+    /**
      * A map containing the mappings for properties for items
      */
     private static final Map<String, Function<String, Object>> PROPERTY_MAPPINGS = new HashMap<>();
@@ -150,6 +155,15 @@ public abstract class Pane {
      */
     public void setTag(@Nullable String tag) {
         this.tag = tag;
+    }
+
+    /**
+     * Set the consumer that should be called whenever this gui is clicked in.
+     *
+     * @param onClick the consumer that gets called
+     */
+    public void setOnClick(Consumer<InventoryClickEvent> onClick) {
+        this.onClick = onClick;
     }
 
     /**

@@ -110,7 +110,13 @@ public class OutlinePane extends Pane {
         int x = (slot % 9) - start.getX();
         int y = (slot / 9) - start.getY();
 
-        if (y * length + x < 0 || y * length + x >= items.length || items[y * length + x] == null)
+        if (y * length + x < 0 || y * length + x >= items.length)
+            return false;
+
+        if (onClick != null)
+            onClick.accept(event);
+
+        if (items[y * length + x] == null)
             return false;
 
         if (items[y * length + x].getItem().equals(event.getCurrentItem())) {
@@ -131,7 +137,10 @@ public class OutlinePane extends Pane {
     @Nullable
     @Override
     public GuiItem getItem(@NotNull String tag) {
-        return Stream.of(items).filter(item -> item != null && tag.equals(item.getTag())).findAny().orElse(null);
+        return Stream.of(items)
+                .filter(item -> item != null && tag.equals(item.getTag()))
+                .findAny()
+                .orElse(null);
     }
 
     /**
@@ -151,6 +160,36 @@ public class OutlinePane extends Pane {
                 Integer.parseInt(element.getAttribute("length")),
                 Integer.parseInt(element.getAttribute("height"))
             );
+
+            if (element.hasAttribute("onClick")) {
+                for (Method method : instance.getClass().getMethods()) {
+                    if (!method.getName().equals(element.getAttribute("onClick")))
+                        continue;
+
+                    int parameterCount = method.getParameterCount();
+
+                    if (parameterCount == 0) {
+                        outlinePane.setOnClick(event -> {
+                            try {
+                                method.setAccessible(true);
+                                method.invoke(instance);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    } else if (parameterCount == 1 &&
+                            InventoryClickEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
+                        outlinePane.setOnClick(event -> {
+                            try {
+                                method.setAccessible(true);
+                                method.invoke(instance, event);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+                }
+            }
 
             if (element.hasAttribute("tag"))
                 outlinePane.setTag(element.getAttribute("tag"));
