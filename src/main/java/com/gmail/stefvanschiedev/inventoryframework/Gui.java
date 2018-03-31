@@ -47,7 +47,7 @@ public class Gui implements Listener, InventoryHolder {
     /**
      * The inventory of this gui
      */
-    private final Inventory inventory;
+    private Inventory inventory;
 
     /**
      * The consumer that will be called once a players clicks in the gui
@@ -126,6 +126,23 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     /**
+     * Sets the amount of rows for this inventory. This will (unlike most other methods) directly update itself in order
+     * to ensure all viewers will still be viewing the new inventory as well.
+     *
+     * @param rows the amount of rows
+     */
+    public void setRows(int rows) {
+        assert rows >= 1 && rows <= 6 : "rows should be between 1 and 6";
+
+        //copy the viewers
+        List<HumanEntity> viewers = new ArrayList<>(inventory.getViewers());
+
+        this.inventory = Bukkit.createInventory(this, rows * 9, this.inventory.getTitle());
+
+        viewers.forEach(humanEntity -> humanEntity.openInventory(inventory));
+    }
+
+    /**
      * Update the gui for everyone
      *
      * @since 5.6.0
@@ -150,6 +167,15 @@ public class Gui implements Listener, InventoryHolder {
      */
     public void setOnClose(Consumer<InventoryCloseEvent> onClose) {
         this.onClose = onClose;
+    }
+
+    /**
+     * Returns the amount of rows this inventory currently has
+     *
+     * @return the amount of rows
+     */
+    public int getRows() {
+        return inventory.getSize() / 9;
     }
 
     /**
