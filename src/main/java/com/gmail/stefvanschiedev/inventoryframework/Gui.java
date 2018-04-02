@@ -143,6 +143,21 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     /**
+     * Sets the title for this inventory. This will (unlike most other methods) directly update itself in order
+     * to ensure all viewers will still be viewing the new inventory as well.
+     *
+     * @param title the title
+     */
+    public void setTitle(String title) {
+        //copy the viewers
+        List<HumanEntity> viewers = new ArrayList<>(inventory.getViewers());
+
+        this.inventory = Bukkit.createInventory(this, this.inventory.getSize(), title);
+
+        viewers.forEach(humanEntity -> humanEntity.openInventory(inventory));
+    }
+
+    /**
      * Update the gui for everyone
      *
      * @since 5.6.0
@@ -170,12 +185,21 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     /**
-     * Returns the amount of rows this inventory currently has
+     * Returns the amount of rows this gui currently has
      *
      * @return the amount of rows
      */
     public int getRows() {
         return inventory.getSize() / 9;
+    }
+
+    /**
+     * Returns the title of this gui
+     *
+     * @return the title
+     */
+    public String getTitle() {
+        return inventory.getTitle();
     }
 
     /**
