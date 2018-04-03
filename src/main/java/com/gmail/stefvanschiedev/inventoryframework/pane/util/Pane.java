@@ -120,7 +120,7 @@ public abstract class Pane {
      *
      * @param inventory the inventory that the items should be displayed in
      */
-    public abstract void display(Inventory inventory);
+    public abstract void display(Inventory inventory, int paneOffsetX, int paneOffsetY);
 
     /**
      * Returns the pane's visibility state

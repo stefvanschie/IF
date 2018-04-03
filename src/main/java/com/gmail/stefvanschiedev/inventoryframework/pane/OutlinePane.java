@@ -47,7 +47,7 @@ public class OutlinePane extends Pane {
      * {@inheritDoc}
      */
     @Override
-    public void display(@NotNull Inventory inventory) {
+    public void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY) {
         for (int x = 0; x < length; x++) {
             for (int y = 0; y < height; y++) {
                 if (items[y * length + x] == null || !items[y * length + x].isVisible())
@@ -55,10 +55,10 @@ public class OutlinePane extends Pane {
 
                 ItemStack item = items[y * length + x].getItem();
 
-                if (item.getType() == Material.AIR)
+                if (item.getType() == Material.AIR || x + paneOffsetX > length || y + paneOffsetY > height)
                     continue;
 
-                inventory.setItem((start.getY() + y) * 9 + (start.getX() + x), item);
+                inventory.setItem((start.getY() + y + paneOffsetY) * 9 + (start.getX() + x + paneOffsetX), item);
             }
         }
     }

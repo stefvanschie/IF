@@ -92,8 +92,9 @@ public class PaginatedPane extends Pane {
      * {@inheritDoc}
      */
     @Override
-    public void display(Inventory inventory) {
-        this.panes[page].forEach(pane -> pane.display(inventory));
+    public void display(Inventory inventory, int paneOffsetX, int paneOffsetY) {
+        this.panes[page].forEach(pane -> pane.display(inventory, paneOffsetX + start.getX(),
+                paneOffsetY + start.getY()));
     }
 
     /**

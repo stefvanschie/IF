@@ -118,7 +118,7 @@ public class Gui implements Listener, InventoryHolder {
         inventory.clear();
 
         //initialize the inventory first
-        panes.stream().filter(Pane::isVisible).forEach(pane -> pane.display(inventory));
+        panes.stream().filter(Pane::isVisible).forEach(pane -> pane.display(inventory, 0, 0));
 
         humanEntity.openInventory(inventory);
     }
