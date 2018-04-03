@@ -15,10 +15,7 @@ import org.w3c.dom.NodeList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -76,6 +73,8 @@ public class PaginatedPane extends Pane {
      */
     public void addPane(int page, Pane pane) {
         this.panes[page].add(pane);
+
+        this.panes[page].sort(Comparator.comparing(Pane::getPriority));
     }
 
     /**
@@ -162,6 +161,9 @@ public class PaginatedPane extends Pane {
                     Integer.parseInt(element.getAttribute("height")),
                     pages
             );
+
+            if (element.hasAttribute("priority"))
+                paginatedPane.setPriority(Priority.valueOf(element.getAttribute("priority")));
 
             if (element.hasAttribute("tag"))
                 paginatedPane.setTag(element.getAttribute("tag"));

@@ -134,6 +134,9 @@ public class StaticPane extends Pane {
                 Integer.parseInt(element.getAttribute("height"))
             );
 
+            if (element.hasAttribute("priority"))
+                staticPane.setPriority(Priority.valueOf(element.getAttribute("priority")));
+
             if (element.hasAttribute("tag"))
                 staticPane.setTag(element.getAttribute("tag"));
 

@@ -191,6 +191,9 @@ public class OutlinePane extends Pane {
                 }
             }
 
+            if (element.hasAttribute("priority"))
+                outlinePane.setPriority(Priority.valueOf(element.getAttribute("priority")));
+
             if (element.hasAttribute("tag"))
                 outlinePane.setTag(element.getAttribute("tag"));
 

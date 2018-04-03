@@ -65,7 +65,7 @@ public class Gui implements Listener, InventoryHolder {
      * @param rows the amount of rows this gui should contain
      * @param title the title/name of this gui
      */
-    protected Gui(Plugin plugin, int rows, String title) {
+    public Gui(Plugin plugin, int rows, String title) {
         assert rows >= 1 && rows <= 6 : "amount of rows outside range";
 
         this.panes = new ArrayList<>();
@@ -78,10 +78,11 @@ public class Gui implements Listener, InventoryHolder {
      * Adds a pane to this gui
      *
      * @param pane the pane to add
-     * @since 5.6.0
      */
-    protected void addPane(Pane pane) {
+    public void addPane(Pane pane) {
         this.panes.add(pane);
+
+        this.panes.sort(Comparator.comparing(Pane::getPriority));
     }
 
     /**
@@ -89,7 +90,6 @@ public class Gui implements Listener, InventoryHolder {
      *
      * @param tag the tag to look for
      * @return the gui item
-     * @since 5.6.0
      */
     @Nullable
     @Contract(pure = true)
@@ -102,7 +102,6 @@ public class Gui implements Listener, InventoryHolder {
      *
      * @param tag the tag to look for
      * @return the pane
-     * @since 5.6.0
      */
     @Nullable
     @Contract(pure = true)
@@ -114,7 +113,6 @@ public class Gui implements Listener, InventoryHolder {
      * Shows a gui to a player
      *
      * @param humanEntity the human entity to show the gui to
-     * @since 5.6.0
      */
     public void show(HumanEntity humanEntity) {
         inventory.clear();

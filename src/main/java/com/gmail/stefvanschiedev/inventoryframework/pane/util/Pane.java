@@ -30,6 +30,7 @@ public abstract class Pane {
     /**
      * The starting position of this pane
      */
+    @NotNull
     protected GuiLocation start;
 
     /**
@@ -43,6 +44,12 @@ public abstract class Pane {
     private boolean visible;
 
     /**
+     * The priority of the pane, determines when it will be rendered
+     */
+    @NotNull
+    private Priority priority;
+
+    /**
      * The tag assigned to this pane, null if no tag has been assigned
      */
     private String tag;
@@ -50,6 +57,7 @@ public abstract class Pane {
     /**
      * The consumer that will be called once a players clicks in the gui
      */
+    @Nullable
     protected Consumer<InventoryClickEvent> onClick;
 
     /**
@@ -63,8 +71,9 @@ public abstract class Pane {
      * @param start the upper left corner of the pane
      * @param length the length of the pane
      * @param height the height of the pane
+     * @param priority the priority of the pane
      */
-    protected Pane(@NotNull GuiLocation start, int length, int height) {
+    protected Pane(@NotNull GuiLocation start, int length, int height, Priority priority) {
         assert start.getX() + length <= 9 : "length longer than maximum size";
         assert start.getY() + height <= 6 : "height longer than maximum size";
 
@@ -73,7 +82,19 @@ public abstract class Pane {
         this.length = length;
         this.height = height;
 
+        this.priority = priority;
         this.visible = true;
+    }
+
+    /**
+     * Constructs a new default pane
+     *
+     * @param start the upper left corner of the pane
+     * @param length the length of the pane
+     * @param height the height of the pane
+     */
+    protected Pane(@NotNull GuiLocation start, int length, int height) {
+        this(start, length, height, Priority.NORMAL);
     }
 
     /**
@@ -149,6 +170,15 @@ public abstract class Pane {
     }
 
     /**
+     * Sets the priority of this pane
+     *
+     * @param priority the priority
+     */
+    public void setPriority(@NotNull Priority priority) {
+        this.priority = priority;
+    }
+
+    /**
      * Sets the tag of this item to the new tag or removes it when the parameter is null
      *
      * @param tag the new tag
@@ -164,6 +194,15 @@ public abstract class Pane {
      */
     public void setOnClick(Consumer<InventoryClickEvent> onClick) {
         this.onClick = onClick;
+    }
+
+    /**
+     * Returns the priority of the pane
+     *
+     * @return the priority
+     */
+    public Priority getPriority() {
+        return priority;
     }
 
     /**
@@ -309,6 +348,43 @@ public abstract class Pane {
     @Contract(pure = true)
     public static Map<String, Function<String, Object>> getPropertyMappings() {
         return PROPERTY_MAPPINGS;
+    }
+
+    /**
+     * An enum representing the rendering priorities for the panes. Uses a similar system to Bukkit's
+     * {@link org.bukkit.event.EventPriority} system
+     */
+    public enum Priority {
+
+        /**
+         * The lowest priority, will be rendered first
+         */
+        LOWEST,
+
+        /**
+         * A low priority, lower than default
+         */
+        LOW,
+
+        /**
+         * A normal priority, the default
+         */
+        NORMAL,
+
+        /**
+         * A higher priority, higher than default
+         */
+        HIGH,
+
+        /**
+         * The highest priority for production use
+         */
+        HIGHEST,
+
+        /**
+         * The highest priority, will always be called last, should not be used for production code
+         */
+        MONITOR
     }
 
     static {
