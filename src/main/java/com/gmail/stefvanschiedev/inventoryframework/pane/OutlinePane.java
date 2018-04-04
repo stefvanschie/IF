@@ -161,59 +161,10 @@ public class OutlinePane extends Pane {
                 Integer.parseInt(element.getAttribute("height"))
             );
 
-            if (element.hasAttribute("onClick")) {
-                for (Method method : instance.getClass().getMethods()) {
-                    if (!method.getName().equals(element.getAttribute("onClick")))
-                        continue;
+            Pane.load(outlinePane, instance, element);
 
-                    int parameterCount = method.getParameterCount();
-
-                    if (parameterCount == 0) {
-                        outlinePane.setOnClick(event -> {
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(instance);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    } else if (parameterCount == 1 &&
-                            InventoryClickEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                        outlinePane.setOnClick(event -> {
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(instance, event);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    }
-                }
-            }
-
-            if (element.hasAttribute("priority"))
-                outlinePane.setPriority(Priority.valueOf(element.getAttribute("priority")));
-
-            if (element.hasAttribute("tag"))
-                outlinePane.setTag(element.getAttribute("tag"));
-
-            if (element.hasAttribute("visible"))
-                outlinePane.setVisible(Boolean.parseBoolean(element.getAttribute("visible")));
-
-            if (element.hasAttribute("populate")) {
-                for (Method method : instance.getClass().getMethods()) {
-                    if (!method.getName().equals(element.getAttribute("populate")))
-                        continue;
-
-                    if (method.getParameterCount() == 1 &&
-                        OutlinePane.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                        method.setAccessible(true);
-                        method.invoke(instance, outlinePane);
-                    }
-                }
-
+            if (element.hasAttribute("populate"))
                 return outlinePane;
-            }
 
             NodeList childNodes = element.getChildNodes();
 
@@ -230,7 +181,7 @@ public class OutlinePane extends Pane {
             }
 
             return outlinePane;
-        } catch (NumberFormatException | IllegalAccessException | InvocationTargetException e) {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
         }
 

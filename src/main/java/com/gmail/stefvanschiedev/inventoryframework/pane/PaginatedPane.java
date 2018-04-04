@@ -163,59 +163,10 @@ public class PaginatedPane extends Pane {
                     pages
             );
 
-            if (element.hasAttribute("priority"))
-                paginatedPane.setPriority(Priority.valueOf(element.getAttribute("priority")));
+            Pane.load(paginatedPane, instance, element);
 
-            if (element.hasAttribute("tag"))
-                paginatedPane.setTag(element.getAttribute("tag"));
-
-            if (element.hasAttribute("visible"))
-                paginatedPane.setVisible(Boolean.parseBoolean(element.getAttribute("visible")));
-
-            if (element.hasAttribute("onClick")) {
-                for (Method method : instance.getClass().getMethods()) {
-                    if (!method.getName().equals(element.getAttribute("onClick")))
-                        continue;
-
-                    int parameterCount = method.getParameterCount();
-
-                    if (parameterCount == 0) {
-                        paginatedPane.setOnClick(event -> {
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(instance);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    } else if (parameterCount == 1 &&
-                            InventoryClickEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                        paginatedPane.setOnClick(event -> {
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(instance, event);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    }
-                }
-            }
-
-            if (element.hasAttribute("populate")) {
-                for (Method method : instance.getClass().getMethods()) {
-                    if (!method.getName().equals(element.getAttribute("populate")))
-                        continue;
-
-                    if (method.getParameterCount() == 1 &&
-                        PaginatedPane.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                        method.setAccessible(true);
-                        method.invoke(instance, paginatedPane);
-                    }
-                }
-
+            if (element.hasAttribute("populate"))
                 return paginatedPane;
-            }
 
             int pageCount = 0;
 
@@ -245,7 +196,7 @@ public class PaginatedPane extends Pane {
             }
 
             return paginatedPane;
-        } catch (NumberFormatException | IllegalAccessException | InvocationTargetException e) {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
         }
 

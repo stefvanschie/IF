@@ -134,59 +134,10 @@ public class StaticPane extends Pane {
                 Integer.parseInt(element.getAttribute("height"))
             );
 
-            if (element.hasAttribute("priority"))
-                staticPane.setPriority(Priority.valueOf(element.getAttribute("priority")));
+            Pane.load(staticPane, instance, element);
 
-            if (element.hasAttribute("tag"))
-                staticPane.setTag(element.getAttribute("tag"));
-
-            if (element.hasAttribute("visible"))
-                staticPane.setVisible(Boolean.parseBoolean(element.getAttribute("visible")));
-
-            if (element.hasAttribute("onClick")) {
-                for (Method method : instance.getClass().getMethods()) {
-                    if (!method.getName().equals(element.getAttribute("onClick")))
-                        continue;
-
-                    int parameterCount = method.getParameterCount();
-
-                    if (parameterCount == 0) {
-                        staticPane.setOnClick(event -> {
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(instance);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    } else if (parameterCount == 1 &&
-                            InventoryClickEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                        staticPane.setOnClick(event -> {
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(instance, event);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    }
-                }
-            }
-
-            if (element.hasAttribute("populate")) {
-                for (Method method : instance.getClass().getMethods()) {
-                    if (!method.getName().equals(element.getAttribute("populate")))
-                        continue;
-
-                    if (method.getParameterCount() == 1 &&
-                        StaticPane.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                        method.setAccessible(true);
-                        method.invoke(instance, staticPane);
-                    }
-                }
-
+            if (element.hasAttribute("populate"))
                 return staticPane;
-            }
 
             NodeList childNodes = element.getChildNodes();
 
@@ -204,7 +155,7 @@ public class StaticPane extends Pane {
             }
 
             return staticPane;
-        } catch (NumberFormatException | IllegalAccessException | InvocationTargetException e) {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
         }
 
