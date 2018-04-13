@@ -122,19 +122,6 @@ public class PaginatedPane extends Pane {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public GuiItem getItem(@NotNull String tag) {
-        return Stream.of(panes)
-                .flatMap(Collection::stream)
-                .map(pane -> pane.getItem(tag))
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(null);
-    }
-
-    /**
      * Loads a paginated pane from a given element
      *
      * @param instance the instance class

@@ -51,11 +51,6 @@ public abstract class Pane {
     private Priority priority;
 
     /**
-     * The tag assigned to this pane, null if no tag has been assigned
-     */
-    private String tag;
-
-    /**
      * The consumer that will be called once a players clicks in the gui
      */
     @Nullable
@@ -151,26 +146,6 @@ public abstract class Pane {
     public abstract boolean click(@NotNull InventoryClickEvent event);
 
     /**
-     * Returns a gui item by tag
-     *
-     * @param tag the tag to look for
-     * @return the gui item
-     */
-    @Nullable
-    public abstract GuiItem getItem(@NotNull String tag);
-
-    /**
-     * Returns the tag that belongs to this item, or null if no tag has been assigned
-     *
-     * @return the tag or null
-     */
-    @Nullable
-    @Contract(pure = true)
-    public String getTag() {
-        return tag;
-    }
-
-    /**
      * Sets the priority of this pane
      *
      * @param priority the priority
@@ -180,20 +155,11 @@ public abstract class Pane {
     }
 
     /**
-     * Sets the tag of this item to the new tag or removes it when the parameter is null
-     *
-     * @param tag the new tag
-     */
-    public void setTag(@Nullable String tag) {
-        this.tag = tag;
-    }
-
-    /**
      * Set the consumer that should be called whenever this gui is clicked in.
      *
      * @param onClick the consumer that gets called
      */
-    public void setOnClick(Consumer<InventoryClickEvent> onClick) {
+    public void setOnClick(@Nullable Consumer<InventoryClickEvent> onClick) {
         this.onClick = onClick;
     }
 
@@ -230,11 +196,6 @@ public abstract class Pane {
 
             itemStack.setItemMeta(itemMeta);
         }
-
-        String tag = null;
-
-        if (element.hasAttribute("tag"))
-            tag = element.getAttribute("tag");
 
         List<Object> properties = new ArrayList<>();
 
@@ -335,7 +296,14 @@ public abstract class Pane {
         }
 
         GuiItem item = action == null ? new GuiItem(itemStack) : new GuiItem(itemStack, action);
-        item.setTag(tag);
+
+        if (element.hasAttribute("field")) {
+            try {
+                instance.getClass().getField(element.getAttribute("field")).set(instance, item);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
 
         return item;
     }
@@ -344,11 +312,16 @@ public abstract class Pane {
         if (element.hasAttribute("priority"))
             pane.setPriority(Priority.valueOf(element.getAttribute("priority")));
 
-        if (element.hasAttribute("tag"))
-            pane.setTag(element.getAttribute("tag"));
-
         if (element.hasAttribute("visible"))
             pane.setVisible(Boolean.parseBoolean(element.getAttribute("visible")));
+
+        if (element.hasAttribute("field")) {
+            try {
+                instance.getClass().getField(element.getAttribute("field")).set(instance, pane);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
 
         if (element.hasAttribute("onClick")) {
             for (Method method : instance.getClass().getMethods()) {

@@ -26,6 +26,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -83,30 +84,6 @@ public class Gui implements Listener, InventoryHolder {
         this.panes.add(pane);
 
         this.panes.sort(Comparator.comparing(Pane::getPriority));
-    }
-
-    /**
-     * Returns a gui item by tag
-     *
-     * @param tag the tag to look for
-     * @return the gui item
-     */
-    @Nullable
-    @Contract(pure = true)
-    public GuiItem getItem(@NotNull String tag) {
-        return panes.stream().map(pane -> pane.getItem(tag)).filter(Objects::nonNull).findAny().orElse(null);
-    }
-
-    /**
-     * Returns a pane by tag
-     *
-     * @param tag the tag to look for
-     * @return the pane
-     */
-    @Nullable
-    @Contract(pure = true)
-    public Pane getPane(@NotNull String tag) {
-        return panes.stream().filter(pane -> tag.equals(pane.getTag())).findAny().orElse(null);
     }
 
     /**
@@ -229,6 +206,14 @@ public class Gui implements Listener, InventoryHolder {
 
             Gui gui = new Gui(plugin, Integer.parseInt(documentElement.getAttribute("rows")),
                     documentElement.getAttribute("title"));
+
+            if (documentElement.hasAttribute("field")) {
+                try {
+                    instance.getClass().getField(documentElement.getAttribute("field")).set(instance, gui);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
 
             if (documentElement.hasAttribute("onClick")) {
                 for (Method method : instance.getClass().getMethods()) {

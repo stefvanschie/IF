@@ -105,18 +105,6 @@ public class StaticPane extends Pane {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Nullable
-    @Override
-    public GuiItem getItem(@NotNull String tag) {
-        return Stream.of(items)
-                .filter(item -> item != null && tag.equals(item.getTag()))
-                .findAny()
-                .orElse(null);
-    }
-
-    /**
      * Loads an outline pane from a given element
      *
      * @param instance the instance class
