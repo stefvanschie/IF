@@ -1,5 +1,6 @@
 package com.gmail.stefvanschiedev.inventoryframework.pane.util;
 
+import com.gmail.stefvanschiedev.inventoryframework.Gui;
 import com.gmail.stefvanschiedev.inventoryframework.GuiItem;
 import com.gmail.stefvanschiedev.inventoryframework.GuiLocation;
 import com.gmail.stefvanschiedev.inventoryframework.pane.StaticPane;
@@ -305,6 +306,17 @@ public abstract class Pane {
             }
         }
 
+        if (element.hasAttribute("populate")) {
+            try {
+                Method method = instance.getClass().getMethod("populate", GuiItem.class);
+
+                method.setAccessible(true);
+                method.invoke(instance, item);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        }
+
         return item;
     }
 
@@ -354,18 +366,15 @@ public abstract class Pane {
         }
 
         if (element.hasAttribute("populate")) {
-            for (Method method : instance.getClass().getMethods()) {
+            for (Method method: instance.getClass().getMethods()) {
                 if (!method.getName().equals(element.getAttribute("populate")))
                     continue;
 
-                if (method.getParameterCount() == 1 &&
-                        StaticPane.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                    try {
-                        method.setAccessible(true);
-                        method.invoke(instance, pane);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    method.setAccessible(true);
+                    method.invoke(instance, pane);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    e.printStackTrace();
                 }
             }
         }

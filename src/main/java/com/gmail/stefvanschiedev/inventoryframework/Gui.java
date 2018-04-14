@@ -275,6 +275,19 @@ public class Gui implements Listener, InventoryHolder {
                 }
             }
 
+            if (documentElement.hasAttribute("populate")) {
+                try {
+                    Method method = instance.getClass().getMethod("populate", Gui.class);
+
+                    method.setAccessible(true);
+                    method.invoke(instance, gui);
+                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    e.printStackTrace();
+                }
+
+                return gui;
+            }
+
             NodeList childNodes = documentElement.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node item = childNodes.item(i);
