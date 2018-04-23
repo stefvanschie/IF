@@ -26,7 +26,7 @@ public class PaginatedPane extends Pane {
     /**
      * A set of panes for the different pages
      */
-    private final List<Pane>[] panes;
+    private final Map<Integer, List<Pane>> panes = new HashMap<>();
 
     /**
      * The current page
@@ -36,16 +36,8 @@ public class PaginatedPane extends Pane {
     /**
      * {@inheritDoc}
      */
-    public PaginatedPane(@NotNull GuiLocation start, int length, int height, int pages) {
+    public PaginatedPane(@NotNull GuiLocation start, int length, int height) {
         super(start, length, height);
-
-        //we do this because java is weird, but don't worry if it fails to work, just yell at me
-        //noinspection unchecked
-        this.panes = (List<Pane>[]) new ArrayList[pages];
-
-        //declare all arrays, so we don't have to check for this every time
-        for (int i = 0; i < panes.length; i++)
-            panes[i] = new ArrayList<>();
     }
 
     /**
@@ -63,7 +55,7 @@ public class PaginatedPane extends Pane {
      * @return the amount of pages
      */
     public int getPages() {
-        return panes.length;
+        return panes.size();
     }
     /**
      * Assigns a pane to a selected page
@@ -72,9 +64,12 @@ public class PaginatedPane extends Pane {
      * @param pane the new pane
      */
     public void addPane(int page, Pane pane) {
-        this.panes[page].add(pane);
+        if (!this.panes.containsKey(page))
+            this.panes.put(page, new ArrayList<>());
 
-        this.panes[page].sort(Comparator.comparing(Pane::getPriority));
+        this.panes.get(page).add(pane);
+
+        this.panes.get(page).sort(Comparator.comparing(Pane::getPriority));
     }
 
     /**
@@ -83,7 +78,7 @@ public class PaginatedPane extends Pane {
      * @param page the page
      */
     public void setPage(int page) {
-        assert page >= 0 && page < panes.length : "page outside range";
+        assert panes.containsKey(page) : "page outside range";
 
         this.page = page;
     }
@@ -93,7 +88,7 @@ public class PaginatedPane extends Pane {
      */
     @Override
     public void display(Inventory inventory, int paneOffsetX, int paneOffsetY) {
-        this.panes[page].forEach(pane -> pane.display(inventory, paneOffsetX + start.getX(),
+        this.panes.get(page).forEach(pane -> pane.display(inventory, paneOffsetX + start.getX(),
                 paneOffsetY + start.getY()));
     }
 
@@ -107,7 +102,7 @@ public class PaginatedPane extends Pane {
         int x = (slot % 9) - start.getX();
         int y = (slot / 9) - start.getY();
 
-        if (x >= 0 && x <= length && y >= 0 && y <= height)
+        if (x < 0 || x > length || y < 0 || y > height)
             return false;
 
         if (onClick != null)
@@ -115,7 +110,7 @@ public class PaginatedPane extends Pane {
 
         boolean success = false;
 
-        for (Pane pane : this.panes[page])
+        for (Pane pane : this.panes.get(page))
             success = success || pane.click(event);
 
         return success;
@@ -132,22 +127,11 @@ public class PaginatedPane extends Pane {
     @Contract("_, null -> fail")
     public static PaginatedPane load(Object instance, @NotNull Element element) {
         try {
-            NodeList childNodes = element.getChildNodes();
-            int pages = 0;
-
-            for (int i = 0; i < childNodes.getLength(); i++) {
-                if (childNodes.item(i).getNodeType() != Node.ELEMENT_NODE)
-                    continue;
-
-                pages++;
-            }
-
             PaginatedPane paginatedPane = new PaginatedPane(new GuiLocation(
                     Integer.parseInt(element.getAttribute("x")),
                     Integer.parseInt(element.getAttribute("y"))),
                     Integer.parseInt(element.getAttribute("length")),
-                    Integer.parseInt(element.getAttribute("height")),
-                    pages
+                    Integer.parseInt(element.getAttribute("height"))
             );
 
             Pane.load(paginatedPane, instance, element);
@@ -157,6 +141,7 @@ public class PaginatedPane extends Pane {
 
             int pageCount = 0;
 
+            NodeList childNodes = element.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node item = childNodes.item(i);
 

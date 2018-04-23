@@ -14,10 +14,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * A pane for static items and stuff. All items will have to be specified a slot, or will be added in the next position.

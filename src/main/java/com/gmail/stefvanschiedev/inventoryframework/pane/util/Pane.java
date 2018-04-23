@@ -1,6 +1,5 @@
 package com.gmail.stefvanschiedev.inventoryframework.pane.util;
 
-import com.gmail.stefvanschiedev.inventoryframework.Gui;
 import com.gmail.stefvanschiedev.inventoryframework.GuiItem;
 import com.gmail.stefvanschiedev.inventoryframework.GuiLocation;
 import com.gmail.stefvanschiedev.inventoryframework.pane.StaticPane;
