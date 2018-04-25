@@ -51,7 +51,7 @@ public class StaticPane extends Pane {
 
                 ItemStack item = items[y * length + x].getItem();
 
-                if (item.getType() == Material.AIR || x + paneOffsetX > length || y + paneOffsetY > height)
+                if (item.getType() == Material.AIR || x + paneOffsetX > 9 || y + paneOffsetY > 6)
                     continue;
 
                 inventory.setItem((start.getY() + y + paneOffsetY) * 9 + (start.getX() + x + paneOffsetX), item);

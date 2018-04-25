@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -58,6 +59,11 @@ public class Gui implements Listener, InventoryHolder {
      * The consumer that will be called once a player closes the gui
      */
     private Consumer<InventoryCloseEvent> onClose;
+
+    /**
+     * The pane mapping which will allow users to register their own panes to be used in XML files
+     */
+    private static final Map<String, BiFunction<Object, Element, Pane>> PANE_MAPPINGS = new HashMap<>();
 
     /**
      * Constructs a new GUI
@@ -306,29 +312,6 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     /**
-     * Loads a pane by the given instance and node
-     *
-     * @param instance the instance
-     * @param node the node
-     * @return the pane
-     * @since 5.6.0
-     */
-    @Nullable
-    @Contract("_, null -> fail")
-    public static Pane loadPane(Object instance, @NotNull Node node) {
-        switch (node.getNodeName()) {
-            case "outlinepane":
-                return OutlinePane.load(instance, (Element) node);
-            case "paginatedpane":
-                return PaginatedPane.load(instance, (Element) node);
-            case "staticpane":
-                return StaticPane.load(instance, (Element) node);
-        }
-
-        return null;
-    }
-
-    /**
      * Registers a property that can be used inside an XML file to add additional new properties.
      *
      * @param attributeName the name of the property. This is the same name you'll be using to specify the property
@@ -341,6 +324,32 @@ public class Gui implements Listener, InventoryHolder {
         assert !Pane.getPropertyMappings().containsKey(attributeName) : "property is already registered";
 
         Pane.getPropertyMappings().put(attributeName, function);
+    }
+
+    /**
+     * Registers a name that can be used inside an XML file to add custom panes
+     *
+     * @param name the name of the pane to be used in the XML file
+     * @param biFunction how the pane loading should be processed
+     * @throws AssertionError when a pane with this name is already registered
+     */
+    public static void registerPane(String name, BiFunction<Object, Element, Pane> biFunction) {
+        assert !PANE_MAPPINGS.containsKey(name) : "pane name already registered";
+
+        PANE_MAPPINGS.put(name, biFunction);
+    }
+
+    /**
+     * Loads a pane by the given instance and node
+     *
+     * @param instance the instance
+     * @param node the node
+     * @return the pane
+     */
+    @Nullable
+    @Contract("_, null -> fail")
+    public static Pane loadPane(Object instance, @NotNull Node node) {
+        return PANE_MAPPINGS.get(node.getNodeName()).apply(instance, (Element) node);
     }
 
     /**
@@ -374,5 +383,11 @@ public class Gui implements Listener, InventoryHolder {
             return;
 
         onClose.accept(event);
+    }
+
+    static {
+        registerPane("outlinepane", OutlinePane::load);
+        registerPane("paginatedpane", PaginatedPane::load);
+        registerPane("staticpane", StaticPane::load);
     }
 }
