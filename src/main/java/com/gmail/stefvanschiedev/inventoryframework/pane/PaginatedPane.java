@@ -92,7 +92,7 @@ public class PaginatedPane extends Pane {
      * {@inheritDoc}
      */
     @Override
-    public boolean click(@NotNull InventoryClickEvent event) {
+    public boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY) {
         int slot = event.getSlot();
 
         int x = (slot % 9) - start.getX();
@@ -107,7 +107,8 @@ public class PaginatedPane extends Pane {
         boolean success = false;
 
         for (Pane pane : this.panes.get(page))
-            success = success || pane.click(event);
+            success = success || pane.click(event, paneOffsetX + start.getX(),
+                    paneOffsetY + start.getY());
 
         return success;
     }

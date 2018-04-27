@@ -367,7 +367,7 @@ public class Gui implements Listener, InventoryHolder {
 
         //loop through the panes reverse, because the pane with the highest priority (last in list) is most likely to have the correct item
         for (int i = panes.size() - 1; i >= 0; i--) {
-            if (panes.get(i).click(event))
+            if (panes.get(i).click(event, 0, 0))
                 break;
         }
     }

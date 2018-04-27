@@ -143,7 +143,7 @@ public abstract class Pane {
      * @param event the event that occurred while clicking on this item
      * @return whether the item was found or not
      */
-    public abstract boolean click(@NotNull InventoryClickEvent event);
+    public abstract boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY);
 
     /**
      * Sets the priority of this pane
