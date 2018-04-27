@@ -2,9 +2,9 @@ package com.gmail.stefvanschiedev.inventoryframework.pane.util;
 
 import com.gmail.stefvanschiedev.inventoryframework.GuiItem;
 import com.gmail.stefvanschiedev.inventoryframework.GuiLocation;
-import com.gmail.stefvanschiedev.inventoryframework.pane.StaticPane;
 import com.google.common.primitives.Primitives;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -69,7 +69,7 @@ public abstract class Pane {
      * @param height the height of the pane
      * @param priority the priority of the pane
      */
-    protected Pane(@NotNull GuiLocation start, int length, int height, Priority priority) {
+    protected Pane(@NotNull GuiLocation start, int length, int height, @NotNull Priority priority) {
         assert start.getX() + length <= 9 : "length longer than maximum size";
         assert start.getY() + height <= 6 : "height longer than maximum size";
 
@@ -168,6 +168,7 @@ public abstract class Pane {
      *
      * @return the priority
      */
+    @NotNull
     public Priority getPriority() {
         return priority;
     }
@@ -184,19 +185,6 @@ public abstract class Pane {
         ItemStack itemStack = new ItemStack(Material.matchMaterial(id.toUpperCase(Locale.getDefault())), 1,
                 element.hasAttribute("damage") ? Short.parseShort(element.getAttribute("damage")) : 0);
 
-        if (element.hasAttribute("displayName")) {
-            ItemMeta itemMeta = itemStack.getItemMeta();
-
-            itemMeta.setDisplayName(element.getAttribute("displayName"));
-            itemStack.setItemMeta(itemMeta);
-        }
-
-        if (element.hasAttribute("lores")) {
-            ItemMeta itemMeta = itemStack.getItemMeta();
-
-            itemStack.setItemMeta(itemMeta);
-        }
-
         List<Object> properties = new ArrayList<>();
 
         if (element.hasChildNodes()) {
@@ -205,27 +193,63 @@ public abstract class Pane {
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node item = childNodes.item(i);
 
-                if (item.getNodeType() != Node.ELEMENT_NODE || !item.getNodeName().equals("properties"))
+                if (item.getNodeType() != Node.ELEMENT_NODE)
                     continue;
 
-                Element propertyList = (Element) item;
+                String nodeName = item.getNodeName();
 
-                for (int j = 0; j < propertyList.getChildNodes().getLength(); j++) {
-                    Node propertyNode = propertyList.getChildNodes().item(j);
+                if (nodeName.equals("properties") || nodeName.equals("lore") || nodeName.equals("enchantments")) {
+                    Element innerElement = (Element) item;
+                    NodeList innerChildNodes = innerElement.getChildNodes();
 
-                    if (propertyNode.getNodeType() != Node.ELEMENT_NODE ||
-                            !propertyNode.getNodeName().equals("property"))
-                        continue;
+                    for (int j = 0; j < innerChildNodes.getLength(); j++) {
+                        Node innerNode = innerChildNodes.item(j);
 
-                    Element property = (Element) propertyNode;
-                    String propertyType;
+                        if (innerNode.getNodeType() != Node.ELEMENT_NODE)
+                            continue;
 
-                    if (!property.hasAttribute("type"))
-                        propertyType = "string";
-                    else
-                        propertyType = property.getAttribute("type");
+                        Element innerElementChild = (Element) innerNode;
+                        if (nodeName.equals("properties")) {
+                            if (!innerNode.getNodeName().equals("property"))
+                                continue;
 
-                    properties.add(PROPERTY_MAPPINGS.get(propertyType).apply(property.getTextContent()));
+                            Element property = innerElementChild;
+                            String propertyType;
+
+                            if (!property.hasAttribute("type"))
+                                propertyType = "string";
+                            else
+                                propertyType = property.getAttribute("type");
+
+                            properties.add(PROPERTY_MAPPINGS.get(propertyType).apply(property.getTextContent()));
+                        } else if (nodeName.equals("lore")) {
+                            if (!innerNode.getNodeName().equals("line"))
+                                continue;
+
+                            ItemMeta itemMeta = itemStack.getItemMeta();
+                            List<String> lore = itemMeta.hasLore() ? itemMeta.getLore() : new ArrayList<>();
+
+                            lore.add(innerNode.getTextContent());
+                            itemMeta.setLore(lore);
+                            itemStack.setItemMeta(itemMeta);
+                        } else if (nodeName.equals("enchantments")) {
+                            if (!innerNode.getNodeName().equals("enchantment"))
+                                continue;
+
+                            ItemMeta itemMeta = itemStack.getItemMeta();
+
+                            itemMeta.addEnchant(Enchantment.getByName(
+                                    innerElementChild.getAttribute("id").toUpperCase(Locale.getDefault())
+                            ), Integer.parseInt(innerElementChild.getAttribute("level")), true);
+                            itemStack.setItemMeta(itemMeta);
+                        }
+                    }
+                } else if (nodeName.equals("displayname")) {
+                    ItemMeta itemMeta = itemStack.getItemMeta();
+
+                    itemMeta.setDisplayName(item.getTextContent());
+
+                    itemStack.setItemMeta(itemMeta);
                 }
             }
         }

@@ -1,7 +1,6 @@
 package com.gmail.stefvanschiedev.inventoryframework.pane;
 
 import com.gmail.stefvanschiedev.inventoryframework.Gui;
-import com.gmail.stefvanschiedev.inventoryframework.GuiItem;
 import com.gmail.stefvanschiedev.inventoryframework.GuiLocation;
 import com.gmail.stefvanschiedev.inventoryframework.pane.util.Pane;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -13,10 +12,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * A pane for panes that should be spread out over multiple pages
