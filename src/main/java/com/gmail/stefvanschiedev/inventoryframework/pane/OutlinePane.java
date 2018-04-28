@@ -40,6 +40,11 @@ public class OutlinePane extends Pane {
     private int rotation;
 
     /**
+     * The amount of empty spots in between each item
+     */
+    private int gap;
+
+    /**
      * Constructs a new default pane
      *
      * @param start  the upper left corner of the pane
@@ -87,16 +92,16 @@ public class OutlinePane extends Pane {
             //increment positions
             if (orientation == Orientation.HORIZONTAL) {
                 if (x == length - 1) {
-                    x = 0;
+                    x = x - length + gap + 1;
                     y++;
                 } else
-                    x++;
+                    x += gap + 1;
             } else if (orientation == Orientation.VERTICAL) {
                 if (y == height - 1) {
                     x++;
-                    y = 0;
+                    y = y - height + gap + 1;
                 } else
-                    y++;
+                    y += gap + 1;
             }
         }
     }
@@ -134,14 +139,20 @@ public class OutlinePane extends Pane {
             newY = x;
         }
 
-        GuiItem item;
+        int index = 0;
 
-        if (orientation == Orientation.HORIZONTAL && items.size() > newY * length + newX)
-            item = items.get(newY * length + newX);
-        else if (orientation == Orientation.VERTICAL && items.size() > newX * height + newY)
-            item = items.get(newX * height + newY);
-        else
+        //adjust for gap
+        if (orientation == Orientation.HORIZONTAL)
+            index = newY * length + newX;
+        else if (orientation == Orientation.VERTICAL)
+            index = newX * height + newY;
+
+        index /= gap + 1;
+
+        if (items.size() <= index)
             return false;
+
+        GuiItem item = items.get(index);
 
         if (!item.getItem().equals(event.getCurrentItem()) || !item.isVisible())
             return false;
@@ -181,12 +192,31 @@ public class OutlinePane extends Pane {
     }
 
     /**
+     * Sets the gap of the pane
+     *
+     * @param gap the new gap
+     */
+    public void setGap(int gap) {
+        this.gap = gap;
+    }
+
+    /**
      * Sets the orientation of this outline pane
      *
      * @param orientation the new orientation
      */
     public void setOrientation(@NotNull Orientation orientation) {
         this.orientation = orientation;
+    }
+
+    /**
+     * Gets the gap of the pane
+     *
+     * @return the gap
+     */
+    @Contract(pure = true)
+    public int getGap() {
+        return gap;
     }
 
     /**
@@ -240,6 +270,9 @@ public class OutlinePane extends Pane {
             if (element.hasAttribute("orientation"))
                 outlinePane.setOrientation(Orientation.valueOf(element.getAttribute("orientation")
                         .toUpperCase(Locale.getDefault())));
+
+            if (element.hasAttribute("gap"))
+                outlinePane.setGap(Integer.parseInt(element.getAttribute("gap")));
 
             NodeList childNodes = element.getChildNodes();
 
