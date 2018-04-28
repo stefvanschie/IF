@@ -182,7 +182,8 @@ public abstract class Pane {
      */
     public static GuiItem loadItem(Object instance, Element element) {
         String id = element.getAttribute("id");
-        ItemStack itemStack = new ItemStack(Material.matchMaterial(id.toUpperCase(Locale.getDefault())), 1,
+        ItemStack itemStack = new ItemStack(Material.matchMaterial(id.toUpperCase(Locale.getDefault())),
+                element.hasAttribute("amount") ? Integer.parseInt(element.getAttribute("amount")) : 1,
                 element.hasAttribute("damage") ? Short.parseShort(element.getAttribute("damage")) : 0);
 
         List<Object> properties = new ArrayList<>();
@@ -209,39 +210,42 @@ public abstract class Pane {
                             continue;
 
                         Element innerElementChild = (Element) innerNode;
-                        if (nodeName.equals("properties")) {
-                            if (!innerNode.getNodeName().equals("property"))
-                                continue;
+                        ItemMeta itemMeta = itemStack.getItemMeta();
 
-                            Element property = innerElementChild;
-                            String propertyType;
+                        switch (nodeName) {
+                            case "properties":
+                                if (!innerNode.getNodeName().equals("property"))
+                                    continue;
 
-                            if (!property.hasAttribute("type"))
-                                propertyType = "string";
-                            else
-                                propertyType = property.getAttribute("type");
+                                String propertyType;
 
-                            properties.add(PROPERTY_MAPPINGS.get(propertyType).apply(property.getTextContent()));
-                        } else if (nodeName.equals("lore")) {
-                            if (!innerNode.getNodeName().equals("line"))
-                                continue;
+                                if (!innerElementChild.hasAttribute("type"))
+                                    propertyType = "string";
+                                else
+                                    propertyType = innerElementChild.getAttribute("type");
 
-                            ItemMeta itemMeta = itemStack.getItemMeta();
-                            List<String> lore = itemMeta.hasLore() ? itemMeta.getLore() : new ArrayList<>();
+                                properties.add(PROPERTY_MAPPINGS.get(propertyType).apply(innerElementChild
+                                        .getTextContent()));
+                                break;
+                            case "lore":
+                                if (!innerNode.getNodeName().equals("line"))
+                                    continue;
 
-                            lore.add(innerNode.getTextContent());
-                            itemMeta.setLore(lore);
-                            itemStack.setItemMeta(itemMeta);
-                        } else if (nodeName.equals("enchantments")) {
-                            if (!innerNode.getNodeName().equals("enchantment"))
-                                continue;
+                                List<String> lore = itemMeta.hasLore() ? itemMeta.getLore() : new ArrayList<>();
 
-                            ItemMeta itemMeta = itemStack.getItemMeta();
+                                lore.add(innerNode.getTextContent());
+                                itemMeta.setLore(lore);
+                                itemStack.setItemMeta(itemMeta);
+                                break;
+                            case "enchantments":
+                                if (!innerNode.getNodeName().equals("enchantment"))
+                                    continue;
 
-                            itemMeta.addEnchant(Enchantment.getByName(
-                                    innerElementChild.getAttribute("id").toUpperCase(Locale.getDefault())
-                            ), Integer.parseInt(innerElementChild.getAttribute("level")), true);
-                            itemStack.setItemMeta(itemMeta);
+                                itemMeta.addEnchant(Enchantment.getByName(
+                                        innerElementChild.getAttribute("id").toUpperCase(Locale.getDefault())
+                                ), Integer.parseInt(innerElementChild.getAttribute("level")), true);
+                                itemStack.setItemMeta(itemMeta);
+                                break;
                         }
                     }
                 } else if (nodeName.equals("displayname")) {

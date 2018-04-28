@@ -16,7 +16,6 @@ import org.w3c.dom.NodeList;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * A pane for items that should be outlined
