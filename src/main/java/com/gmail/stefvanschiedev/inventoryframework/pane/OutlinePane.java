@@ -25,7 +25,14 @@ public class OutlinePane extends Pane {
     /**
      * A set of items inside this pane
      */
-    private final Set<Map.Entry<GuiItem, GuiLocation>> items;
+    @NotNull
+    private final List<GuiItem> items;
+
+    /**
+     * The orientation of the items in this pane
+     */
+    @NotNull
+    private Orientation orientation;
 
     /**
      * The clockwise rotation of this pane in degrees
@@ -42,7 +49,8 @@ public class OutlinePane extends Pane {
     public OutlinePane(@NotNull GuiLocation start, int length, int height) {
         super(start, length, height);
 
-        this.items = new HashSet<>(length * height);
+        this.items = new ArrayList<>(length * height);
+        this.orientation = Orientation.HORIZONTAL;
     }
 
     /**
@@ -50,15 +58,13 @@ public class OutlinePane extends Pane {
      */
     @Override
     public void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY) {
-        items.stream().filter(entry -> {
-            GuiItem key = entry.getKey();
-            GuiLocation value = entry.getValue();
+        int x = 0;
+        int y = 0;
 
-            return key.isVisible() && key.getItem().getType() != Material.AIR &&
-                    value.getX() + paneOffsetX <= 9 && value.getY() + paneOffsetY <= 6;
-        }).forEach(entry -> {
-            GuiLocation location = entry.getValue();
-            int x = location.getX(), y = location.getY();
+        for (GuiItem item : items) {
+            if (!item.isVisible() || item.getItem().getType() == Material.AIR)
+                continue;
+
             int newX = x, newY = y;
 
             //apply rotations
@@ -76,33 +82,23 @@ public class OutlinePane extends Pane {
             }
 
             inventory.setItem((start.getY() + newY + paneOffsetY) * 9 + (start.getX() + newX + paneOffsetX),
-                    entry.getKey().getItem());
-        });
-    }
+                    item.getItem());
 
-    /**
-     * Adds a gui item at the specific spot in the pane
-     *
-     * @param item the item to set
-     */
-    public void addItem(@NotNull GuiItem item) {
-        int highestPos = -1;
-
-        for (Map.Entry<GuiItem, GuiLocation> entry : items) {
-            int pos = entry.getValue().getY() * length + entry.getValue().getX();
-
-            if (pos <= highestPos)
-                continue;
-
-            highestPos = pos;
+            //increment positions
+            if (orientation == Orientation.HORIZONTAL) {
+                if (x == length - 1) {
+                    x = 0;
+                    y++;
+                } else
+                    x++;
+            } else if (orientation == Orientation.VERTICAL) {
+                if (y == height - 1) {
+                    x++;
+                    y = 0;
+                } else
+                    y++;
+            }
         }
-
-        if (highestPos == length * height - 1)
-            return;
-
-        int newPos = highestPos + 1;
-
-        items.add(new AbstractMap.SimpleEntry<>(item, new GuiLocation(newPos % length, newPos / height)));
     }
 
     /**
@@ -138,27 +134,24 @@ public class OutlinePane extends Pane {
             newY = x;
         }
 
-        //find the item on the correct spot
-        for (Map.Entry<GuiItem, GuiLocation> entry : items) {
-            GuiLocation location = entry.getValue();
-            GuiItem item = entry.getKey();
+        GuiItem item;
 
-            if (location.getX() != newX || location.getY() != newY ||
-                    !item.getItem().equals(event.getCurrentItem()))
-                continue;
+        if (orientation == Orientation.HORIZONTAL && items.size() > newY * length + newX)
+            item = items.get(newY * length + newX);
+        else if (orientation == Orientation.VERTICAL && items.size() > newX * height + newY)
+            item = items.get(newX * height + newY);
+        else
+            return false;
 
-            if (!item.isVisible())
-                return false;
+        if (!item.getItem().equals(event.getCurrentItem()) || !item.isVisible())
+            return false;
 
-            Consumer<InventoryClickEvent> action = item.getAction();
+        Consumer<InventoryClickEvent> action = item.getAction();
 
-            if (action != null)
-                action.accept(event);
+        if (action != null)
+            action.accept(event);
 
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**
@@ -176,6 +169,35 @@ public class OutlinePane extends Pane {
         assert rotation % 90 == 0 : "rotation isn't divisible by 90";
 
         this.rotation = rotation % 360;
+    }
+
+    /**
+     * Adds a gui item at the specific spot in the pane
+     *
+     * @param item the item to set
+     */
+    public void addItem(@NotNull GuiItem item) {
+        items.add(item);
+    }
+
+    /**
+     * Sets the orientation of this outline pane
+     *
+     * @param orientation the new orientation
+     */
+    public void setOrientation(@NotNull Orientation orientation) {
+        this.orientation = orientation;
+    }
+
+    /**
+     * Gets the orientation of this outline pane
+     *
+     * @return the orientation
+     */
+    @NotNull
+    @Contract(pure = true)
+    public Orientation getOrientation() {
+        return orientation;
     }
 
     /**
@@ -215,6 +237,10 @@ public class OutlinePane extends Pane {
             if (element.hasAttribute("rotation"))
                 outlinePane.setRotation(Integer.parseInt(element.getAttribute("rotation")));
 
+            if (element.hasAttribute("orientation"))
+                outlinePane.setOrientation(Orientation.valueOf(element.getAttribute("orientation")
+                        .toUpperCase(Locale.getDefault())));
+
             NodeList childNodes = element.getChildNodes();
 
             for (int i = 0; i < childNodes.getLength(); i++) {
@@ -235,5 +261,21 @@ public class OutlinePane extends Pane {
         }
 
         return null;
+    }
+
+    /**
+     * An orientation for outline panes
+     */
+    public enum Orientation {
+
+        /**
+         * A horizontal orientation, will outline every item from the top-left corner going to the right and down
+         */
+        HORIZONTAL,
+
+        /**
+         * A vertical orientation, will outline every item from the top-left corner going down and to the right
+         */
+        VERTICAL
     }
 }
