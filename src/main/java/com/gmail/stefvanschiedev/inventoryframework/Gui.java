@@ -5,6 +5,7 @@ import com.gmail.stefvanschiedev.inventoryframework.pane.PaginatedPane;
 import com.gmail.stefvanschiedev.inventoryframework.pane.StaticPane;
 import com.gmail.stefvanschiedev.inventoryframework.pane.util.Pane;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -209,8 +210,8 @@ public class Gui implements Listener, InventoryHolder {
 
             documentElement.normalize();
 
-            Gui gui = new Gui(plugin, Integer.parseInt(documentElement.getAttribute("rows")),
-                    documentElement.getAttribute("title"));
+            Gui gui = new Gui(plugin, Integer.parseInt(documentElement.getAttribute("rows")), ChatColor
+                    .translateAlternateColorCodes('&', documentElement.getAttribute("title")));
 
             if (documentElement.hasAttribute("field")) {
                 try {

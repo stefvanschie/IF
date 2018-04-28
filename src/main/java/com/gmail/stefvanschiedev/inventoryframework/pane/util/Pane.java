@@ -3,6 +3,7 @@ package com.gmail.stefvanschiedev.inventoryframework.pane.util;
 import com.gmail.stefvanschiedev.inventoryframework.GuiItem;
 import com.gmail.stefvanschiedev.inventoryframework.GuiLocation;
 import com.google.common.primitives.Primitives;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Cancellable;
@@ -233,7 +234,8 @@ public abstract class Pane {
 
                                 List<String> lore = itemMeta.hasLore() ? itemMeta.getLore() : new ArrayList<>();
 
-                                lore.add(innerNode.getTextContent());
+                                lore.add(ChatColor.translateAlternateColorCodes('&', innerNode
+                                        .getTextContent()));
                                 itemMeta.setLore(lore);
                                 itemStack.setItemMeta(itemMeta);
                                 break;
@@ -251,7 +253,8 @@ public abstract class Pane {
                 } else if (nodeName.equals("displayname")) {
                     ItemMeta itemMeta = itemStack.getItemMeta();
 
-                    itemMeta.setDisplayName(item.getTextContent());
+                    itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', item
+                            .getTextContent()));
 
                     itemStack.setItemMeta(itemMeta);
                 }
