@@ -62,7 +62,10 @@ public class OutlinePane extends Pane {
      * {@inheritDoc}
      */
     @Override
-    public void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY) {
+    public void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
+        int length = Math.min(this.length, maxLength);
+        int height = Math.min(this.height, maxHeight);
+
         int x = 0;
         int y = 0;
 
@@ -110,7 +113,11 @@ public class OutlinePane extends Pane {
      * {@inheritDoc}
      */
     @Override
-    public boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY) {
+    public boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY, int maxLength,
+                         int maxHeight) {
+        int length = Math.min(this.length, maxLength);
+        int height = Math.min(this.height, maxHeight);
+
         int slot = event.getSlot();
 
         //correct coordinates

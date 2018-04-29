@@ -83,16 +83,20 @@ public class PaginatedPane extends Pane {
      * {@inheritDoc}
      */
     @Override
-    public void display(Inventory inventory, int paneOffsetX, int paneOffsetY) {
+    public void display(Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
         this.panes.get(page).forEach(pane -> pane.display(inventory, paneOffsetX + start.getX(),
-                paneOffsetY + start.getY()));
+                paneOffsetY + start.getY(), Math.min(length, maxLength), Math.min(height, maxHeight)));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY) {
+    public boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY, int maxLength,
+                         int maxHeight) {
+        int length = Math.min(this.length, maxLength);
+        int height = Math.min(this.height, maxHeight);
+
         int slot = event.getSlot();
 
         int x = (slot % 9) - start.getX();
@@ -108,7 +112,7 @@ public class PaginatedPane extends Pane {
 
         for (Pane pane : this.panes.get(page))
             success = success || pane.click(event, paneOffsetX + start.getX(),
-                    paneOffsetY + start.getY());
+                    paneOffsetY + start.getY(), length, height);
 
         return success;
     }

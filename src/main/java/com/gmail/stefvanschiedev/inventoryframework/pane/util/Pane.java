@@ -116,8 +116,12 @@ public abstract class Pane {
      * Has to set all the items in the right spot inside the inventory
      *
      * @param inventory the inventory that the items should be displayed in
+     * @param paneOffsetX the pane's offset on the x axis
+     * @param paneOffsetY the pane's offset on the y axis
+     * @param maxLength the maximum length of the pane
+     * @param maxHeight the maximum height of the pane
      */
-    public abstract void display(Inventory inventory, int paneOffsetX, int paneOffsetY);
+    public abstract void display(Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight);
 
     /**
      * Returns the pane's visibility state
@@ -142,9 +146,14 @@ public abstract class Pane {
      * Called whenever there is being clicked on this pane
      *
      * @param event the event that occurred while clicking on this item
+     * @param paneOffsetX the pane's offset on the x axis
+     * @param paneOffsetY the pane's offset on the y axis
+     * @param maxLength the maximum length of the pane
+     * @param maxHeight the maximum height of the pane
      * @return whether the item was found or not
      */
-    public abstract boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY);
+    public abstract boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY, int maxLength,
+                                  int maxHeight);
 
     /**
      * Sets the priority of this pane

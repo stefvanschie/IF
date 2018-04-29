@@ -101,7 +101,8 @@ public class Gui implements Listener, InventoryHolder {
         inventory.clear();
 
         //initialize the inventory first
-        panes.stream().filter(Pane::isVisible).forEach(pane -> pane.display(inventory, 0, 0));
+        panes.stream().filter(Pane::isVisible).forEach(pane -> pane.display(inventory, 0, 0,
+                9, getRows()));
 
         humanEntity.openInventory(inventory);
     }
@@ -368,7 +369,7 @@ public class Gui implements Listener, InventoryHolder {
 
         //loop through the panes reverse, because the pane with the highest priority (last in list) is most likely to have the correct item
         for (int i = panes.size() - 1; i >= 0; i--) {
-            if (panes.get(i).click(event, 0, 0))
+            if (panes.get(i).click(event, 0, 0, 9, getRows()))
                 break;
         }
     }

@@ -51,7 +51,10 @@ public class StaticPane extends Pane {
      * {@inheritDoc}
      */
     @Override
-    public void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY) {
+    public void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
+        int length = Math.min(this.length, maxLength);
+        int height = Math.min(this.height, maxHeight);
+
         items.stream().filter(entry -> {
             GuiItem key = entry.getKey();
             GuiLocation value = entry.getValue();
@@ -96,7 +99,11 @@ public class StaticPane extends Pane {
      * {@inheritDoc}
      */
     @Override
-    public boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY) {
+    public boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY, int maxLength,
+                         int maxHeight) {
+        int length = Math.min(this.length, maxLength);
+        int height = Math.min(this.height, maxHeight);
+
         int slot = event.getSlot();
 
         //correct coordinates
