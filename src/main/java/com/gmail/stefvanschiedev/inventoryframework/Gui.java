@@ -4,6 +4,7 @@ import com.gmail.stefvanschiedev.inventoryframework.pane.OutlinePane;
 import com.gmail.stefvanschiedev.inventoryframework.pane.PaginatedPane;
 import com.gmail.stefvanschiedev.inventoryframework.pane.StaticPane;
 import com.gmail.stefvanschiedev.inventoryframework.pane.util.Pane;
+import com.gmail.stefvanschiedev.inventoryframework.util.XMLUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
@@ -250,35 +251,8 @@ public class Gui implements Listener, InventoryHolder {
                 }
             }
 
-            if (documentElement.hasAttribute("onClick")) {
-                for (Method method : instance.getClass().getMethods()) {
-                    if (!method.getName().equals(documentElement.getAttribute("onClick")))
-                        continue;
-
-                    int parameterCount = method.getParameterCount();
-
-                    if (parameterCount == 0) {
-                        gui.setOnClick(event -> {
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(instance);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    } else if (parameterCount == 1 &&
-                            InventoryClickEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                        gui.setOnClick(event -> {
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(instance, event);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    }
-                }
-            }
+            if (documentElement.hasAttribute("onClick"))
+                gui.setOnClick(XMLUtil.loadOnClickAttribute(instance, documentElement));
 
             if (documentElement.hasAttribute("onClose")) {
                 for (Method method : instance.getClass().getMethods()) {

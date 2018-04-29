@@ -2,6 +2,7 @@ package com.gmail.stefvanschiedev.inventoryframework.pane.util;
 
 import com.gmail.stefvanschiedev.inventoryframework.GuiItem;
 import com.gmail.stefvanschiedev.inventoryframework.GuiLocation;
+import com.gmail.stefvanschiedev.inventoryframework.util.XMLUtil;
 import com.google.common.primitives.Primitives;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -450,35 +451,8 @@ public abstract class Pane {
             }
         }
 
-        if (element.hasAttribute("onClick")) {
-            for (Method method : instance.getClass().getMethods()) {
-                if (!method.getName().equals(element.getAttribute("onClick")))
-                    continue;
-
-                int parameterCount = method.getParameterCount();
-
-                if (parameterCount == 0) {
-                    pane.setOnClick(event -> {
-                        try {
-                            method.setAccessible(true);
-                            method.invoke(instance);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                } else if (parameterCount == 1 &&
-                        InventoryClickEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                    pane.setOnClick(event -> {
-                        try {
-                            method.setAccessible(true);
-                            method.invoke(instance, event);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }
-            }
-        }
+        if (element.hasAttribute("onClick"))
+            pane.setOnClick(XMLUtil.loadOnClickAttribute(instance, element));
 
         if (element.hasAttribute("populate")) {
             for (Method method: instance.getClass().getMethods()) {

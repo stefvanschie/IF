@@ -3,6 +3,7 @@ package com.gmail.stefvanschiedev.inventoryframework.pane;
 import com.gmail.stefvanschiedev.inventoryframework.GuiItem;
 import com.gmail.stefvanschiedev.inventoryframework.GuiLocation;
 import com.gmail.stefvanschiedev.inventoryframework.pane.util.Pane;
+import com.gmail.stefvanschiedev.inventoryframework.util.GeometryUtil;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -61,25 +62,12 @@ public class StaticPane extends Pane {
                     value.getX() + paneOffsetX <= 9 && value.getY() + paneOffsetY <= 6;
         }).forEach(entry -> {
             GuiLocation location = entry.getValue();
-            int x = location.getX(), y = location.getY();
-            int newX = x, newY = y;
 
-            //apply rotations
-            if (rotation == 90) {
-                newX = height - 1 - y;
-                //noinspection SuspiciousNameCombination
-                newY = x;
-            } else if (rotation == 180) {
-                newX = length - 1 - x;
-                newY = height - 1 - y;
-            } else if (rotation == 270) {
-                //noinspection SuspiciousNameCombination
-                newX = y;
-                newY = length - 1 - x;
-            }
+            Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(location.getX(), location
+                    .getY(), length, height, rotation);
 
-            inventory.setItem((start.getY() + newY + paneOffsetY) * 9 + (start.getX() + newX + paneOffsetX),
-                    entry.getKey().getItem());
+            inventory.setItem((start.getY() + coordinates.getValue() + paneOffsetY) * 9 + (start.getX() + coordinates
+                    .getKey() + paneOffsetX), entry.getKey().getItem());
         });
     }
 
@@ -114,28 +102,15 @@ public class StaticPane extends Pane {
 
         //first we undo the rotation
         //this is the same as applying a new rotation to match up to 360, so we'll be doing that
-        int newX = x;
-        int newY = y;
-
-        if (rotation == 90) {
-            //noinspection SuspiciousNameCombination
-            newX = y;
-            newY = length - 1 - x;
-        } else if (rotation == 180) {
-            newX = length - 1 - x;
-            newY = height - 1 - y;
-        } else if (rotation == 270) {
-            newX = height - 1 - y;
-            //noinspection SuspiciousNameCombination
-            newY = x;
-        }
+        Map.Entry<Integer, Integer> coordinates = GeometryUtil.processCounterClockwiseRotation(x, y, length, height,
+                rotation);
 
         //find the item on the correct spot
         for (Map.Entry<GuiItem, GuiLocation> entry : items) {
             GuiLocation location = entry.getValue();
             GuiItem item = entry.getKey();
 
-            if (location.getX() != newX || location.getY() != newY ||
+            if (location.getX() != coordinates.getKey() || location.getY() != coordinates.getValue() ||
                     !item.getItem().equals(event.getCurrentItem()))
                 continue;
 

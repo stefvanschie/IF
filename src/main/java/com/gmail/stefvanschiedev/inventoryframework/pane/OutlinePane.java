@@ -3,6 +3,7 @@ package com.gmail.stefvanschiedev.inventoryframework.pane;
 import com.gmail.stefvanschiedev.inventoryframework.GuiItem;
 import com.gmail.stefvanschiedev.inventoryframework.GuiLocation;
 import com.gmail.stefvanschiedev.inventoryframework.pane.util.Pane;
+import com.gmail.stefvanschiedev.inventoryframework.util.GeometryUtil;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -80,24 +81,11 @@ public class OutlinePane extends Pane {
             if (!item.isVisible() || item.getItem().getType() == Material.AIR)
                 continue;
 
-            int newX = x, newY = y;
+            Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y, length, height,
+                    rotation);
 
-            //apply rotations
-            if (rotation == 90) {
-                newX = height - 1 - y;
-                //noinspection SuspiciousNameCombination
-                newY = x;
-            } else if (rotation == 180) {
-                newX = length - 1 - x;
-                newY = height - 1 - y;
-            } else if (rotation == 270) {
-                //noinspection SuspiciousNameCombination
-                newX = y;
-                newY = length - 1 - x;
-            }
-
-            inventory.setItem((start.getY() + newY + paneOffsetY) * 9 + (start.getX() + newX + paneOffsetX),
-                    item.getItem());
+            inventory.setItem((start.getY() + coordinates.getValue() + paneOffsetY) * 9 + (start.getX() + coordinates
+                    .getKey() + paneOffsetX), item.getItem());
 
             //increment positions
             if (orientation == Orientation.HORIZONTAL) {
@@ -141,23 +129,9 @@ public class OutlinePane extends Pane {
         if (x < 0 || x > length || y < 0 || y > height)
             return false;
 
-        //first we undo the rotation
-        //this is the same as applying a new rotation to match up to 360, so we'll be doing that
-        int newX = x;
-        int newY = y;
+        Map.Entry<Integer, Integer> coordinates = GeometryUtil.processCounterClockwiseRotation(x, y, length, height, rotation);
 
-        if (rotation == 90) {
-            //noinspection SuspiciousNameCombination
-            newX = y;
-            newY = length - 1 - x;
-        } else if (rotation == 180) {
-            newX = length - 1 - x;
-            newY = height - 1 - y;
-        } else if (rotation == 270) {
-            newX = height - 1 - y;
-            //noinspection SuspiciousNameCombination
-            newY = x;
-        }
+        int newX = coordinates.getKey(), newY = coordinates.getValue();
 
         int index = 0;
 
