@@ -45,6 +45,11 @@ public class OutlinePane extends Pane {
     private int gap;
 
     /**
+     * Whether the items should be repeated to fill the entire pane
+     */
+    private boolean repeat;
+
+    /**
      * Constructs a new default pane
      *
      * @param start  the upper left corner of the pane
@@ -69,7 +74,9 @@ public class OutlinePane extends Pane {
         int x = 0;
         int y = 0;
 
-        for (GuiItem item : items) {
+        for (int i = 0; i < (repeat ? length * height : items.size()); i++) {
+            GuiItem item = items.get(i % items.size());
+
             if (!item.isVisible() || item.getItem().getType() == Material.AIR)
                 continue;
 
@@ -94,18 +101,24 @@ public class OutlinePane extends Pane {
 
             //increment positions
             if (orientation == Orientation.HORIZONTAL) {
-                if (x == length - 1) {
-                    x = x - length + gap + 1;
-                    y++;
-                } else
-                    x += gap + 1;
+                x += gap + 1;
+
+                if (x >= length) {
+                    y += x / length;
+                    x %= length;
+                }
             } else if (orientation == Orientation.VERTICAL) {
-                if (y == height - 1) {
-                    x++;
-                    y = y - height + gap + 1;
-                } else
-                    y += gap + 1;
+                y += gap + 1;
+
+                if (y >= height) {
+                    x += y / height;
+                    y %= height;
+                }
             }
+
+            //stop the loop when there is no more space in the pane
+            if (x >= length || y >= height)
+                break;
         }
     }
 
@@ -156,7 +169,9 @@ public class OutlinePane extends Pane {
 
         index /= gap + 1;
 
-        if (items.size() <= index)
+        if (items.size() <= index && repeat)
+            index %= items.size();
+        else if (items.size() <= index)
             return false;
 
         GuiItem item = items.get(index);
@@ -227,6 +242,25 @@ public class OutlinePane extends Pane {
     }
 
     /**
+     * Sets whether this pane should repeat itself
+     *
+     * @param repeat whether the pane should repeat
+     */
+    public void setRepeat(boolean repeat) {
+        this.repeat = repeat;
+    }
+
+    /**
+     * Gets whether this outline pane repeats itself
+     *
+     * @return true if this pane repeats, false otherwise
+     */
+    @Contract(pure = true)
+    public boolean doesRepeat() {
+        return repeat;
+    }
+
+    /**
      * Gets the gap of the pane
      *
      * @return the gap
@@ -290,6 +324,10 @@ public class OutlinePane extends Pane {
 
             if (element.hasAttribute("gap"))
                 outlinePane.setGap(Integer.parseInt(element.getAttribute("gap")));
+
+            if (element.hasAttribute("repeat"))
+                outlinePane.setRepeat(Boolean.parseBoolean(element.getAttribute("repeat")));
+
 
             NodeList childNodes = element.getChildNodes();
 
