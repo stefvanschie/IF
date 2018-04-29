@@ -95,10 +95,47 @@ public abstract class Pane {
     }
 
     /**
+     * Set the length of this pane
+     *
+     * @param length the new length
+     */
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    /**
+     * Set the height of this pane
+     *
+     * @param height the new height
+     */
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    /**
+     * Set the x coordinate of this pane
+     *
+     * @param x the new x coordinate
+     */
+    public void setX(int x) {
+        this.start = new GuiLocation(x, start.getY());
+    }
+
+    /**
+     * Set the y coordinate of this pane
+     *
+     * @param y the new y coordinate
+     */
+    public void setY(int y) {
+        this.start = new GuiLocation(start.getX(), y);
+    }
+
+    /**
      * Returns the length of this pane
      *
      * @return the length
      */
+    @Contract(pure = true)
     public int getLength() {
         return length;
     }
@@ -108,8 +145,29 @@ public abstract class Pane {
      *
      * @return the height
      */
+    @Contract(pure = true)
     public int getHeight() {
         return height;
+    }
+
+    /**
+     * Gets the x coordinate of this pane
+     *
+     * @return the x coordinate
+     */
+    @Contract(pure = true)
+    public int getX() {
+        return start.getX();
+    }
+
+    /**
+     * Gets the y coordinate of this pane
+     *
+     * @return the y coordinate
+     */
+    @Contract(pure = true)
+    public int getY() {
+        return start.getY();
     }
 
     /**
