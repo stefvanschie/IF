@@ -190,6 +190,16 @@ public class OutlinePane extends Pane {
     }
 
     /**
+     * Adds a gui item in the specified index
+     *
+     * @param item the item to add
+     * @param index the item's index
+     */
+    public void insertItem(@NotNull GuiItem item, int index) {
+        items.add(index, item);
+    }
+
+    /**
      * Adds a gui item at the specific spot in the pane
      *
      * @param item the item to set
