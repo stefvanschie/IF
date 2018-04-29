@@ -251,6 +251,16 @@ public class OutlinePane extends Pane {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public Collection<Pane> getPanes() {
+        return new HashSet<>();
+    }
+
+    /**
      * Gets whether this outline pane repeats itself
      *
      * @return true if this pane repeats, false otherwise
@@ -268,6 +278,15 @@ public class OutlinePane extends Pane {
     @Contract(pure = true)
     public int getGap() {
         return gap;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public List<GuiItem> getItems() {
+        return items;
     }
 
     /**

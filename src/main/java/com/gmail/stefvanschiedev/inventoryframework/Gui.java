@@ -33,6 +33,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * The base class of all GUIs
@@ -125,6 +126,22 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     /**
+     * Gets all the panes in this gui, this includes child panes from other panes
+     *
+     * @return all panes
+     */
+    @NotNull
+    @Contract(pure = true)
+    public Collection<Pane> getPanes() {
+        Collection<Pane> panes = new HashSet<>();
+
+        this.panes.forEach(pane -> panes.addAll(pane.getPanes()));
+        panes.addAll(this.panes);
+
+        return panes;
+    }
+
+    /**
      * Sets the title for this inventory. This will (unlike most other methods) directly update itself in order
      * to ensure all viewers will still be viewing the new inventory as well.
      *
@@ -137,6 +154,17 @@ public class Gui implements Listener, InventoryHolder {
         this.inventory = Bukkit.createInventory(this, this.inventory.getSize(), title);
 
         viewers.forEach(humanEntity -> humanEntity.openInventory(inventory));
+    }
+
+    /**
+     * Gets all the items in all underlying panes
+     *
+     * @return all items
+     */
+    @NotNull
+    @Contract(pure = true)
+    public Collection<GuiItem> getItems() {
+        return getPanes().stream().flatMap(pane -> pane.getItems().stream()).collect(Collectors.toSet());
     }
 
     /**

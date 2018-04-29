@@ -184,6 +184,24 @@ public abstract class Pane {
     }
 
     /**
+     * Gets all the items in this pane and all underlying panes
+     *
+     * @return all items
+     */
+    @NotNull
+    @Contract(pure = true)
+    public abstract Collection<GuiItem> getItems();
+
+    /**
+     * Gets all the panes in this panes, including any child panes from other panes
+     *
+     * @return all panes
+     */
+    @NotNull
+    @Contract(pure = true)
+    public abstract Collection<Pane> getPanes();
+
+    /**
      * Loads an item from an instance and an element
      *
      * @param instance the instance

@@ -1,6 +1,7 @@
 package com.gmail.stefvanschiedev.inventoryframework.pane;
 
 import com.gmail.stefvanschiedev.inventoryframework.Gui;
+import com.gmail.stefvanschiedev.inventoryframework.GuiItem;
 import com.gmail.stefvanschiedev.inventoryframework.GuiLocation;
 import com.gmail.stefvanschiedev.inventoryframework.pane.util.Pane;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -13,6 +14,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A pane for panes that should be spread out over multiple pages
@@ -115,6 +117,33 @@ public class PaginatedPane extends Pane {
                     paneOffsetY + start.getY(), length, height);
 
         return success;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public Collection<Pane> getPanes() {
+        Collection<Pane> panes = new HashSet<>();
+
+        this.panes.forEach((integer, p) -> {
+            p.forEach(pane -> panes.addAll(pane.getPanes()));
+            panes.addAll(p);
+        });
+
+        return panes;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public Collection<GuiItem> getItems() {
+        return getPanes().stream().flatMap(pane -> pane.getItems().stream()).collect(Collectors.toList());
     }
 
     /**

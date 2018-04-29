@@ -13,11 +13,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.AbstractMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * A pane for static items and stuff. All items will have to be specified a slot, or will be added in the next position.
@@ -170,6 +168,25 @@ public class StaticPane extends Pane {
         assert rotation % 90 == 0 : "rotation isn't divisible by 90";
 
         this.rotation = rotation % 360;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @NotNull
+    @Override
+    public Collection<GuiItem> getItems() {
+        return items.stream().map(Map.Entry::getKey).collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public Collection<Pane> getPanes() {
+        return new HashSet<>();
     }
 
     /**
