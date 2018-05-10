@@ -4,6 +4,9 @@ import com.gmail.stefvanschiedev.inventoryframework.GuiItem;
 import com.gmail.stefvanschiedev.inventoryframework.GuiLocation;
 import com.gmail.stefvanschiedev.inventoryframework.util.XMLUtil;
 import com.google.common.primitives.Primitives;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import org.apache.commons.codec.binary.Base64;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -12,6 +15,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +23,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -284,6 +289,8 @@ public abstract class Pane {
                 if (item.getNodeType() != Node.ELEMENT_NODE)
                     continue;
 
+                Element elementItem = (Element) item;
+
                 String nodeName = item.getNodeName();
 
                 if (nodeName.equals("properties") || nodeName.equals("lore") || nodeName.equals("enchantments")) {
@@ -343,6 +350,28 @@ public abstract class Pane {
                             .getTextContent()));
 
                     itemStack.setItemMeta(itemMeta);
+                } else if (nodeName.equals("skull") && itemStack.getItemMeta() instanceof SkullMeta) {
+                    SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+
+                    if (elementItem.hasAttribute("owner"))
+                        skullMeta.setOwner(elementItem.getAttribute("owner"));
+                    else if (elementItem.hasAttribute("id")) {
+                        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+                        byte[] encodedData = Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}",
+                                "http://textures.minecraft.net/texture/" + elementItem.getAttribute("id"))
+                                .getBytes());
+                        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
+
+                        try {
+                            Field profileField = skullMeta.getClass().getDeclaredField("profile");
+                            profileField.setAccessible(true);
+                            profileField.set(skullMeta, profile);
+                        } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    itemStack.setItemMeta(skullMeta);
                 }
             }
         }
