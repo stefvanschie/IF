@@ -1,0 +1,5 @@
+root = true
+
+# Indentation override for all java files
+[**.java]
+indent_size = 4
