@@ -1,9 +1,9 @@
-package com.gmail.stefvanschiedev.inventoryframework.pane;
+package com.github.stefvanschie.inventoryframework.pane;
 
-import com.gmail.stefvanschiedev.inventoryframework.Gui;
-import com.gmail.stefvanschiedev.inventoryframework.GuiItem;
-import com.gmail.stefvanschiedev.inventoryframework.GuiLocation;
-import com.gmail.stefvanschiedev.inventoryframework.pane.util.Pane;
+import com.github.stefvanschie.inventoryframework.Gui;
+import com.github.stefvanschie.inventoryframework.GuiItem;
+import com.github.stefvanschie.inventoryframework.GuiLocation;
+import com.github.stefvanschie.inventoryframework.pane.util.Pane;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Contract;

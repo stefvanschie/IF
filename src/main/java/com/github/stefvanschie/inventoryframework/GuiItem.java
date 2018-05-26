@@ -1,4 +1,4 @@
-package com.gmail.stefvanschiedev.inventoryframework;
+package com.github.stefvanschie.inventoryframework;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;

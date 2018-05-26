@@ -1,4 +1,4 @@
-package com.gmail.stefvanschiedev.inventoryframework;
+package com.github.stefvanschie.inventoryframework;
 
 /**
  * A location inside a GUI

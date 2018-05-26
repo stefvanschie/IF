@@ -9,7 +9,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
-    <groupId>com.gmail.stefvanschiedev.inventoryframework</groupId>
+    <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF</artifactId>
     <version>0.1.0</version>
     <packaging>jar</packaging>

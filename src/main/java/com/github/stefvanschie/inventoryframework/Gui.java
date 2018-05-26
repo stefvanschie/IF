@@ -1,10 +1,10 @@
-package com.gmail.stefvanschiedev.inventoryframework;
+package com.github.stefvanschie.inventoryframework;
 
-import com.gmail.stefvanschiedev.inventoryframework.pane.OutlinePane;
-import com.gmail.stefvanschiedev.inventoryframework.pane.PaginatedPane;
-import com.gmail.stefvanschiedev.inventoryframework.pane.StaticPane;
-import com.gmail.stefvanschiedev.inventoryframework.pane.util.Pane;
-import com.gmail.stefvanschiedev.inventoryframework.util.XMLUtil;
+import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
+import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
+import com.github.stefvanschie.inventoryframework.pane.StaticPane;
+import com.github.stefvanschie.inventoryframework.pane.util.Pane;
+import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;

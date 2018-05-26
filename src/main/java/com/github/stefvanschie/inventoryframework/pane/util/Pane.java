@@ -1,8 +1,8 @@
-package com.gmail.stefvanschiedev.inventoryframework.pane.util;
+package com.github.stefvanschie.inventoryframework.pane.util;
 
-import com.gmail.stefvanschiedev.inventoryframework.GuiItem;
-import com.gmail.stefvanschiedev.inventoryframework.GuiLocation;
-import com.gmail.stefvanschiedev.inventoryframework.util.XMLUtil;
+import com.github.stefvanschie.inventoryframework.GuiItem;
+import com.github.stefvanschie.inventoryframework.GuiLocation;
+import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.google.common.primitives.Primitives;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;

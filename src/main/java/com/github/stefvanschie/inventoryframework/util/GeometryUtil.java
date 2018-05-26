@@ -1,4 +1,4 @@
-package com.gmail.stefvanschiedev.inventoryframework.util;
+package com.github.stefvanschie.inventoryframework.util;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
