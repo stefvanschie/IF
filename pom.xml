@@ -26,6 +26,10 @@
         </license>
     </licenses>
 
+    <scm>
+        <url>https://github.com/stefvanschie/IF.git</url>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
