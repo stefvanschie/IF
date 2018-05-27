@@ -71,6 +71,7 @@ public class Gui implements Listener, InventoryHolder {
     /**
      * Constructs a new GUI
      *
+     * @param plugin the main plugin
      * @param rows the amount of rows this gui should contain
      * @param title the title/name of this gui
      */
@@ -227,6 +228,8 @@ public class Gui implements Listener, InventoryHolder {
     /**
      * Loads a Gui from a given input stream
      *
+     * @param plugin the main plugin
+     * @param instance the class instance for all reflection lookups
      * @param inputStream the file
      * @return the gui
      * @since 5.6.0
