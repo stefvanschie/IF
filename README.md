@@ -41,6 +41,8 @@ Now in order to shade the project into your project, add the following to your p
         </executions>
     </plugin>
 
+Replace [YOUR PACKAGE] with the top-level package of your project.
+
 ## Building from source
 If you want to build this project from source, run the following from Git Bash:
 
