@@ -61,7 +61,13 @@ public abstract class Pane {
      * The consumer that will be called once a players clicks in the gui
      */
     @Nullable
-    protected Consumer<InventoryClickEvent> onClick;
+    protected Consumer<InventoryClickEvent> onLocalClick;
+
+    /**
+     * The consumer that will be called once a players clicks in the gui or inventory
+     */
+    @Nullable
+    protected Consumer<InventoryClickEvent> onGlobalClick;
 
     /**
      * A map containing the mappings for properties for items
@@ -229,43 +235,6 @@ public abstract class Pane {
     }
 
     /**
-     * Set the consumer that should be called whenever this gui is clicked in.
-     *
-     * @param onClick the consumer that gets called
-     */
-    public void setOnClick(@Nullable Consumer<InventoryClickEvent> onClick) {
-        this.onClick = onClick;
-    }
-
-    /**
-     * Returns the priority of the pane
-     *
-     * @return the priority
-     */
-    @NotNull
-    public Priority getPriority() {
-        return priority;
-    }
-
-    /**
-     * Gets all the items in this pane and all underlying panes
-     *
-     * @return all items
-     */
-    @NotNull
-    @Contract(pure = true)
-    public abstract Collection<GuiItem> getItems();
-
-    /**
-     * Gets all the panes in this panes, including any child panes from other panes
-     *
-     * @return all panes
-     */
-    @NotNull
-    @Contract(pure = true)
-    public abstract Collection<Pane> getPanes();
-
-    /**
      * Loads an item from an instance and an element
      *
      * @param instance the instance
@@ -378,9 +347,9 @@ public abstract class Pane {
 
         Consumer<InventoryClickEvent> action = null;
 
-        if (element.hasAttribute("onClick")) {
+        if (element.hasAttribute("onLocalClick")) {
             for (Method method : instance.getClass().getMethods()) {
-                if (!method.getName().equals(element.getAttribute("onClick")))
+                if (!method.getName().equals(element.getAttribute("onLocalClick")))
                     continue;
 
                 int parameterCount = method.getParameterCount();
@@ -480,8 +449,8 @@ public abstract class Pane {
             }
         }
 
-        if (element.hasAttribute("onClick"))
-            pane.setOnClick(XMLUtil.loadOnClickAttribute(instance, element));
+        if (element.hasAttribute("onLocalClick"))
+            pane.setOnLocalClick(XMLUtil.loadOnClickAttribute(instance, element));
 
         if (element.hasAttribute("populate")) {
             for (Method method: instance.getClass().getMethods()) {
@@ -496,6 +465,52 @@ public abstract class Pane {
                 }
             }
         }
+    }
+
+    /**
+     * Returns the priority of the pane
+     *
+     * @return the priority
+     */
+    @NotNull
+    public Priority getPriority() {
+        return priority;
+    }
+
+    /**
+     * Gets all the items in this pane and all underlying panes
+     *
+     * @return all items
+     */
+    @NotNull
+    @Contract(pure = true)
+    public abstract Collection<GuiItem> getItems();
+
+    /**
+     * Gets all the panes in this panes, including any child panes from other panes
+     *
+     * @return all panes
+     */
+    @NotNull
+    @Contract(pure = true)
+    public abstract Collection<Pane> getPanes();
+
+    /**
+     * Set the consumer that should be called whenever this gui is clicked in.
+     *
+     * @param onLocalClick the consumer that gets called
+     */
+    public void setOnLocalClick(@Nullable Consumer<InventoryClickEvent> onLocalClick) {
+        this.onLocalClick = onLocalClick;
+    }
+
+    /**
+     * Set the consumer that should be called whenever this gui or player inventory is clicked in.
+     *
+     * @param onLocalClick the consumer that gets called
+     */
+    public void setOnGlobalClick(@Nullable Consumer<InventoryClickEvent> onGlobalClick) {
+        this.onGlobalClick = onGlobalClick;
     }
 
     /**

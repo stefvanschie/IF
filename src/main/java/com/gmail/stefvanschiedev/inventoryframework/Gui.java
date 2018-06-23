@@ -56,7 +56,13 @@ public class Gui implements Listener, InventoryHolder {
     /**
      * The consumer that will be called once a players clicks in the gui
      */
-    private Consumer<InventoryClickEvent> onClick;
+    private Consumer<InventoryClickEvent> onLocalClick;
+
+    /**
+     * The consumer that will be called once a players clicks in the gui or in their inventory
+     */
+    private Consumer<InventoryClickEvent> onGlobalClick;
+
 
     /**
      * The consumer that will be called once a player closes the gui
@@ -178,53 +184,6 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     /**
-     * Set the consumer that should be called whenever this gui is clicked in.
-     *
-     * @param onClick the consumer that gets called
-     */
-    public void setOnClick(Consumer<InventoryClickEvent> onClick) {
-        this.onClick = onClick;
-    }
-
-    /**
-     * Set the consumer that should be called whenever this gui is closed.
-     *
-     * @param onClose the consumer that gets called
-     */
-    public void setOnClose(Consumer<InventoryCloseEvent> onClose) {
-        this.onClose = onClose;
-    }
-
-    /**
-     * Returns the amount of rows this gui currently has
-     *
-     * @return the amount of rows
-     */
-    public int getRows() {
-        return inventory.getSize() / 9;
-    }
-
-    /**
-     * Returns the title of this gui
-     *
-     * @return the title
-     */
-    public String getTitle() {
-        return inventory.getTitle();
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @since 5.6.0
-     */
-    @NotNull
-    @Override
-    public Inventory getInventory() {
-        return inventory;
-    }
-
-    /**
      * Loads a Gui from a given input stream
      *
      * @param inputStream the file
@@ -251,8 +210,8 @@ public class Gui implements Listener, InventoryHolder {
                 }
             }
 
-            if (documentElement.hasAttribute("onClick"))
-                gui.setOnClick(XMLUtil.loadOnClickAttribute(instance, documentElement));
+            if (documentElement.hasAttribute("onLocalClick"))
+                gui.setOnLocalClick(XMLUtil.loadOnClickAttribute(instance, documentElement));
 
             if (documentElement.hasAttribute("onClose")) {
                 for (Method method : instance.getClass().getMethods()) {
@@ -316,6 +275,62 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     /**
+     * Set the consumer that should be called whenever this gui is clicked in.
+     *
+     * @param onLocalClick the consumer that gets called
+     */
+    public void setOnLocalClick(Consumer<InventoryClickEvent> onLocalClick) {
+        this.onLocalClick = onLocalClick;
+    }
+
+    /**
+     * Set the consumer that should be called whenever this gui is closed.
+     *
+     * @param onClose the consumer that gets called
+     */
+    public void setOnClose(Consumer<InventoryCloseEvent> onClose) {
+        this.onClose = onClose;
+    }
+
+    /**
+     * Returns the amount of rows this gui currently has
+     *
+     * @return the amount of rows
+     */
+    public int getRows() {
+        return inventory.getSize() / 9;
+    }
+
+    /**
+     * Returns the title of this gui
+     *
+     * @return the title
+     */
+    public String getTitle() {
+        return inventory.getTitle();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 5.6.0
+     */
+    @NotNull
+    @Override
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    /**
+     * Set the consumer that should be called whenever this gui or inventory is clicked in.
+     *
+     * @param onLocalClick the consumer that gets called
+     */
+    public void setOnGlobalClick(Consumer<InventoryClickEvent> onGlobalClick) {
+        this.onGlobalClick = onGlobalClick;
+    }
+
+    /**
      * Registers a property that can be used inside an XML file to add additional new properties.
      *
      * @param attributeName the name of the property. This is the same name you'll be using to specify the property
@@ -363,11 +378,15 @@ public class Gui implements Listener, InventoryHolder {
      */
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getCurrentItem() == null || !this.equals(event.getClickedInventory().getHolder()))
+        if (event.getCurrentItem() == null || !this.equals(event.getClickedInventory().getHolder())) {
+            if (this.equals(event.getInventory().getHolder()))
+                if (onGlobalClick != null)
+                    onGlobalClick.accept(event);
             return;
+        }
 
-        if (onClick != null)
-            onClick.accept(event);
+        if (onLocalClick != null)
+            onLocalClick.accept(event);
 
         //loop through the panes reverse, because the pane with the highest priority (last in list) is most likely to have the correct item
         for (int i = panes.size() - 1; i >= 0; i--) {

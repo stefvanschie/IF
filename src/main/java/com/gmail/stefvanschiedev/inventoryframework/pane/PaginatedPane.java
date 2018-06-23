@@ -107,8 +107,8 @@ public class PaginatedPane extends Pane {
         if (x < 0 || x > length || y < 0 || y > height)
             return false;
 
-        if (onClick != null)
-            onClick.accept(event);
+        if (onLocalClick != null)
+            onLocalClick.accept(event);
 
         boolean success = false;
 
