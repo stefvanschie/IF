@@ -64,12 +64,6 @@ public abstract class Pane {
     protected Consumer<InventoryClickEvent> onLocalClick;
 
     /**
-     * The consumer that will be called once a players clicks in the gui or inventory
-     */
-    @Nullable
-    protected Consumer<InventoryClickEvent> onGlobalClick;
-
-    /**
      * A map containing the mappings for properties for items
      */
     private static final Map<String, Function<String, Object>> PROPERTY_MAPPINGS = new HashMap<>();
@@ -502,15 +496,6 @@ public abstract class Pane {
      */
     public void setOnLocalClick(@Nullable Consumer<InventoryClickEvent> onLocalClick) {
         this.onLocalClick = onLocalClick;
-    }
-
-    /**
-     * Set the consumer that should be called whenever this gui or player inventory is clicked in.
-     *
-     * @param onLocalClick the consumer that gets called
-     */
-    public void setOnGlobalClick(@Nullable Consumer<InventoryClickEvent> onGlobalClick) {
-        this.onGlobalClick = onGlobalClick;
     }
 
     /**
