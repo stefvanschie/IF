@@ -212,6 +212,36 @@ public class Gui implements Listener, InventoryHolder {
 
             if (documentElement.hasAttribute("onLocalClick"))
                 gui.setOnLocalClick(XMLUtil.loadOnClickAttribute(instance, documentElement));
+            
+            if (documentElement.hasAttribute("onGlobalClick")) {
+                for (Method method : instance.getClass().getMethods()) {
+                    if (!method.getName().equals(element.getAttribute("onGlobalClick")))
+                        continue;
+
+                    int parameterCount = method.getParameterCount();
+
+                    if (parameterCount == 0) {
+                        gui.setOnGlobalClick(event -> {
+                            try {
+                                method.setAccessible(true);
+                                method.invoke(instance);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    } else if (parameterCount == 1 &&
+                            InventoryClickEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
+                        gui.setOnGlobalClick(event -> {
+                            try {
+                                method.setAccessible(true);
+                                method.invoke(instance, event);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+                }
+            }
 
             if (documentElement.hasAttribute("onClose")) {
                 for (Method method : instance.getClass().getMethods()) {
