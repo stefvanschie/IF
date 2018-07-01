@@ -215,7 +215,7 @@ public class Gui implements Listener, InventoryHolder {
             
             if (documentElement.hasAttribute("onGlobalClick")) {
                 for (Method method : instance.getClass().getMethods()) {
-                    if (!method.getName().equals(element.getAttribute("onGlobalClick")))
+                    if (!method.getName().equals(documentElement.getAttribute("onGlobalClick")))
                         continue;
 
                     int parameterCount = method.getParameterCount();
