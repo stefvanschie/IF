@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 public class XMLUtil {
 
     /**
-     * Loads an onClick consumer from the given instance and element
+     * Loads an onLocalClick consumer from the given instance and element
      *
      * @param instance the object instance
      * @param element the element
@@ -22,7 +22,7 @@ public class XMLUtil {
     @Contract(pure = true)
     public static Consumer<InventoryClickEvent> loadOnClickAttribute(Object instance, Element element) {
         for (Method method : instance.getClass().getMethods()) {
-            if (!method.getName().equals(element.getAttribute("onClick")))
+            if (!method.getName().equals(element.getAttribute("onLocalClick")))
                 continue;
 
             int parameterCount = method.getParameterCount();
