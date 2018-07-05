@@ -357,7 +357,7 @@ public class Gui implements Listener, InventoryHolder {
     /**
      * Set the consumer that should be called whenever this gui or inventory is clicked in.
      *
-     * @param onLocalClick the consumer that gets called
+     * @param onGlobalClick the consumer that gets called
      */
     public void setOnGlobalClick(Consumer<InventoryClickEvent> onGlobalClick) {
         this.onGlobalClick = onGlobalClick;

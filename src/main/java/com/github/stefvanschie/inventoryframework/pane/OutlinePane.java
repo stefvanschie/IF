@@ -51,6 +51,11 @@ public class OutlinePane extends Pane {
     private boolean repeat;
 
     /**
+     * Whether the items should be flipped horizontally and/or vertically
+     */
+    private boolean flipHorizontally, flipVertically;
+
+    /**
      * Constructs a new default pane
      *
      * @param start  the upper left corner of the pane
@@ -81,7 +86,15 @@ public class OutlinePane extends Pane {
             if (!item.isVisible() || item.getItem().getType() == Material.AIR)
                 continue;
 
-            Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y, length, height,
+            int newX = x, newY = y;
+
+            if (flipHorizontally)
+                newX = length - x - 1;
+
+            if (flipVertically)
+                newY = height - y - 1;
+
+            Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(newX, newY, length, height,
                     rotation);
 
             inventory.setItem((start.getY() + coordinates.getValue() + paneOffsetY) * 9 + (start.getX() + coordinates
@@ -132,6 +145,12 @@ public class OutlinePane extends Pane {
         Map.Entry<Integer, Integer> coordinates = GeometryUtil.processCounterClockwiseRotation(x, y, length, height, rotation);
 
         int newX = coordinates.getKey(), newY = coordinates.getValue();
+
+        if (flipHorizontally)
+            newX = length - newX - 1;
+
+        if (flipVertically)
+            newY = height - newY - 1;
 
         int index = 0;
 
@@ -195,6 +214,24 @@ public class OutlinePane extends Pane {
      */
     public void addItem(@NotNull GuiItem item) {
         items.add(item);
+    }
+
+    /**
+     * Sets whether this pane should flip its items horizontally
+     *
+     * @param flipHorizontally whether the pane should flip items horizontally
+     */
+    public void flipHorizontally(boolean flipHorizontally) {
+        this.flipHorizontally = flipHorizontally;
+    }
+
+    /**
+     * Sets whether this pane should flip its items vertically
+     *
+     * @param flipVertically whether the pane should flip items vertically
+     */
+    public void flipVertically(boolean flipVertically) {
+        this.flipVertically = flipVertically;
     }
 
     /**
@@ -286,6 +323,26 @@ public class OutlinePane extends Pane {
     }
 
     /**
+     * Gets whether this pane's items are flipped horizontally
+     *
+     * @return true if the items are flipped horizontally, false otherwise
+     */
+    @Contract(pure = true)
+    public boolean isFlippedHorizontally() {
+        return flipHorizontally;
+    }
+
+    /**
+     * Gets whether this pane's items are flipped vertically
+     *
+     * @return true if the items are flipped vertically, false otherwise
+     */
+    @Contract(pure = true)
+    public boolean isFlippedVertically() {
+        return flipVertically;
+    }
+
+    /**
      * Loads an outline pane from a given element
      *
      * @param instance the instance class
@@ -303,17 +360,12 @@ public class OutlinePane extends Pane {
                 Integer.parseInt(element.getAttribute("height"))
             );
 
-            Pane.load(outlinePane, instance, element);
-
-            if (element.hasAttribute("populate"))
-                return outlinePane;
-
             if (element.hasAttribute("rotation"))
                 outlinePane.setRotation(Integer.parseInt(element.getAttribute("rotation")));
 
             if (element.hasAttribute("orientation"))
                 outlinePane.setOrientation(Orientation.valueOf(element.getAttribute("orientation")
-                        .toUpperCase(Locale.getDefault())));
+                    .toUpperCase(Locale.getDefault())));
 
             if (element.hasAttribute("gap"))
                 outlinePane.setGap(Integer.parseInt(element.getAttribute("gap")));
@@ -321,6 +373,16 @@ public class OutlinePane extends Pane {
             if (element.hasAttribute("repeat"))
                 outlinePane.setRepeat(Boolean.parseBoolean(element.getAttribute("repeat")));
 
+            if (element.hasAttribute("flipHorizontally"))
+                outlinePane.flipHorizontally(Boolean.parseBoolean(element.getAttribute("flipHorizontally")));
+
+            if (element.hasAttribute("flipVertically"))
+                outlinePane.flipVertically(Boolean.parseBoolean(element.getAttribute("flipVertically")));
+
+            Pane.load(outlinePane, instance, element);
+
+            if (element.hasAttribute("populate"))
+                return outlinePane;
 
             NodeList childNodes = element.getChildNodes();
 

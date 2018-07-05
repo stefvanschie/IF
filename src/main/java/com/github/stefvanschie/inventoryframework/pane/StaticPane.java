@@ -34,6 +34,11 @@ public class StaticPane extends Pane {
     private int rotation;
 
     /**
+     * Whether the items should be flipped horizontally and/or vertically
+     */
+    private boolean flipHorizontally, flipVertically;
+
+    /**
      * Constructs a new default pane
      *
      * @param start the upper left corner of the pane
@@ -63,8 +68,16 @@ public class StaticPane extends Pane {
         }).forEach(entry -> {
             GuiLocation location = entry.getValue();
 
-            Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(location.getX(), location
-                    .getY(), length, height, rotation);
+            int x = location.getX(), y = location.getY();
+
+            if (flipHorizontally)
+                x = length - x - 1;
+
+            if (flipVertically)
+                y = height - y - 1;
+
+            Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y, length, height,
+                rotation);
 
             inventory.setItem((start.getY() + coordinates.getValue() + paneOffsetY) * 9 + (start.getX() + coordinates
                     .getKey() + paneOffsetX), entry.getKey().getItem());
@@ -105,13 +118,20 @@ public class StaticPane extends Pane {
         Map.Entry<Integer, Integer> coordinates = GeometryUtil.processCounterClockwiseRotation(x, y, length, height,
                 rotation);
 
+        int newX = coordinates.getKey(), newY = coordinates.getValue();
+
+        if (flipHorizontally)
+            newX = length - newX - 1;
+
+        if (flipVertically)
+            newY = height - newY - 1;
+
         //find the item on the correct spot
         for (Map.Entry<GuiItem, GuiLocation> entry : items) {
             GuiLocation location = entry.getValue();
             GuiItem item = entry.getKey();
 
-            if (location.getX() != coordinates.getKey() || location.getY() != coordinates.getValue() ||
-                    !item.getItem().equals(event.getCurrentItem()))
+            if (location.getX() != newX || location.getY() != newY || !item.getItem().equals(event.getCurrentItem()))
                 continue;
 
             if (!item.isVisible())
@@ -165,6 +185,24 @@ public class StaticPane extends Pane {
     }
 
     /**
+     * Sets whether this pane should flip its items horizontally
+     *
+     * @param flipHorizontally whether the pane should flip items horizontally
+     */
+    public void flipHorizontally(boolean flipHorizontally) {
+        this.flipHorizontally = flipHorizontally;
+    }
+
+    /**
+     * Sets whether this pane should flip its items vertically
+     *
+     * @param flipVertically whether the pane should flip items vertically
+     */
+    public void flipVertically(boolean flipVertically) {
+        this.flipVertically = flipVertically;
+    }
+
+    /**
      * Gets the rotation specified to this pane. If no rotation has been set, or if this pane is not capable of having a
      * rotation, 0 is returned.
      *
@@ -173,6 +211,26 @@ public class StaticPane extends Pane {
     @Contract(pure = true)
     public int getRotation() {
         return rotation;
+    }
+
+    /**
+     * Gets whether this pane's items are flipped horizontally
+     *
+     * @return true if the items are flipped horizontally, false otherwise
+     */
+    @Contract(pure = true)
+    public boolean isFlippedHorizontally() {
+        return flipHorizontally;
+    }
+
+    /**
+     * Gets whether this pane's items are flipped vertically
+     *
+     * @return true if the items are flipped vertically, false otherwise
+     */
+    @Contract(pure = true)
+    public boolean isFlippedVertically() {
+        return flipVertically;
     }
 
     /**
@@ -193,13 +251,19 @@ public class StaticPane extends Pane {
                 Integer.parseInt(element.getAttribute("height"))
             );
 
+            if (element.hasAttribute("rotation"))
+                staticPane.setRotation(Integer.parseInt(element.getAttribute("rotation")));
+
+            if (element.hasAttribute("flipHorizontally"))
+                staticPane.flipHorizontally(Boolean.parseBoolean(element.getAttribute("flipHorizontally")));
+
+            if (element.hasAttribute("flipVertically"))
+                staticPane.flipVertically(Boolean.parseBoolean(element.getAttribute("flipVertically")));
+
             Pane.load(staticPane, instance, element);
 
             if (element.hasAttribute("populate"))
                 return staticPane;
-
-            if (element.hasAttribute("rotation"))
-                staticPane.setRotation(Integer.parseInt(element.getAttribute("rotation")));
 
             NodeList childNodes = element.getChildNodes();
 
