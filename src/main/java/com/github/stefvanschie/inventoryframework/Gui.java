@@ -28,6 +28,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -207,7 +208,10 @@ public class Gui implements Listener, InventoryHolder {
 
             if (documentElement.hasAttribute("field")) {
                 try {
-                    instance.getClass().getField(documentElement.getAttribute("field")).set(instance, gui);
+                    Field field = instance.getClass().getField(documentElement.getAttribute("field"));
+
+                    field.setAccessible(true);
+                    field.set(instance, gui);
                 } catch (NoSuchFieldException | IllegalAccessException e) {
                     e.printStackTrace();
                 }

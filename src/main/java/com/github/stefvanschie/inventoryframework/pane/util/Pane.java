@@ -408,7 +408,10 @@ public abstract class Pane {
 
         if (element.hasAttribute("field")) {
             try {
-                instance.getClass().getField(element.getAttribute("field")).set(instance, item);
+                Field field = instance.getClass().getField(element.getAttribute("field"));
+
+                field.setAccessible(true);
+                field.set(instance, item);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -437,7 +440,10 @@ public abstract class Pane {
 
         if (element.hasAttribute("field")) {
             try {
-                instance.getClass().getField(element.getAttribute("field")).set(instance, pane);
+                Field field = instance.getClass().getField(element.getAttribute("field"));
+
+                field.setAccessible(true);
+                field.set(instance, pane);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();
             }
