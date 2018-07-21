@@ -392,6 +392,9 @@ public abstract class Pane {
                                     //because reflection with lambdas is stupid
                                     method.setAccessible(true);
                                     method.invoke(instance, properties.toArray(new Object[0]));
+
+                                    //since we'll append the event to the list next time again, we need to remove it here again
+                                    properties.remove(0);
                                 } catch (IllegalAccessException | InvocationTargetException e) {
                                     e.printStackTrace();
                                 }
