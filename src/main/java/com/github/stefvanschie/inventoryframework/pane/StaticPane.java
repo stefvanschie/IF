@@ -63,8 +63,7 @@ public class StaticPane extends Pane {
             GuiItem key = entry.getKey();
             GuiLocation value = entry.getValue();
 
-            return key.isVisible() && key.getItem().getType() != Material.AIR &&
-                    value.getX() + paneOffsetX <= 9 && value.getY() + paneOffsetY <= 6;
+            return key.isVisible() && value.getX() + paneOffsetX <= 9 && value.getY() + paneOffsetY <= 6;
         }).forEach(entry -> {
             GuiLocation location = entry.getValue();
 

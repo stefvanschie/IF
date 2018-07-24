@@ -83,7 +83,7 @@ public class OutlinePane extends Pane {
         for (int i = 0; i < (repeat ? length * height : items.size()); i++) {
             GuiItem item = items.get(i % items.size());
 
-            if (!item.isVisible() || item.getItem().getType() == Material.AIR)
+            if (!item.isVisible())
                 continue;
 
             int newX = x, newY = y;
