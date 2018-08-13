@@ -76,7 +76,9 @@ public class PaginatedPane extends Pane {
      * @param page the page
      */
     public void setPage(int page) {
-        assert panes.containsKey(page) : "page outside range";
+        if (!panes.containsKey(page)) {
+            throw new ArrayIndexOutOfBoundsException("page outside range");
+        }
 
         this.page = page;
     }

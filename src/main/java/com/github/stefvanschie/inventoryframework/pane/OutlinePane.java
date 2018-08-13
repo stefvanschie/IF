@@ -187,12 +187,16 @@ public class OutlinePane extends Pane {
      *
      * This method fails for any pane that has a length and height which are unequal.
      *
-     * @param rotation the rotation of this pane
-     * @throws AssertionError when the length and height of the pane are not the same
+     * @param rotation the rotation of this pane, must be divisible by 90.
+     * @throws UnsupportedOperationException when the length and height of the pane are not the same
      */
     public void setRotation(int rotation) {
-        assert length == height : "length and height are different";
-        assert rotation % 90 == 0 : "rotation isn't divisible by 90";
+        if (length != height) {
+            throw new UnsupportedOperationException("length and height are different");
+        }
+        if (rotation % 90 != 0) {
+            throw new IllegalArgumentException("rotation isn't divisible by 90");
+        }
 
         this.rotation = rotation % 360;
     }
