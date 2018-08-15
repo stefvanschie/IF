@@ -15,12 +15,16 @@ public class GuiLocation {
     /**
      * Creates a new location for in a gui
      *
-     * @param x the x coordinate
-     * @param y the y coordinate
+     * @param x the x coordinate in range 0..9.
+     * @param y the y coordinate in range 0..9.
      */
     public GuiLocation(int x, int y) {
-        assert x >= 0 && x <= 9 : "x coordinate outside GUI";
-        assert y >= 0 && y <= 9 : "y coordinate outside GUI";
+        if (!(x >= 0 && x <= 9)) {
+            throw new IllegalArgumentException("x coordinate outside GUI");
+        }
+        if (!(y >= 0 && y <= 9)) {
+            throw new IllegalArgumentException("y coordinate outside GUI");
+        }
 
         this.x = x;
         this.y = y;

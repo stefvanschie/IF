@@ -78,12 +78,14 @@ public class Gui implements Listener, InventoryHolder {
     /**
      * Constructs a new GUI
      *
-     * @param plugin the main plugin
-     * @param rows the amount of rows this gui should contain
-     * @param title the title/name of this gui
+     * @param plugin the main plugin.
+     * @param rows the amount of rows this gui should contain, in range 1..6.
+     * @param title the title/name of this gui.
      */
     public Gui(Plugin plugin, int rows, String title) {
-        assert rows >= 1 && rows <= 6 : "amount of rows outside range";
+        if (!(rows >= 1 && rows <= 6)) {
+            throw new IllegalArgumentException("Rows should be between 1 and 6");
+        }
 
         this.panes = new ArrayList<>();
         this.inventory = Bukkit.createInventory(this, rows * 9, title);
@@ -118,13 +120,15 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     /**
-     * Sets the amount of rows for this inventory. This will (unlike most other methods) directly update itself in order
-     * to ensure all viewers will still be viewing the new inventory as well.
+     * Sets the amount of rows for this inventory.
+     * This will (unlike most other methods) directly update itself in order to ensure all viewers will still be viewing the new inventory as well.
      *
-     * @param rows the amount of rows
+     * @param rows the amount of rows in range 1..6.
      */
     public void setRows(int rows) {
-        assert rows >= 1 && rows <= 6 : "rows should be between 1 and 6";
+        if (!(rows >= 1 && rows <= 6)) {
+            throw new IllegalArgumentException("Rows should be between 1 and 6");
+        }
 
         //copy the viewers
         List<HumanEntity> viewers = new ArrayList<>(inventory.getViewers());
@@ -374,10 +378,12 @@ public class Gui implements Listener, InventoryHolder {
      *                      type in the XML file.
      * @param function how the property should be processed. This converts the raw text input from the XML node value
      *                 into the correct object type.
-     * @throws AssertionError when a property with this name is already registered.
+     * @throws IllegalArgumentException when a property with this name is already registered.
      */
     public static void registerProperty(String attributeName, Function<String, Object> function) {
-        assert !Pane.getPropertyMappings().containsKey(attributeName) : "property is already registered";
+        if (Pane.getPropertyMappings().containsKey(attributeName)) {
+            throw new IllegalArgumentException("property '" + attributeName + "' is already registered");
+        }
 
         Pane.getPropertyMappings().put(attributeName, function);
     }
@@ -387,10 +393,12 @@ public class Gui implements Listener, InventoryHolder {
      *
      * @param name the name of the pane to be used in the XML file
      * @param biFunction how the pane loading should be processed
-     * @throws AssertionError when a pane with this name is already registered
+     * @throws IllegalArgumentException when a pane with this name is already registered
      */
     public static void registerPane(String name, BiFunction<Object, Element, Pane> biFunction) {
-        assert !PANE_MAPPINGS.containsKey(name) : "pane name already registered";
+        if (PANE_MAPPINGS.containsKey(name)) {
+            throw new IllegalArgumentException("pane name '" + name + "' is already registered");
+        }
 
         PANE_MAPPINGS.put(name, biFunction);
     }
