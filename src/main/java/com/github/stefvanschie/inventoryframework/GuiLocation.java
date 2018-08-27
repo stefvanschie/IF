@@ -2,8 +2,6 @@ package com.github.stefvanschie.inventoryframework;
 
 /**
  * A location inside a GUI
- *
- * @since 5.6.0
  */
 public class GuiLocation {
 

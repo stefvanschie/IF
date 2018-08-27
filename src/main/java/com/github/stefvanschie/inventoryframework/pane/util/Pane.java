@@ -238,7 +238,7 @@ public abstract class Pane {
      * @param element the element
      * @return the gui item
      */
-    public static GuiItem loadItem(Object instance, Element element) {
+    public static GuiItem loadItem(@NotNull Object instance, @NotNull Element element) {
         String id = element.getAttribute("id");
         ItemStack itemStack = new ItemStack(Material.matchMaterial(id.toUpperCase(Locale.getDefault())),
                 element.hasAttribute("amount") ? Integer.parseInt(element.getAttribute("amount")) : 1,
@@ -412,16 +412,8 @@ public abstract class Pane {
 
         GuiItem item = action == null ? new GuiItem(itemStack) : new GuiItem(itemStack, action);
 
-        if (element.hasAttribute("field")) {
-            try {
-                Field field = instance.getClass().getField(element.getAttribute("field"));
-
-                field.setAccessible(true);
-                field.set(instance, item);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
+        if (element.hasAttribute("field"))
+            XMLUtil.loadFieldAttribute(instance, element, item);
 
         if (element.hasAttribute("populate")) {
             try {
@@ -437,23 +429,15 @@ public abstract class Pane {
         return item;
     }
 
-    public static void load(Pane pane, Object instance, Element element) {
+    public static void load(@NotNull Pane pane, @NotNull Object instance, @NotNull Element element) {
         if (element.hasAttribute("priority"))
             pane.setPriority(Priority.valueOf(element.getAttribute("priority")));
 
         if (element.hasAttribute("visible"))
             pane.setVisible(Boolean.parseBoolean(element.getAttribute("visible")));
 
-        if (element.hasAttribute("field")) {
-            try {
-                Field field = instance.getClass().getField(element.getAttribute("field"));
-
-                field.setAccessible(true);
-                field.set(instance, pane);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
+        if (element.hasAttribute("field"))
+            XMLUtil.loadFieldAttribute(instance, element, pane);
 
         if (element.hasAttribute("onLocalClick"))
             pane.setOnLocalClick(XMLUtil.loadOnClickAttribute(instance, element));

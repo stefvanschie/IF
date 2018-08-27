@@ -2,9 +2,11 @@ package com.github.stefvanschie.inventoryframework.util;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
@@ -50,5 +52,23 @@ public class XMLUtil {
         }
 
         return null;
+    }
+
+    /**
+     * Sets a field from the given instance and element to the specified value
+     *
+     * @param instance the class instance the field is located in
+     * @param element the element from which the field is specified
+     * @param value the field's new value
+     */
+    public static void loadFieldAttribute(@NotNull Object instance, @NotNull Element element, @Nullable Object value) {
+        try {
+            Field field = instance.getClass().getField(element.getAttribute("field"));
+
+            field.setAccessible(true);
+            field.set(instance, value);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 }

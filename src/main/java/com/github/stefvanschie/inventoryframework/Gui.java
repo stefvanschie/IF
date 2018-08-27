@@ -28,7 +28,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -39,8 +38,6 @@ import java.util.stream.Collectors;
 
 /**
  * The base class of all GUIs
- *
- * @since 5.6.0
  */
 public class Gui implements Listener, InventoryHolder {
 
@@ -182,8 +179,6 @@ public class Gui implements Listener, InventoryHolder {
 
     /**
      * Update the gui for everyone
-     *
-     * @since 5.6.0
      */
     public void update() {
         new HashSet<>(inventory.getViewers()).forEach(this::show);
@@ -196,7 +191,6 @@ public class Gui implements Listener, InventoryHolder {
      * @param instance the class instance for all reflection lookups
      * @param inputStream the file
      * @return the gui
-     * @since 5.6.0
      */
     @Nullable
     @Contract("_, _, null -> fail")
@@ -210,16 +204,8 @@ public class Gui implements Listener, InventoryHolder {
             Gui gui = new Gui(plugin, Integer.parseInt(documentElement.getAttribute("rows")), ChatColor
                     .translateAlternateColorCodes('&', documentElement.getAttribute("title")));
 
-            if (documentElement.hasAttribute("field")) {
-                try {
-                    Field field = instance.getClass().getField(documentElement.getAttribute("field"));
-
-                    field.setAccessible(true);
-                    field.set(instance, gui);
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
+            if (documentElement.hasAttribute("field"))
+                XMLUtil.loadFieldAttribute(instance, documentElement, gui);
 
             if (documentElement.hasAttribute("onLocalClick"))
                 gui.setOnLocalClick(XMLUtil.loadOnClickAttribute(instance, documentElement));
@@ -353,8 +339,6 @@ public class Gui implements Listener, InventoryHolder {
 
     /**
      * {@inheritDoc}
-     *
-     * @since 5.6.0
      */
     @NotNull
     @Override

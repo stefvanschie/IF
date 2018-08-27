@@ -4,7 +4,6 @@ import com.github.stefvanschie.inventoryframework.GuiLocation;
 import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.pane.util.Pane;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
-import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Contract;
