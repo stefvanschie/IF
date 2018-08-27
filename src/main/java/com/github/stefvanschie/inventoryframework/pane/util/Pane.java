@@ -77,8 +77,11 @@ public abstract class Pane {
      * @param priority the priority of the pane
      */
     protected Pane(@NotNull GuiLocation start, int length, int height, @NotNull Priority priority) {
-        assert start.getX() + length <= 9 : "length longer than maximum size";
-        assert start.getY() + height <= 6 : "height longer than maximum size";
+        if (start.getX() + length > 9)
+            throw new IllegalArgumentException("length longer than maximum size");
+
+        if (start.getY() + height > 6)
+            throw new IllegalArgumentException("height longer than maximum size");
 
         this.start = start;
 
