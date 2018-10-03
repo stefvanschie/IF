@@ -13,13 +13,11 @@ Before you make a contribution, please make sure it follows these ground rules:
 * Check if there's already an issue made (which is the same as yours) before you make another one.
 * Don't post your issue in other issues, please keep everything nicely organized and make a separate one.
 * Don't ask for support for outdated Minecraft versions, we won't add it.
-* Please keep the issues section for actual bugs or code problems, not for support. You can ask support on
-[SpigotMC](https://www.spigotmc.org/threads/building-game.83557/) and [DevBukkit](https://dev.bukkit.org/projects/buildinggame#comments).
+* Please keep the issues section for actual bugs or code problems, not for support.
 
 ### Ground rules for pull requests
 
-* Make sure your pull request benefits all users, not just you. If you want to add features specific for you or your server,
-please consider maintaining a fork of the project or using the [API](https://github.com/stefvanschie/buildinggame/wiki/API).
+* Make sure your pull request benefits all users, not just you.
 * Make sure you're pull request hasn't already been made.
 * If you're making a pull request regarding an issue, please link that issue as well.
 * Follow the conventions notated in the style_guide file in this repository.
@@ -28,12 +26,7 @@ please consider maintaining a fork of the project or using the [API](https://git
 ## First timers
 
 If you want to help with this project, but don't know where to start, take a look at the
-[currently opened issues](https://github.com/stefvanschie/buildinggame/issues). There are always some people who could use your help.
-
-If you're wanting to make a pull request which involves settings (in either the config.yml / messages.yml), I highly recommend you to take
-a look at [this specific class](https://github.com/stefvanschie/buildinggame/blob/master/buildinggame/src/com/gmail/stefvanschiedev/buildinggame/managers/files/SettingsManager.java).
-In short this will manage all your settings. So no more hassle with config#isSet or config#addDefault, that will already been handled for you.
-You just have to add the settings to either the default config.yml or messages.yml and can continue programming.
+[currently opened issues](https://github.com/stefvanschie/IF/issues). There are always some people who could use your help.
 
 ## Getting started with pull requests
 
