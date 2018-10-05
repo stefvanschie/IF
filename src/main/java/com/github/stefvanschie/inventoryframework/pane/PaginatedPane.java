@@ -4,8 +4,12 @@ import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.GuiLocation;
 import com.github.stefvanschie.inventoryframework.pane.util.Pane;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +17,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -76,12 +86,61 @@ public class PaginatedPane extends Pane {
      * @param page the page
      */
     public void setPage(int page) {
-        if (!panes.containsKey(page)) {
-            throw new ArrayIndexOutOfBoundsException("page outside range");
-        }
-
-        this.page = page;
+        this.page = page >= this.getPages() ? this.getPages() - 1 : page < 1 ? 0 : page;
     }
+
+	/**
+	 * Populates the PaginatedPane based on the provided list by adding new pages until all items can fit.
+	 * This can be helpful when dealing with lists of unknown size.
+	 *
+	 * @param items The list to populate the pane with
+	 */
+	@Contract("null -> fail")
+	public void populateWithItemStacks(@NotNull List<ItemStack> items) {
+		//Don't do anything if the list is empty
+		if (items.isEmpty()) return;
+
+		int itemsPerPage = this.height * this.length;
+		int pagesNeeded = items.size() / itemsPerPage + 1;
+
+		for (int i = 0; i < pagesNeeded; i++) {
+			StaticPane page = new StaticPane(this.start, this.length, this.height);
+
+			for (int j = 0; j < itemsPerPage; j++) {
+				//Check if the loop reached the end of the list
+				int index = i * itemsPerPage + j;
+				if (index >= items.size()) break;
+
+				//Convert j to x and y
+				int x = j % (this.length);
+				int y = j / (this.length);
+
+				page.addItem(new GuiItem(items.get(index)), new GuiLocation(x, y));
+			}
+			this.addPane(i, page);
+		}
+	}
+
+	/**
+	 * This method creates a list of ItemStacks all with the given {@code material} and the display names.
+	 * After that it calls {@link #populateWithItemStacks(List)}
+	 * This method also translates the color char {@code &} for all names.
+	 *
+	 * @param displayNames The display names for all the items
+	 * @param material The material to use for the {@link org.bukkit.inventory.ItemStack}s
+	 */
+	@Contract("null, _ -> fail")
+	public void populateWithNames(@NotNull List<String> displayNames, Material material) {
+		if(material == null || material == Material.AIR) return;
+
+		populateWithItemStacks(displayNames.stream().map((name) -> {
+			ItemStack itemStack = new ItemStack(material);
+			ItemMeta itemMeta = itemStack.getItemMeta();
+			itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+			itemStack.setItemMeta(itemMeta);
+			return itemStack;
+		}).collect(Collectors.toList()));
+	}
 
     /**
      * {@inheritDoc}
@@ -206,4 +265,5 @@ public class PaginatedPane extends Pane {
 
         return null;
     }
+
 }
