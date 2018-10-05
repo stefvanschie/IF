@@ -45,4 +45,9 @@ public class GuiLocation {
     public int getY() {
         return y;
     }
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof GuiLocation && ((GuiLocation) obj).x == this.x && ((GuiLocation) obj).y == this.y;
+	}
 }
