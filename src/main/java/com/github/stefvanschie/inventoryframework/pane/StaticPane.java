@@ -6,6 +6,7 @@ import com.github.stefvanschie.inventoryframework.pane.util.Pane;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,271 +23,292 @@ import java.util.stream.Collectors;
  */
 public class StaticPane extends Pane {
 
-    /**
-     * A set of items inside this pane
-     */
-    private final Set<Map.Entry<GuiItem, GuiLocation>> items;
+	/**
+	 * A set of items inside this pane
+	 */
+	private final Set<Map.Entry<GuiItem, GuiLocation>> items;
 
-    /**
-     * The clockwise rotation of this pane in degrees
-     */
-    private int rotation;
+	/**
+	 * The clockwise rotation of this pane in degrees
+	 */
+	private int rotation;
 
-    /**
-     * Whether the items should be flipped horizontally and/or vertically
-     */
-    private boolean flipHorizontally, flipVertically;
+	/**
+	 * Whether the items should be flipped horizontally and/or vertically
+	 */
+	private boolean flipHorizontally, flipVertically;
 
-    /**
-     * Constructs a new default pane
-     *
-     * @param start the upper left corner of the pane
-     * @param length the length of the pane
-     * @param height the height of the pane
-     */
-    public StaticPane(@NotNull GuiLocation start, int length, int height) {
-        super(start, length, height);
+	/**
+	 * Constructs a new default pane
+	 *
+	 * @param start  the upper left corner of the pane
+	 * @param length the length of the pane
+	 * @param height the height of the pane
+	 */
+	public StaticPane(@NotNull GuiLocation start, int length, int height) {
+		super(start, length, height);
 
-        this.items = new HashSet<>(length * height);
-    }
+		this.items = new HashSet<>(length * height);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
-        int length = Math.min(this.length, maxLength);
-        int height = Math.min(this.height, maxHeight);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
+		int length = Math.min(this.length, maxLength);
+		int height = Math.min(this.height, maxHeight);
 
-        items.stream().filter(entry -> {
-            GuiItem key = entry.getKey();
-            GuiLocation value = entry.getValue();
+		items.stream().filter(entry -> {
+			GuiItem key = entry.getKey();
+			GuiLocation value = entry.getValue();
 
-            return key.isVisible() && value.getX() + paneOffsetX <= 9 && value.getY() + paneOffsetY <= 6;
-        }).forEach(entry -> {
-            GuiLocation location = entry.getValue();
+			return key.isVisible() && value.getX() + paneOffsetX <= 9 && value.getY() + paneOffsetY <= 6;
+		}).forEach(entry -> {
+			GuiLocation location = entry.getValue();
 
-            int x = location.getX(), y = location.getY();
+			int x = location.getX(), y = location.getY();
 
-            if (flipHorizontally)
-                x = length - x - 1;
+			if (flipHorizontally)
+				x = length - x - 1;
 
-            if (flipVertically)
-                y = height - y - 1;
+			if (flipVertically)
+				y = height - y - 1;
 
-            Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y, length, height,
-                rotation);
+			Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y, length, height,
+				rotation);
 
-            inventory.setItem((start.getY() + coordinates.getValue() + paneOffsetY) * 9 + (start.getX() + coordinates
-                    .getKey() + paneOffsetX), entry.getKey().getItem());
-        });
-    }
+			inventory.setItem((start.getY() + coordinates.getValue() + paneOffsetY) * 9 + (start.getX() + coordinates
+				.getKey() + paneOffsetX), entry.getKey().getItem());
+		});
+	}
 
-    /**
-     * Adds a gui item at the specific spot in the pane
-     *
-     * @param item the item to set
-     * @param location the location of the item
-     */
-    public void addItem(@NotNull GuiItem item, @NotNull GuiLocation location) {
-        items.add(new AbstractMap.SimpleEntry<>(item, location));
-    }
+	/**
+	 * Adds a gui item at the specific spot in the pane
+	 *
+	 * @param item     the item to set
+	 * @param location the location of the item
+	 */
+	public void addItem(@NotNull GuiItem item, @NotNull GuiLocation location) {
+		items.add(new AbstractMap.SimpleEntry<>(item, location));
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY, int maxLength,
-                         int maxHeight) {
-        int length = Math.min(this.length, maxLength);
-        int height = Math.min(this.height, maxHeight);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY, int maxLength,
+						 int maxHeight) {
+		int length = Math.min(this.length, maxLength);
+		int height = Math.min(this.height, maxHeight);
 
-        int slot = event.getSlot();
+		int slot = event.getSlot();
 
-        //correct coordinates
-        int x = (slot % 9) - start.getX() - paneOffsetX;
-        int y = (slot / 9) - start.getY() - paneOffsetY;
+		//correct coordinates
+		int x = (slot % 9) - start.getX() - paneOffsetX;
+		int y = (slot / 9) - start.getY() - paneOffsetY;
 
-        //this isn't our item
-        if (x < 0 || x > length || y < 0 || y > height)
-            return false;
+		//this isn't our item
+		if (x < 0 || x > length || y < 0 || y > height)
+			return false;
 
-        //first we undo the rotation
-        //this is the same as applying a new rotation to match up to 360, so we'll be doing that
-        Map.Entry<Integer, Integer> coordinates = GeometryUtil.processCounterClockwiseRotation(x, y, length, height,
-                rotation);
+		//first we undo the rotation
+		//this is the same as applying a new rotation to match up to 360, so we'll be doing that
+		Map.Entry<Integer, Integer> coordinates = GeometryUtil.processCounterClockwiseRotation(x, y, length, height,
+			rotation);
 
-        int newX = coordinates.getKey(), newY = coordinates.getValue();
+		int newX = coordinates.getKey(), newY = coordinates.getValue();
 
-        if (flipHorizontally)
-            newX = length - newX - 1;
+		if (flipHorizontally)
+			newX = length - newX - 1;
 
-        if (flipVertically)
-            newY = height - newY - 1;
+		if (flipVertically)
+			newY = height - newY - 1;
 
-        //find the item on the correct spot
-        for (Map.Entry<GuiItem, GuiLocation> entry : items) {
-            GuiLocation location = entry.getValue();
-            GuiItem item = entry.getKey();
+		//find the item on the correct spot
+		for (Map.Entry<GuiItem, GuiLocation> entry : items) {
+			GuiLocation location = entry.getValue();
+			GuiItem item = entry.getKey();
 
-            if (location.getX() != newX || location.getY() != newY || !item.getItem().equals(event.getCurrentItem()))
-                continue;
+			if (location.getX() != newX || location.getY() != newY || !item.getItem().equals(event.getCurrentItem()))
+				continue;
 
-            if (!item.isVisible())
-                return false;
+			if (!item.isVisible())
+				return false;
 
-            Consumer<InventoryClickEvent> action = item.getAction();
+			Consumer<InventoryClickEvent> action = item.getAction();
 
-            if (action != null)
-                action.accept(event);
+			if (action != null)
+				action.accept(event);
 
-            return true;
-        }
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    /**
-     * Sets the rotation of this pane. The rotation is in degrees and can only be in increments of 90. Anything higher
-     * than 360, will be lowered to a value in between [0, 360) while maintaining the same rotational value. E.g. 450
-     * degrees becomes 90 degrees, 1080 degrees becomes 0, etc.
-     *
-     * This method fails for any pane that has a length and height which are unequal.
-     *
-     * @param rotation the rotation of this pane, must be divisible by 90.
-     * @throws UnsupportedOperationException when the length and height of the pane are not the same
-     */
-    public void setRotation(int rotation) {
-        if (length != height) {
-            throw new UnsupportedOperationException("length and height are different");
-        }
-        if (rotation % 90 != 0) {
-            throw new IllegalArgumentException("rotation isn't divisible by 90");
-        }
+	/**
+	 * Sets the rotation of this pane. The rotation is in degrees and can only be in increments of 90. Anything higher
+	 * than 360, will be lowered to a value in between [0, 360) while maintaining the same rotational value. E.g. 450
+	 * degrees becomes 90 degrees, 1080 degrees becomes 0, etc.
+	 * <p>
+	 * This method fails for any pane that has a length and height which are unequal.
+	 *
+	 * @param rotation the rotation of this pane, must be divisible by 90.
+	 * @throws UnsupportedOperationException when the length and height of the pane are not the same
+	 */
+	public void setRotation(int rotation) {
+		if (length != height) {
+			throw new UnsupportedOperationException("length and height are different");
+		}
+		if (rotation % 90 != 0) {
+			throw new IllegalArgumentException("rotation isn't divisible by 90");
+		}
 
-        this.rotation = rotation % 360;
-    }
+		this.rotation = rotation % 360;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @NotNull
-    @Override
-    public Collection<GuiItem> getItems() {
-        return items.stream().map(Map.Entry::getKey).collect(Collectors.toList());
-    }
+	/**
+	 * Fills all empty space in the pane with the given {@code itemStack}
+	 *
+	 * @param itemStack The {@link org.bukkit.inventory.ItemStack} to fill the empty space with
+	 */
+	@Contract("null -> fail")
+	public void fillWith(@NotNull ItemStack itemStack) {
+		//The non empty spots
+		List<GuiLocation> locations = this.items.stream().map(Map.Entry::getValue).collect(Collectors.toList());
 
-    /**
-     * {@inheritDoc}
-     */
-    @NotNull
-    @Contract(pure = true)
-    @Override
-    public Collection<Pane> getPanes() {
-        return new HashSet<>();
-    }
+		for (int y = 0; y < this.getHeight(); y++) {
+			for (int x = 0; x < this.getLength(); x++) {
+				GuiLocation location = new GuiLocation(x, y);
+				if(locations.contains(location))
+					continue;
 
-    /**
-     * Sets whether this pane should flip its items horizontally
-     *
-     * @param flipHorizontally whether the pane should flip items horizontally
-     */
-    public void flipHorizontally(boolean flipHorizontally) {
-        this.flipHorizontally = flipHorizontally;
-    }
+				this.addItem(new GuiItem(itemStack), location);
+			}
+		}
+	}
 
-    /**
-     * Sets whether this pane should flip its items vertically
-     *
-     * @param flipVertically whether the pane should flip items vertically
-     */
-    public void flipVertically(boolean flipVertically) {
-        this.flipVertically = flipVertically;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@NotNull
+	@Override
+	public Collection<GuiItem> getItems() {
+		return items.stream().map(Map.Entry::getKey).collect(Collectors.toList());
+	}
 
-    /**
-     * Gets the rotation specified to this pane. If no rotation has been set, or if this pane is not capable of having a
-     * rotation, 0 is returned.
-     *
-     * @return the rotation for this pane
-     */
-    @Contract(pure = true)
-    public int getRotation() {
-        return rotation;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@NotNull
+	@Contract(pure = true)
+	@Override
+	public Collection<Pane> getPanes() {
+		return new HashSet<>();
+	}
 
-    /**
-     * Gets whether this pane's items are flipped horizontally
-     *
-     * @return true if the items are flipped horizontally, false otherwise
-     */
-    @Contract(pure = true)
-    public boolean isFlippedHorizontally() {
-        return flipHorizontally;
-    }
+	/**
+	 * Sets whether this pane should flip its items horizontally
+	 *
+	 * @param flipHorizontally whether the pane should flip items horizontally
+	 */
+	public void flipHorizontally(boolean flipHorizontally) {
+		this.flipHorizontally = flipHorizontally;
+	}
 
-    /**
-     * Gets whether this pane's items are flipped vertically
-     *
-     * @return true if the items are flipped vertically, false otherwise
-     */
-    @Contract(pure = true)
-    public boolean isFlippedVertically() {
-        return flipVertically;
-    }
+	/**
+	 * Sets whether this pane should flip its items vertically
+	 *
+	 * @param flipVertically whether the pane should flip items vertically
+	 */
+	public void flipVertically(boolean flipVertically) {
+		this.flipVertically = flipVertically;
+	}
 
-    /**
-     * Loads an outline pane from a given element
-     *
-     * @param instance the instance class
-     * @param element the element
-     * @return the outline pane
-     */
-    @Nullable
-    @Contract("_, null -> fail")
-    public static StaticPane load(Object instance, @NotNull Element element) {
-        try {
-            StaticPane staticPane = new StaticPane(new GuiLocation(
-                Integer.parseInt(element.getAttribute("x")),
-                Integer.parseInt(element.getAttribute("y"))),
-                Integer.parseInt(element.getAttribute("length")),
-                Integer.parseInt(element.getAttribute("height"))
-            );
+	/**
+	 * Gets the rotation specified to this pane. If no rotation has been set, or if this pane is not capable of having a
+	 * rotation, 0 is returned.
+	 *
+	 * @return the rotation for this pane
+	 */
+	@Contract(pure = true)
+	public int getRotation() {
+		return rotation;
+	}
 
-            if (element.hasAttribute("rotation"))
-                staticPane.setRotation(Integer.parseInt(element.getAttribute("rotation")));
+	/**
+	 * Gets whether this pane's items are flipped horizontally
+	 *
+	 * @return true if the items are flipped horizontally, false otherwise
+	 */
+	@Contract(pure = true)
+	public boolean isFlippedHorizontally() {
+		return flipHorizontally;
+	}
 
-            if (element.hasAttribute("flipHorizontally"))
-                staticPane.flipHorizontally(Boolean.parseBoolean(element.getAttribute("flipHorizontally")));
+	/**
+	 * Gets whether this pane's items are flipped vertically
+	 *
+	 * @return true if the items are flipped vertically, false otherwise
+	 */
+	@Contract(pure = true)
+	public boolean isFlippedVertically() {
+		return flipVertically;
+	}
 
-            if (element.hasAttribute("flipVertically"))
-                staticPane.flipVertically(Boolean.parseBoolean(element.getAttribute("flipVertically")));
+	/**
+	 * Loads an outline pane from a given element
+	 *
+	 * @param instance the instance class
+	 * @param element  the element
+	 * @return the outline pane
+	 */
+	@Nullable
+	@Contract("_, null -> fail")
+	public static StaticPane load(Object instance, @NotNull Element element) {
+		try {
+			StaticPane staticPane = new StaticPane(new GuiLocation(
+				Integer.parseInt(element.getAttribute("x")),
+				Integer.parseInt(element.getAttribute("y"))),
+				Integer.parseInt(element.getAttribute("length")),
+				Integer.parseInt(element.getAttribute("height"))
+			);
 
-            Pane.load(staticPane, instance, element);
+			if (element.hasAttribute("rotation"))
+				staticPane.setRotation(Integer.parseInt(element.getAttribute("rotation")));
 
-            if (element.hasAttribute("populate"))
-                return staticPane;
+			if (element.hasAttribute("flipHorizontally"))
+				staticPane.flipHorizontally(Boolean.parseBoolean(element.getAttribute("flipHorizontally")));
 
-            NodeList childNodes = element.getChildNodes();
+			if (element.hasAttribute("flipVertically"))
+				staticPane.flipVertically(Boolean.parseBoolean(element.getAttribute("flipVertically")));
 
-            for (int i = 0; i < childNodes.getLength(); i++) {
-                Node item = childNodes.item(i);
+			Pane.load(staticPane, instance, element);
 
-                if (item.getNodeType() != Node.ELEMENT_NODE)
-                    continue;
+			if (element.hasAttribute("populate"))
+				return staticPane;
 
-                Element child = (Element) item;
+			NodeList childNodes = element.getChildNodes();
 
-                staticPane.addItem(Pane.loadItem(instance, child),
-                    new GuiLocation(Integer.parseInt(child.getAttribute("x")),
-                        Integer.parseInt(child.getAttribute("y"))));
-            }
+			for (int i = 0; i < childNodes.getLength(); i++) {
+				Node item = childNodes.item(i);
 
-            return staticPane;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
+				if (item.getNodeType() != Node.ELEMENT_NODE)
+					continue;
 
-        return null;
-    }
+				Element child = (Element) item;
+
+				staticPane.addItem(Pane.loadItem(instance, child),
+					new GuiLocation(Integer.parseInt(child.getAttribute("x")),
+						Integer.parseInt(child.getAttribute("y"))));
+			}
+
+			return staticPane;
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 }
