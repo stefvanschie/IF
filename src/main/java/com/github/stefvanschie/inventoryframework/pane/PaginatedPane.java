@@ -2,8 +2,7 @@ package com.github.stefvanschie.inventoryframework.pane;
 
 import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
-import com.github.stefvanschie.inventoryframework.GuiLocation;
-import com.github.stefvanschie.inventoryframework.pane.util.Pane;
+import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -44,8 +43,22 @@ public class PaginatedPane extends Pane {
     /**
      * {@inheritDoc}
      */
-    public PaginatedPane(@NotNull GuiLocation start, int length, int height) {
-        super(start, length, height);
+    public PaginatedPane(int x, int y, int length, int height, Priority priority) {
+        super(x, y, length, height, priority);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public PaginatedPane(int x, int y, int length, int height) {
+        super(x, y, length, height);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public PaginatedPane(int length, int height) {
+        super(length, height);
     }
 
     /**
@@ -106,7 +119,7 @@ public class PaginatedPane extends Pane {
 		int pagesNeeded = items.size() / itemsPerPage + 1;
 
 		for (int i = 0; i < pagesNeeded; i++) {
-			StaticPane page = new StaticPane(this.start, this.length, this.height);
+			StaticPane page = new StaticPane(getX(), getY(), this.length, this.height);
 
 			for (int j = 0; j < itemsPerPage; j++) {
 				//Check if the loop reached the end of the list
@@ -117,7 +130,7 @@ public class PaginatedPane extends Pane {
 				int x = j % (this.length);
 				int y = j / (this.length);
 
-				page.addItem(new GuiItem(items.get(index)), new GuiLocation(x, y));
+				page.addItem(new GuiItem(items.get(index)), x, y);
 			}
 			this.addPane(i, page);
 		}
@@ -149,8 +162,8 @@ public class PaginatedPane extends Pane {
      */
     @Override
     public void display(Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
-        this.panes.get(page).forEach(pane -> pane.display(inventory, paneOffsetX + start.getX(),
-                paneOffsetY + start.getY(), Math.min(length, maxLength), Math.min(height, maxHeight)));
+        this.panes.get(page).forEach(pane -> pane.display(inventory, paneOffsetX + getX(),
+                paneOffsetY + getY(), Math.min(length, maxLength), Math.min(height, maxHeight)));
     }
 
     /**
@@ -164,10 +177,10 @@ public class PaginatedPane extends Pane {
 
         int slot = event.getSlot();
 
-        int x = (slot % 9) - start.getX();
-        int y = (slot / 9) - start.getY();
+        int x = (slot % 9) - getX();
+        int y = (slot / 9) - getY();
 
-        if (x < 0 || x > length || y < 0 || y > height)
+        if (x < 0 || x >= length || y < 0 || y >= height)
             return false;
 
         if (onLocalClick != null)
@@ -176,8 +189,8 @@ public class PaginatedPane extends Pane {
         boolean success = false;
 
         for (Pane pane : this.panes.get(page))
-            success = success || pane.click(event, paneOffsetX + start.getX(),
-                    paneOffsetY + start.getY(), length, height);
+            success = success || pane.click(event, paneOffsetX + getX(), paneOffsetY + getY(),
+                length, height);
 
         return success;
     }
@@ -220,11 +233,9 @@ public class PaginatedPane extends Pane {
     @Contract("_, null -> fail")
     public static PaginatedPane load(Object instance, @NotNull Element element) {
         try {
-            PaginatedPane paginatedPane = new PaginatedPane(new GuiLocation(
-                    Integer.parseInt(element.getAttribute("x")),
-                    Integer.parseInt(element.getAttribute("y"))),
-                    Integer.parseInt(element.getAttribute("length")),
-                    Integer.parseInt(element.getAttribute("height"))
+            PaginatedPane paginatedPane = new PaginatedPane(
+                Integer.parseInt(element.getAttribute("length")),
+                Integer.parseInt(element.getAttribute("height"))
             );
 
             Pane.load(paginatedPane, instance, element);
@@ -249,9 +260,15 @@ public class PaginatedPane extends Pane {
                     Node pane = innerNodes.item(j);
 
                     if (pane.getNodeType() != Node.ELEMENT_NODE)
-                        continue;
+                        return null;
 
-                    panes.add(Gui.loadPane(instance, pane));
+                    Pane innerPane = Gui.loadPane(instance, pane);
+
+                    if (innerPane == null) {
+                        throw new XMLLoadException("Unable to load paginated pane: inner pane " + j + " could not be loaded.");
+                    }
+
+                    panes.add(innerPane);
                 }
 
                 for (Pane pane : panes)

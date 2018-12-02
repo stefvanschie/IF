@@ -41,7 +41,8 @@ public class GeometryUtil {
     }
 
     /**
-     * Calculates a counter clockwise rotation across a two dimensional grid
+     * Calculates a counter clockwise rotation across a two dimensional grid. This is the same as calling
+     * {@link #processClockwiseRotation(int, int, int, int, int)} with 360 - rotation as the rotation.
      *
      * @param x the standard x coordinate
      * @param y the standard y coordinate
@@ -54,21 +55,6 @@ public class GeometryUtil {
     @Contract(pure = true)
     public static Map.Entry<Integer, Integer> processCounterClockwiseRotation(int x, int y, int length, int height,
                                                                               int rotation) {
-        int newX = x, newY = y;
-
-        if (rotation == 90) {
-            //noinspection SuspiciousNameCombination
-            newX = y;
-            newY = length - 1 - x;
-        } else if (rotation == 180) {
-            newX = length - 1 - x;
-            newY = height - 1 - y;
-        } else if (rotation == 270) {
-            newX = height - 1 - y;
-            //noinspection SuspiciousNameCombination
-            newY = x;
-        }
-
-        return new AbstractMap.SimpleEntry<>(newX, newY);
+        return processClockwiseRotation(x, y, length, height, 360 - rotation);
     }
 }

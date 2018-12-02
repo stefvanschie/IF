@@ -1,9 +1,6 @@
 package com.github.stefvanschie.inventoryframework;
 
-import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
-import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
-import com.github.stefvanschie.inventoryframework.pane.StaticPane;
-import com.github.stefvanschie.inventoryframework.pane.util.Pane;
+import com.github.stefvanschie.inventoryframework.pane.*;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -438,6 +435,7 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     static {
+        registerPane("masonrypane", MasonryPane::load);
         registerPane("outlinepane", OutlinePane::load);
         registerPane("paginatedpane", PaginatedPane::load);
         registerPane("staticpane", StaticPane::load);

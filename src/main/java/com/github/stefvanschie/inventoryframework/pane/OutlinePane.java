@@ -1,8 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
-import com.github.stefvanschie.inventoryframework.GuiLocation;
 import com.github.stefvanschie.inventoryframework.GuiItem;
-import com.github.stefvanschie.inventoryframework.pane.util.Pane;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -21,7 +19,7 @@ import java.util.function.Consumer;
 /**
  * A pane for items that should be outlined
  */
-public class OutlinePane extends Pane {
+public class OutlinePane extends Pane implements Flippable, Orientable, Rotatable {
 
     /**
      * A set of items inside this pane
@@ -56,14 +54,27 @@ public class OutlinePane extends Pane {
     private boolean flipHorizontally, flipVertically;
 
     /**
-     * Constructs a new default pane
-     *
-     * @param start  the upper left corner of the pane
-     * @param length the length of the pane
-     * @param height the height of the pane
+     * {@inheritDoc}
      */
-    public OutlinePane(@NotNull GuiLocation start, int length, int height) {
-        super(start, length, height);
+    public OutlinePane(int x, int y, int length, int height, Priority priority) {
+        super(x, y, length, height, priority);
+
+        this.items = new ArrayList<>(length * height);
+        this.orientation = Orientation.HORIZONTAL;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public OutlinePane(int x, int y, int length, int height) {
+        this(x, y, length, height, Priority.NORMAL);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public OutlinePane(int length, int height) {
+        super(length, height);
 
         this.items = new ArrayList<>(length * height);
         this.orientation = Orientation.HORIZONTAL;
@@ -97,8 +108,8 @@ public class OutlinePane extends Pane {
             Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(newX, newY, length, height,
                     rotation);
 
-            inventory.setItem((start.getY() + coordinates.getValue() + paneOffsetY) * 9 + (start.getX() + coordinates
-                    .getKey() + paneOffsetX), item.getItem());
+            inventory.setItem((getY() + coordinates.getValue() + paneOffsetY) * 9 + (getX() + coordinates.getKey() +
+                paneOffsetX), item.getItem());
 
             //increment positions
             if (orientation == Orientation.HORIZONTAL) {
@@ -135,12 +146,15 @@ public class OutlinePane extends Pane {
         int slot = event.getSlot();
 
         //correct coordinates
-        int x = (slot % 9) - start.getX() - paneOffsetX;
-        int y = (slot / 9) - start.getY() - paneOffsetY;
+        int x = (slot % 9) - getX() - paneOffsetX;
+        int y = (slot / 9) - getY() - paneOffsetY;
 
         //this isn't our item
-        if (x < 0 || x > length || y < 0 || y > height)
+        if (x < 0 || x >= length || y < 0 || y >= height)
             return false;
+
+        if (onLocalClick != null)
+            onLocalClick.accept(event);
 
         Map.Entry<Integer, Integer> coordinates = GeometryUtil.processCounterClockwiseRotation(x, y, length, height, rotation);
 
@@ -181,19 +195,14 @@ public class OutlinePane extends Pane {
     }
 
     /**
-     * Sets the rotation of this pane. The rotation is in degrees and can only be in increments of 90. Anything higher
-     * than 360, will be lowered to a value in between [0, 360) while maintaining the same rotational value. E.g. 450
-     * degrees becomes 90 degrees, 1080 degrees becomes 0, etc.
-     *
-     * This method fails for any pane that has a length and height which are unequal.
-     *
-     * @param rotation the rotation of this pane, must be divisible by 90.
-     * @throws UnsupportedOperationException when the length and height of the pane are not the same
+     * {@inheritDoc}
      */
+    @Override
     public void setRotation(int rotation) {
         if (length != height) {
             throw new UnsupportedOperationException("length and height are different");
         }
+
         if (rotation % 90 != 0) {
             throw new IllegalArgumentException("rotation isn't divisible by 90");
         }
@@ -221,19 +230,17 @@ public class OutlinePane extends Pane {
     }
 
     /**
-     * Sets whether this pane should flip its items horizontally
-     *
-     * @param flipHorizontally whether the pane should flip items horizontally
+     * {@inheritDoc}
      */
+    @Override
     public void flipHorizontally(boolean flipHorizontally) {
         this.flipHorizontally = flipHorizontally;
     }
 
     /**
-     * Sets whether this pane should flip its items vertically
-     *
-     * @param flipVertically whether the pane should flip items vertically
+     * {@inheritDoc}
      */
+    @Override
     public void flipVertically(boolean flipVertically) {
         this.flipVertically = flipVertically;
     }
@@ -248,10 +255,9 @@ public class OutlinePane extends Pane {
     }
 
     /**
-     * Sets the orientation of this outline pane
-     *
-     * @param orientation the new orientation
+     * {@inheritDoc}
      */
+    @Override
     public void setOrientation(@NotNull Orientation orientation) {
         this.orientation = orientation;
     }
@@ -311,37 +317,34 @@ public class OutlinePane extends Pane {
      */
     @NotNull
     @Contract(pure = true)
+    @Override
     public Orientation getOrientation() {
         return orientation;
     }
 
     /**
-     * Gets the rotation specified to this pane. If no rotation has been set, or if this pane is not capable of having a
-     * rotation, 0 is returned.
-     *
-     * @return the rotation for this pane
+     * {@inheritDoc}
      */
     @Contract(pure = true)
+    @Override
     public int getRotation() {
         return rotation;
     }
 
     /**
-     * Gets whether this pane's items are flipped horizontally
-     *
-     * @return true if the items are flipped horizontally, false otherwise
+     * {@inheritDoc}
      */
     @Contract(pure = true)
+    @Override
     public boolean isFlippedHorizontally() {
         return flipHorizontally;
     }
 
     /**
-     * Gets whether this pane's items are flipped vertically
-     *
-     * @return true if the items are flipped vertically, false otherwise
+     * {@inheritDoc}
      */
     @Contract(pure = true)
+    @Override
     public boolean isFlippedVertically() {
         return flipVertically;
     }
@@ -357,19 +360,10 @@ public class OutlinePane extends Pane {
     @Contract("_, null -> fail")
     public static OutlinePane load(Object instance, @NotNull Element element) {
         try {
-            OutlinePane outlinePane = new OutlinePane(new GuiLocation(
-                Integer.parseInt(element.getAttribute("x")),
-                Integer.parseInt(element.getAttribute("y"))),
+            OutlinePane outlinePane = new OutlinePane(
                 Integer.parseInt(element.getAttribute("length")),
                 Integer.parseInt(element.getAttribute("height"))
             );
-
-            if (element.hasAttribute("rotation"))
-                outlinePane.setRotation(Integer.parseInt(element.getAttribute("rotation")));
-
-            if (element.hasAttribute("orientation"))
-                outlinePane.setOrientation(Orientation.valueOf(element.getAttribute("orientation")
-                    .toUpperCase(Locale.getDefault())));
 
             if (element.hasAttribute("gap"))
                 outlinePane.setGap(Integer.parseInt(element.getAttribute("gap")));
@@ -377,13 +371,10 @@ public class OutlinePane extends Pane {
             if (element.hasAttribute("repeat"))
                 outlinePane.setRepeat(Boolean.parseBoolean(element.getAttribute("repeat")));
 
-            if (element.hasAttribute("flipHorizontally"))
-                outlinePane.flipHorizontally(Boolean.parseBoolean(element.getAttribute("flipHorizontally")));
-
-            if (element.hasAttribute("flipVertically"))
-                outlinePane.flipVertically(Boolean.parseBoolean(element.getAttribute("flipVertically")));
-
             Pane.load(outlinePane, instance, element);
+            Flippable.load(outlinePane, element);
+            Orientable.load(outlinePane, element);
+            Rotatable.load(outlinePane, element);
 
             if (element.hasAttribute("populate"))
                 return outlinePane;
@@ -408,21 +399,5 @@ public class OutlinePane extends Pane {
         }
 
         return null;
-    }
-
-    /**
-     * An orientation for outline panes
-     */
-    public enum Orientation {
-
-        /**
-         * A horizontal orientation, will outline every item from the top-left corner going to the right and down
-         */
-        HORIZONTAL,
-
-        /**
-         * A vertical orientation, will outline every item from the top-left corner going down and to the right
-         */
-        VERTICAL
     }
 }
