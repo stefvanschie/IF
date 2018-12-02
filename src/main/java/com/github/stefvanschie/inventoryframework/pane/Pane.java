@@ -1,7 +1,6 @@
-package com.github.stefvanschie.inventoryframework.pane.util;
+package com.github.stefvanschie.inventoryframework.pane;
 
 import com.github.stefvanschie.inventoryframework.GuiItem;
-import com.github.stefvanschie.inventoryframework.GuiLocation;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.google.common.primitives.Primitives;
 import com.mojang.authlib.GameProfile;
@@ -36,10 +35,9 @@ import java.util.function.Function;
 public abstract class Pane {
 
     /**
-     * The starting position of this pane
+     * The starting position of this pane, which is 0 by default
      */
-    @NotNull
-    protected GuiLocation start;
+    protected int x = 0, y = 0;
 
     /**
      * Length is horizontal, height is vertical
@@ -71,19 +69,23 @@ public abstract class Pane {
     /**
      * Constructs a new default pane
      *
-     * @param start the upper left corner of the pane
+     * @param x the upper left x coordinate of the pane
+     * @param y the upper left y coordinate of the pane
      * @param length the length of the pane
      * @param height the height of the pane
      * @param priority the priority of the pane
      */
-    protected Pane(@NotNull GuiLocation start, int length, int height, @NotNull Priority priority) {
-        if (start.getX() + length > 9)
+    protected Pane(int x, int y, int length, int height, @NotNull Priority priority) {
+        if (x + length > 9) {
             throw new IllegalArgumentException("length longer than maximum size");
+        }
 
-        if (start.getY() + height > 6)
+        if (y + height > 6) {
             throw new IllegalArgumentException("height longer than maximum size");
+        }
 
-        this.start = start;
+        this.x = x;
+        this.y = y;
 
         this.length = length;
         this.height = height;
@@ -93,14 +95,29 @@ public abstract class Pane {
     }
 
     /**
-     * Constructs a new default pane
+     * Constructs a new default pane, with no position
      *
-     * @param start the upper left corner of the pane
      * @param length the length of the pane
      * @param height the height of the pane
      */
-    protected Pane(@NotNull GuiLocation start, int length, int height) {
-        this(start, length, height, Priority.NORMAL);
+    protected Pane(int length, int height) {
+        this.length = length;
+        this.height = height;
+
+        this.priority = Priority.NORMAL;
+        this.visible = true;
+    }
+
+    /**
+     * Constructs a new default pane
+     *
+     * @param x the upper left x coordinate of the pane
+     * @param y the upper left y coordinate of the pane
+     * @param length the length of the pane
+     * @param height the height of the pane
+     */
+    protected Pane(int x, int y, int length, int height) {
+        this(x, y, length, height, Priority.NORMAL);
     }
 
     /**
@@ -127,7 +144,7 @@ public abstract class Pane {
      * @param x the new x coordinate
      */
     public void setX(int x) {
-        this.start = new GuiLocation(x, start.getY());
+        this.x = x;
     }
 
     /**
@@ -136,7 +153,7 @@ public abstract class Pane {
      * @param y the new y coordinate
      */
     public void setY(int y) {
-        this.start = new GuiLocation(start.getX(), y);
+        this.y = y;
     }
 
     /**
@@ -166,7 +183,7 @@ public abstract class Pane {
      */
     @Contract(pure = true)
     public int getX() {
-        return start.getX();
+        return x;
     }
 
     /**
@@ -176,7 +193,7 @@ public abstract class Pane {
      */
     @Contract(pure = true)
     public int getY() {
-        return start.getY();
+        return y;
     }
 
     /**
@@ -320,6 +337,7 @@ public abstract class Pane {
                     SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
 
                     if (elementItem.hasAttribute("owner"))
+                        //noinspection deprecation
                         skullMeta.setOwner(elementItem.getAttribute("owner"));
                     else if (elementItem.hasAttribute("id")) {
                         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
@@ -430,6 +448,14 @@ public abstract class Pane {
     }
 
     public static void load(@NotNull Pane pane, @NotNull Object instance, @NotNull Element element) {
+        if (element.hasAttribute("x")) {
+            pane.setX(Integer.parseInt(element.getAttribute("x")));
+        }
+
+        if (element.hasAttribute("y")) {
+            pane.setX(Integer.parseInt(element.getAttribute("y")));
+        }
+
         if (element.hasAttribute("priority"))
             pane.setPriority(Priority.valueOf(element.getAttribute("priority")));
 
