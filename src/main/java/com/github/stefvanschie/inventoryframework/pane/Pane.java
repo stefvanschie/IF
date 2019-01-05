@@ -1,6 +1,8 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
 import com.github.stefvanschie.inventoryframework.GuiItem;
+import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
+import com.github.stefvanschie.inventoryframework.exception.XMLReflectionException;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.google.common.primitives.Primitives;
 import com.mojang.authlib.GameProfile;
@@ -354,8 +356,8 @@ public abstract class Pane {
                             Field profileField = skullMeta.getClass().getDeclaredField("profile");
                             profileField.setAccessible(true);
                             profileField.set(skullMeta, profile);
-                        } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
-                            e.printStackTrace();
+                        } catch (NoSuchFieldException | SecurityException | IllegalAccessException exception) {
+                            throw new XMLLoadException(exception);
                         }
                     }
 
@@ -380,8 +382,8 @@ public abstract class Pane {
                             //because reflection with lambdas is stupid
                             method.setAccessible(true);
                             method.invoke(instance);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
+                        } catch (IllegalAccessException | InvocationTargetException exception) {
+                            throw new XMLReflectionException(exception);
                         }
                     };
                 else if (InventoryClickEvent.class.isAssignableFrom(parameterTypes[0]) ||
@@ -392,8 +394,8 @@ public abstract class Pane {
                                 //because reflection with lambdas is stupid
                                 method.setAccessible(true);
                                 method.invoke(instance, event);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
+                            } catch (IllegalAccessException | InvocationTargetException exception) {
+                                throw new XMLReflectionException(exception);
                             }
                         };
                     else if (parameterCount == properties.size() + 1) {
@@ -420,8 +422,8 @@ public abstract class Pane {
 
                                     //since we'll append the event to the list next time again, we need to remove it here again
                                     properties.remove(0);
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    e.printStackTrace();
+                                } catch (IllegalAccessException | InvocationTargetException exception) {
+                                    throw new XMLReflectionException(exception);
                                 }
                             };
                         }
@@ -443,8 +445,8 @@ public abstract class Pane {
 
                 method.setAccessible(true);
                 method.invoke(instance, item);
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                e.printStackTrace();
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException exception) {
+                throw new XMLLoadException(exception);
             }
         }
 
@@ -480,8 +482,8 @@ public abstract class Pane {
                 try {
                     method.setAccessible(true);
                     method.invoke(instance, pane);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
+                } catch (IllegalAccessException | InvocationTargetException exception) {
+                    throw new XMLLoadException(exception);
                 }
             }
         }
