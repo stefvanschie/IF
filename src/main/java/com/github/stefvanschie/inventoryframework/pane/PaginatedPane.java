@@ -259,8 +259,9 @@ public class PaginatedPane extends Pane {
                 for (int j = 0; j < innerNodes.getLength(); j++) {
                     Node pane = innerNodes.item(j);
 
-                    if (pane.getNodeType() != Node.ELEMENT_NODE)
-                        return null;
+                    if (pane.getNodeType() != Node.ELEMENT_NODE) {
+                        continue;
+                    }
 
                     Pane innerPane = Gui.loadPane(instance, pane);
 
@@ -284,5 +285,4 @@ public class PaginatedPane extends Pane {
 
         return null;
     }
-
 }
