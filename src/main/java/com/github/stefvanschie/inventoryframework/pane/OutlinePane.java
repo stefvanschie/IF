@@ -1,6 +1,7 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
 import com.github.stefvanschie.inventoryframework.GuiItem;
+import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -356,7 +357,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
      * @param element the element
      * @return the outline pane
      */
-    @Nullable
+    @NotNull
     @Contract("_, null -> fail")
     public static OutlinePane load(Object instance, @NotNull Element element) {
         try {
@@ -394,10 +395,8 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
             }
 
             return outlinePane;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException(exception);
         }
-
-        return null;
     }
 }

@@ -232,7 +232,7 @@ public class MasonryPane extends Pane implements Orientable {
      * @param element the element
      * @return the masonry pane
      */
-    @Nullable
+    @NotNull
     @Contract("_, null -> fail")
     public static MasonryPane load(Object instance, @NotNull Element element) {
         try {
@@ -267,10 +267,8 @@ public class MasonryPane extends Pane implements Orientable {
             }
 
             return masonryPane;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException(exception);
         }
-
-        return null;
     }
 }

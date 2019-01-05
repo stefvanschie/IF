@@ -229,7 +229,7 @@ public class PaginatedPane extends Pane {
      * @param element the element
      * @return the paginated pane
      */
-    @Nullable
+    @NotNull
     @Contract("_, null -> fail")
     public static PaginatedPane load(Object instance, @NotNull Element element) {
         try {
@@ -279,10 +279,8 @@ public class PaginatedPane extends Pane {
             }
 
             return paginatedPane;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException(exception);
         }
-
-        return null;
     }
 }

@@ -18,4 +18,14 @@ public class XMLLoadException extends RuntimeException {
     public XMLLoadException(String message) {
         super(message);
     }
+
+    /**
+     * Constructs the exception with a given cause
+     *
+     * @param cause the cause of this exzception
+     * @since 0.3.1
+     */
+    public XMLLoadException(Throwable cause) {
+        super(cause);
+    }
 }
