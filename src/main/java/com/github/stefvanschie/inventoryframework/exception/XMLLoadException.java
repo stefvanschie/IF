@@ -1,6 +1,7 @@
 package com.github.stefvanschie.inventoryframework.exception;
 
 import com.github.stefvanschie.inventoryframework.Gui;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An exception indicating that something went wrong while trying to load a {@link Gui} from an XML file.
@@ -15,7 +16,17 @@ public class XMLLoadException extends RuntimeException {
      * @param message the message to show
      * @since 0.3.0
      */
-    public XMLLoadException(String message) {
+    public XMLLoadException(@NotNull String message) {
         super(message);
+    }
+
+    /**
+     * Constructs the exception with a given cause
+     *
+     * @param cause the cause of this exzception
+     * @since 0.3.1
+     */
+    public XMLLoadException(@NotNull Throwable cause) {
+        super(cause);
     }
 }

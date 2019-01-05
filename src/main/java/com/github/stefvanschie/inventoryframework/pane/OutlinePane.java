@@ -1,6 +1,7 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
 import com.github.stefvanschie.inventoryframework.GuiItem;
+import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -8,7 +9,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -56,7 +56,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
     /**
      * {@inheritDoc}
      */
-    public OutlinePane(int x, int y, int length, int height, Priority priority) {
+    public OutlinePane(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
 
         this.items = new ArrayList<>(length * height);
@@ -304,8 +304,8 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
     /**
      * {@inheritDoc}
      */
-    @Override
     @NotNull
+    @Override
     public List<GuiItem> getItems() {
         return items;
     }
@@ -356,9 +356,9 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
      * @param element the element
      * @return the outline pane
      */
-    @Nullable
+    @NotNull
     @Contract("_, null -> fail")
-    public static OutlinePane load(Object instance, @NotNull Element element) {
+    public static OutlinePane load(@NotNull Object instance, @NotNull Element element) {
         try {
             OutlinePane outlinePane = new OutlinePane(
                 Integer.parseInt(element.getAttribute("length")),
@@ -394,10 +394,8 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
             }
 
             return outlinePane;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException(exception);
         }
-
-        return null;
     }
 }

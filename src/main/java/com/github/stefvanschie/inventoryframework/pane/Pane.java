@@ -1,6 +1,8 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
 import com.github.stefvanschie.inventoryframework.GuiItem;
+import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
+import com.github.stefvanschie.inventoryframework.exception.XMLReflectionException;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.google.common.primitives.Primitives;
 import com.mojang.authlib.GameProfile;
@@ -64,6 +66,7 @@ public abstract class Pane {
     /**
      * A map containing the mappings for properties for items
      */
+    @NotNull
     private static final Map<String, Function<String, Object>> PROPERTY_MAPPINGS = new HashMap<>();
 
     /**
@@ -205,7 +208,8 @@ public abstract class Pane {
      * @param maxLength the maximum length of the pane
      * @param maxHeight the maximum height of the pane
      */
-    public abstract void display(Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight);
+    public abstract void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength,
+                                 int maxHeight);
 
     /**
      * Returns the pane's visibility state
@@ -255,6 +259,8 @@ public abstract class Pane {
      * @param element the element
      * @return the gui item
      */
+    @NotNull
+    @Contract(pure = true)
     public static GuiItem loadItem(@NotNull Object instance, @NotNull Element element) {
         String id = element.getAttribute("id");
         ItemStack itemStack = new ItemStack(Material.matchMaterial(id.toUpperCase(Locale.getDefault())),
@@ -350,8 +356,8 @@ public abstract class Pane {
                             Field profileField = skullMeta.getClass().getDeclaredField("profile");
                             profileField.setAccessible(true);
                             profileField.set(skullMeta, profile);
-                        } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
-                            e.printStackTrace();
+                        } catch (NoSuchFieldException | SecurityException | IllegalAccessException exception) {
+                            throw new XMLLoadException(exception);
                         }
                     }
 
@@ -376,8 +382,8 @@ public abstract class Pane {
                             //because reflection with lambdas is stupid
                             method.setAccessible(true);
                             method.invoke(instance);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
+                        } catch (IllegalAccessException | InvocationTargetException exception) {
+                            throw new XMLReflectionException(exception);
                         }
                     };
                 else if (InventoryClickEvent.class.isAssignableFrom(parameterTypes[0]) ||
@@ -388,8 +394,8 @@ public abstract class Pane {
                                 //because reflection with lambdas is stupid
                                 method.setAccessible(true);
                                 method.invoke(instance, event);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
+                            } catch (IllegalAccessException | InvocationTargetException exception) {
+                                throw new XMLReflectionException(exception);
                             }
                         };
                     else if (parameterCount == properties.size() + 1) {
@@ -416,8 +422,8 @@ public abstract class Pane {
 
                                     //since we'll append the event to the list next time again, we need to remove it here again
                                     properties.remove(0);
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    e.printStackTrace();
+                                } catch (IllegalAccessException | InvocationTargetException exception) {
+                                    throw new XMLReflectionException(exception);
                                 }
                             };
                         }
@@ -439,8 +445,8 @@ public abstract class Pane {
 
                 method.setAccessible(true);
                 method.invoke(instance, item);
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                e.printStackTrace();
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException exception) {
+                throw new XMLLoadException(exception);
             }
         }
 
@@ -453,7 +459,7 @@ public abstract class Pane {
         }
 
         if (element.hasAttribute("y")) {
-            pane.setX(Integer.parseInt(element.getAttribute("y")));
+            pane.setY(Integer.parseInt(element.getAttribute("y")));
         }
 
         if (element.hasAttribute("priority"))
@@ -476,8 +482,8 @@ public abstract class Pane {
                 try {
                     method.setAccessible(true);
                     method.invoke(instance, pane);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
+                } catch (IllegalAccessException | InvocationTargetException exception) {
+                    throw new XMLLoadException(exception);
                 }
             }
         }

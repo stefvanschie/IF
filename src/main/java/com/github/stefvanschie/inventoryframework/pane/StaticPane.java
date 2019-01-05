@@ -1,13 +1,13 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
 import com.github.stefvanschie.inventoryframework.GuiItem;
+import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -24,6 +24,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	/**
 	 * A set of items inside this pane and their locations
 	 */
+	@NotNull
 	private final Set<Map.Entry<GuiItem, Map.Entry<Integer, Integer>>> items;
 
 	/**
@@ -39,7 +40,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
     /**
      * {@inheritDoc}
      */
-    public StaticPane(int x, int y, int length, int height, Priority priority) {
+    public StaticPane(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
 
         this.items = new HashSet<>(length * height);
@@ -276,9 +277,9 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	 * @param element  the element
 	 * @return the outline pane
 	 */
-	@Nullable
+	@NotNull
 	@Contract("_, null -> fail")
-	public static StaticPane load(Object instance, @NotNull Element element) {
+	public static StaticPane load(@NotNull Object instance, @NotNull Element element) {
 		try {
 			StaticPane staticPane = new StaticPane(
 				Integer.parseInt(element.getAttribute("length")),
@@ -307,10 +308,8 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 			}
 
 			return staticPane;
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
+		} catch (NumberFormatException exception) {
+			throw new XMLLoadException(exception);
 		}
-
-		return null;
 	}
 }
