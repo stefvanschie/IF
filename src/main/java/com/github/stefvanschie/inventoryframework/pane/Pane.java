@@ -453,7 +453,7 @@ public abstract class Pane {
         }
 
         if (element.hasAttribute("y")) {
-            pane.setX(Integer.parseInt(element.getAttribute("y")));
+            pane.setY(Integer.parseInt(element.getAttribute("y")));
         }
 
         if (element.hasAttribute("priority"))
