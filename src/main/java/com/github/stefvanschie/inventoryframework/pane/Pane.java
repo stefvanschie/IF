@@ -64,6 +64,7 @@ public abstract class Pane {
     /**
      * A map containing the mappings for properties for items
      */
+    @NotNull
     private static final Map<String, Function<String, Object>> PROPERTY_MAPPINGS = new HashMap<>();
 
     /**
@@ -205,7 +206,8 @@ public abstract class Pane {
      * @param maxLength the maximum length of the pane
      * @param maxHeight the maximum height of the pane
      */
-    public abstract void display(Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight);
+    public abstract void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength,
+                                 int maxHeight);
 
     /**
      * Returns the pane's visibility state
@@ -255,6 +257,8 @@ public abstract class Pane {
      * @param element the element
      * @return the gui item
      */
+    @NotNull
+    @Contract(pure = true)
     public static GuiItem loadItem(@NotNull Object instance, @NotNull Element element) {
         String id = element.getAttribute("id");
         ItemStack itemStack = new ItemStack(Material.matchMaterial(id.toUpperCase(Locale.getDefault())),

@@ -41,32 +41,38 @@ public class Gui implements Listener, InventoryHolder {
     /**
      * A set of all panes in this inventory
      */
+    @NotNull
     private final List<Pane> panes;
 
     /**
      * The inventory of this gui
      */
+    @NotNull
     private Inventory inventory;
 
     /**
      * The consumer that will be called once a players clicks in the gui
      */
+    @Nullable
     private Consumer<InventoryClickEvent> onLocalClick;
 
     /**
      * The consumer that will be called once a players clicks in the gui or in their inventory
      */
+    @Nullable
     private Consumer<InventoryClickEvent> onGlobalClick;
 
 
     /**
      * The consumer that will be called once a player closes the gui
      */
+    @Nullable
     private Consumer<InventoryCloseEvent> onClose;
 
     /**
      * The pane mapping which will allow users to register their own panes to be used in XML files
      */
+    @NotNull
     private static final Map<String, BiFunction<Object, Element, Pane>> PANE_MAPPINGS = new HashMap<>();
 
     /**
@@ -76,7 +82,7 @@ public class Gui implements Listener, InventoryHolder {
      * @param rows the amount of rows this gui should contain, in range 1..6.
      * @param title the title/name of this gui.
      */
-    public Gui(Plugin plugin, int rows, String title) {
+    public Gui(@NotNull Plugin plugin, int rows, @NotNull String title) {
         if (!(rows >= 1 && rows <= 6)) {
             throw new IllegalArgumentException("Rows should be between 1 and 6");
         }
@@ -92,7 +98,7 @@ public class Gui implements Listener, InventoryHolder {
      *
      * @param pane the pane to add
      */
-    public void addPane(Pane pane) {
+    public void addPane(@NotNull Pane pane) {
         this.panes.add(pane);
 
         this.panes.sort(Comparator.comparing(Pane::getPriority));
@@ -103,7 +109,7 @@ public class Gui implements Listener, InventoryHolder {
      *
      * @param humanEntity the human entity to show the gui to
      */
-    public void show(HumanEntity humanEntity) {
+    public void show(@NotNull HumanEntity humanEntity) {
         inventory.clear();
 
         //initialize the inventory first
@@ -154,7 +160,7 @@ public class Gui implements Listener, InventoryHolder {
      *
      * @param title the title
      */
-    public void setTitle(String title) {
+    public void setTitle(@NotNull String title) {
         //copy the viewers
         List<HumanEntity> viewers = new ArrayList<>(inventory.getViewers());
 
@@ -191,7 +197,7 @@ public class Gui implements Listener, InventoryHolder {
      */
     @Nullable
     @Contract("_, _, null -> fail")
-    public static Gui load(Plugin plugin, Object instance, InputStream inputStream) {
+    public static Gui load(@NotNull Plugin plugin, @NotNull Object instance, @NotNull InputStream inputStream) {
         try {
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
             Element documentElement = document.getDocumentElement();
@@ -204,8 +210,14 @@ public class Gui implements Listener, InventoryHolder {
             if (documentElement.hasAttribute("field"))
                 XMLUtil.loadFieldAttribute(instance, documentElement, gui);
 
-            if (documentElement.hasAttribute("onLocalClick"))
-                gui.setOnLocalClick(XMLUtil.loadOnClickAttribute(instance, documentElement));
+            if (documentElement.hasAttribute("onLocalClick")) {
+                Consumer<InventoryClickEvent> onClickAttribute = XMLUtil.loadOnClickAttribute(instance,
+                    documentElement);
+
+                if (onClickAttribute != null) {
+                    gui.setOnLocalClick(onClickAttribute);
+                }
+            }
             
             if (documentElement.hasAttribute("onGlobalClick")) {
                 for (Method method : instance.getClass().getMethods()) {
@@ -303,7 +315,7 @@ public class Gui implements Listener, InventoryHolder {
      *
      * @param onLocalClick the consumer that gets called
      */
-    public void setOnLocalClick(Consumer<InventoryClickEvent> onLocalClick) {
+    public void setOnLocalClick(@NotNull Consumer<InventoryClickEvent> onLocalClick) {
         this.onLocalClick = onLocalClick;
     }
 
@@ -312,7 +324,7 @@ public class Gui implements Listener, InventoryHolder {
      *
      * @param onClose the consumer that gets called
      */
-    public void setOnClose(Consumer<InventoryCloseEvent> onClose) {
+    public void setOnClose(@NotNull Consumer<InventoryCloseEvent> onClose) {
         this.onClose = onClose;
     }
 
@@ -348,7 +360,7 @@ public class Gui implements Listener, InventoryHolder {
      *
      * @param onGlobalClick the consumer that gets called
      */
-    public void setOnGlobalClick(Consumer<InventoryClickEvent> onGlobalClick) {
+    public void setOnGlobalClick(@NotNull Consumer<InventoryClickEvent> onGlobalClick) {
         this.onGlobalClick = onGlobalClick;
     }
 
@@ -361,7 +373,7 @@ public class Gui implements Listener, InventoryHolder {
      *                 into the correct object type.
      * @throws IllegalArgumentException when a property with this name is already registered.
      */
-    public static void registerProperty(String attributeName, Function<String, Object> function) {
+    public static void registerProperty(@NotNull String attributeName, @NotNull Function<String, Object> function) {
         if (Pane.getPropertyMappings().containsKey(attributeName)) {
             throw new IllegalArgumentException("property '" + attributeName + "' is already registered");
         }
@@ -376,7 +388,7 @@ public class Gui implements Listener, InventoryHolder {
      * @param biFunction how the pane loading should be processed
      * @throws IllegalArgumentException when a pane with this name is already registered
      */
-    public static void registerPane(String name, BiFunction<Object, Element, Pane> biFunction) {
+    public static void registerPane(@NotNull String name, @NotNull BiFunction<Object, Element, Pane> biFunction) {
         if (PANE_MAPPINGS.containsKey(name)) {
             throw new IllegalArgumentException("pane name '" + name + "' is already registered");
         }
@@ -391,9 +403,9 @@ public class Gui implements Listener, InventoryHolder {
      * @param node the node
      * @return the pane
      */
-    @Nullable
+    @NotNull
     @Contract("_, null -> fail")
-    public static Pane loadPane(Object instance, @NotNull Node node) {
+    public static Pane loadPane(@NotNull Object instance, @NotNull Node node) {
         return PANE_MAPPINGS.get(node.getNodeName()).apply(instance, (Element) node);
     }
 
@@ -403,7 +415,7 @@ public class Gui implements Listener, InventoryHolder {
      * @param event the event fired
      */
     @EventHandler(ignoreCancelled = true)
-    public void onInventoryClick(InventoryClickEvent event) {
+    public void onInventoryClick(@NotNull InventoryClickEvent event) {
         if (event.getCurrentItem() == null || !this.equals(event.getClickedInventory().getHolder())) {
             if (this.equals(event.getInventory().getHolder()))
                 if (onGlobalClick != null)
@@ -427,7 +439,7 @@ public class Gui implements Listener, InventoryHolder {
      * @param event the event fired
      */
     @EventHandler(ignoreCancelled = true)
-    public void onInventoryClose(InventoryCloseEvent event) {
+    public void onInventoryClose(@NotNull InventoryCloseEvent event) {
         if (onClose == null)
             return;
 

@@ -7,7 +7,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -29,6 +28,7 @@ public class MasonryPane extends Pane implements Orientable {
     /**
      * A list of panes that should be displayed
      */
+    @NotNull
     private final List<Pane> panes = new ArrayList<>();
 
     /**
@@ -62,7 +62,7 @@ public class MasonryPane extends Pane implements Orientable {
      * {@inheritDoc}
      */
     @Override
-    public void display(Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
+    public void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
         int length = Math.min(this.length, maxLength) - paneOffsetX;
         int height = Math.min(this.height, maxHeight) - paneOffsetY;
 
@@ -234,7 +234,7 @@ public class MasonryPane extends Pane implements Orientable {
      */
     @NotNull
     @Contract("_, null -> fail")
-    public static MasonryPane load(Object instance, @NotNull Element element) {
+    public static MasonryPane load(@NotNull Object instance, @NotNull Element element) {
         try {
             MasonryPane masonryPane = new MasonryPane(
                 Integer.parseInt(element.getAttribute("length")),
@@ -257,13 +257,7 @@ public class MasonryPane extends Pane implements Orientable {
                     continue;
                 }
 
-                Pane childPane = Gui.loadPane(instance, pane);
-
-                if (childPane == null) {
-                    throw new XMLLoadException("Unable to load masonry pane: inner pane " + j + " could not be loaded.");
-                }
-
-                masonryPane.addPane(childPane);
+                masonryPane.addPane(Gui.loadPane(instance, pane));
             }
 
             return masonryPane;

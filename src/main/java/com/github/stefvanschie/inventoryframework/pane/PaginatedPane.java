@@ -33,6 +33,7 @@ public class PaginatedPane extends Pane {
     /**
      * A set of panes for the different pages
      */
+    @NotNull
     private final Map<Integer, List<Pane>> panes = new HashMap<>();
 
     /**
@@ -43,7 +44,7 @@ public class PaginatedPane extends Pane {
     /**
      * {@inheritDoc}
      */
-    public PaginatedPane(int x, int y, int length, int height, Priority priority) {
+    public PaginatedPane(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
     }
 
@@ -84,7 +85,7 @@ public class PaginatedPane extends Pane {
      * @param page the page to assign the pane to
      * @param pane the new pane
      */
-    public void addPane(int page, Pane pane) {
+    public void addPane(int page, @NotNull Pane pane) {
         if (!this.panes.containsKey(page))
             this.panes.put(page, new ArrayList<>());
 
@@ -145,7 +146,7 @@ public class PaginatedPane extends Pane {
 	 * @param material The material to use for the {@link org.bukkit.inventory.ItemStack}s
 	 */
 	@Contract("null, _ -> fail")
-	public void populateWithNames(@NotNull List<String> displayNames, Material material) {
+	public void populateWithNames(@NotNull List<String> displayNames, @Nullable Material material) {
 		if(material == null || material == Material.AIR) return;
 
 		populateWithItemStacks(displayNames.stream().map((name) -> {
@@ -161,7 +162,7 @@ public class PaginatedPane extends Pane {
      * {@inheritDoc}
      */
     @Override
-    public void display(Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
+    public void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
         this.panes.get(page).forEach(pane -> pane.display(inventory, paneOffsetX + getX(),
                 paneOffsetY + getY(), Math.min(length, maxLength), Math.min(height, maxHeight)));
     }
@@ -231,7 +232,7 @@ public class PaginatedPane extends Pane {
      */
     @NotNull
     @Contract("_, null -> fail")
-    public static PaginatedPane load(Object instance, @NotNull Element element) {
+    public static PaginatedPane load(@NotNull Object instance, @NotNull Element element) {
         try {
             PaginatedPane paginatedPane = new PaginatedPane(
                 Integer.parseInt(element.getAttribute("length")),
@@ -263,13 +264,7 @@ public class PaginatedPane extends Pane {
                         continue;
                     }
 
-                    Pane innerPane = Gui.loadPane(instance, pane);
-
-                    if (innerPane == null) {
-                        throw new XMLLoadException("Unable to load paginated pane: inner pane " + j + " could not be loaded.");
-                    }
-
-                    panes.add(innerPane);
+                    panes.add(Gui.loadPane(instance, pane));
                 }
 
                 for (Pane pane : panes)
