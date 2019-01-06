@@ -518,6 +518,13 @@ public abstract class Pane {
     public abstract Collection<Pane> getPanes();
 
     /**
+     * Clears the entire pane of any items/panes. Underlying panes will not be cleared.
+     *
+     * @since 0.3.2
+     */
+    public abstract void clear();
+
+    /**
      * Set the consumer that should be called whenever this gui is clicked in.
      *
      * @param onLocalClick the consumer that gets called

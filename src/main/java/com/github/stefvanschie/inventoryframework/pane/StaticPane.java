@@ -217,6 +217,14 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 		return items.stream().map(Map.Entry::getKey).collect(Collectors.toList());
 	}
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clear() {
+        items.clear();
+    }
+
 	/**
 	 * {@inheritDoc}
 	 */
