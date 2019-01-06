@@ -211,6 +211,14 @@ public class MasonryPane extends Pane implements Orientable {
     /**
      * {@inheritDoc}
      */
+    @Override
+    public void clear() {
+        panes.clear();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @NotNull
     @Override
     public Orientation getOrientation() {

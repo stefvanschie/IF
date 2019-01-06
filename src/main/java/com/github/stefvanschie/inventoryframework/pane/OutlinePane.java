@@ -233,6 +233,14 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
      * {@inheritDoc}
      */
     @Override
+    public void clear() {
+        items.clear();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void flipHorizontally(boolean flipHorizontally) {
         this.flipHorizontally = flipHorizontally;
     }

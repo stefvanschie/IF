@@ -224,6 +224,14 @@ public class PaginatedPane extends Pane {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clear() {
+        panes.clear();
+    }
+
+    /**
      * Loads a paginated pane from a given element
      *
      * @param instance the instance class
