@@ -1,5 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
+import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
@@ -7,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -84,7 +86,8 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
      * {@inheritDoc}
      */
     @Override
-    public void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
+    public void display(@NotNull Gui gui, @NotNull Inventory inventory, @NotNull PlayerInventory playerInventory,
+                        int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
@@ -108,8 +111,20 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
             Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(newX, newY, length, height,
                     rotation);
 
-            inventory.setItem((getY() + coordinates.getValue() + paneOffsetY) * 9 + (getX() + coordinates.getKey() +
-                paneOffsetX), item.getItem());
+            int finalRow = getY() + coordinates.getValue() + paneOffsetY;
+            int finalColumn = getX() + coordinates.getKey() + paneOffsetX;
+
+            if (finalRow >= gui.getRows()) {
+                gui.setState(Gui.State.BOTTOM);
+
+                if (finalRow == gui.getRows() + 3) {
+                    playerInventory.setItem(finalColumn, item.getItem());
+                } else {
+                    playerInventory.setItem(((finalRow - gui.getRows()) + 1) * 9 + finalColumn, item.getItem());
+                }
+            } else {
+                inventory.setItem(finalRow * 9 + finalColumn, item.getItem());
+            }
 
             //increment positions
             if (orientation == Orientation.HORIZONTAL) {
@@ -138,25 +153,36 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
      * {@inheritDoc}
      */
     @Override
-    public boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY, int maxLength,
-                         int maxHeight) {
+    public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY,
+                         int maxLength, int maxHeight) {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
         int slot = event.getSlot();
 
-        //correct coordinates
-        int x = (slot % 9) - getX() - paneOffsetX;
-        int y = (slot / 9) - getY() - paneOffsetY;
+        int x, y;
+
+        if (event.getView().getInventory(event.getRawSlot()).equals(event.getView().getBottomInventory())) {
+            x = (slot % 9) - getX() - paneOffsetX;
+            y = ((slot / 9) + gui.getRows() - 1) - getY() - paneOffsetY;
+
+            if (slot / 9 == 0) {
+                y = (gui.getRows() + 3) - getY() - paneOffsetY;
+            }
+        } else {
+            x = (slot % 9) - getX() - paneOffsetX;
+            y = (slot / 9) - getY() - paneOffsetY;
+        }
 
         //this isn't our item
         if (x < 0 || x >= length || y < 0 || y >= height)
             return false;
 
-        if (onLocalClick != null)
-            onLocalClick.accept(event);
+        if (onClick != null)
+            onClick.accept(event);
 
-        Map.Entry<Integer, Integer> coordinates = GeometryUtil.processCounterClockwiseRotation(x, y, length, height, rotation);
+        Map.Entry<Integer, Integer> coordinates = GeometryUtil.processCounterClockwiseRotation(x, y, length, height,
+            rotation);
 
         int newX = coordinates.getKey(), newY = coordinates.getValue();
 

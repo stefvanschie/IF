@@ -5,10 +5,12 @@ import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
@@ -51,10 +53,28 @@ public class Gui implements Listener, InventoryHolder {
     private Inventory inventory;
 
     /**
-     * The consumer that will be called once a players clicks in the gui
+     * The state of this gui
+     */
+    @NotNull
+    private State state = State.TOP;
+
+    /**
+     * A player cache for storing player's inventories
+     */
+    @NotNull
+    private HumanEntityCache humanEntityCache = new HumanEntityCache();
+
+    /**
+     * The consumer that will be called once a players clicks in the top-half of the gui
      */
     @Nullable
-    private Consumer<InventoryClickEvent> onLocalClick;
+    private Consumer<InventoryClickEvent> onTopClick;
+
+    /**
+     * The consumer that will be called once a players clicks in the bottom-half of the gui
+     */
+    @Nullable
+    private Consumer<InventoryClickEvent> onBottomClick;
 
     /**
      * The consumer that will be called once a players clicks in the gui or in their inventory
@@ -112,9 +132,24 @@ public class Gui implements Listener, InventoryHolder {
     public void show(@NotNull HumanEntity humanEntity) {
         inventory.clear();
 
+        //set the state to the top, so in case there are no longer any bottom part panes, their inventory will be shown again
+        setState(State.TOP);
+
+        humanEntityCache.store(humanEntity);
+
+        for (int i = 0; i < 36; i++) {
+            humanEntity.getInventory().clear(i);
+        }
+
         //initialize the inventory first
-        panes.stream().filter(Pane::isVisible).forEach(pane -> pane.display(inventory, 0, 0,
-                9, getRows()));
+        panes.stream().filter(Pane::isVisible).forEach(pane -> pane.display(this, inventory,
+            humanEntity.getInventory(), 0, 0, 9, getRows() + 4));
+
+        //ensure that the inventory is cached before being overwritten and restore it if we end up not needing the bottom part after all
+        if (state == State.TOP) {
+            humanEntityCache.restore(humanEntity);
+            humanEntityCache.clearCache(humanEntity);
+        }
 
         humanEntity.openInventory(inventory);
     }
@@ -188,6 +223,34 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     /**
+     * Calling this method will set the state of this gui. If this state is set to top state, it will restore all the
+     * stored inventories of the players and will assume no pane extends into the bottom inventory part. If the state is
+     * set to bottom state it will assume one or more panes overflow into the bottom half of the inventory and will
+     * store all players' inventories and clear those.
+     *
+     * Do not call this method if you just want the player's inventory to be cleared.
+     *
+     * @param state the new gui state
+     * @since 0.4.0
+     */
+    public void setState(@NotNull State state) {
+        this.state = state;
+
+        if (state == State.TOP) {
+            humanEntityCache.restoreAll();
+            humanEntityCache.clearCache();
+        } else if (state == State.BOTTOM) {
+            inventory.getViewers().forEach(humanEntity -> {
+                humanEntityCache.store(humanEntity);
+
+                for (int i = 0; i < 36; i++) {
+                    humanEntity.getInventory().clear(i);
+                }
+            });
+        }
+    }
+
+    /**
      * Loads a Gui from a given input stream
      *
      * @param plugin the main plugin
@@ -210,42 +273,30 @@ public class Gui implements Listener, InventoryHolder {
             if (documentElement.hasAttribute("field"))
                 XMLUtil.loadFieldAttribute(instance, documentElement, gui);
 
-            if (documentElement.hasAttribute("onLocalClick")) {
-                Consumer<InventoryClickEvent> onClickAttribute = XMLUtil.loadOnClickAttribute(instance,
-                    documentElement);
+            if (documentElement.hasAttribute("onTopClick")) {
+                Consumer<InventoryClickEvent> onTopClickAttribute = XMLUtil.loadOnClickAttribute(instance,
+                    documentElement, "onTopClick");
 
-                if (onClickAttribute != null) {
-                    gui.setOnLocalClick(onClickAttribute);
+                if (onTopClickAttribute != null) {
+                    gui.setOnTopClick(onTopClickAttribute);
+                }
+            }
+
+            if (documentElement.hasAttribute("onBottomClick")) {
+                Consumer<InventoryClickEvent> onBottomClickAttribute = XMLUtil.loadOnClickAttribute(instance,
+                    documentElement, "onBottomClick");
+
+                if (onBottomClickAttribute != null) {
+                    gui.setOnBottomClick(onBottomClickAttribute);
                 }
             }
             
             if (documentElement.hasAttribute("onGlobalClick")) {
-                for (Method method : instance.getClass().getMethods()) {
-                    if (!method.getName().equals(documentElement.getAttribute("onGlobalClick")))
-                        continue;
+                Consumer<InventoryClickEvent> onGlobalClickAttribute = XMLUtil.loadOnClickAttribute(instance,
+                    documentElement, "onGlobalClick");
 
-                    int parameterCount = method.getParameterCount();
-
-                    if (parameterCount == 0) {
-                        gui.setOnGlobalClick(event -> {
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(instance);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    } else if (parameterCount == 1 &&
-                            InventoryClickEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                        gui.setOnGlobalClick(event -> {
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(instance, event);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    }
+                if (onGlobalClickAttribute != null) {
+                    gui.setOnGlobalClick(onGlobalClickAttribute);
                 }
             }
 
@@ -313,10 +364,39 @@ public class Gui implements Listener, InventoryHolder {
     /**
      * Set the consumer that should be called whenever this gui is clicked in.
      *
-     * @param onLocalClick the consumer that gets called
+     * @param onTopClick the consumer that gets called
      */
+    public void setOnTopClick(@NotNull Consumer<InventoryClickEvent> onTopClick) {
+        this.onTopClick = onTopClick;
+    }
+
+    /**
+     * Set the consumer that should be called whenever the inventory is clicked in.
+     *
+     * @param onBottomClick the consumer that gets called
+     */
+    public void setOnBottomClick(@NotNull Consumer<InventoryClickEvent> onBottomClick) {
+        this.onBottomClick = onBottomClick;
+    }
+
+    /**
+     * Set the consumer that should be called whenever this gui or inventory is clicked in.
+     *
+     * @param onGlobalClick the consumer that gets called
+     */
+    public void setOnGlobalClick(@NotNull Consumer<InventoryClickEvent> onGlobalClick) {
+        this.onGlobalClick = onGlobalClick;
+    }
+
+    /**
+     * Set the consumer that should be called whenever this gui is clicked in.
+     *
+     * @param onLocalClick the consumer that gets called
+     * @deprecated see {@link #setOnTopClick(Consumer)}
+     */
+    @Deprecated
     public void setOnLocalClick(@NotNull Consumer<InventoryClickEvent> onLocalClick) {
-        this.onLocalClick = onLocalClick;
+        this.onTopClick = onLocalClick;
     }
 
     /**
@@ -353,15 +433,6 @@ public class Gui implements Listener, InventoryHolder {
     @Override
     public Inventory getInventory() {
         return inventory;
-    }
-
-    /**
-     * Set the consumer that should be called whenever this gui or inventory is clicked in.
-     *
-     * @param onGlobalClick the consumer that gets called
-     */
-    public void setOnGlobalClick(@NotNull Consumer<InventoryClickEvent> onGlobalClick) {
-        this.onGlobalClick = onGlobalClick;
     }
 
     /**
@@ -416,19 +487,32 @@ public class Gui implements Listener, InventoryHolder {
      */
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(@NotNull InventoryClickEvent event) {
-        if (event.getCurrentItem() == null || !this.equals(event.getClickedInventory().getHolder())) {
-            if (this.equals(event.getInventory().getHolder()))
-                if (onGlobalClick != null)
-                    onGlobalClick.accept(event);
+        if (!this.equals(event.getInventory().getHolder())) {
             return;
         }
 
-        if (onLocalClick != null)
-            onLocalClick.accept(event);
+        if (onGlobalClick != null) {
+            onGlobalClick.accept(event);
+        }
+
+        if (onTopClick != null &&
+            event.getView().getInventory(event.getRawSlot()).equals(event.getView().getTopInventory())) {
+            onTopClick.accept(event);
+        }
+
+        if (onBottomClick != null &&
+            event.getView().getInventory(event.getRawSlot()).equals(event.getView().getBottomInventory())) {
+            onBottomClick.accept(event);
+        }
+
+        if ((event.getView().getInventory(event.getRawSlot()).equals(event.getView().getBottomInventory()) &&
+            state == State.TOP) || event.getCurrentItem() == null) {
+            return;
+        }
 
         //loop through the panes reverse, because the pane with the highest priority (last in list) is most likely to have the correct item
         for (int i = panes.size() - 1; i >= 0; i--) {
-            if (panes.get(i).click(event, 0, 0, 9, getRows()))
+            if (panes.get(i).click(this, event, 0, 0, 9, getRows() + 4))
                 break;
         }
     }
@@ -440,10 +524,51 @@ public class Gui implements Listener, InventoryHolder {
      */
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClose(@NotNull InventoryCloseEvent event) {
+        HumanEntity humanEntity = event.getPlayer();
+
+        humanEntityCache.restore(humanEntity);
+        humanEntityCache.clearCache(humanEntity);
+
         if (onClose == null)
             return;
 
         onClose.accept(event);
+    }
+
+    /**
+     * Handles player's leaving
+     *
+     * @param event the event fired
+     * @since 0.4.0
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+
+        humanEntityCache.restore(player);
+        humanEntityCache.clearCache(player);
+    }
+
+    /**
+     * The gui state
+     *
+     * @since 0.4.0
+     */
+    public enum State {
+
+        /**
+         * This signals that only the top-half of the Gui is in use and the player's inventory will stay like it is
+         *
+         * @since 0.4.0
+         */
+        TOP,
+
+        /**
+         * This singals that the bottom-hal of the Gui is in use and the player's inventory will be cleared and stored
+         *
+         * @since 0.4.0
+         */
+        BOTTOM
     }
 
     static {
