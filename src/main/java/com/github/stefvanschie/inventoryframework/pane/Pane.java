@@ -1,5 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
+import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.exception.XMLReflectionException;
@@ -15,6 +16,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.Contract;
@@ -79,14 +81,6 @@ public abstract class Pane {
      * @param priority the priority of the pane
      */
     protected Pane(int x, int y, int length, int height, @NotNull Priority priority) {
-        if (x + length > 9) {
-            throw new IllegalArgumentException("length longer than maximum size");
-        }
-
-        if (y + height > 6) {
-            throw new IllegalArgumentException("height longer than maximum size");
-        }
-
         this.x = x;
         this.y = y;
 
@@ -202,14 +196,16 @@ public abstract class Pane {
     /**
      * Has to set all the items in the right spot inside the inventory
      *
+     * @param gui the gui for which we're rendering
      * @param inventory the inventory that the items should be displayed in
+     * @param playerInventory the player's inventory
      * @param paneOffsetX the pane's offset on the x axis
      * @param paneOffsetY the pane's offset on the y axis
      * @param maxLength the maximum length of the pane
      * @param maxHeight the maximum height of the pane
      */
-    public abstract void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength,
-                                 int maxHeight);
+    public abstract void display(@NotNull Gui gui, @NotNull Inventory inventory, @NotNull PlayerInventory playerInventory,
+                                 int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight);
 
     /**
      * Returns the pane's visibility state
@@ -233,6 +229,7 @@ public abstract class Pane {
     /**
      * Called whenever there is being clicked on this pane
      *
+     * @param gui the gui this event stems from
      * @param event the event that occurred while clicking on this item
      * @param paneOffsetX the pane's offset on the x axis
      * @param paneOffsetY the pane's offset on the y axis
@@ -240,8 +237,8 @@ public abstract class Pane {
      * @param maxHeight the maximum height of the pane
      * @return whether the item was found or not
      */
-    public abstract boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY, int maxLength,
-                                  int maxHeight);
+    public abstract boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX,
+                                  int paneOffsetY, int maxLength, int maxHeight);
 
     /**
      * Sets the priority of this pane

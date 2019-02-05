@@ -11,7 +11,7 @@
 
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF</artifactId>
-    <version>0.3.2</version>
+    <version>0.4.0-test</version>
     <packaging>jar</packaging>
 
     <name>IF</name>
@@ -57,7 +57,7 @@
         </dependency>
     </dependencies>
 
-    <distributionManagement>
+    <!--<distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
@@ -139,5 +139,5 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
 </project>

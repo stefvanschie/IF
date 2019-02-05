@@ -1,11 +1,13 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
+import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -66,7 +68,8 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
+	public void display(@NotNull Gui gui, @NotNull Inventory inventory, @NotNull PlayerInventory playerInventory,
+                        int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
 		int length = Math.min(this.length, maxLength);
 		int height = Math.min(this.height, maxHeight);
 
@@ -89,8 +92,22 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 			Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y, length, height,
 				rotation);
 
-			inventory.setItem((getY() + coordinates.getValue() + paneOffsetY) * 9 + (getX() + coordinates.getKey() +
-                paneOffsetX), entry.getKey().getItem());
+			ItemStack item = entry.getKey().getItem();
+
+			int finalRow = getY() + coordinates.getValue() + paneOffsetY;
+			int finalColumn = getX() + coordinates.getKey() + paneOffsetX;
+
+			if (finalRow >= gui.getRows()) {
+			    gui.setState(Gui.State.BOTTOM);
+
+			    if (finalRow == gui.getRows() + 3) {
+			        playerInventory.setItem(finalColumn, item);
+                } else {
+			        playerInventory.setItem(((finalRow - gui.getRows()) + 1) * 9 + finalColumn, item);
+                }
+            } else {
+                inventory.setItem(finalRow * 9 + finalColumn, item);
+            }
 		});
 	}
 
@@ -109,16 +126,26 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY, int maxLength,
-						 int maxHeight) {
+	public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY,
+                         int maxLength, int maxHeight) {
 		int length = Math.min(this.length, maxLength);
 		int height = Math.min(this.height, maxHeight);
 
 		int slot = event.getSlot();
 
-		//correct coordinates
-		int x = (slot % 9) - getX() - paneOffsetX;
-		int y = (slot / 9) - getY() - paneOffsetY;
+		int x, y;
+
+        if (event.getView().getInventory(event.getRawSlot()).equals(event.getView().getBottomInventory())) {
+            x = (slot % 9) - getX() - paneOffsetX;
+            y = ((slot / 9) + gui.getRows() - 1) - getY() - paneOffsetY;
+
+            if (slot / 9 == 0) {
+                y = (gui.getRows() + 3) - getY() - paneOffsetY;
+            }
+        } else {
+            x = (slot % 9) - getX() - paneOffsetX;
+            y = (slot / 9) - getY() - paneOffsetY;
+        }
 
 		//this isn't our item
 		if (x < 0 || x >= length || y < 0 || y >= height)

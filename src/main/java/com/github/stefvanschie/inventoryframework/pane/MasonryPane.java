@@ -5,6 +5,7 @@ import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -62,7 +63,8 @@ public class MasonryPane extends Pane implements Orientable {
      * {@inheritDoc}
      */
     @Override
-    public void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
+    public void display(@NotNull Gui gui, @NotNull Inventory inventory, @NotNull PlayerInventory playerInventory,
+                        int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
         int length = Math.min(this.length, maxLength) - paneOffsetX;
         int height = Math.min(this.height, maxHeight) - paneOffsetY;
 
@@ -102,7 +104,15 @@ public class MasonryPane extends Pane implements Orientable {
                             pane.setX(x);
                             pane.setY(y);
 
-                            pane.display(inventory, paneOffsetX + getX(), paneOffsetY + getY(), Math.min(this.length, maxLength), Math.min(this.height, maxHeight));
+                            pane.display(
+                                gui,
+                                inventory,
+                                playerInventory,
+                                paneOffsetX + getX(),
+                                paneOffsetY + getY(),
+                                Math.min(this.length, maxLength),
+                                Math.min(this.height, maxHeight)
+                            );
                             break outerLoop;
                         }
                     }
@@ -134,7 +144,15 @@ public class MasonryPane extends Pane implements Orientable {
                             pane.setX(x);
                             pane.setY(y);
 
-                            pane.display(inventory, paneOffsetX + getX(), paneOffsetY + getY(), Math.min(this.length, maxLength), Math.min(this.height, maxHeight));
+                            pane.display(
+                                gui,
+                                inventory,
+                                playerInventory,
+                                paneOffsetX + getX(),
+                                paneOffsetY + getY(),
+                                Math.min(this.length, maxLength),
+                                Math.min(this.height, maxHeight)
+                            );
                             break outerLoop;
                         }
                     }
@@ -147,15 +165,26 @@ public class MasonryPane extends Pane implements Orientable {
      * {@inheritDoc}
      */
     @Override
-    public boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY, int maxLength,
-                         int maxHeight) {
+    public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY,
+                         int maxLength, int maxHeight) {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
         int slot = event.getSlot();
 
-        int x = (slot % 9) - getX();
-        int y = (slot / 9) - getY();
+        int x, y;
+
+        if (event.getView().getInventory(event.getRawSlot()).equals(event.getView().getBottomInventory())) {
+            x = (slot % 9) - getX() - paneOffsetX;
+            y = ((slot / 9) + gui.getRows() - 1) - getY() - paneOffsetY;
+
+            if (slot / 9 == 0) {
+                y = (gui.getRows() + 3) - getY() - paneOffsetY;
+            }
+        } else {
+            x = (slot % 9) - getX() - paneOffsetX;
+            y = (slot / 9) - getY() - paneOffsetY;
+        }
 
         if (x < 0 || x >= length || y < 0 || y >= height)
             return false;
@@ -166,8 +195,8 @@ public class MasonryPane extends Pane implements Orientable {
         boolean success = false;
 
         for (Pane pane : panes) {
-            success = success || pane.click(event, paneOffsetX + getX(), paneOffsetY + getY(),
-                length, height);
+            success = success || pane.click(gui, event, paneOffsetX + getX(),
+                paneOffsetY + getY(), length, height);
         }
 
         return success;

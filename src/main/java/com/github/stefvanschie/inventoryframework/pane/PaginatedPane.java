@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -162,36 +163,52 @@ public class PaginatedPane extends Pane {
      * {@inheritDoc}
      */
     @Override
-    public void display(@NotNull Inventory inventory, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
-        this.panes.get(page).forEach(pane -> pane.display(inventory, paneOffsetX + getX(),
-                paneOffsetY + getY(), Math.min(length, maxLength), Math.min(height, maxHeight)));
+    public void display(@NotNull Gui gui, @NotNull Inventory inventory, @NotNull PlayerInventory playerInventory,
+                        int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
+        this.panes.get(page).forEach(pane -> pane.display(gui, inventory,  playerInventory,
+            paneOffsetX + getX(), paneOffsetY + getY(),
+            Math.min(length, maxLength), Math.min(height, maxHeight)));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean click(@NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY, int maxLength,
+    public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY, int maxLength,
                          int maxHeight) {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
         int slot = event.getSlot();
 
-        int x = (slot % 9) - getX();
-        int y = (slot / 9) - getY();
+        int x, y;
 
-        if (x < 0 || x >= length || y < 0 || y >= height)
+        if (event.getView().getInventory(event.getRawSlot()).equals(event.getView().getBottomInventory())) {
+            x = (slot % 9) - getX() - paneOffsetX;
+            y = ((slot / 9) + gui.getRows() - 1) - getY() - paneOffsetY;
+
+            if (slot / 9 == 0) {
+                y = (gui.getRows() + 3) - getY() - paneOffsetY;
+            }
+        } else {
+            x = (slot % 9) - getX() - paneOffsetX;
+            y = (slot / 9) - getY() - paneOffsetY;
+        }
+
+        //this isn't our item
+        if (x < 0 || x >= length || y < 0 || y >= height) {
             return false;
+        }
 
         if (onLocalClick != null)
             onLocalClick.accept(event);
 
         boolean success = false;
 
-        for (Pane pane : this.panes.get(page))
-            success = success || pane.click(event, paneOffsetX + getX(), paneOffsetY + getY(),
-                length, height);
+        for (Pane pane : this.panes.get(page)) {
+            success = success || pane.click(gui, event, paneOffsetX + getX(),
+                paneOffsetY + getY(), length, height);
+        }
 
         return success;
     }
