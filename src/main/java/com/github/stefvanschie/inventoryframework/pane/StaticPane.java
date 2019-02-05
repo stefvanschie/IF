@@ -151,8 +151,8 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 		if (x < 0 || x >= length || y < 0 || y >= height)
 			return false;
 
-        if (onLocalClick != null)
-            onLocalClick.accept(event);
+        if (onClick != null)
+            onClick.accept(event);
 
 		//first we undo the rotation
 		//this is the same as applying a new rotation to match up to 360, so we'll be doing that

@@ -22,10 +22,10 @@ public class XMLUtil {
      */
     @Nullable
     @Contract(pure = true)
-    public static Consumer<InventoryClickEvent> loadOnClickAttribute(@NotNull Object instance,
-                                                                     @NotNull Element element) {
+    public static Consumer<InventoryClickEvent> loadOnClickAttribute(@NotNull Object instance, @NotNull Element element,
+                                                                     @NotNull String name) {
         for (Method method : instance.getClass().getMethods()) {
-            if (!method.getName().equals(element.getAttribute("onLocalClick")))
+            if (!method.getName().equals(element.getAttribute(name)))
                 continue;
 
             int parameterCount = method.getParameterCount();

@@ -189,8 +189,8 @@ public class MasonryPane extends Pane implements Orientable {
         if (x < 0 || x >= length || y < 0 || y >= height)
             return false;
 
-        if (onLocalClick != null)
-            onLocalClick.accept(event);
+        if (onClick != null)
+            onClick.accept(event);
 
         boolean success = false;
 

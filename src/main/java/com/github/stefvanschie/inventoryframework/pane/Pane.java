@@ -63,7 +63,7 @@ public abstract class Pane {
      * The consumer that will be called once a players clicks in the gui
      */
     @Nullable
-    protected Consumer<InventoryClickEvent> onLocalClick;
+    protected Consumer<InventoryClickEvent> onClick;
 
     /**
      * A map containing the mappings for properties for items
@@ -365,9 +365,9 @@ public abstract class Pane {
 
         Consumer<InventoryClickEvent> action = null;
 
-        if (element.hasAttribute("onLocalClick")) {
+        if (element.hasAttribute("onClick")) {
             for (Method method : instance.getClass().getMethods()) {
-                if (!method.getName().equals(element.getAttribute("onLocalClick")))
+                if (!method.getName().equals(element.getAttribute("onClick")))
                     continue;
 
                 int parameterCount = method.getParameterCount();
@@ -468,8 +468,8 @@ public abstract class Pane {
         if (element.hasAttribute("field"))
             XMLUtil.loadFieldAttribute(instance, element, pane);
 
-        if (element.hasAttribute("onLocalClick"))
-            pane.setOnLocalClick(XMLUtil.loadOnClickAttribute(instance, element));
+        if (element.hasAttribute("onClick"))
+            pane.setOnClick(XMLUtil.loadOnClickAttribute(instance, element, "onClick"));
 
         if (element.hasAttribute("populate")) {
             for (Method method: instance.getClass().getMethods()) {
@@ -524,10 +524,22 @@ public abstract class Pane {
     /**
      * Set the consumer that should be called whenever this gui is clicked in.
      *
-     * @param onLocalClick the consumer that gets called
+     * @param onClick the consumer that gets called
+     * @since 0.4.0
      */
+    public void setOnClick(@Nullable Consumer<InventoryClickEvent> onClick) {
+        this.onClick = onClick;
+    }
+
+    /**
+     * Set the consumer that should be called whenever this gui is clicked in.
+     *
+     * @param onLocalClick the consumer that gets called
+     * @deprecated see {@link #setOnClick(Consumer)}
+     */
+    @Deprecated
     public void setOnLocalClick(@Nullable Consumer<InventoryClickEvent> onLocalClick) {
-        this.onLocalClick = onLocalClick;
+        this.onClick = onLocalClick;
     }
 
     /**

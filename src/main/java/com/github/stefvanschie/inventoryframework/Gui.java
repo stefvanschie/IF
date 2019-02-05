@@ -65,10 +65,16 @@ public class Gui implements Listener, InventoryHolder {
     private HumanEntityCache humanEntityCache = new HumanEntityCache();
 
     /**
-     * The consumer that will be called once a players clicks in the gui
+     * The consumer that will be called once a players clicks in the top-half of the gui
      */
     @Nullable
-    private Consumer<InventoryClickEvent> onLocalClick;
+    private Consumer<InventoryClickEvent> onTopClick;
+
+    /**
+     * The consumer that will be called once a players clicks in the bottom-half of the gui
+     */
+    @Nullable
+    private Consumer<InventoryClickEvent> onBottomClick;
 
     /**
      * The consumer that will be called once a players clicks in the gui or in their inventory
@@ -267,42 +273,30 @@ public class Gui implements Listener, InventoryHolder {
             if (documentElement.hasAttribute("field"))
                 XMLUtil.loadFieldAttribute(instance, documentElement, gui);
 
-            if (documentElement.hasAttribute("onLocalClick")) {
-                Consumer<InventoryClickEvent> onClickAttribute = XMLUtil.loadOnClickAttribute(instance,
-                    documentElement);
+            if (documentElement.hasAttribute("onTopClick")) {
+                Consumer<InventoryClickEvent> onTopClickAttribute = XMLUtil.loadOnClickAttribute(instance,
+                    documentElement, "onTopClick");
 
-                if (onClickAttribute != null) {
-                    gui.setOnLocalClick(onClickAttribute);
+                if (onTopClickAttribute != null) {
+                    gui.setOnTopClick(onTopClickAttribute);
+                }
+            }
+
+            if (documentElement.hasAttribute("onBottomClick")) {
+                Consumer<InventoryClickEvent> onBottomClickAttribute = XMLUtil.loadOnClickAttribute(instance,
+                    documentElement, "onBottomClick");
+
+                if (onBottomClickAttribute != null) {
+                    gui.setOnBottomClick(onBottomClickAttribute);
                 }
             }
             
             if (documentElement.hasAttribute("onGlobalClick")) {
-                for (Method method : instance.getClass().getMethods()) {
-                    if (!method.getName().equals(documentElement.getAttribute("onGlobalClick")))
-                        continue;
+                Consumer<InventoryClickEvent> onGlobalClickAttribute = XMLUtil.loadOnClickAttribute(instance,
+                    documentElement, "onGlobalClick");
 
-                    int parameterCount = method.getParameterCount();
-
-                    if (parameterCount == 0) {
-                        gui.setOnGlobalClick(event -> {
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(instance);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    } else if (parameterCount == 1 &&
-                            InventoryClickEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                        gui.setOnGlobalClick(event -> {
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(instance, event);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    }
+                if (onGlobalClickAttribute != null) {
+                    gui.setOnGlobalClick(onGlobalClickAttribute);
                 }
             }
 
@@ -370,10 +364,39 @@ public class Gui implements Listener, InventoryHolder {
     /**
      * Set the consumer that should be called whenever this gui is clicked in.
      *
-     * @param onLocalClick the consumer that gets called
+     * @param onTopClick the consumer that gets called
      */
+    public void setOnTopClick(@NotNull Consumer<InventoryClickEvent> onTopClick) {
+        this.onTopClick = onTopClick;
+    }
+
+    /**
+     * Set the consumer that should be called whenever the inventory is clicked in.
+     *
+     * @param onBottomClick the consumer that gets called
+     */
+    public void setOnBottomClick(@NotNull Consumer<InventoryClickEvent> onBottomClick) {
+        this.onBottomClick = onBottomClick;
+    }
+
+    /**
+     * Set the consumer that should be called whenever this gui or inventory is clicked in.
+     *
+     * @param onGlobalClick the consumer that gets called
+     */
+    public void setOnGlobalClick(@NotNull Consumer<InventoryClickEvent> onGlobalClick) {
+        this.onGlobalClick = onGlobalClick;
+    }
+
+    /**
+     * Set the consumer that should be called whenever this gui is clicked in.
+     *
+     * @param onLocalClick the consumer that gets called
+     * @deprecated see {@link #setOnTopClick(Consumer)}
+     */
+    @Deprecated
     public void setOnLocalClick(@NotNull Consumer<InventoryClickEvent> onLocalClick) {
-        this.onLocalClick = onLocalClick;
+        this.onTopClick = onLocalClick;
     }
 
     /**
@@ -410,15 +433,6 @@ public class Gui implements Listener, InventoryHolder {
     @Override
     public Inventory getInventory() {
         return inventory;
-    }
-
-    /**
-     * Set the consumer that should be called whenever this gui or inventory is clicked in.
-     *
-     * @param onGlobalClick the consumer that gets called
-     */
-    public void setOnGlobalClick(@NotNull Consumer<InventoryClickEvent> onGlobalClick) {
-        this.onGlobalClick = onGlobalClick;
     }
 
     /**
@@ -473,20 +487,26 @@ public class Gui implements Listener, InventoryHolder {
      */
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(@NotNull InventoryClickEvent event) {
-        if (event.getCurrentItem() == null || !this.equals(event.getView().getTopInventory().getHolder())) {
-            if (this.equals(event.getView().getTopInventory().getHolder()) && onGlobalClick != null) {
-                onGlobalClick.accept(event);
-            }
-
+        if (!this.equals(event.getInventory().getHolder())) {
             return;
         }
 
-        if (onLocalClick != null) {
-            onLocalClick.accept(event);
+        if (onGlobalClick != null) {
+            onGlobalClick.accept(event);
         }
 
-        if (event.getView().getInventory(event.getRawSlot()).equals(event.getView().getBottomInventory()) &&
-            state == State.TOP) {
+        if (onTopClick != null &&
+            event.getView().getInventory(event.getRawSlot()).equals(event.getView().getTopInventory())) {
+            onTopClick.accept(event);
+        }
+
+        if (onBottomClick != null &&
+            event.getView().getInventory(event.getRawSlot()).equals(event.getView().getBottomInventory())) {
+            onBottomClick.accept(event);
+        }
+
+        if ((event.getView().getInventory(event.getRawSlot()).equals(event.getView().getBottomInventory()) &&
+            state == State.TOP) || event.getCurrentItem() == null) {
             return;
         }
 
