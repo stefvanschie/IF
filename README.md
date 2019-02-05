@@ -11,7 +11,7 @@ To add this project as a dependency to your pom.xml, add the following to your p
 <dependency>
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.0</version>
 </dependency>
 ```
 The project is in the Central Repository, so specifying a repository is not needed.
