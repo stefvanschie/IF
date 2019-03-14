@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.font.util.Font;
 import com.github.stefvanschie.inventoryframework.util.CSVUtil;
 import com.github.stefvanschie.inventoryframework.util.SkullUtil;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +20,7 @@ import java.util.Map;
  *
  * @since 0.5.0
  */
-public class CSVFont implements Font {
+public class CSVFont extends Font {
 
     /**
      * A map with all the items and their dedicated characters
@@ -55,6 +56,7 @@ public class CSVFont implements Font {
      * {@inheritDoc}
      */
     @NotNull
+    @Contract(pure = true)
     @Override
     public ItemStack getDefaultItem() {
         return characterMappings.get(defaultCharacter);
@@ -64,6 +66,7 @@ public class CSVFont implements Font {
      * {@inheritDoc}
      */
     @Nullable
+    @Contract(pure = true)
     @Override
     public ItemStack toItem(char character) {
         return characterMappings.get(character);

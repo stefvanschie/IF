@@ -1,11 +1,13 @@
 package com.github.stefvanschie.inventoryframework.pane.component;
 
 import com.github.stefvanschie.inventoryframework.GuiItem;
+import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.font.util.Font;
-import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
+import com.github.stefvanschie.inventoryframework.pane.*;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Element;
 
 /**
  * A label for displaying text.
@@ -127,5 +129,53 @@ public class Label extends OutlinePane {
     @NotNull
     public Font getFont() {
         return font;
+    }
+
+    /**
+     * Loads a label from a given element
+     *
+     * @param instance the instance class
+     * @param element  the element
+     * @return the percentage bar
+     */
+    @NotNull
+    @Contract(value = "_, null -> fail", pure = true)
+    public static Label load(@NotNull Object instance, @NotNull Element element) {
+        int length;
+        int height;
+
+        try {
+            length = Integer.parseInt(element.getAttribute("length"));
+            height = Integer.parseInt(element.getAttribute("height"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException(exception);
+        }
+
+        Font font = null;
+
+        if (element.hasAttribute("font")) {
+            font = Font.fromName(element.getAttribute("font"));
+        }
+
+        if (font == null) {
+            throw new XMLLoadException("Incorrect font specified for label");
+        }
+
+        Label label = new Label(length, height, font);
+
+        Pane.load(label, instance, element);
+        Orientable.load(label, element);
+        Flippable.load(label, element);
+        Rotatable.load(label, element);
+
+        if (element.hasAttribute("populate")) {
+            return label;
+        }
+
+        if (element.hasAttribute("text")) {
+            label.setText(element.getAttribute("text"));
+        }
+
+        return label;
     }
 }

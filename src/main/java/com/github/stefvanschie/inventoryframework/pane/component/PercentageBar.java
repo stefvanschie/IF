@@ -2,6 +2,7 @@ package com.github.stefvanschie.inventoryframework.pane.component;
 
 import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
+import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.Flippable;
 import com.github.stefvanschie.inventoryframework.pane.Orientable;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
@@ -11,7 +12,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Element;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -358,4 +361,44 @@ public class PercentageBar extends Pane implements Orientable, Flippable {
     @Override
     public void clear() {}
 
+    /**
+     * Loads a percentage bar from a given element
+     *
+     * @param instance the instance class
+     * @param element  the element
+     * @return the percentage bar
+     */
+    @NotNull
+    @Contract(value = "_, null -> fail", pure = true)
+    public static PercentageBar load(@NotNull Object instance, @NotNull Element element) {
+        int length;
+        int height;
+
+        try {
+            length = Integer.parseInt(element.getAttribute("length"));
+            height = Integer.parseInt(element.getAttribute("height"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException(exception);
+        }
+
+        PercentageBar percentageBar = new PercentageBar(length, height);
+
+        Pane.load(percentageBar, instance, element);
+        Orientable.load(percentageBar, element);
+        Flippable.load(percentageBar, element);
+
+        if (element.hasAttribute("populate")) {
+            return percentageBar;
+        }
+
+        if (element.hasAttribute("percentage")) {
+            try {
+                percentageBar.setPercentage(Float.parseFloat(element.getAttribute("percentage")));
+            } catch (IllegalArgumentException exception) {
+                throw new XMLLoadException(exception);
+            }
+        }
+
+        return percentageBar;
+    }
 }

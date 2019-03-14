@@ -1,6 +1,8 @@
 package com.github.stefvanschie.inventoryframework;
 
 import com.github.stefvanschie.inventoryframework.pane.*;
+import com.github.stefvanschie.inventoryframework.pane.component.Label;
+import com.github.stefvanschie.inventoryframework.pane.component.PercentageBar;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -576,5 +578,8 @@ public class Gui implements Listener, InventoryHolder {
         registerPane("outlinepane", OutlinePane::load);
         registerPane("paginatedpane", PaginatedPane::load);
         registerPane("staticpane", StaticPane::load);
+
+        registerPane("label", Label::load);
+        registerPane("percentagebar", PercentageBar::load);
     }
 }
