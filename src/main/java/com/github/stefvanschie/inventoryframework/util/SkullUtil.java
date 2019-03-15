@@ -1,6 +1,5 @@
 package com.github.stefvanschie.inventoryframework.util;
 
-import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.apache.commons.codec.binary.Base64;

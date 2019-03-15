@@ -1,9 +1,11 @@
 package com.github.stefvanschie.inventoryframework.pane.component;
 
+import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.font.util.Font;
 import com.github.stefvanschie.inventoryframework.pane.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +22,7 @@ public class Label extends OutlinePane {
      * The character set used for displaying the characters in this label
      */
     @NotNull
-    private Font font;
+    private final Font font;
 
     /**
      * The text to be displayed
@@ -105,6 +107,17 @@ public class Label extends OutlinePane {
 
             addItem(new GuiItem(item));
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY,
+                         int maxLength, int maxHeight) {
+        event.setCancelled(true);
+
+        return super.click(gui, event, paneOffsetX, paneOffsetY, maxLength, maxHeight);
     }
 
     /**

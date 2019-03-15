@@ -122,6 +122,8 @@ public class PercentageBar extends Pane implements Orientable, Flippable {
             onClick.accept(event);
         }
 
+        event.setCancelled(true);
+
         int newPaneOffsetX = paneOffsetX + getX();
         int newPaneOffsetY = paneOffsetY + getY();
 

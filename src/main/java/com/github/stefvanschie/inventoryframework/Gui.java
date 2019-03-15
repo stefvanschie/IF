@@ -1,6 +1,7 @@
 package com.github.stefvanschie.inventoryframework;
 
 import com.github.stefvanschie.inventoryframework.pane.*;
+import com.github.stefvanschie.inventoryframework.pane.component.CycleButton;
 import com.github.stefvanschie.inventoryframework.pane.component.Label;
 import com.github.stefvanschie.inventoryframework.pane.component.PercentageBar;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
@@ -64,7 +65,7 @@ public class Gui implements Listener, InventoryHolder {
      * A player cache for storing player's inventories
      */
     @NotNull
-    private HumanEntityCache humanEntityCache = new HumanEntityCache();
+    private final HumanEntityCache humanEntityCache = new HumanEntityCache();
 
     /**
      * The consumer that will be called once a players clicks in the top-half of the gui
@@ -579,6 +580,7 @@ public class Gui implements Listener, InventoryHolder {
         registerPane("paginatedpane", PaginatedPane::load);
         registerPane("staticpane", StaticPane::load);
 
+        registerPane("cyclebutton", CycleButton::load);
         registerPane("label", Label::load);
         registerPane("percentagebar", PercentageBar::load);
     }

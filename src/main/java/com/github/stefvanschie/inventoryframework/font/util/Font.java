@@ -26,167 +26,167 @@ public abstract class Font {
     /**
      * The birch planks font
      */
-    public static Font BIRCH_PLANKS = new CSVFont(' ', "/fonts/birch-planks.csv");
+    public static final Font BIRCH_PLANKS = new CSVFont(' ', "/fonts/birch-planks.csv");
 
     /**
      * The black font
      */
-    public static Font BLACK = new CSVFont(' ', "/fonts/black.csv");
+    public static final Font BLACK = new CSVFont(' ', "/fonts/black.csv");
 
     /**
      * The blue font
      */
-    public static  Font BLUE = new CSVFont(' ', "/fonts/blue.csv");
+    public static final Font BLUE = new CSVFont(' ', "/fonts/blue.csv");
 
     /**
      * The brown font
      */
-    public static Font BROWN = new CSVFont(' ', "/fonts/brown.csv");
+    public static final Font BROWN = new CSVFont(' ', "/fonts/brown.csv");
 
     /**
      * The cobblestone font
      */
-    public static Font COBBLESTONE = new CSVFont(' ', "/fonts/cobblestone.csv");
+    public static final Font COBBLESTONE = new CSVFont(' ', "/fonts/cobblestone.csv");
 
     /**
      * The cyan font
      */
-    public static Font CYAN = new CSVFont(' ', "/fonts/cyan.csv");
+    public static final Font CYAN = new CSVFont(' ', "/fonts/cyan.csv");
 
     /**
      * The diamond font
      */
-    public static Font DIAMOND = new CSVFont(' ', "/fonts/diamond.csv");
+    public static final Font DIAMOND = new CSVFont(' ', "/fonts/diamond.csv");
 
     /**
      * The dirt font
      */
-    public static Font DIRT = new CSVFont(' ', "/fonts/dirt.csv");
+    public static final Font DIRT = new CSVFont(' ', "/fonts/dirt.csv");
 
     /**
      * The gold font
      */
-    public static Font GOLD = new CSVFont(' ', "/fonts/gold.csv");
+    public static final Font GOLD = new CSVFont(' ', "/fonts/gold.csv");
 
     /**
      * The gray font
      */
-    public static Font GRAY = new CSVFont(' ', "/fonts/gray.csv");
+    public static final Font GRAY = new CSVFont(' ', "/fonts/gray.csv");
 
     /**
      * The green font
      */
-    public static Font GREEN = new CSVFont(' ', "/fonts/green.csv");
+    public static final Font GREEN = new CSVFont(' ', "/fonts/green.csv");
 
     /**
      * The jungle planks font
      */
-    public static Font JUNGLE_PLANKS = new CSVFont(' ', "/fonts/jungle-planks.csv");
+    public static final Font JUNGLE_PLANKS = new CSVFont(' ', "/fonts/jungle-planks.csv");
 
     /**
      * The letter cube font
      */
-    public static Font LETTER_CUBE = new CSVFont(' ', "/fonts/letter-cube.csv");
+    public static final Font LETTER_CUBE = new CSVFont(' ', "/fonts/letter-cube.csv");
 
     /**
      * The light blue font
      */
-    public static Font LIGHT_BLUE = new CSVFont(' ', "/fonts/light-blue.csv");
+    public static final Font LIGHT_BLUE = new CSVFont(' ', "/fonts/light-blue.csv");
 
     /**
      * The light gray font
      */
-    public static Font LIGHT_GRAY = new CSVFont(' ', "/fonts/light-gray.csv");
+    public static final Font LIGHT_GRAY = new CSVFont(' ', "/fonts/light-gray.csv");
 
     /**
      * The lime font
      */
-    public static Font LIME = new CSVFont(' ', "/fonts/lime.csv");
+    public static final Font LIME = new CSVFont(' ', "/fonts/lime.csv");
 
     /**
      * The magenta font
      */
-    public static Font MAGENTA = new CSVFont(' ', "/fonts/magenta.csv");
+    public static final Font MAGENTA = new CSVFont(' ', "/fonts/magenta.csv");
 
     /**
      * The monitor font
      */
-    public static Font MONITOR = new CSVFont(' ', "/fonts/monitor.csv");
+    public static final Font MONITOR = new CSVFont(' ', "/fonts/monitor.csv");
 
     /**
      * The oak log font
      */
-    public static Font OAK_LOG = new CSVFont(' ', "/fonts/oak-log.csv");
+    public static final Font OAK_LOG = new CSVFont(' ', "/fonts/oak-log.csv");
 
     /**
      * The oak planks font
      */
-    public static Font OAK_PLANKS = new CSVFont(' ', "/fonts/oak-planks.csv");
+    public static final Font OAK_PLANKS = new CSVFont(' ', "/fonts/oak-planks.csv");
 
     /**
      * The orange font
      */
-    public static Font ORANGE = new CSVFont(' ', "/fonts/orange.csv");
+    public static final Font ORANGE = new CSVFont(' ', "/fonts/orange.csv");
 
     /**
      * The pink font
      */
-    public static Font PINK = new CSVFont(' ', "/fonts/pink.csv");
+    public static final Font PINK = new CSVFont(' ', "/fonts/pink.csv");
 
     /**
      * The plush font
      */
-    public static Font PLUSH = new CSVFont(' ', "/fonts/plush.csv");
+    public static final Font PLUSH = new CSVFont(' ', "/fonts/plush.csv");
 
     /**
      * The pumpkin font
      */
-    public static Font PUMPKIN = new CSVFont('_', "/fonts/pumpkin.csv");
+    public static final Font PUMPKIN = new CSVFont('_', "/fonts/pumpkin.csv");
 
     /**
      * The purple font
      */
-    public static Font PURPLE = new CSVFont(' ', "/fonts/purple.csv");
+    public static final Font PURPLE = new CSVFont(' ', "/fonts/purple.csv");
 
     /**
      * The quartz font
      */
-    public static Font QUARTZ = new CSVFont(' ', "/fonts/quartz.csv");
+    public static final Font QUARTZ = new CSVFont(' ', "/fonts/quartz.csv");
 
     /**
      * The rainbow font
      */
-    public static Font RAINBOW = new CSVFont(' ', "/fonts/rainbow.csv");
+    public static final Font RAINBOW = new CSVFont(' ', "/fonts/rainbow.csv");
 
     /**
      * The red font
      */
-    public static Font RED = new CSVFont(' ', "/fonts/red.csv");
+    public static final Font RED = new CSVFont(' ', "/fonts/red.csv");
 
     /**
      * The spruce planks font
      */
-    public static Font SPRUCE_PLANKS = new CSVFont(' ', "/fonts/spruce-planks.csv");
+    public static final Font SPRUCE_PLANKS = new CSVFont(' ', "/fonts/spruce-planks.csv");
 
     /**
      * The stone font
      */
-    public static Font STONE = new CSVFont(' ', "/fonts/stone.csv");
+    public static final Font STONE = new CSVFont(' ', "/fonts/stone.csv");
 
     /**
      * The watermelon font
      */
-    public static Font WATERMELON = new CSVFont(' ', "/fonts/watermelon.csv");
+    public static final Font WATERMELON = new CSVFont(' ', "/fonts/watermelon.csv");
 
     /**
      * The white font
      */
-    public static Font WHITE = new CSVFont(' ', "/fonts/white.csv");
+    public static final Font WHITE = new CSVFont(' ', "/fonts/white.csv");
 
     /**
      * The yellow font
      */
-    public static Font YELLOW = new CSVFont(' ', "/fonts/yellow.csv");
+    public static final Font YELLOW = new CSVFont(' ', "/fonts/yellow.csv");
 
     /**
      * Gets a default item for characters that do not have a dedicated item

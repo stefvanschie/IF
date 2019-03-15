@@ -1,7 +1,6 @@
 package com.github.stefvanschie.inventoryframework;
 
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
