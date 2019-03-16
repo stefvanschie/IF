@@ -12,30 +12,30 @@ import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
 /**
- * A percentage bar for a graphical interface into what amount of a whole is set.
+ * A slider for a graphical interface into what amount of a whole is set.
  *
  * @since 0.5.0
  */
-public class PercentageBar extends VariableBar {
+public class Slider extends VariableBar {
 
     /**
      * {@inheritDoc}
      */
-    public PercentageBar(int x, int y, int length, int height, @NotNull Priority priority) {
+    public Slider(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
     }
 
     /**
      * {@inheritDoc}
      */
-    public PercentageBar(int x, int y, int length, int height) {
+    public Slider(int x, int y, int length, int height) {
         super(x, y, length, height);
     }
 
     /**
      * {@inheritDoc}
      */
-    public PercentageBar(int length, int height) {
+    public Slider(int length, int height) {
         super(length, height);
     }
 
@@ -72,38 +72,48 @@ public class PercentageBar extends VariableBar {
             onClick.accept(event);
         }
 
-        event.setCancelled(true);
-
         int newPaneOffsetX = paneOffsetX + getX();
         int newPaneOffsetY = paneOffsetY + getY();
 
-        return this.fillPane.click(gui, event, newPaneOffsetX, newPaneOffsetY, length, height) ||
+        boolean success = this.fillPane.click(gui, event, newPaneOffsetX, newPaneOffsetY, length, height) ||
             this.backgroundPane.click(gui, event, newPaneOffsetX, newPaneOffsetY, length, height);
+
+        if (orientation == Orientation.HORIZONTAL) {
+            setValue((float) (x + 1) / length);
+        } else if (orientation == Orientation.VERTICAL) {
+            setValue((float) (y + 1) / height);
+        } else {
+            throw new UnsupportedOperationException("Unknown orientation");
+        }
+
+        gui.update();
+
+        return success;
     }
 
     /**
-     * Sets the percentage of this bar. The percentage has to be in (0,1). If not, this method will throw an
+     * Sets the value of this bar. The value has to be in (0,1). If not, this method will throw an
      * {@link IllegalArgumentException}.
      *
-     * @param percentage the new percentage.
-     * @throws IllegalArgumentException when the percentage is out of range
+     * @param value the new value.
+     * @throws IllegalArgumentException when the value is out of range
      * @since 0.5.0
      */
-    public void setPercentage(float percentage) {
-        if (percentage < 0 || percentage > 1) {
-            throw new IllegalArgumentException("Percentage is out of range (0,1)");
+    public void setValue(float value) {
+        if (value < 0 || value > 1) {
+            throw new IllegalArgumentException("Value is out of range (0,1)");
         }
 
-        this.value = percentage;
+        this.value = value;
 
         if (orientation == Orientation.HORIZONTAL) {
-            this.fillPane.setLength(Math.round(getLength() * percentage));
+            this.fillPane.setLength(Math.round(getLength() * value));
 
             if (flipHorizontally) {
                 this.fillPane.setX(getLength() - this.fillPane.getLength());
             }
         } else if (orientation == Orientation.VERTICAL) {
-            this.fillPane.setHeight(Math.round(getHeight() * percentage));
+            this.fillPane.setHeight(Math.round(getHeight() * value));
 
             if (flipVertically) {
                 this.fillPane.setY(getHeight() - this.fillPane.getHeight());
@@ -114,12 +124,12 @@ public class PercentageBar extends VariableBar {
     }
 
     /**
-     * Gets the percentage as a float in between (0,1) this bar is currently set at.
+     * Gets the value as a float in between (0,1) this bar is currently set at.
      *
-     * @return the percentage
+     * @return the value
      * @since 0.5.0
      */
-    public float getPercentage() {
+    public float getValue() {
         return value;
     }
 
@@ -132,7 +142,7 @@ public class PercentageBar extends VariableBar {
      */
     @NotNull
     @Contract(value = "_, null -> fail", pure = true)
-    public static PercentageBar load(@NotNull Object instance, @NotNull Element element) {
+    public static Slider load(@NotNull Object instance, @NotNull Element element) {
         int length;
         int height;
 
@@ -143,24 +153,24 @@ public class PercentageBar extends VariableBar {
             throw new XMLLoadException(exception);
         }
 
-        PercentageBar percentageBar = new PercentageBar(length, height);
+        Slider slider = new Slider(length, height);
 
-        Pane.load(percentageBar, instance, element);
-        Orientable.load(percentageBar, element);
-        Flippable.load(percentageBar, element);
+        Pane.load(slider, instance, element);
+        Orientable.load(slider, element);
+        Flippable.load(slider, element);
 
         if (element.hasAttribute("populate")) {
-            return percentageBar;
+            return slider;
         }
 
-        if (element.hasAttribute("percentage")) {
+        if (element.hasAttribute("value")) {
             try {
-                percentageBar.setPercentage(Float.parseFloat(element.getAttribute("percentage")));
+                slider.setValue(Float.parseFloat(element.getAttribute("value")));
             } catch (IllegalArgumentException exception) {
                 throw new XMLLoadException(exception);
             }
         }
 
-        return percentageBar;
+        return slider;
     }
 }
