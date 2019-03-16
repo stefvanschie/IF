@@ -18,6 +18,7 @@ public class XMLUtil {
      *
      * @param instance the object instance
      * @param element the element
+     * @param name the name of the attribute
      * @return the consumer to be called on click
      */
     @Nullable

@@ -1,6 +1,7 @@
 package com.github.stefvanschie.inventoryframework;
 
 import com.github.stefvanschie.inventoryframework.pane.*;
+import com.github.stefvanschie.inventoryframework.pane.component.*;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -62,7 +63,7 @@ public class Gui implements Listener, InventoryHolder {
      * A player cache for storing player's inventories
      */
     @NotNull
-    private HumanEntityCache humanEntityCache = new HumanEntityCache();
+    private final HumanEntityCache humanEntityCache = new HumanEntityCache();
 
     /**
      * The consumer that will be called once a players clicks in the top-half of the gui
@@ -576,5 +577,11 @@ public class Gui implements Listener, InventoryHolder {
         registerPane("outlinepane", OutlinePane::load);
         registerPane("paginatedpane", PaginatedPane::load);
         registerPane("staticpane", StaticPane::load);
+
+        registerPane("cyclebutton", CycleButton::load);
+        registerPane("label", Label::load);
+        registerPane("percentagebar", PercentageBar::load);
+        registerPane("slider", Slider::load);
+        registerPane("togglebutton", ToggleButton::load);
     }
 }
