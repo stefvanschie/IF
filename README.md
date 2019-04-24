@@ -5,6 +5,8 @@ This framework is based on a pane principle. This means that the GUI is divided 
 
 Next to those panes, GUIs can also be created from XML files by simple loading them in. This allows for easy GUI creation with little code.
 
+*1.14-pre-5 breaks this framework and this will be fixed soon.*
+
 ## Maven dependency
 To add this project as a dependency to your pom.xml, add the following to your pom.xml:
 ```XML
