@@ -54,6 +54,12 @@ public class Gui implements Listener, InventoryHolder {
     private Inventory inventory;
 
     /**
+     * The title of this gui
+     */
+    @NotNull
+    private String title;
+
+    /**
      * The state of this gui
      */
     @NotNull
@@ -110,6 +116,7 @@ public class Gui implements Listener, InventoryHolder {
 
         this.panes = new ArrayList<>();
         this.inventory = Bukkit.createInventory(this, rows * 9, title);
+        this.title = title;
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
@@ -169,7 +176,7 @@ public class Gui implements Listener, InventoryHolder {
         //copy the viewers
         List<HumanEntity> viewers = new ArrayList<>(inventory.getViewers());
 
-        this.inventory = Bukkit.createInventory(this, rows * 9, this.inventory.getTitle());
+        this.inventory = Bukkit.createInventory(this, rows * 9, getTitle());
 
         viewers.forEach(humanEntity -> humanEntity.openInventory(inventory));
     }
@@ -201,6 +208,7 @@ public class Gui implements Listener, InventoryHolder {
         List<HumanEntity> viewers = new ArrayList<>(inventory.getViewers());
 
         this.inventory = Bukkit.createInventory(this, this.inventory.getSize(), title);
+        this.title = title;
 
         viewers.forEach(humanEntity -> humanEntity.openInventory(inventory));
     }
@@ -423,8 +431,10 @@ public class Gui implements Listener, InventoryHolder {
      *
      * @return the title
      */
+    @NotNull
+    @Contract(pure = true)
     public String getTitle() {
-        return inventory.getTitle();
+        return title;
     }
 
     /**
@@ -496,17 +506,23 @@ public class Gui implements Listener, InventoryHolder {
             onGlobalClick.accept(event);
         }
 
+        Inventory inventory = event.getView().getInventory(event.getRawSlot());
+
+        if (inventory == null) {
+            return;
+        }
+
         if (onTopClick != null &&
-            event.getView().getInventory(event.getRawSlot()).equals(event.getView().getTopInventory())) {
+            inventory.equals(event.getView().getTopInventory())) {
             onTopClick.accept(event);
         }
 
         if (onBottomClick != null &&
-            event.getView().getInventory(event.getRawSlot()).equals(event.getView().getBottomInventory())) {
+            inventory.equals(event.getView().getBottomInventory())) {
             onBottomClick.accept(event);
         }
 
-        if ((event.getView().getInventory(event.getRawSlot()).equals(event.getView().getBottomInventory()) &&
+        if ((inventory.equals(event.getView().getBottomInventory()) &&
             state == State.TOP) || event.getCurrentItem() == null) {
             return;
         }

@@ -4,13 +4,14 @@ import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.exception.XMLReflectionException;
+import com.github.stefvanschie.inventoryframework.util.SkullUtil;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.google.common.primitives.Primitives;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import org.apache.commons.codec.binary.Base64;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -260,9 +261,14 @@ public abstract class Pane {
     @Contract(pure = true)
     public static GuiItem loadItem(@NotNull Object instance, @NotNull Element element) {
         String id = element.getAttribute("id");
-        ItemStack itemStack = new ItemStack(Material.matchMaterial(id.toUpperCase(Locale.getDefault())),
-                element.hasAttribute("amount") ? Integer.parseInt(element.getAttribute("amount")) : 1,
-                element.hasAttribute("damage") ? Short.parseShort(element.getAttribute("damage")) : 0);
+        Material material = Objects.requireNonNull(Material.matchMaterial(id.toUpperCase(Locale.getDefault())));
+        boolean hasAmount = element.hasAttribute("amount");
+        boolean hasDamage = element.hasAttribute("damage");
+        int amount = Integer.parseInt(element.getAttribute("amount"));
+        short damage = Short.parseShort(element.getAttribute("damage"));
+
+        //noinspection deprecation
+        ItemStack itemStack = new ItemStack(material, hasAmount ? amount : 1, hasDamage ? damage : 0);
 
         List<Object> properties = new ArrayList<>();
 
@@ -290,7 +296,7 @@ public abstract class Pane {
                             continue;
 
                         Element innerElementChild = (Element) innerNode;
-                        ItemMeta itemMeta = itemStack.getItemMeta();
+                        ItemMeta itemMeta = Objects.requireNonNull(itemStack.getItemMeta());
 
                         switch (nodeName) {
                             case "properties":
@@ -311,7 +317,8 @@ public abstract class Pane {
                                 if (!innerNode.getNodeName().equals("line"))
                                     continue;
 
-                                List<String> lore = itemMeta.hasLore() ? itemMeta.getLore() : new ArrayList<>();
+                                boolean hasLore = itemMeta.hasLore();
+                                List<String> lore = hasLore ? Objects.requireNonNull(itemMeta.getLore()) : new ArrayList<>();
 
                                 lore.add(ChatColor.translateAlternateColorCodes('&', innerNode
                                         .getTextContent()));
@@ -322,15 +329,23 @@ public abstract class Pane {
                                 if (!innerNode.getNodeName().equals("enchantment"))
                                     continue;
 
-                                itemMeta.addEnchant(Enchantment.getByName(
-                                        innerElementChild.getAttribute("id").toUpperCase(Locale.getDefault())
-                                ), Integer.parseInt(innerElementChild.getAttribute("level")), true);
+                                Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(
+                                    innerElementChild.getAttribute("id").toUpperCase(Locale.getDefault())
+                                ));
+
+                                if (enchantment == null) {
+                                    throw new XMLLoadException("Enchantment cannot be found");
+                                }
+
+                                int level = Integer.parseInt(innerElementChild.getAttribute("level"));
+
+                                itemMeta.addEnchant(enchantment, level, true);
                                 itemStack.setItemMeta(itemMeta);
                                 break;
                         }
                     }
                 } else if (nodeName.equals("displayname")) {
-                    ItemMeta itemMeta = itemStack.getItemMeta();
+                    ItemMeta itemMeta = Objects.requireNonNull(itemStack.getItemMeta());
 
                     itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', item
                             .getTextContent()));
@@ -344,7 +359,7 @@ public abstract class Pane {
                         skullMeta.setOwner(elementItem.getAttribute("owner"));
                     else if (elementItem.hasAttribute("id")) {
                         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-                        byte[] encodedData = Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}",
+                        byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}",
                                 "http://textures.minecraft.net/texture/" + elementItem.getAttribute("id"))
                                 .getBytes());
                         profile.getProperties().put("textures", new Property("textures", new String(encodedData)));

@@ -2,13 +2,14 @@ package com.github.stefvanschie.inventoryframework.util;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.util.Base64;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -36,10 +37,10 @@ public final class SkullUtil {
     @NotNull
     public static ItemStack getSkull(@NotNull String id) {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-        ItemMeta itemMeta = item.getItemMeta();
+        ItemMeta itemMeta = Objects.requireNonNull(item.getItemMeta());
 
         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-        byte[] encodedData = Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}",
+        byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}",
             "http://textures.minecraft.net/texture/" + id).getBytes());
         profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
 
