@@ -541,6 +541,10 @@ public class Gui implements Listener, InventoryHolder {
      */
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClose(@NotNull InventoryCloseEvent event) {
+        if (!this.equals(event.getInventory().getHolder())) {
+            return;
+        }
+
         HumanEntity humanEntity = event.getPlayer();
 
         humanEntityCache.restore(humanEntity);
