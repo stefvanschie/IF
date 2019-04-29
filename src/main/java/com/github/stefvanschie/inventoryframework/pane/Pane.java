@@ -264,11 +264,11 @@ public abstract class Pane {
         Material material = Objects.requireNonNull(Material.matchMaterial(id.toUpperCase(Locale.getDefault())));
         boolean hasAmount = element.hasAttribute("amount");
         boolean hasDamage = element.hasAttribute("damage");
-        int amount = Integer.parseInt(element.getAttribute("amount"));
-        short damage = Short.parseShort(element.getAttribute("damage"));
+        int amount = hasAmount ? Integer.parseInt(element.getAttribute("amount")) : 1;
+        short damage = hasDamage ? Short.parseShort(element.getAttribute("damage")) : 0;
 
         //noinspection deprecation
-        ItemStack itemStack = new ItemStack(material, hasAmount ? amount : 1, hasDamage ? damage : 0);
+        ItemStack itemStack = new ItemStack(material, amount, damage);
 
         List<Object> properties = new ArrayList<>();
 
