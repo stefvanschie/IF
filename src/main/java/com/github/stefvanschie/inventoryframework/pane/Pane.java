@@ -16,6 +16,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -498,6 +499,18 @@ public abstract class Pane {
                     throw new XMLLoadException(exception);
                 }
             }
+        }
+    }
+
+    //Code taken from InventoryView#getInventory(rawSlot) to support for 1.12 where method doesn't exist
+    public Inventory getInventory(InventoryView view, int rawSlot) {
+        if(rawSlot == InventoryView.OUTSIDE || rawSlot == -1) {
+            return null;
+        }
+        if(rawSlot < view.getTopInventory().getSize()) {
+            return view.getTopInventory();
+        } else {
+            return view.getBottomInventory();
         }
     }
 

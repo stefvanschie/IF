@@ -135,7 +135,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 
 		int x, y;
 
-        if (event.getView().getInventory(event.getRawSlot()).equals(event.getView().getBottomInventory())) {
+        if (getInventory(event.getView(), event.getRawSlot()).equals(event.getView().getBottomInventory())) {
             x = (slot % 9) - getX() - paneOffsetX;
             y = ((slot / 9) + gui.getRows() - 1) - getY() - paneOffsetY;
 
