@@ -502,18 +502,6 @@ public abstract class Pane {
         }
     }
 
-    //Code taken from InventoryView#getInventory(rawSlot) to support for 1.12 where method doesn't exist
-    public Inventory getInventory(InventoryView view, int rawSlot) {
-        if(rawSlot == InventoryView.OUTSIDE || rawSlot == -1) {
-            return null;
-        }
-        if(rawSlot < view.getTopInventory().getSize()) {
-            return view.getTopInventory();
-        } else {
-            return view.getBottomInventory();
-        }
-    }
-
     /**
      * Returns the priority of the pane
      *

@@ -447,6 +447,18 @@ public class Gui implements Listener, InventoryHolder {
         return inventory;
     }
 
+    //Code taken from InventoryView#getInventory(rawSlot) to support for 1.12 where method doesn't exist
+    public static Inventory getInventory(InventoryView view, int rawSlot) {
+        if(rawSlot == InventoryView.OUTSIDE || rawSlot == -1) {
+            return null;
+        }
+        if(rawSlot < view.getTopInventory().getSize()) {
+            return view.getTopInventory();
+        } else {
+            return view.getBottomInventory();
+        }
+    }
+
     /**
      * Registers a property that can be used inside an XML file to add additional new properties.
      *
@@ -532,18 +544,6 @@ public class Gui implements Listener, InventoryHolder {
         for (int i = panes.size() - 1; i >= 0; i--) {
             if (panes.get(i).click(this, event, 0, 0, 9, getRows() + 4))
                 break;
-        }
-    }
-
-    //Code taken from InventoryView#getInventory(rawSlot) to support for 1.12 where method doesn't exist
-    private Inventory getInventory(InventoryView view, int rawSlot) {
-        if(rawSlot == InventoryView.OUTSIDE || rawSlot == -1) {
-            return null;
-        }
-        if(rawSlot < view.getTopInventory().getSize()) {
-            return view.getTopInventory();
-        } else {
-            return view.getBottomInventory();
         }
     }
 

@@ -67,7 +67,7 @@ public class CycleButton extends Pane {
 
         int x, y;
 
-        if (getInventory(event.getView(), event.getRawSlot()).equals(event.getView().getBottomInventory())) {
+        if (Gui.getInventory(event.getView(), event.getRawSlot()).equals(event.getView().getBottomInventory())) {
             x = (slot % 9) - getX() - paneOffsetX;
             y = ((slot / 9) + gui.getRows() - 1) - getY() - paneOffsetY;
 
