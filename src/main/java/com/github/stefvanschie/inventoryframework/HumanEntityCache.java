@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * A class for containing players and their inventory state for later use
@@ -19,7 +20,7 @@ public class HumanEntityCache {
      * inventory contents. 0-8 is the hotbar, with 9-35 being the inventory both starting in the top-left corner and
      * continuing in reading order.
      */
-    private final Map<HumanEntity, ItemStack[]> inventories = new HashMap<>();
+    private final Map<HumanEntity, ItemStack[]> inventories = new WeakHashMap<>();
 
     /**
      * Stores this player's inventory in the cache. If the player was already stored, their cache will be overwritten.
