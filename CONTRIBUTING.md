@@ -30,7 +30,7 @@ If you want to help with this project, but don't know where to start, take a loo
 
 ## Getting started with pull requests
 
-When you want to fix an issue, make sure no one is assigned to that issue as of yet. If someone is assigned, (s)he will fix it. Also when you're more experienced with this projefct, please leave issues tagged with "good first issue" for people with less experience, unless there are no other issues available.
+When you want to fix an issue, make sure no one is assigned to that issue as of yet. If someone is assigned, (s)he will fix it. Also when you're more experienced with this project, please leave issues tagged with "good first issue" for people with less experience, unless there are no other issues available.
 
 Note that issues tagged with "good first issue" don't necessarily mean this has to be your first issue. You can still fix those issues if you feel like you don't have that much experience with this project or aren't very comfortable with it.
 
