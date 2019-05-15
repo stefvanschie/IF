@@ -115,25 +115,27 @@ public class PaginatedPane extends Pane {
 	@Contract("null -> fail")
 	public void populateWithItemStacks(@NotNull List<ItemStack> items) {
 		//Don't do anything if the list is empty
-		if (items.isEmpty()) return;
+		if (items.isEmpty()) {
+		    return;
+        }
 
 		int itemsPerPage = this.height * this.length;
-		int pagesNeeded = items.size() / itemsPerPage + 1;
+		int pagesNeeded = (int) Math.max(Math.ceil(items.size() / (double) itemsPerPage), 1);
 
 		for (int i = 0; i < pagesNeeded; i++) {
-			StaticPane page = new StaticPane(getX(), getY(), this.length, this.height);
+			OutlinePane page = new OutlinePane(0, 0, this.length, this.height);
 
 			for (int j = 0; j < itemsPerPage; j++) {
 				//Check if the loop reached the end of the list
 				int index = i * itemsPerPage + j;
-				if (index >= items.size()) break;
 
-				//Convert j to x and y
-				int x = j % (this.length);
-				int y = j / (this.length);
+				if (index >= items.size()) {
+				    break;
+                }
 
-				page.addItem(new GuiItem(items.get(index)), x, y);
+				page.addItem(new GuiItem(items.get(index)));
 			}
+
 			this.addPane(i, page);
 		}
 	}
