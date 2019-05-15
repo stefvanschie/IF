@@ -6,12 +6,9 @@ import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
@@ -40,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * The base class of all GUIs
  */
-public class Gui implements Listener, InventoryHolder {
+public class Gui implements InventoryHolder {
 
     /**
      * A set of all panes in this inventory
@@ -104,6 +101,11 @@ public class Gui implements Listener, InventoryHolder {
     private static final Map<String, BiFunction<Object, Element, Pane>> PANE_MAPPINGS = new HashMap<>();
 
     /**
+     * Whether listeners have ben registered by some gui
+     */
+    private static boolean hasRegisteredListeners;
+
+    /**
      * Constructs a new GUI
      *
      * @param plugin the main plugin.
@@ -119,7 +121,11 @@ public class Gui implements Listener, InventoryHolder {
         this.inventory = Bukkit.createInventory(this, rows * 9, title);
         this.title = title;
 
-        Bukkit.getPluginManager().registerEvents(this, plugin);
+        if (!hasRegisteredListeners) {
+            Bukkit.getPluginManager().registerEvents(new GuiListener(), plugin);
+
+            hasRegisteredListeners = true;
+        }
     }
 
     /**
@@ -189,8 +195,8 @@ public class Gui implements Listener, InventoryHolder {
      */
     @NotNull
     @Contract(pure = true)
-    public Collection<Pane> getPanes() {
-        Collection<Pane> panes = new HashSet<>();
+    public List<Pane> getPanes() {
+        List<Pane> panes = new ArrayList<>();
 
         this.panes.forEach(pane -> panes.addAll(pane.getPanes()));
         panes.addAll(this.panes);
@@ -258,6 +264,31 @@ public class Gui implements Listener, InventoryHolder {
                 }
             });
         }
+    }
+
+    /**
+     * Gets the state of this gui
+     *
+     * @return the state
+     * @since 0.5.4
+     */
+    @NotNull
+    @Contract(pure = true)
+    public State getState() {
+        return state;
+    }
+
+    /**
+     * Gets the human entity cache used for this gui
+     *
+     * @return the human entity cache
+     * @see HumanEntityCache
+     * @since 0.5.4
+     */
+    @NotNull
+    @Contract(pure = true)
+    protected HumanEntityCache getHumanEntityCache() {
+        return humanEntityCache;
     }
 
     /**
@@ -381,6 +412,18 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     /**
+     * Gets the top click event assigned to this gui, or null if there is no top click assigned.
+     *
+     * @return the top click
+     * @since 0.5.4
+     */
+    @Nullable
+    @Contract(pure = true)
+    public Consumer<InventoryClickEvent> getOnTopClick() {
+        return onTopClick;
+    }
+
+    /**
      * Set the consumer that should be called whenever the inventory is clicked in.
      *
      * @param onBottomClick the consumer that gets called
@@ -390,12 +433,36 @@ public class Gui implements Listener, InventoryHolder {
     }
 
     /**
+     * Gets the bottom click event assigned to this gui, or null if there is no bottom click assigned.
+     *
+     * @return the bottom click
+     * @since 0.5.4
+     */
+    @Nullable
+    @Contract(pure = true)
+    public Consumer<InventoryClickEvent> getOnBottomClick() {
+        return onBottomClick;
+    }
+
+    /**
      * Set the consumer that should be called whenever this gui or inventory is clicked in.
      *
      * @param onGlobalClick the consumer that gets called
      */
     public void setOnGlobalClick(@NotNull Consumer<InventoryClickEvent> onGlobalClick) {
         this.onGlobalClick = onGlobalClick;
+    }
+
+    /**
+     * Gets the global click event assigned to this gui, or null if there is no global click assigned.
+     *
+     * @return the global click
+     * @since 0.5.4
+     */
+    @Nullable
+    @Contract(pure = true)
+    public Consumer<InventoryClickEvent> getOnGlobalClick() {
+        return onGlobalClick;
     }
 
     /**
@@ -416,6 +483,18 @@ public class Gui implements Listener, InventoryHolder {
      */
     public void setOnClose(@NotNull Consumer<InventoryCloseEvent> onClose) {
         this.onClose = onClose;
+    }
+
+    /**
+     * Gets the on close event assigned to this gui, or null if no close event is assigned.
+     *
+     * @return the on close event
+     * @since 0.5.4
+     */
+    @Nullable
+    @Contract(pure = true)
+    public Consumer<InventoryCloseEvent> getOnClose() {
+        return onClose;
     }
 
     /**
@@ -502,85 +581,6 @@ public class Gui implements Listener, InventoryHolder {
     @Contract("_, null -> fail")
     public static Pane loadPane(@NotNull Object instance, @NotNull Node node) {
         return PANE_MAPPINGS.get(node.getNodeName()).apply(instance, (Element) node);
-    }
-
-    /**
-     * Handles clicks in inventories
-     * 
-     * @param event the event fired
-     */
-    @EventHandler(ignoreCancelled = true)
-    public void onInventoryClick(@NotNull InventoryClickEvent event) {
-        if (!this.equals(event.getInventory().getHolder())) {
-            return;
-        }
-
-        if (onGlobalClick != null) {
-            onGlobalClick.accept(event);
-        }
-
-        Inventory inventory = getInventory(event.getView(), event.getRawSlot());
-
-        if (inventory == null) {
-            return;
-        }
-
-        if (onTopClick != null &&
-            inventory.equals(event.getView().getTopInventory())) {
-            onTopClick.accept(event);
-        }
-
-        if (onBottomClick != null &&
-            inventory.equals(event.getView().getBottomInventory())) {
-            onBottomClick.accept(event);
-        }
-
-        if ((inventory.equals(event.getView().getBottomInventory()) &&
-            state == State.TOP) || event.getCurrentItem() == null) {
-            return;
-        }
-
-        //loop through the panes reverse, because the pane with the highest priority (last in list) is most likely to have the correct item
-        for (int i = panes.size() - 1; i >= 0; i--) {
-            if (panes.get(i).click(this, event, 0, 0, 9, getRows() + 4))
-                break;
-        }
-    }
-
-    /**
-     * Handles closing in inventories
-     *
-     * @param event the event fired
-     */
-    @EventHandler(ignoreCancelled = true)
-    public void onInventoryClose(@NotNull InventoryCloseEvent event) {
-        if (!this.equals(event.getInventory().getHolder())) {
-            return;
-        }
-
-        HumanEntity humanEntity = event.getPlayer();
-
-        humanEntityCache.restore(humanEntity);
-        humanEntityCache.clearCache(humanEntity);
-
-        if (onClose == null)
-            return;
-
-        onClose.accept(event);
-    }
-
-    /**
-     * Handles player's leaving
-     *
-     * @param event the event fired
-     * @since 0.4.0
-     */
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-
-        humanEntityCache.restore(player);
-        humanEntityCache.clearCache(player);
     }
 
     /**
