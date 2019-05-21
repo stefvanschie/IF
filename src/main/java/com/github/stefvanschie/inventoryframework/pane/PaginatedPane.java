@@ -202,7 +202,13 @@ public class PaginatedPane extends Pane {
     @Override
     public void display(@NotNull Gui gui, @NotNull Inventory inventory, @NotNull PlayerInventory playerInventory,
                         int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
-        this.panes.get(page).forEach(pane -> pane.display(gui, inventory,  playerInventory,
+        List<Pane> panes = this.panes.get(page);
+
+        if (panes == null) {
+            return;
+        }
+
+        panes.forEach(pane -> pane.display(gui, inventory,  playerInventory,
             paneOffsetX + getX(), paneOffsetY + getY(),
             Math.min(length, maxLength), Math.min(height, maxHeight)));
     }
