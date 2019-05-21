@@ -140,6 +140,41 @@ public class PaginatedPane extends Pane {
 		}
 	}
 
+
+    /**
+     * Populates the PaginatedPane based on the provided list by adding new pages until all items can fit.
+     * This can be helpful when dealing with lists of unknown size.
+     *
+     * @param items The list to populate the pane with
+     */
+    @Contract("null -> fail")
+    public void populateWithGuiItem(@NotNull List<GuiItem> items) {
+        //Don't do anything if the list is empty
+        if (items.isEmpty()) {
+            return;
+        }
+
+        int itemsPerPage = this.height * this.length;
+        int pagesNeeded = (int) Math.max(Math.ceil(items.size() / (double) itemsPerPage), 1);
+
+        for (int i = 0; i < pagesNeeded; i++) {
+            OutlinePane page = new OutlinePane(0, 0, this.length, this.height);
+
+            for (int j = 0; j < itemsPerPage; j++) {
+                //Check if the loop reached the end of the list
+                int index = i * itemsPerPage + j;
+
+                if (index >= items.size()) {
+                    break;
+                }
+
+                page.addItem(items.get(index));
+            }
+
+            this.addPane(i, page);
+        }
+    }
+
 	/**
 	 * This method creates a list of ItemStacks all with the given {@code material} and the display names.
 	 * After that it calls {@link #populateWithItemStacks(List)}
