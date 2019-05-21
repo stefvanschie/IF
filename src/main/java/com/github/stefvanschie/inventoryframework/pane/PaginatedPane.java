@@ -148,7 +148,7 @@ public class PaginatedPane extends Pane {
      * @param items The list to populate the pane with
      */
     @Contract("null -> fail")
-    public void populateWithGuiItem(@NotNull List<GuiItem> items) {
+    public void populateWithGuiItems(@NotNull List<GuiItem> items) {
         //Don't do anything if the list is empty
         if (items.isEmpty()) {
             return;
@@ -161,9 +161,9 @@ public class PaginatedPane extends Pane {
             OutlinePane page = new OutlinePane(0, 0, this.length, this.height);
 
             for (int j = 0; j < itemsPerPage; j++) {
-                //Check if the loop reached the end of the list
                 int index = i * itemsPerPage + j;
 
+				//Check if the loop reached the end of the list
                 if (index >= items.size()) {
                     break;
                 }
