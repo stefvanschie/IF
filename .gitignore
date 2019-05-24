@@ -2,6 +2,6 @@
 out
 .idea
 target
-test
+IF-Test
 *.iml
 *.txt
