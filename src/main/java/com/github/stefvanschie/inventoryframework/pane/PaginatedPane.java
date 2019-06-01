@@ -246,9 +246,15 @@ public class PaginatedPane extends Pane {
         if (onClick != null)
             onClick.accept(event);
 
+        List<Pane> panes = this.panes.get(page);
+
+        if (panes == null) {
+            return false;
+        }
+
         boolean success = false;
 
-        for (Pane pane : this.panes.get(page)) {
+        for (Pane pane : panes) {
             success = success || pane.click(gui, event, paneOffsetX + getX(),
                 paneOffsetY + getY(), length, height);
         }
