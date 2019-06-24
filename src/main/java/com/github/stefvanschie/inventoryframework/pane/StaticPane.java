@@ -122,6 +122,16 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 		items.add(new AbstractMap.SimpleEntry<>(item, new AbstractMap.SimpleEntry<>(x, y)));
 	}
 
+    /**
+     * Removes the specified item from the pane
+     *
+     * @param item the item to remove
+     * @since 0.5.8
+     */
+    public void removeItem(@NotNull GuiItem item) {
+        items.removeIf(entry -> entry.getKey().equals(item));
+    }
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -135,6 +145,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 
 		int x, y;
 
+        //noinspection ConstantConditions
         if (Gui.getInventory(event.getView(), event.getRawSlot()).equals(event.getView().getBottomInventory())) {
             x = (slot % 9) - getX() - paneOffsetX;
             y = ((slot / 9) + gui.getRows() - 1) - getY() - paneOffsetY;
@@ -208,7 +219,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	/**
 	 * Fills all empty space in the pane with the given {@code itemStack}
 	 *
-	 * @param itemStack The {@link org.bukkit.inventory.ItemStack} to fill the empty space with
+	 * @param itemStack The {@link ItemStack} to fill the empty space with
 	 */
 	@Contract("null -> fail")
 	public void fillWith(@NotNull ItemStack itemStack) {
