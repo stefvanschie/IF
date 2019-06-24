@@ -162,6 +162,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
 
         int x, y;
 
+        //noinspection ConstantConditions
         if (Gui.getInventory(event.getView(), event.getRawSlot()).equals(event.getView().getBottomInventory())) {
             x = (slot % 9) - getX() - paneOffsetX;
             y = ((slot / 9) + gui.getRows() - 1) - getY() - paneOffsetY;
@@ -253,6 +254,16 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
      */
     public void addItem(@NotNull GuiItem item) {
         items.add(item);
+    }
+
+    /**
+     * Removes the specified item from the pane
+     *
+     * @param item the item to remove
+     * @since 0.5.8
+     */
+    public void removeItem(@NotNull GuiItem item) {
+        items.remove(item);
     }
 
     /**
