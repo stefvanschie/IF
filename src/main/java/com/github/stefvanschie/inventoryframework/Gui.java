@@ -6,7 +6,6 @@ import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
@@ -87,6 +86,11 @@ public class Gui implements InventoryHolder {
     @Nullable
     private Consumer<InventoryClickEvent> onGlobalClick;
 
+    /**
+     * The consumer that will be called once a player clicks outside of the gui screen
+     */
+    @Nullable
+    private Consumer<InventoryClickEvent> onOutsideClick;
 
     /**
      * The consumer that will be called once a player closes the gui
@@ -341,6 +345,15 @@ public class Gui implements InventoryHolder {
                 }
             }
 
+            if (documentElement.hasAttribute("onOutsideClick")) {
+                Consumer<InventoryClickEvent> onOutsideClickAttribute = XMLUtil.loadOnClickAttribute(instance,
+                    documentElement, "onOutsideClick");
+
+                if (onOutsideClickAttribute != null) {
+                    gui.setOnOutsideClick(onOutsideClickAttribute);
+                }
+            }
+
             if (documentElement.hasAttribute("onClose")) {
                 for (Method method : instance.getClass().getMethods()) {
                     if (!method.getName().equals(documentElement.getAttribute("onClose")))
@@ -463,6 +476,28 @@ public class Gui implements InventoryHolder {
     @Contract(pure = true)
     public Consumer<InventoryClickEvent> getOnGlobalClick() {
         return onGlobalClick;
+    }
+
+    /**
+     * Set the consumer that should be called whenever a player clicks outside the gui.
+     *
+     * @param onOutsideClick the consumer that gets called
+     * @since 0.5.7
+     */
+    public void setOnOutsideClick(@NotNull Consumer<InventoryClickEvent> onOutsideClick) {
+        this.onOutsideClick = onOutsideClick;
+    }
+
+    /**
+     * Gets the outside click event assigned to this gui, or null if there is no outside click assigned.
+     *
+     * @return the outside click
+     * @since 0.5.7
+     */
+    @Nullable
+    @Contract(pure = true)
+    public Consumer<InventoryClickEvent> getOnOutsideClick() {
+        return onOutsideClick;
     }
 
     /**
@@ -598,7 +633,7 @@ public class Gui implements InventoryHolder {
         TOP,
 
         /**
-         * This singals that the bottom-hal of the Gui is in use and the player's inventory will be cleared and stored
+         * This signals that the bottom-hal of the Gui is in use and the player's inventory will be cleared and stored
          *
          * @since 0.4.0
          */

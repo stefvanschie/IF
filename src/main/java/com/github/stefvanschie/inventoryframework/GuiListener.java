@@ -2,22 +2,19 @@ package com.github.stefvanschie.inventoryframework;
 
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Listens to events for guis. Only one of these is ever initialized per plugin.
+ * Listens to events for {@link Gui}s. Only one of these is ever initialized per plugin.
  *
  * @since 0.5.4
  */
@@ -36,6 +33,13 @@ public class GuiListener implements Listener {
         }
 
         Gui gui = (Gui) event.getInventory().getHolder();
+        Consumer<InventoryClickEvent> onOutsideClick = gui.getOnOutsideClick();
+
+        if (onOutsideClick != null && event.getClickedInventory() == null) {
+            onOutsideClick.accept(event);
+            return;
+        }
+
         Consumer<InventoryClickEvent> onGlobalClick = gui.getOnGlobalClick();
 
         if (onGlobalClick != null) {
