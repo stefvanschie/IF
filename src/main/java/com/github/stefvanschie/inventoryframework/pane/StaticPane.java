@@ -217,36 +217,36 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 		this.rotation = rotation % 360;
 	}
 
-    /**
-     * Fills all empty space in the pane with the given {@code itemStack} and adds the given action
-     *
-     * @param itemStack The {@link ItemStack} to fill the empty space with
-     * @param action The action called whenever an interaction with one of this items happens
-     */
-    @Contract("null, _ -> fail")
-    public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<InventoryClickEvent> action) {
-        //The non empty spots
-        List<Map.Entry<Integer, Integer>> locations = this.items.stream()
-            .map(Map.Entry::getValue)
-            .collect(Collectors.toList());
+	/**
+	 * Fills all empty space in the pane with the given {@code itemStack} and adds the given action
+	 *
+	 * @param itemStack The {@link ItemStack} to fill the empty space with
+	 * @param action    The action called whenever an interaction with one of this items happens
+	 */
+	@Contract("null, _ -> fail")
+	public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<InventoryClickEvent> action) {
+		//The non empty spots
+		List<Map.Entry<Integer, Integer>> locations = this.items.stream()
+			.map(Map.Entry::getValue)
+			.collect(Collectors.toList());
 
-        for (int y = 0; y < this.getHeight(); y++) {
-            for (int x = 0; x < this.getLength(); x++) {
-                boolean found = false;
+		for (int y = 0; y < this.getHeight(); y++) {
+			for (int x = 0; x < this.getLength(); x++) {
+				boolean found = false;
 
-                for (Map.Entry<Integer, Integer> location : locations) {
-                    if (location.getKey() == x && location.getValue() == y) {
-                        found = true;
-                        break;
-                    }
-                }
+				for (Map.Entry<Integer, Integer> location : locations) {
+					if (location.getKey() == x && location.getValue() == y) {
+						found = true;
+						break;
+					}
+				}
 
-                if (!found) {
-                    this.addItem(new GuiItem(itemStack, action), x, y);
-                }
-            }
-        }
-    }
+				if (!found) {
+					this.addItem(new GuiItem(itemStack, action), x, y);
+				}
+			}
+		}
+	}
 
 	/**
 	 * Fills all empty space in the pane with the given {@code itemStack}
