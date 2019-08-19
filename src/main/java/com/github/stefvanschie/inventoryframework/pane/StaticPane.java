@@ -222,6 +222,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	 *
 	 * @param itemStack The {@link ItemStack} to fill the empty space with
 	 * @param action    The action called whenever an interaction with the item happens
+     * @since 0.5.9
 	 */
 	@Contract("null, _ -> fail")
 	public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<InventoryClickEvent> action) {
@@ -252,6 +253,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	 * Fills all empty space in the pane with the given {@code itemStack}
 	 *
 	 * @param itemStack The {@link ItemStack} to fill the empty space with
+     * @since 0.2.4
 	 */
 	@Contract("null -> fail")
 	public void fillWith(@NotNull ItemStack itemStack) {
