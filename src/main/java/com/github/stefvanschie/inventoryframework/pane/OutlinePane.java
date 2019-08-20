@@ -4,6 +4,8 @@ import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
+import me.ialistannen.mininbt.ItemNBTUtil;
+import me.ialistannen.mininbt.NBTWrappers;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -182,43 +184,27 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         if (onClick != null)
             onClick.accept(event);
 
-        Map.Entry<Integer, Integer> coordinates = GeometryUtil.processCounterClockwiseRotation(x, y, length, height,
-            rotation);
+        Optional<GuiItem> optionalItem = items.stream().filter(guiItem -> {
+            NBTWrappers.NBTTagCompound tag = ItemNBTUtil.getTag(event.getCurrentItem());
 
-        int newX = coordinates.getKey(), newY = coordinates.getValue();
+            if (tag == null) {
+                return false;
+            }
 
-        if (flipHorizontally)
-            newX = length - newX - 1;
+            return guiItem.getUUID().equals(UUID.fromString(tag.getString("IF-uuid")));
+        }).findAny();
 
-        if (flipVertically)
-            newY = height - newY - 1;
+        if (optionalItem.isPresent()) {
+            Consumer<InventoryClickEvent> action = optionalItem.get().getAction();
 
-        int index = 0;
+            if (action != null) {
+                action.accept(event);
+            }
 
-        //adjust for gap
-        if (orientation == Orientation.HORIZONTAL)
-            index = newY * length + newX;
-        else if (orientation == Orientation.VERTICAL)
-            index = newX * height + newY;
+            return true;
+        }
 
-        index /= gap + 1;
-
-        if (items.size() <= index && repeat)
-            index %= items.size();
-        else if (items.size() <= index)
-            return false;
-
-        GuiItem item = items.get(index);
-
-        if (!item.getItem().equals(event.getCurrentItem()) || !item.isVisible())
-            return false;
-
-        Consumer<InventoryClickEvent> action = item.getAction();
-
-        if (action != null)
-            action.accept(event);
-
-        return true;
+        return false;
     }
 
     /**
