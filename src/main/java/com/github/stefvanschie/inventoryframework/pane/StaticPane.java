@@ -4,6 +4,8 @@ import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
+import me.ialistannen.mininbt.ItemNBTUtil;
+import me.ialistannen.mininbt.NBTWrappers;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -166,40 +168,27 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
         if (onClick != null)
             onClick.accept(event);
 
-		//first we undo the rotation
-		//this is the same as applying a new rotation to match up to 360, so we'll be doing that
-		Map.Entry<Integer, Integer> coordinates = GeometryUtil.processCounterClockwiseRotation(x, y, length, height,
-			rotation);
+        Optional<GuiItem> optionalItem = items.stream().map(Map.Entry::getKey).filter(guiItem -> {
+            NBTWrappers.NBTTagCompound tag = ItemNBTUtil.getTag(event.getCurrentItem());
 
-		int newX = coordinates.getKey(), newY = coordinates.getValue();
+            if (tag == null) {
+                return false;
+            }
 
-		if (flipHorizontally)
-			newX = length - newX - 1;
+            return guiItem.getUUID().equals(UUID.fromString(tag.getString("IF-uuid")));
+        }).findAny();
 
-		if (flipVertically)
-			newY = height - newY - 1;
+        if (optionalItem.isPresent()) {
+            Consumer<InventoryClickEvent> action = optionalItem.get().getAction();
 
-		//find the item on the correct spot
-		for (Map.Entry<GuiItem, Map.Entry<Integer, Integer>> entry : items) {
-			Map.Entry<Integer, Integer> location = entry.getValue();
-			GuiItem item = entry.getKey();
+            if (action != null) {
+                action.accept(event);
+            }
 
-			if (location.getKey() != newX || location.getValue() != newY ||
-                !item.getItem().equals(event.getCurrentItem()))
-				continue;
+            return true;
+        }
 
-			if (!item.isVisible())
-				return false;
-
-			Consumer<InventoryClickEvent> action = item.getAction();
-
-			if (action != null)
-				action.accept(event);
-
-			return true;
-		}
-
-		return false;
+        return false;
 	}
 
 	/**
