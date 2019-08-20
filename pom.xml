@@ -11,7 +11,7 @@
 
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF</artifactId>
-    <version>0.5.8</version>
+    <version>0.5.9-test</version>
     <packaging>jar</packaging>
 
     <name>IF</name>
@@ -46,6 +46,10 @@
             <id>mojang-repo</id>
             <url>https://libraries.minecraft.net/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -71,6 +75,12 @@
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.3.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.I-Al-Istannen</groupId>
+            <artifactId>MiniNBT</artifactId>
+            <version>master-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
