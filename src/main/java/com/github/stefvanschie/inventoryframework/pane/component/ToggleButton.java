@@ -28,7 +28,7 @@ public class ToggleButton extends Pane {
     /**
      * The panes used for showing the enabled and disabled states
      */
-    private OutlinePane enabledPane, disabledPane;
+    private final OutlinePane enabledPane, disabledPane;
 
     /**
      * Whether the button is enabled or disabled

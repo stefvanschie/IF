@@ -19,8 +19,8 @@ public class GuiItem {
     /**
      * An action for the inventory
      */
-    @Nullable
-    private Consumer<InventoryClickEvent> action;
+    @NotNull
+    private final Consumer<InventoryClickEvent> action;
 
     /**
      * The items shown
@@ -46,17 +46,12 @@ public class GuiItem {
      * @param action the action called whenever an interaction with this item happens
      */
     public GuiItem(@NotNull ItemStack item, @Nullable Consumer<InventoryClickEvent> action) {
-        this(item);
+        if (action == null) {
+            this.action = event -> {};
+        } else {
+            this.action = action;
+        }
 
-        this.action = action;
-    }
-
-    /**
-     * Creates a new gui item based on the item stack and action
-     *
-     * @param item the item stack
-     */
-    public GuiItem(@NotNull ItemStack item) {
         this.visible = true;
 
         NBTWrappers.NBTTagCompound compound = new NBTWrappers.NBTTagCompound();
@@ -67,11 +62,20 @@ public class GuiItem {
     }
 
     /**
+     * Creates a new gui item based on the item stack and action
+     *
+     * @param item the item stack
+     */
+    public GuiItem(@NotNull ItemStack item) {
+        this(item, null);
+    }
+
+    /**
      * Returns the action for this item
      *
      * @return the action called when clicked on this item
      */
-    @Nullable
+    @NotNull
     @Contract(pure = true)
     public Consumer<InventoryClickEvent> getAction() {
         return action;
