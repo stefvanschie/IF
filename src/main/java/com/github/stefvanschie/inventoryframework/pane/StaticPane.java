@@ -179,11 +179,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
         }).findAny();
 
         if (optionalItem.isPresent()) {
-            Consumer<InventoryClickEvent> action = optionalItem.get().getAction();
-
-            if (action != null) {
-                action.accept(event);
-            }
+            optionalItem.get().getAction().accept(event);
 
             return true;
         }
