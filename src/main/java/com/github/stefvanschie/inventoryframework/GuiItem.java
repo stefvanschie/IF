@@ -54,7 +54,7 @@ public class GuiItem {
 
         this.visible = true;
 
-        NBTWrappers.NBTTagCompound compound = new NBTWrappers.NBTTagCompound();
+        NBTWrappers.NBTTagCompound compound = ItemNBTUtil.getTag(item);
 
         compound.setString("IF-uuid", uuid.toString());
 

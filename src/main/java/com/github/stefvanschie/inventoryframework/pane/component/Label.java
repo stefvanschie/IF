@@ -36,7 +36,7 @@ public class Label extends OutlinePane {
      * @param x the x coordinate
      * @param y the y coordinate
      * @param length the length
-     * @param height the width
+     * @param height the height
      * @param priority the priority
      * @param font the character set
      * @since 0.5.0
@@ -53,7 +53,7 @@ public class Label extends OutlinePane {
      * @param x the x coordinate
      * @param y the y coordinate
      * @param length the length
-     * @param height the width
+     * @param height the height
      * @param font the character set
      * @since 0.5.0
      */
@@ -68,7 +68,7 @@ public class Label extends OutlinePane {
      * Creates a new label
      *
      * @param length the length
-     * @param height the width
+     * @param height the height
      * @param font the character set
      * @since 0.5.0
      */
