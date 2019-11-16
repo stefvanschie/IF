@@ -17,13 +17,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -277,6 +271,31 @@ public class PaginatedPane extends Pane {
         });
 
         return panes;
+    }
+
+    /**
+     * Gets all the panes from inside the specified page of this pane. If the specified page is not existent, this
+     * method will throw an {@link IllegalArgumentException}. If the specified page is existent, but doesn't
+     * have any panes, the returned collection will be empty. The returned collection is unmodifiable. The returned
+     * collection is not synchronized and no guarantees should be made as to the safety of concurrently accessing the
+     * returned collection. If synchronized behaviour should be allowed, the returned collection must be synchronized
+     * externally.
+     *
+     * @param page the panes of this page will be returned
+     * @return a collection of panes belonging to the specified page
+     * @since 0.5.13
+     * @throws IllegalArgumentException if the page does not exist
+     */
+    @NotNull
+    @Contract(pure = true)
+    public Collection<Pane> getPanes(int page) {
+        Collection<Pane> panes = this.panes.get(page);
+
+        if (panes == null) {
+            throw new IllegalArgumentException("Invalid page");
+        }
+
+        return Collections.unmodifiableCollection(panes);
     }
 
     /**
