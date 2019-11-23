@@ -4,8 +4,6 @@ import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
-import me.ialistannen.mininbt.ItemNBTUtil;
-import me.ialistannen.mininbt.NBTWrappers;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -168,23 +166,22 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
         if (onClick != null)
             onClick.accept(event);
 
-        Optional<GuiItem> optionalItem = items.stream().map(Map.Entry::getKey).filter(guiItem -> {
-            NBTWrappers.NBTTagCompound tag = ItemNBTUtil.getTag(event.getCurrentItem());
+        ItemStack itemStack = event.getCurrentItem();
 
-            if (tag == null) {
-                return false;
-            }
-
-            return guiItem.getUUID().equals(UUID.fromString(tag.getString("IF-uuid")));
-        }).findAny();
-
-        if (optionalItem.isPresent()) {
-            optionalItem.get().getAction().accept(event);
-
-            return true;
+        if (itemStack == null) {
+            return false;
         }
 
-        return false;
+        Set<GuiItem> items = this.items.stream().map(Map.Entry::getKey).collect(Collectors.toSet());
+        GuiItem clickedItem = findMatchingItem(items, itemStack);
+
+        if (clickedItem == null) {
+            return false;
+        }
+
+        clickedItem.getAction().accept(event);
+
+        return true;
 	}
 
 	/**

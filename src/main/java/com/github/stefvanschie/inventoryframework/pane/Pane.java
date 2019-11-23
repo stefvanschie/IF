@@ -8,6 +8,8 @@ import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.google.common.primitives.Primitives;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import me.ialistannen.mininbt.ItemNBTUtil;
+import me.ialistannen.mininbt.NBTWrappers;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -498,6 +500,41 @@ public abstract class Pane {
                 }
             }
         }
+    }
+
+    /**
+     * Finds a type of {@link GuiItem} from the provided collection of items based on the provided {@link ItemStack}.
+     * The items will be compared using internal data. When the item does not have this data, this method will return
+     * null. If the item does have such data, but its value cannot be found in the provided list, null is also returned.
+     * This method will not mutate any of the provided arguments, nor any of the contents inside of the arguments. The
+     * provided collection may be unmodifiable if preferred. This method will always return a type of {@link GuiItem}
+     * that is in the provided collection - when the returned result is not null - such that an element E inside the
+     * provided collection reference equals the returned type of {@link GuiItem}.
+     *
+     * @param items a collection of items in which will be searched
+     * @param item the item for which an {@link GuiItem} should be found
+     * @param <T> a type of GuiItem, which will be used in the provided collection and as return type
+     * @return the found type of {@link GuiItem} or null if none was found
+     * @since 0.5.14
+     */
+    @Nullable
+    @Contract(pure = true)
+    protected static <T extends GuiItem> T findMatchingItem(@NotNull Collection<T> items, @NotNull ItemStack item) {
+        return items.stream().filter(guiItem -> {
+            NBTWrappers.NBTTagCompound tag = ItemNBTUtil.getTag(item);
+
+            if (tag == null) {
+                return false;
+            }
+
+            String stringUUID = tag.getString("IF-uuid");
+
+            if (stringUUID == null) {
+                return false;
+            }
+
+            return guiItem.getUUID().equals(UUID.fromString(stringUUID));
+        }).findAny().orElse(null);
     }
 
     /**
