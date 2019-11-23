@@ -4,8 +4,6 @@ import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
-import me.ialistannen.mininbt.ItemNBTUtil;
-import me.ialistannen.mininbt.NBTWrappers;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -18,7 +16,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * A pane for items that should be outlined
@@ -184,23 +181,21 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         if (onClick != null)
             onClick.accept(event);
 
-        Optional<GuiItem> optionalItem = items.stream().filter(guiItem -> {
-            NBTWrappers.NBTTagCompound tag = ItemNBTUtil.getTag(event.getCurrentItem());
+        ItemStack itemStack = event.getCurrentItem();
 
-            if (tag == null) {
-                return false;
-            }
-
-            return guiItem.getUUID().equals(UUID.fromString(tag.getString("IF-uuid")));
-        }).findAny();
-
-        if (optionalItem.isPresent()) {
-            optionalItem.get().getAction().accept(event);
-
-            return true;
+        if (itemStack == null) {
+            return false;
         }
 
-        return false;
+        GuiItem item = findMatchingItem(items, itemStack);
+
+        if (item == null) {
+            return false;
+        }
+
+        item.getAction().accept(event);
+
+        return true;
     }
 
     /**
