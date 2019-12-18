@@ -101,7 +101,7 @@ public class GuiListener implements Listener {
 
         Consumer<InventoryCloseEvent> onClose = gui.getOnClose();
 
-        if (onClose != null) {
+        if (!gui.isUpdating() && onClose != null) {
             onClose.accept(event);
         }
     }
