@@ -99,6 +99,12 @@ public class Gui implements InventoryHolder {
     private Consumer<InventoryCloseEvent> onClose;
 
     /**
+     * Whether this gui is updating (as invoked by {@link #update()}), true if this is the case, false otherwise. This
+     * is used to indicate that inventory close events due to updating should be ignored.
+     */
+    private boolean updating = false;
+
+    /**
      * The pane mapping which will allow users to register their own panes to be used in XML files
      */
     @NotNull
@@ -239,7 +245,11 @@ public class Gui implements InventoryHolder {
      * Update the gui for everyone
      */
     public void update() {
+        updating = true;
+
         new HashSet<>(inventory.getViewers()).forEach(this::show);
+
+        updating = false;
     }
 
     /**
@@ -559,6 +569,18 @@ public class Gui implements InventoryHolder {
     @Override
     public Inventory getInventory() {
         return inventory;
+    }
+
+    /**
+     * Gets whether this gui is being updated, as invoked by {@link #update()}. This returns true if this is the case
+     * and false otherwise.
+     *
+     * @return whether this gui is being updated
+     * @since 0.5.15
+     */
+    @Contract(pure = true)
+    protected boolean isUpdating() {
+        return updating;
     }
 
     //Code taken from InventoryView#getInventory(rawSlot) to support for 1.12 where method doesn't exist
