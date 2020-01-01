@@ -139,9 +139,11 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
             }
         }
 
+        int itemAmount = items.size();
+
         outerloop:
-        for (int i = 0; i < mask.amountOfEnabledSlots(); i++) {
-            GuiItem item = items.get(i % items.size());
+        for (int i = 0; i < (doesRepeat() ? mask.amountOfEnabledSlots() : itemAmount); i++) {
+            GuiItem item = items.get(i % itemAmount);
 
             if (!item.isVisible())
                 continue;
