@@ -17,7 +17,6 @@ import org.w3c.dom.NodeList;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * A pane for static items and stuff. All items will have to be specified a slot, or will be added in the next position.
@@ -25,10 +24,11 @@ import java.util.stream.Collectors;
 public class StaticPane extends Pane implements Flippable, Rotatable {
 
 	/**
-	 * A set of items inside this pane and their locations
+	 * A map of locations inside this pane and their item. The locations are stored in a way where the x coordinate is
+     * the key and the y coordinate is the value.
 	 */
 	@NotNull
-	private final Set<Map.Entry<GuiItem, Map.Entry<Integer, Integer>>> items;
+	private final Map<Map.Entry<Integer, Integer>, GuiItem> items;
 
 	/**
 	 * The clockwise rotation of this pane in degrees
@@ -46,7 +46,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
     public StaticPane(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
 
-        this.items = new HashSet<>(length * height);
+        this.items = new HashMap<>(length * height);
     }
 
 	/**
@@ -60,9 +60,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
      * {@inheritDoc}
      */
     public StaticPane(int length, int height) {
-        super(length, height);
-
-        this.items = new HashSet<>(length * height);
+        this(0, 0, length, height);
     }
 
 	/**
@@ -74,13 +72,13 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 		int length = Math.min(this.length, maxLength);
 		int height = Math.min(this.height, maxHeight);
 
-		items.stream().filter(entry -> {
-			GuiItem key = entry.getKey();
-			Map.Entry<Integer, Integer> value = entry.getValue();
+		items.entrySet().stream().filter(entry -> {
+			GuiItem item = entry.getValue();
+			Map.Entry<Integer, Integer> location = entry.getKey();
 
-			return key.isVisible() && value.getKey() + paneOffsetX <= 9 && value.getValue() + paneOffsetY <= 6;
+			return item.isVisible() && location.getKey() + paneOffsetX <= 9 && location.getValue() + paneOffsetY <= 6;
 		}).forEach(entry -> {
-			Map.Entry<Integer, Integer> location = entry.getValue();
+			Map.Entry<Integer, Integer> location = entry.getKey();
 
 			int x = location.getKey(), y = location.getValue();
 
@@ -93,7 +91,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 			Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y, length, height,
 				rotation);
 
-			ItemStack item = entry.getKey().getItem();
+			ItemStack item = entry.getValue().getItem();
 
 			int finalRow = getY() + coordinates.getValue() + paneOffsetY;
 			int finalColumn = getX() + coordinates.getKey() + paneOffsetX;
@@ -113,14 +111,17 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	}
 
 	/**
-	 * Adds a gui item at the specific spot in the pane
+	 * Adds a gui item at the specific spot in the pane. If the coordinates as specified by the x and y parameters is
+     * already occupied, that item will be replaced by the item parameter.
 	 *
 	 * @param item the item to set
 	 * @param x    the x coordinate of the position of the item
      * @param y    the y coordinate of the position of the item
 	 */
 	public void addItem(@NotNull GuiItem item, int x, int y) {
-		items.add(new AbstractMap.SimpleEntry<>(item, new AbstractMap.SimpleEntry<>(x, y)));
+	    items.keySet().removeIf(entry -> entry.getKey() == x && entry.getValue() == y);
+
+		items.put(new AbstractMap.SimpleEntry<>(x, y), item);
 	}
 
     /**
@@ -130,7 +131,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
      * @since 0.5.8
      */
     public void removeItem(@NotNull GuiItem item) {
-        items.removeIf(entry -> entry.getKey().equals(item));
+        items.values().removeIf(guiItem -> guiItem.equals(item));
     }
 
 	/**
@@ -172,8 +173,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
             return false;
         }
 
-        Set<GuiItem> items = this.items.stream().map(Map.Entry::getKey).collect(Collectors.toSet());
-        GuiItem clickedItem = findMatchingItem(items, itemStack);
+        GuiItem clickedItem = findMatchingItem(items.values(), itemStack);
 
         if (clickedItem == null) {
             return false;
@@ -209,9 +209,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	@Contract("null, _ -> fail")
 	public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<InventoryClickEvent> action) {
 		//The non empty spots
-		List<Map.Entry<Integer, Integer>> locations = this.items.stream()
-			.map(Map.Entry::getValue)
-			.collect(Collectors.toList());
+		Set<Map.Entry<Integer, Integer>> locations = this.items.keySet();
 
 		for (int y = 0; y < this.getHeight(); y++) {
 			for (int x = 0; x < this.getLength(); x++) {
@@ -248,7 +246,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	@NotNull
 	@Override
 	public Collection<GuiItem> getItems() {
-		return items.stream().map(Map.Entry::getKey).collect(Collectors.toList());
+		return items.values();
 	}
 
     /**
