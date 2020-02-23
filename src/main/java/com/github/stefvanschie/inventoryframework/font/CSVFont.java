@@ -10,9 +10,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A font for characters with a space as default character. Only one instance of this class should ever exist and should
@@ -25,7 +24,7 @@ public class CSVFont extends Font {
     /**
      * A map with all the items and their dedicated characters
      */
-    private final Map<Character, ItemStack> characterMappings = new HashMap<>();
+    private final Map<Character, ItemStack> characterMappings;
 
     /**
      * The default character to use when a requested character cannot be found
@@ -42,19 +41,14 @@ public class CSVFont extends Font {
     public CSVFont(char defaultCharacter, String filePath) {
         this.defaultCharacter = defaultCharacter;
 
-        try {
-            InputStream inputStream = getClass().getResourceAsStream(filePath);
-            List<String[]> strings = CSVUtil.readAll(inputStream);
-
-            strings.forEach(values -> characterMappings.put(values[0].charAt(0), SkullUtil.getSkull(values[1])));
+        try (InputStream inputStream = getClass().getResourceAsStream(filePath)) {
+            characterMappings = CSVUtil.readAll(inputStream).stream()
+                    .collect(Collectors.toMap(v -> v[0].charAt(0), v -> SkullUtil.getSkull(v[1])));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error loading CSV-based font: " + filePath, e);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Contract(pure = true)
     @Override
@@ -62,9 +56,6 @@ public class CSVFont extends Font {
         return characterMappings.get(defaultCharacter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Nullable
     @Contract(pure = true)
     @Override

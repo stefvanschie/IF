@@ -36,23 +36,14 @@ public class PaginatedPane extends Pane {
      */
     private int page;
 
-    /**
-     * {@inheritDoc}
-     */
     public PaginatedPane(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public PaginatedPane(int x, int y, int length, int height) {
         super(x, y, length, height);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public PaginatedPane(int length, int height) {
         super(length, height);
     }
@@ -181,7 +172,7 @@ public class PaginatedPane extends Pane {
 	public void populateWithNames(@NotNull List<String> displayNames, @Nullable Material material) {
 		if(material == null || material == Material.AIR) return;
 
-		populateWithItemStacks(displayNames.stream().map((name) -> {
+		populateWithItemStacks(displayNames.stream().map(name -> {
 			ItemStack itemStack = new ItemStack(material);
 			ItemMeta itemMeta = itemStack.getItemMeta();
 			itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
@@ -190,9 +181,6 @@ public class PaginatedPane extends Pane {
 		}).collect(Collectors.toList()));
 	}
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void display(@NotNull Gui gui, @NotNull Inventory inventory, @NotNull PlayerInventory playerInventory,
                         int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
@@ -207,9 +195,6 @@ public class PaginatedPane extends Pane {
             Math.min(length, maxLength), Math.min(height, maxHeight)));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY, int maxLength,
                          int maxHeight) {
@@ -256,9 +241,6 @@ public class PaginatedPane extends Pane {
         return success;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Contract(pure = true)
     @Override
@@ -298,9 +280,6 @@ public class PaginatedPane extends Pane {
         return Collections.unmodifiableCollection(panes);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Contract(pure = true)
     @Override
@@ -308,9 +287,6 @@ public class PaginatedPane extends Pane {
         return getPanes().stream().flatMap(pane -> pane.getItems().stream()).collect(Collectors.toList());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void clear() {
         panes.clear();
@@ -324,7 +300,6 @@ public class PaginatedPane extends Pane {
      * @return the paginated pane
      */
     @NotNull
-    @Contract("_, null -> fail")
     public static PaginatedPane load(@NotNull Object instance, @NotNull Element element) {
         try {
             PaginatedPane paginatedPane = new PaginatedPane(
@@ -348,8 +323,6 @@ public class PaginatedPane extends Pane {
 
                 NodeList innerNodes = item.getChildNodes();
 
-                List<Pane> panes = new ArrayList<>();
-
                 for (int j = 0; j < innerNodes.getLength(); j++) {
                     Node pane = innerNodes.item(j);
 
@@ -357,11 +330,8 @@ public class PaginatedPane extends Pane {
                         continue;
                     }
 
-                    panes.add(Gui.loadPane(instance, pane));
+					paginatedPane.addPane(pageCount, Gui.loadPane(instance, pane));
                 }
-
-                for (Pane pane : panes)
-                    paginatedPane.addPane(pageCount, pane);
 
                 pageCount++;
             }

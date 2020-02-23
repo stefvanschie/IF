@@ -35,18 +35,12 @@ public class ToggleButton extends Pane {
      */
     private boolean enabled = false;
 
-    /**
-     * {@inheritDoc}
-     */
     public ToggleButton(int x, int y, int length, int height, @NotNull Priority priority) {
         this(x, y, length, height);
 
         setPriority(priority);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public ToggleButton(int length, int height) {
         super(length, height);
 
@@ -59,9 +53,6 @@ public class ToggleButton extends Pane {
         this.disabledPane.setRepeat(true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public ToggleButton(int x, int y, int length, int height) {
         this(length, height);
 
@@ -69,9 +60,6 @@ public class ToggleButton extends Pane {
         setY(y);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void display(@NotNull Gui gui, @NotNull Inventory inventory, @NotNull PlayerInventory playerInventory,
                         int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
@@ -88,9 +76,6 @@ public class ToggleButton extends Pane {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY,
                          int maxLength, int maxHeight) {
@@ -161,18 +146,12 @@ public class ToggleButton extends Pane {
         enabledPane.addItem(item);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Override
     public Collection<GuiItem> getItems() {
         return getPanes().stream().flatMap(pane -> pane.getItems().stream()).collect(Collectors.toSet());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Override
     public Collection<Pane> getPanes() {
@@ -188,9 +167,6 @@ public class ToggleButton extends Pane {
         enabled = !enabled;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void clear() {}
 
@@ -203,7 +179,7 @@ public class ToggleButton extends Pane {
      * @since 0.5.0
      */
     @NotNull
-    @Contract(value = "_, null -> fail", pure = true)
+    @Contract(pure = true)
     public static ToggleButton load(@NotNull Object instance, @NotNull Element element) {
         int length, height;
 

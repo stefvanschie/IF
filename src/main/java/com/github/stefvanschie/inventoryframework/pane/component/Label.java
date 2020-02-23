@@ -109,9 +109,6 @@ public class Label extends OutlinePane {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY,
                          int maxLength, int maxHeight) {
@@ -152,7 +149,7 @@ public class Label extends OutlinePane {
      * @return the percentage bar
      */
     @NotNull
-    @Contract(value = "_, null -> fail", pure = true)
+    @Contract(pure = true)
     public static Label load(@NotNull Object instance, @NotNull Element element) {
         int length;
         int height;

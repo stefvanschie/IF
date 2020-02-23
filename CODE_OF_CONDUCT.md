@@ -14,7 +14,7 @@ experience, size or personal appearance.
 * All users are equal regardless of age, ethnicity, religion, role/status, gender identity/expression, nationality, preferences, race, sexual identity/orientation, experience, size or personal appearance.
 * Don't harass others based on their English skills. Correcting them is allowed and encouraged, but should be done in a civil manner
 * All posts should be made in English, or at the very least an English translation should be provided.
-* Do not spread hate towards other (similar) projects/communties
+* Do not spread hate towards other (similar) projects/communities
 * Remind others of the rules and standards when needed
 * Don't publish others private information (such as passwords, addresses, etc.) without explicit permission
 

@@ -37,8 +37,8 @@ Note that issues tagged with "good first issue" don't necessarily mean this has 
 When you want to fix an issue, please leave a comment stating that you're going to fix this issue so we can assign you to it. This ensures that people aren't wasting their time by fixing the same issue.
 
 If your pull request is bigger than a few lines (say 10 max.) make a fork of the project and add the changes there first. Changes
-that are smaller (documentation changes, spelling/grammer fixes, adding comments, constant values errors, additional logging messages,
-etc.) can be done direclty without the need for a new fork.
+that are smaller (documentation changes, spelling/grammar fixes, adding comments, constant values errors, additional logging messages,
+etc.) can be done directly without the need for a new fork.
 
 ## Submitting an issue
 

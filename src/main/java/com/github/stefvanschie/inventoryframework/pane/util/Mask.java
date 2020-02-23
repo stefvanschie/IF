@@ -17,7 +17,7 @@ public class Mask {
      * A two-dimensional array of booleans indicating which slots are 'enabled' and which ones are 'disabled'. This
      * two-dimensional array is constructed in a row-major order fashion.
      */
-    private boolean[][] mask;
+    private final boolean[][] mask;
 
     /**
      * Creates a mask based on the strings provided. Each string is a row for the mask and each character is a cell of

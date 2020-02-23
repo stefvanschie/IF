@@ -1,5 +1,6 @@
 package com.github.stefvanschie.inventoryframework.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -37,9 +38,8 @@ public final class CSVUtil {
      */
     @NotNull
     public static List<String[]> readAll(@NotNull InputStream inputStream) throws IOException {
-        List<String[]> strings = new ArrayList<>();
-
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            List<String[]> strings = new ArrayList<>();
             String line;
 
             while ((line = reader.readLine()) != null) {
@@ -72,7 +72,9 @@ public final class CSVUtil {
                         array[i] = array[i].substring(1, array[i].length() - 1);
                     }
 
-                    array[i] = array[i].replace("\"\"", "\"");
+                    array[i] = StringUtils.replace(array[i], "\"\"", "\"");
+                    //Restore original code (array[i] = array[i].replace("\"\"", "\""))
+                    //once we update to Java 11, where it receives the current, faster implementation
 
                     //replace unicode characters
                     Matcher matcher = UNICODE_CHARACTER_PATTERN.matcher(array[i]);
@@ -90,8 +92,8 @@ public final class CSVUtil {
 
                 strings.add(array);
             }
+            
+            return strings;
         }
-
-        return strings;
     }
 }

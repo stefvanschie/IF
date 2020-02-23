@@ -92,17 +92,15 @@ public class GuiListener implements Listener {
         }
 
         Gui gui = (Gui) event.getInventory().getHolder();
-        HumanEntityCache humanEntityCache = gui.getHumanEntityCache();
-
-        HumanEntity humanEntity = event.getPlayer();
-
-        humanEntityCache.restore(humanEntity);
-        humanEntityCache.clearCache(humanEntity);
 
         Consumer<InventoryCloseEvent> onClose = gui.getOnClose();
-
         if (!gui.isUpdating() && onClose != null) {
             onClose.accept(event);
         }
+
+        HumanEntityCache humanEntityCache = gui.getHumanEntityCache();
+        HumanEntity humanEntity = event.getPlayer();
+        humanEntityCache.restore(humanEntity);
+        humanEntityCache.clearCache(humanEntity);
     }
 }

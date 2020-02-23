@@ -1,6 +1,6 @@
 package com.github.stefvanschie.inventoryframework.util;
 
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.Event;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 public class XMLUtil {
 
     /**
-     * Loads an onLocalClick consumer from the given instance and element
+     * Loads an event consumer from the given instance and element
      *
      * @param instance the object instance
      * @param element the element
@@ -23,34 +23,36 @@ public class XMLUtil {
      */
     @Nullable
     @Contract(pure = true)
-    public static Consumer<InventoryClickEvent> loadOnClickAttribute(@NotNull Object instance, @NotNull Element element,
-                                                                     @NotNull String name) {
+    public static <T extends Event> Consumer<T> loadOnEventAttribute(@NotNull Object instance, @NotNull Element element,
+                                                                     @NotNull Class<T> eventType, @NotNull String name) {
+        String attribute = element.getAttribute(name);
         for (Method method : instance.getClass().getMethods()) {
-            if (!method.getName().equals(element.getAttribute(name)))
+            if (!method.getName().equals(attribute))
                 continue;
 
             int parameterCount = method.getParameterCount();
-
+            boolean eventParameter;
             if (parameterCount == 0) {
-                return event -> {
-                    try {
-                        method.setAccessible(true);
-                        method.invoke(instance);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                };
+                eventParameter = false;
             } else if (parameterCount == 1 &&
-                    InventoryClickEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                return event -> {
-                    try {
-                        method.setAccessible(true);
-                        method.invoke(instance, event);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                };
+                    eventType.isAssignableFrom(method.getParameterTypes()[0])) {
+                eventParameter = true;
+            } else {
+                continue;
             }
+
+            return event -> {
+                try {
+                    method.setAccessible(true);
+                    if (eventParameter) {
+                        method.invoke(instance, event);
+                    } else {
+                        method.invoke(instance);
+                    }
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException("Error while invoking reflection-obtained event listener", e);
+                }
+            };
         }
 
         return null;
@@ -70,7 +72,7 @@ public class XMLUtil {
             field.setAccessible(true);
             field.set(instance, value);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

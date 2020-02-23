@@ -40,32 +40,20 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	 */
 	private boolean flipHorizontally, flipVertically;
 
-    /**
-     * {@inheritDoc}
-     */
     public StaticPane(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
 
         this.items = new HashMap<>(length * height);
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public StaticPane(int x, int y, int length, int height) {
 		this(x, y, length, height, Priority.NORMAL);
 	}
 
-    /**
-     * {@inheritDoc}
-     */
     public StaticPane(int length, int height) {
         this(0, 0, length, height);
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void display(@NotNull Gui gui, @NotNull Inventory inventory, @NotNull PlayerInventory playerInventory,
                         int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
@@ -134,9 +122,6 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
         items.values().removeIf(guiItem -> guiItem.equals(item));
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY,
                          int maxLength, int maxHeight) {
@@ -184,9 +169,6 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
         return true;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setRotation(int rotation) {
 		if (length != height) {
@@ -206,7 +188,6 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	 * @param action    The action called whenever an interaction with the item happens
      * @since 0.5.9
 	 */
-	@Contract("null, _ -> fail")
 	public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<InventoryClickEvent> action) {
 		//The non empty spots
 		Set<Map.Entry<Integer, Integer>> locations = this.items.keySet();
@@ -240,26 +221,17 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 		this.fillWith(itemStack, null);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@NotNull
 	@Override
 	public Collection<GuiItem> getItems() {
 		return items.values();
 	}
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void clear() {
         items.clear();
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@NotNull
 	@Contract(pure = true)
 	@Override
@@ -267,43 +239,28 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 		return new HashSet<>();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void flipHorizontally(boolean flipHorizontally) {
 		this.flipHorizontally = flipHorizontally;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void flipVertically(boolean flipVertically) {
 		this.flipVertically = flipVertically;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Contract(pure = true)
     @Override
 	public int getRotation() {
 		return rotation;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Contract(pure = true)
     @Override
 	public boolean isFlippedHorizontally() {
 		return flipHorizontally;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Contract(pure = true)
     @Override
 	public boolean isFlippedVertically() {
@@ -318,7 +275,6 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	 * @return the outline pane
 	 */
 	@NotNull
-	@Contract("_, null -> fail")
 	public static StaticPane load(@NotNull Object instance, @NotNull Element element) {
 		try {
 			StaticPane staticPane = new StaticPane(

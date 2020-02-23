@@ -38,22 +38,29 @@ public final class SkullUtil {
     public static ItemStack getSkull(@NotNull String id) {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta itemMeta = Objects.requireNonNull(item.getItemMeta());
+        setSkull(itemMeta, id);
+        item.setItemMeta(itemMeta);
+        return item;
+    }
 
+    /**
+     * Sets the skull of an existing {@link ItemMeta} from the specified id.
+     * The id is the value from the textures.minecraft.net website after the last '/' character.
+     *
+     * @param id the skull id
+     */
+    public static void setSkull(@NotNull ItemMeta meta, @NotNull String id) {
         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
         byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}",
             "http://textures.minecraft.net/texture/" + id).getBytes());
         profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
 
         try {
-            Field profileField = itemMeta.getClass().getDeclaredField("profile");
+            Field profileField = meta.getClass().getDeclaredField("profile");
             profileField.setAccessible(true);
-            profileField.set(itemMeta, profile);
-        } catch (NoSuchFieldException | SecurityException | IllegalAccessException exception) {
-            exception.printStackTrace();
+            profileField.set(meta, profile);
+        } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
-
-        item.setItemMeta(itemMeta);
-
-        return item;
     }
 }

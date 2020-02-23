@@ -1,6 +1,5 @@
 package com.github.stefvanschie.inventoryframework.util;
 
-import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

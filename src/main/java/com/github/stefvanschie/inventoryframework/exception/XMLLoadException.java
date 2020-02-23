@@ -23,10 +23,20 @@ public class XMLLoadException extends RuntimeException {
     /**
      * Constructs the exception with a given cause
      *
-     * @param cause the cause of this exzception
+     * @param cause the cause of this exception
      * @since 0.3.1
      */
     public XMLLoadException(@NotNull Throwable cause) {
         super(cause);
+    }
+
+    /**
+     * Constructs the exception with a given message and cause
+     *
+     * @param message the message to show
+     * @param cause the cause of this exception
+     */
+    public XMLLoadException(@NotNull String message, @NotNull Throwable cause) {
+        super(message, cause);
     }
 }

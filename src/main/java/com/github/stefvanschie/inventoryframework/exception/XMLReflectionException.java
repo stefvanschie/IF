@@ -1,6 +1,5 @@
 package com.github.stefvanschie.inventoryframework.exception;
 
-import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -27,7 +26,7 @@ public class XMLReflectionException extends RuntimeException {
     /**
      * Constructs the exception with a given cause
      *
-     * @param cause the cause of this exzception
+     * @param cause the cause of this exception
      * @since 0.3.1
      */
     public XMLReflectionException(@NotNull Throwable cause) {
