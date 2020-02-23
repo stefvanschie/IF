@@ -47,6 +47,7 @@ public final class SkullUtil {
      * Sets the skull of an existing {@link ItemMeta} from the specified id.
      * The id is the value from the textures.minecraft.net website after the last '/' character.
      *
+     * @param meta the meta to change
      * @param id the skull id
      */
     public static void setSkull(@NotNull ItemMeta meta, @NotNull String id) {
