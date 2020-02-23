@@ -7,7 +7,6 @@ import com.github.stefvanschie.inventoryframework.pane.Pane;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.PlayerInventory;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -33,30 +32,18 @@ public class CycleButton extends Pane {
      */
     private int position = 0;
 
-    /**
-     * {@inheritDoc}
-     */
     public CycleButton(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public CycleButton(int x, int y, int length, int height) {
         super(x, y, length, height);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public CycleButton(int length, int height) {
         super(length, height);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY,
                          int maxLength, int maxHeight) {
@@ -100,9 +87,6 @@ public class CycleButton extends Pane {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void display(@NotNull Gui gui, @NotNull Inventory inventory, @NotNull PlayerInventory playerInventory,
                         int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
@@ -115,9 +99,6 @@ public class CycleButton extends Pane {
         panes.get(position).display(gui, inventory, playerInventory, newX, newY, newMaxLength, newMaxHeight);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Override
     public Collection<GuiItem> getItems() {
@@ -145,17 +126,11 @@ public class CycleButton extends Pane {
         panes.add(pane);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void clear() {
         panes.clear();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Override
     public Collection<Pane> getPanes() {
@@ -180,7 +155,6 @@ public class CycleButton extends Pane {
      * @since 0.5.0
      */
     @NotNull
-    @Contract("_, null -> fail")
     public static CycleButton load(@NotNull Object instance, @NotNull Element element) {
         int length;
         int height;

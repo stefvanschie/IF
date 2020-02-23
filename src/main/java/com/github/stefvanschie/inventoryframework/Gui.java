@@ -1,8 +1,10 @@
 package com.github.stefvanschie.inventoryframework;
 
+import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.*;
 import com.github.stefvanschie.inventoryframework.pane.component.*;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
@@ -19,14 +21,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -160,11 +158,7 @@ public class Gui implements InventoryHolder {
         //set the state to the top, so in case there are no longer any bottom part panes, their inventory will be shown again
         setState(State.TOP);
 
-        humanEntityCache.store(humanEntity);
-
-        for (int i = 0; i < 36; i++) {
-            humanEntity.getInventory().clear(i);
-        }
+        humanEntityCache.storeAndClear(humanEntity);
 
         //initialize the inventory first
         panes.stream().filter(Pane::isVisible).forEach(pane -> pane.display(this, inventory,
@@ -249,6 +243,9 @@ public class Gui implements InventoryHolder {
 
         new HashSet<>(inventory.getViewers()).forEach(this::show);
 
+        if (!updating)
+            throw new AssertionError("Gui#isUpdating became false before Gui#update finished");
+
         updating = false;
     }
 
@@ -306,16 +303,37 @@ public class Gui implements InventoryHolder {
     }
 
     /**
-     * Loads a Gui from a given input stream
+     * Loads a Gui from a given input stream.
+     * Returns null instead of throwing an exception in case of a failure.
+     *
+     * @param plugin the main plugin
+     * @param instance the class instance for all reflection lookups
+     * @param inputStream the file
+     * @return the gui or null if the loading failed
+     * @see #loadOrThrow(Plugin, Object, InputStream)
+     */
+    @Nullable
+    public static Gui load(@NotNull Plugin plugin, @NotNull Object instance, @NotNull InputStream inputStream) {
+        try {
+            return loadOrThrow(plugin, instance, inputStream);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Loads a Gui from a given input stream.
+     * Throws a {@link RuntimeException} instead of returning null in case of a failure.
      *
      * @param plugin the main plugin
      * @param instance the class instance for all reflection lookups
      * @param inputStream the file
      * @return the gui
+     * @see #load(Plugin, Object, InputStream)
      */
-    @Nullable
-    @Contract("_, _, null -> fail")
-    public static Gui load(@NotNull Plugin plugin, @NotNull Object instance, @NotNull InputStream inputStream) {
+    @NotNull
+    public static Gui loadOrThrow(@NotNull Plugin plugin, @NotNull Object instance, @NotNull InputStream inputStream) {
         try {
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
             Element documentElement = document.getDocumentElement();
@@ -329,100 +347,47 @@ public class Gui implements InventoryHolder {
                 XMLUtil.loadFieldAttribute(instance, documentElement, gui);
 
             if (documentElement.hasAttribute("onTopClick")) {
-                Consumer<InventoryClickEvent> onTopClickAttribute = XMLUtil.loadOnClickAttribute(instance,
-                    documentElement, "onTopClick");
-
-                if (onTopClickAttribute != null) {
-                    gui.setOnTopClick(onTopClickAttribute);
-                }
+                gui.setOnTopClick(XMLUtil.loadOnEventAttribute(instance,
+                        documentElement, InventoryClickEvent.class, "onTopClick"));
             }
 
             if (documentElement.hasAttribute("onBottomClick")) {
-                Consumer<InventoryClickEvent> onBottomClickAttribute = XMLUtil.loadOnClickAttribute(instance,
-                    documentElement, "onBottomClick");
-
-                if (onBottomClickAttribute != null) {
-                    gui.setOnBottomClick(onBottomClickAttribute);
-                }
+                gui.setOnBottomClick(XMLUtil.loadOnEventAttribute(instance,
+                        documentElement, InventoryClickEvent.class, "onBottomClick"));
             }
-            
-            if (documentElement.hasAttribute("onGlobalClick")) {
-                Consumer<InventoryClickEvent> onGlobalClickAttribute = XMLUtil.loadOnClickAttribute(instance,
-                    documentElement, "onGlobalClick");
 
-                if (onGlobalClickAttribute != null) {
-                    gui.setOnGlobalClick(onGlobalClickAttribute);
-                }
+            if (documentElement.hasAttribute("onGlobalClick")) {
+                gui.setOnGlobalClick(XMLUtil.loadOnEventAttribute(instance,
+                        documentElement, InventoryClickEvent.class, "onGlobalClick"));
             }
 
             if (documentElement.hasAttribute("onOutsideClick")) {
-                Consumer<InventoryClickEvent> onOutsideClickAttribute = XMLUtil.loadOnClickAttribute(instance,
-                    documentElement, "onOutsideClick");
-
-                if (onOutsideClickAttribute != null) {
-                    gui.setOnOutsideClick(onOutsideClickAttribute);
-                }
+                gui.setOnOutsideClick(XMLUtil.loadOnEventAttribute(instance,
+                        documentElement, InventoryClickEvent.class, "onOutsideClick"));
             }
 
             if (documentElement.hasAttribute("onClose")) {
-                for (Method method : instance.getClass().getMethods()) {
-                    if (!method.getName().equals(documentElement.getAttribute("onClose")))
-                        continue;
-
-                    int parameterCount = method.getParameterCount();
-
-                    if (parameterCount == 0) {
-                        gui.setOnClose(event -> {
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(instance);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    } else if (parameterCount == 1 &&
-                            InventoryCloseEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                        gui.setOnClose(event -> {
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(instance, event);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    }
-                }
+                gui.setOnClose(XMLUtil.loadOnEventAttribute(instance,
+                        documentElement, InventoryCloseEvent.class, "onClose"));
             }
 
             if (documentElement.hasAttribute("populate")) {
-                try {
-                    Method method = instance.getClass().getMethod("populate", Gui.class);
+                MethodUtils.invokeExactMethod(instance, "populate", gui, Gui.class);
+            } else {
+                NodeList childNodes = documentElement.getChildNodes();
+                for (int i = 0; i < childNodes.getLength(); i++) {
+                    Node item = childNodes.item(i);
 
-                    method.setAccessible(true);
-                    method.invoke(instance, gui);
-                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    e.printStackTrace();
+                    if (item.getNodeType() == Node.ELEMENT_NODE)
+                        gui.addPane(loadPane(instance, item));
                 }
-
-                return gui;
-            }
-
-            NodeList childNodes = documentElement.getChildNodes();
-            for (int i = 0; i < childNodes.getLength(); i++) {
-                Node item = childNodes.item(i);
-
-                if (item.getNodeType() != Node.ELEMENT_NODE)
-                    continue;
-
-                gui.addPane(loadPane(instance, item));
             }
 
             return gui;
-        } catch (ParserConfigurationException | SAXException | IOException | NumberFormatException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new XMLLoadException("Error loading " + plugin.getName() + "'s gui with associated class: "
+                    + instance.getClass().getSimpleName(), e);
         }
-
-        return null;
     }
 
     /**
@@ -430,7 +395,7 @@ public class Gui implements InventoryHolder {
      *
      * @param onTopClick the consumer that gets called
      */
-    public void setOnTopClick(@NotNull Consumer<InventoryClickEvent> onTopClick) {
+    public void setOnTopClick(@Nullable Consumer<InventoryClickEvent> onTopClick) {
         this.onTopClick = onTopClick;
     }
 
@@ -451,7 +416,7 @@ public class Gui implements InventoryHolder {
      *
      * @param onBottomClick the consumer that gets called
      */
-    public void setOnBottomClick(@NotNull Consumer<InventoryClickEvent> onBottomClick) {
+    public void setOnBottomClick(@Nullable Consumer<InventoryClickEvent> onBottomClick) {
         this.onBottomClick = onBottomClick;
     }
 
@@ -472,7 +437,7 @@ public class Gui implements InventoryHolder {
      *
      * @param onGlobalClick the consumer that gets called
      */
-    public void setOnGlobalClick(@NotNull Consumer<InventoryClickEvent> onGlobalClick) {
+    public void setOnGlobalClick(@Nullable Consumer<InventoryClickEvent> onGlobalClick) {
         this.onGlobalClick = onGlobalClick;
     }
 
@@ -494,7 +459,7 @@ public class Gui implements InventoryHolder {
      * @param onOutsideClick the consumer that gets called
      * @since 0.5.7
      */
-    public void setOnOutsideClick(@NotNull Consumer<InventoryClickEvent> onOutsideClick) {
+    public void setOnOutsideClick(@Nullable Consumer<InventoryClickEvent> onOutsideClick) {
         this.onOutsideClick = onOutsideClick;
     }
 
@@ -526,7 +491,7 @@ public class Gui implements InventoryHolder {
      *
      * @param onClose the consumer that gets called
      */
-    public void setOnClose(@NotNull Consumer<InventoryCloseEvent> onClose) {
+    public void setOnClose(@Nullable Consumer<InventoryCloseEvent> onClose) {
         this.onClose = onClose;
     }
 
@@ -562,9 +527,6 @@ public class Gui implements InventoryHolder {
         return title;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Override
     public Inventory getInventory() {
@@ -585,14 +547,12 @@ public class Gui implements InventoryHolder {
 
     //Code taken from InventoryView#getInventory(rawSlot) to support for 1.12 where method doesn't exist
     public static Inventory getInventory(InventoryView view, int rawSlot) {
-        if(rawSlot == InventoryView.OUTSIDE || rawSlot == -1) {
+        if (rawSlot == InventoryView.OUTSIDE || rawSlot == -1) {
             return null;
         }
-        if(rawSlot < view.getTopInventory().getSize()) {
-            return view.getTopInventory();
-        } else {
-            return view.getBottomInventory();
-        }
+        return rawSlot < view.getTopInventory().getSize()
+                ? view.getTopInventory()
+                : view.getBottomInventory();
     }
 
     /**
@@ -605,11 +565,7 @@ public class Gui implements InventoryHolder {
      * @throws IllegalArgumentException when a property with this name is already registered.
      */
     public static void registerProperty(@NotNull String attributeName, @NotNull Function<String, Object> function) {
-        if (Pane.getPropertyMappings().containsKey(attributeName)) {
-            throw new IllegalArgumentException("property '" + attributeName + "' is already registered");
-        }
-
-        Pane.getPropertyMappings().put(attributeName, function);
+        Pane.registerProperty(attributeName, function);
     }
 
     /**
@@ -635,7 +591,6 @@ public class Gui implements InventoryHolder {
      * @return the pane
      */
     @NotNull
-    @Contract("_, null -> fail")
     public static Pane loadPane(@NotNull Object instance, @NotNull Node node) {
         return PANE_MAPPINGS.get(node.getNodeName()).apply(instance, (Element) node);
     }

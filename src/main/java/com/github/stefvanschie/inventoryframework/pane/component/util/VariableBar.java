@@ -45,9 +45,6 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
      */
     protected boolean flipHorizontally, flipVertically;
 
-    /**
-     * {@inheritDoc}
-     */
     protected VariableBar(int length, int height) {
         super(length, height);
 
@@ -66,9 +63,6 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         this.backgroundPane.setRepeat(true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected VariableBar(int x, int y, int length, int height, @NotNull Priority priority) {
         this(length, height);
 
@@ -78,16 +72,10 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         setPriority(priority);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected VariableBar(int x, int y, int length, int height) {
         this(x, y, length, height, Priority.NORMAL);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setLength(int length) {
         super.setLength(length);
@@ -107,9 +95,6 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         this.backgroundPane.setLength(length);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setHeight(int height) {
         super.setHeight(height);
@@ -129,9 +114,6 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         this.backgroundPane.setHeight(height);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setOrientation(@NotNull Orientation orientation) {
         this.orientation = orientation;
@@ -147,9 +129,6 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void display(@NotNull Gui gui, @NotNull Inventory inventory, @NotNull PlayerInventory playerInventory,
                         int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
@@ -164,9 +143,6 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
             newMaxHeight);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setX(int x) {
         super.setX(x);
@@ -175,9 +151,6 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         this.backgroundPane.setX(x);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setY(int y) {
         super.setY(y);
@@ -210,68 +183,44 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         backgroundPane.addItem(item);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Override
     public Collection<GuiItem> getItems() {
         return getPanes().stream().flatMap(pane -> pane.getItems().stream()).collect(Collectors.toSet());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Override
     public Collection<Pane> getPanes() {
         return Stream.of(this.fillPane, this.backgroundPane).collect(Collectors.toSet());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void flipHorizontally(boolean flipHorizontally) {
         this.flipHorizontally = flipHorizontally;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void flipVertically(boolean flipVertically) {
         this.flipVertically = flipVertically;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Override
     public Orientation getOrientation() {
         return orientation;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isFlippedHorizontally() {
         return flipHorizontally;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isFlippedVertically() {
         return flipVertically;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void clear() {}
 }

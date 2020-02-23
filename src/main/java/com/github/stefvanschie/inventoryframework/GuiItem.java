@@ -46,12 +46,7 @@ public class GuiItem {
      * @param action the action called whenever an interaction with this item happens
      */
     public GuiItem(@NotNull ItemStack item, @Nullable Consumer<InventoryClickEvent> action) {
-        if (action == null) {
-            this.action = event -> {};
-        } else {
-            this.action = action;
-        }
-
+        this.action = action == null ? event -> {} : action;
         this.visible = true;
 
         NBTWrappers.NBTTagCompound compound = ItemNBTUtil.getTag(item);

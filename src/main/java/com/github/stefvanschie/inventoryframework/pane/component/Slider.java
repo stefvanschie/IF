@@ -18,30 +18,18 @@ import org.w3c.dom.Element;
  */
 public class Slider extends VariableBar {
 
-    /**
-     * {@inheritDoc}
-     */
     public Slider(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public Slider(int x, int y, int length, int height) {
         super(x, y, length, height);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public Slider(int length, int height) {
         super(length, height);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY,
                          int maxLength, int maxHeight) {
@@ -141,7 +129,7 @@ public class Slider extends VariableBar {
      * @return the percentage bar
      */
     @NotNull
-    @Contract(value = "_, null -> fail", pure = true)
+    @Contract(pure = true)
     public static Slider load(@NotNull Object instance, @NotNull Element element) {
         int length;
         int height;

@@ -4,17 +4,16 @@ import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.exception.XMLReflectionException;
+import com.github.stefvanschie.inventoryframework.util.SkullUtil;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.google.common.primitives.Primitives;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import me.ialistannen.mininbt.ItemNBTUtil;
 import me.ialistannen.mininbt.NBTWrappers;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +27,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -304,12 +302,9 @@ public abstract class Pane {
                                 if (!innerNode.getNodeName().equals("property"))
                                     continue;
 
-                                String propertyType;
-
-                                if (!innerElementChild.hasAttribute("type"))
-                                    propertyType = "string";
-                                else
-                                    propertyType = innerElementChild.getAttribute("type");
+                                String propertyType = innerElementChild.hasAttribute("type")
+                                        ? innerElementChild.getAttribute("type")
+                                        : "string";
 
                                 properties.add(PROPERTY_MAPPINGS.get(propertyType).apply(innerElementChild
                                         .getTextContent()));
@@ -359,19 +354,7 @@ public abstract class Pane {
                         //noinspection deprecation
                         skullMeta.setOwner(elementItem.getAttribute("owner"));
                     else if (elementItem.hasAttribute("id")) {
-                        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-                        byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}",
-                                "http://textures.minecraft.net/texture/" + elementItem.getAttribute("id"))
-                                .getBytes());
-                        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
-
-                        try {
-                            Field profileField = skullMeta.getClass().getDeclaredField("profile");
-                            profileField.setAccessible(true);
-                            profileField.set(skullMeta, profile);
-                        } catch (NoSuchFieldException | SecurityException | IllegalAccessException exception) {
-                            throw new XMLLoadException(exception);
-                        }
+                        SkullUtil.setSkull(skullMeta, elementItem.getAttribute("id"));
                     }
 
                     itemStack.setItemMeta(skullMeta);
@@ -382,8 +365,9 @@ public abstract class Pane {
         Consumer<InventoryClickEvent> action = null;
 
         if (element.hasAttribute("onClick")) {
+            String methodName = element.getAttribute("onClick");
             for (Method method : instance.getClass().getMethods()) {
-                if (!method.getName().equals(element.getAttribute("onClick")))
+                if (!method.getName().equals(methodName))
                     continue;
 
                 int parameterCount = method.getParameterCount();
@@ -399,8 +383,7 @@ public abstract class Pane {
                             throw new XMLReflectionException(exception);
                         }
                     };
-                else if (InventoryClickEvent.class.isAssignableFrom(parameterTypes[0]) ||
-                    Cancellable.class.isAssignableFrom(parameterTypes[0])) {
+                else if (InventoryClickEvent.class.isAssignableFrom(parameterTypes[0])) {
                     if (parameterCount == 1)
                         action = event -> {
                             try {
@@ -447,17 +430,14 @@ public abstract class Pane {
             }
         }
 
-        GuiItem item = action == null ? new GuiItem(itemStack) : new GuiItem(itemStack, action);
+        GuiItem item = new GuiItem(itemStack, action);
 
         if (element.hasAttribute("field"))
             XMLUtil.loadFieldAttribute(instance, element, item);
 
         if (element.hasAttribute("populate")) {
             try {
-                Method method = instance.getClass().getMethod("populate", GuiItem.class);
-
-                method.setAccessible(true);
-                method.invoke(instance, item);
+                MethodUtils.invokeExactMethod(instance, "populate", item, GuiItem.class);
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException exception) {
                 throw new XMLLoadException(exception);
             }
@@ -485,11 +465,12 @@ public abstract class Pane {
             XMLUtil.loadFieldAttribute(instance, element, pane);
 
         if (element.hasAttribute("onClick"))
-            pane.setOnClick(XMLUtil.loadOnClickAttribute(instance, element, "onClick"));
+            pane.setOnClick(XMLUtil.loadOnEventAttribute(instance, element, InventoryClickEvent.class, "onClick"));
 
         if (element.hasAttribute("populate")) {
+            String attribute = element.getAttribute("populate");
             for (Method method: instance.getClass().getMethods()) {
-                if (!method.getName().equals(element.getAttribute("populate")))
+                if (!method.getName().equals(attribute))
                     continue;
 
                 try {
@@ -529,11 +510,7 @@ public abstract class Pane {
 
             String stringUUID = tag.getString("IF-uuid");
 
-            if (stringUUID == null) {
-                return false;
-            }
-
-            return guiItem.getUUID().equals(UUID.fromString(stringUUID));
+            return stringUUID != null && guiItem.getUUID().equals(UUID.fromString(stringUUID));
         }).findAny().orElse(null);
     }
 
@@ -548,7 +525,9 @@ public abstract class Pane {
     }
 
     /**
-     * Gets all the items in this pane and all underlying panes
+     * Gets all the items in this pane and all underlying panes.
+     * The returned collection is not guaranteed to be mutable or to be a view of the underlying data.
+     * (So changes to the gui are not guaranteed to be visible in the returned value.)
      *
      * @return all items
      */
@@ -557,7 +536,9 @@ public abstract class Pane {
     public abstract Collection<GuiItem> getItems();
 
     /**
-     * Gets all the panes in this panes, including any child panes from other panes
+     * Gets all the panes in this panes, including any child panes from other panes.
+     * The returned collection is not guaranteed to be mutable or to be a view of the underlying data.
+     * (So changes to the gui are not guaranteed to be visible in the returned value.)
      *
      * @return all panes
      */
@@ -594,14 +575,21 @@ public abstract class Pane {
     }
 
     /**
-     * Returns the property mappings used when loading properties from an XML file.
+     * Registers a property that can be used inside an XML file to add additional new properties.
+     * The use of {@link Gui#registerProperty(String, Function)} is preferred over this method.
      *
-     * @return the property mappings
+     * @param attributeName the name of the property. This is the same name you'll be using to specify the property
+     *                      type in the XML file.
+     * @param function how the property should be processed. This converts the raw text input from the XML node value
+     *                 into the correct object type.
+     * @throws IllegalArgumentException when a property with this name is already registered.
      */
-    @NotNull
-    @Contract(pure = true)
-    public static Map<String, Function<String, Object>> getPropertyMappings() {
-        return PROPERTY_MAPPINGS;
+    public static void registerProperty(@NotNull String attributeName, @NotNull Function<String, Object> function) {
+        if (PROPERTY_MAPPINGS.containsKey(attributeName)) {
+            throw new IllegalArgumentException("property '" + attributeName + "' is already registered");
+        }
+    
+        PROPERTY_MAPPINGS.put(attributeName, function);
     }
 
     /**

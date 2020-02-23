@@ -61,9 +61,6 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
     @NotNull
     private Mask mask;
 
-    /**
-     * {@inheritDoc}
-     */
     public OutlinePane(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
 
@@ -82,23 +79,14 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         this.mask = new Mask(mask);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public OutlinePane(int x, int y, int length, int height) {
         this(x, y, length, height, Priority.NORMAL);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public OutlinePane(int length, int height) {
         this(0, 0, length, height);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void display(@NotNull Gui gui, @NotNull Inventory inventory, @NotNull PlayerInventory playerInventory,
                         int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
@@ -205,9 +193,6 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY,
                          int maxLength, int maxHeight) {
@@ -255,9 +240,6 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setRotation(int rotation) {
         if (length != height) {
@@ -300,9 +282,6 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         items.remove(item);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void clear() {
         items.clear();
@@ -324,17 +303,11 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         this.mask = mask;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void flipHorizontally(boolean flipHorizontally) {
         this.flipHorizontally = flipHorizontally;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void flipVertically(boolean flipVertically) {
         this.flipVertically = flipVertically;
@@ -349,9 +322,6 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         this.gap = gap;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setOrientation(@NotNull Orientation orientation) {
         this.orientation = orientation;
@@ -366,9 +336,6 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         this.repeat = repeat;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Contract(pure = true)
     @Override
@@ -396,9 +363,6 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         return gap;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Override
     public List<GuiItem> getItems() {
@@ -417,27 +381,18 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         return orientation;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Contract(pure = true)
     @Override
     public int getRotation() {
         return rotation;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Contract(pure = true)
     @Override
     public boolean isFlippedHorizontally() {
         return flipHorizontally;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Contract(pure = true)
     @Override
     public boolean isFlippedVertically() {
@@ -452,7 +407,6 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
      * @return the outline pane
      */
     @NotNull
-    @Contract("_, null -> fail")
     public static OutlinePane load(@NotNull Object instance, @NotNull Element element) {
         try {
             OutlinePane outlinePane = new OutlinePane(

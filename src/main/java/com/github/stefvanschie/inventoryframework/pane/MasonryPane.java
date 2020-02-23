@@ -6,7 +6,6 @@ import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.PlayerInventory;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -38,30 +37,18 @@ public class MasonryPane extends Pane implements Orientable {
     @NotNull
     private Orientation orientation = Orientation.HORIZONTAL;
 
-    /**
-     * {@inheritDoc}
-     */
     public MasonryPane(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public MasonryPane(int x, int y, int length, int height) {
         super(x, y, length, height);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public MasonryPane(int length, int height) {
         super(length, height);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void display(@NotNull Gui gui, @NotNull Inventory inventory, @NotNull PlayerInventory playerInventory,
                         int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
@@ -161,9 +148,6 @@ public class MasonryPane extends Pane implements Orientable {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY,
                          int maxLength, int maxHeight) {
@@ -212,18 +196,12 @@ public class MasonryPane extends Pane implements Orientable {
         panes.add(pane);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Override
     public Collection<GuiItem> getItems() {
         return getPanes().stream().flatMap(pane -> pane.getItems().stream()).collect(Collectors.toList());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Override
     public Collection<Pane> getPanes() {
@@ -237,26 +215,17 @@ public class MasonryPane extends Pane implements Orientable {
         return panes;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void clear() {
         panes.clear();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @NotNull
     @Override
     public Orientation getOrientation() {
         return orientation;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setOrientation(@NotNull Orientation orientation) {
         this.orientation = orientation;
@@ -270,7 +239,6 @@ public class MasonryPane extends Pane implements Orientable {
      * @return the masonry pane
      */
     @NotNull
-    @Contract("_, null -> fail")
     public static MasonryPane load(@NotNull Object instance, @NotNull Element element) {
         try {
             MasonryPane masonryPane = new MasonryPane(
