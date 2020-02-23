@@ -593,6 +593,19 @@ public abstract class Pane {
     }
 
     /**
+     * Returns the property mappings used when loading properties from an XML file.
+     *
+     * @deprecated use {@link Gui#registerProperty(String, Function)} instead
+     * @return the property mappings
+     */
+    @NotNull
+    @Contract(pure = true)
+    @Deprecated
+    public static Map<String, Function<String, Object>> getPropertyMappings() {
+        return PROPERTY_MAPPINGS;
+    }
+
+    /**
      * An enum representing the rendering priorities for the panes. Uses a similar system to Bukkit's
      * {@link org.bukkit.event.EventPriority} system
      */

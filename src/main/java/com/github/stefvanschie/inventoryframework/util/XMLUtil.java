@@ -1,5 +1,7 @@
 package com.github.stefvanschie.inventoryframework.util;
 
+import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
+import com.github.stefvanschie.inventoryframework.exception.XMLReflectionException;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +52,7 @@ public class XMLUtil {
                         method.invoke(instance);
                     }
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException("Error while invoking reflection-obtained event listener", e);
+                    throw new XMLReflectionException(e);
                 }
             };
         }
@@ -72,7 +74,7 @@ public class XMLUtil {
             field.setAccessible(true);
             field.set(instance, value);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new XMLLoadException(e);
         }
     }
 }
