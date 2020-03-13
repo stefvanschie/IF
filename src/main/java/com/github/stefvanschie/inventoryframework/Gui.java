@@ -183,11 +183,34 @@ public class Gui implements InventoryHolder {
         }
 
         //copy the viewers
-        List<HumanEntity> viewers = new ArrayList<>(inventory.getViewers());
+        List<HumanEntity> viewers = getViewers();
 
         this.inventory = Bukkit.createInventory(this, rows * 9, getTitle());
 
         viewers.forEach(humanEntity -> humanEntity.openInventory(inventory));
+    }
+
+    /**
+     * Gets the count of {@link HumanEntity} instances that are currently viewing this GUI.
+     *
+     * @return the count of viewers
+     */
+    @Contract(pure = true)
+    public int getViewerCount() {
+        return inventory.getViewers().size();
+    }
+
+    /**
+     * Gets a mutable snapshot of the current {@link HumanEntity} viewers of this GUI.
+     * This is a snapshot (copy) and a not a view, therefore modifications aren't visible.
+     *
+     * @return a snapshot of the current viewers
+     * @see #getViewerCount()
+     */
+    @NotNull
+    @Contract(pure = true)
+    public List<HumanEntity> getViewers() {
+        return new ArrayList<>(inventory.getViewers());
     }
 
     /**
@@ -214,7 +237,7 @@ public class Gui implements InventoryHolder {
      */
     public void setTitle(@NotNull String title) {
         //copy the viewers
-        List<HumanEntity> viewers = new ArrayList<>(inventory.getViewers());
+        List<HumanEntity> viewers = getViewers();
 
         this.inventory = Bukkit.createInventory(this, this.inventory.getSize(), title);
         this.title = title;
@@ -239,7 +262,7 @@ public class Gui implements InventoryHolder {
     public void update() {
         updating = true;
 
-        new HashSet<>(inventory.getViewers()).forEach(this::show);
+        getViewers().forEach(this::show);
 
         if (!updating)
             throw new AssertionError("Gui#isUpdating became false before Gui#update finished");
