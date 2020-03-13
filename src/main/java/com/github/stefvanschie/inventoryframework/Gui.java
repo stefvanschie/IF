@@ -24,7 +24,6 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -130,7 +129,7 @@ public class Gui implements InventoryHolder {
         this.title = title;
 
         if (!hasRegisteredListeners) {
-            Bukkit.getPluginManager().registerEvents(new GuiListener(), plugin);
+            Bukkit.getPluginManager().registerEvents(new GuiListener(plugin), plugin);
 
             hasRegisteredListeners = true;
         }
@@ -166,8 +165,7 @@ public class Gui implements InventoryHolder {
 
         //ensure that the inventory is cached before being overwritten and restore it if we end up not needing the bottom part after all
         if (state == State.TOP) {
-            humanEntityCache.restore(humanEntity);
-            humanEntityCache.clearCache(humanEntity);
+            humanEntityCache.restoreAndForget(humanEntity);
         }
 
         humanEntity.openInventory(inventory);
@@ -264,16 +262,9 @@ public class Gui implements InventoryHolder {
         this.state = state;
 
         if (state == State.TOP) {
-            humanEntityCache.restoreAll();
-            humanEntityCache.clearCache();
+            humanEntityCache.restoreAndForgetAll();
         } else if (state == State.BOTTOM) {
-            inventory.getViewers().forEach(humanEntity -> {
-                humanEntityCache.store(humanEntity);
-
-                for (int i = 0; i < 36; i++) {
-                    humanEntity.getInventory().clear(i);
-                }
-            });
+            inventory.getViewers().forEach(humanEntityCache::storeAndClear);
         }
     }
 
