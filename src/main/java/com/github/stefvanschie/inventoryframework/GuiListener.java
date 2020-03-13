@@ -1,18 +1,23 @@
 package com.github.stefvanschie.inventoryframework;
 
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -22,6 +27,12 @@ import java.util.function.Consumer;
  * @since 0.5.4
  */
 public class GuiListener implements Listener {
+
+    /**
+     * A collection of all {@link Gui} instances that have at least one viewers.
+     */
+    @NotNull
+    private final Set<Gui> activeGuiInstances = new HashSet<>();
 
     /**
      * The main plugin instance.
@@ -117,6 +128,25 @@ public class GuiListener implements Listener {
         }
 
         gui.getHumanEntityCache().restoreAndForget(event.getPlayer());
+
+        if (gui.getViewerCount() == 1) {
+            activeGuiInstances.remove(gui);
+        }
+    }
+
+    /**
+     * Registers newly opened inventories
+     *
+     * @param event the event fired
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onInventoryOpen(@NotNull InventoryOpenEvent event) {
+        if (!(event.getInventory().getHolder() instanceof Gui)) {
+            return;
+        }
+
+        Gui gui = (Gui) event.getInventory().getHolder();
+        activeGuiInstances.add(gui);
     }
 
     /**
@@ -126,8 +156,20 @@ public class GuiListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPluginDisable(@NotNull PluginDisableEvent event) {
-        if (event.getPlugin() == plugin) {
-            HumanEntityCache.getActiveInstances().forEach(HumanEntityCache::restoreAndForgetAll);
+        if (event.getPlugin() != plugin) {
+            return;
         }
+
+        int counter = 0; //callbacks might open GUIs, eg. in nested menus
+        while (!activeGuiInstances.isEmpty() && counter++ < 10) {
+            for (Gui gui : new ArrayList<>(activeGuiInstances)) {
+                for (HumanEntity viewer : gui.getViewers()) {
+                    viewer.closeInventory();
+                }
+            }
+        }
+
+        plugin.getLogger().warning("Unable to close GUIs on plugin disable: they keep getting opened "
+                + "(tried: " + counter + " times)");
     }
 }
