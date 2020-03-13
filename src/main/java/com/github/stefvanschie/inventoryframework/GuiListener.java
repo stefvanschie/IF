@@ -1,24 +1,42 @@
 package com.github.stefvanschie.inventoryframework;
 
 import com.github.stefvanschie.inventoryframework.pane.Pane;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Listens to events for {@link Gui}s. Only one of these is ever initialized per plugin.
+ * Listens to events for {@link Gui}s. Only one instance of this class gets constructed.
+ * (One instance per plugin, but plugins are supposed to shade and relocate IF.)
  *
  * @since 0.5.4
  */
 public class GuiListener implements Listener {
+
+    /**
+     * The main plugin instance.
+     */
+    @NotNull
+    private final Plugin plugin;
+
+    /**
+     * Constructs a new listener
+     *
+     * @param plugin the main plugin
+     */
+    public GuiListener(@NotNull Plugin plugin) {
+        this.plugin = plugin;
+    }
 
     /**
      * Handles clicks in inventories
@@ -98,9 +116,18 @@ public class GuiListener implements Listener {
             onClose.accept(event);
         }
 
-        HumanEntityCache humanEntityCache = gui.getHumanEntityCache();
-        HumanEntity humanEntity = event.getPlayer();
-        humanEntityCache.restore(humanEntity);
-        humanEntityCache.clearCache(humanEntity);
+        gui.getHumanEntityCache().restoreAndForget(event.getPlayer());
+    }
+
+    /**
+     * Handles the disabling of the plugin
+     *
+     * @param event the event fired
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPluginDisable(@NotNull PluginDisableEvent event) {
+        if (event.getPlugin() == plugin) {
+            HumanEntityCache.getActiveInstances().forEach(HumanEntityCache::restoreAndForgetAll);
+        }
     }
 }
