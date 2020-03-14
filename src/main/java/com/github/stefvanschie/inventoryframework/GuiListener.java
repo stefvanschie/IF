@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 public class GuiListener implements Listener {
 
     /**
-     * A collection of all {@link Gui} instances that have at least one viewers.
+     * A collection of all {@link Gui} instances that have at least one viewer.
      */
     @NotNull
     private final Set<Gui> activeGuiInstances = new HashSet<>();
@@ -164,7 +164,8 @@ public class GuiListener implements Listener {
         }
 
         int counter = 0; //callbacks might open GUIs, eg. in nested menus
-        while (!activeGuiInstances.isEmpty() && counter++ < 10) {
+		int maxCount = 10;
+        while (!activeGuiInstances.isEmpty() && counter++ < maxCount) {
             for (Gui gui : new ArrayList<>(activeGuiInstances)) {
                 for (HumanEntity viewer : gui.getViewers()) {
                     viewer.closeInventory();
@@ -172,7 +173,9 @@ public class GuiListener implements Listener {
             }
         }
 
-        plugin.getLogger().warning("Unable to close GUIs on plugin disable: they keep getting opened "
-                + "(tried: " + counter + " times)");
+        if (counter == maxCount) {
+			plugin.getLogger().warning("Unable to close GUIs on plugin disable: they keep getting opened "
+					+ "(tried: " + maxCount + " times)");
+		}
     }
 }
