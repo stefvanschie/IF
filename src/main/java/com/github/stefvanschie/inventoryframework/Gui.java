@@ -194,6 +194,7 @@ public class Gui implements InventoryHolder {
      * Gets the count of {@link HumanEntity} instances that are currently viewing this GUI.
      *
      * @return the count of viewers
+     * @since 0.5.19
      */
     @Contract(pure = true)
     public int getViewerCount() {
@@ -206,6 +207,7 @@ public class Gui implements InventoryHolder {
      *
      * @return a snapshot of the current viewers
      * @see #getViewerCount()
+     * @since 0.5.19
      */
     @NotNull
     @Contract(pure = true)
