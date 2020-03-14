@@ -44,6 +44,7 @@ public class GuiListener implements Listener {
      * Constructs a new listener
      *
      * @param plugin the main plugin
+     * @since 0.5.19
      */
     public GuiListener(@NotNull Plugin plugin) {
         this.plugin = plugin;
@@ -138,6 +139,7 @@ public class GuiListener implements Listener {
      * Registers newly opened inventories
      *
      * @param event the event fired
+     * @since 0.5.19
      */
     @EventHandler(ignoreCancelled = true)
     public void onInventoryOpen(@NotNull InventoryOpenEvent event) {
@@ -153,6 +155,7 @@ public class GuiListener implements Listener {
      * Handles the disabling of the plugin
      *
      * @param event the event fired
+     * @since 0.5.19
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPluginDisable(@NotNull PluginDisableEvent event) {
