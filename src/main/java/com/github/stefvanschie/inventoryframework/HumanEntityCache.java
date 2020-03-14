@@ -54,12 +54,24 @@ public class HumanEntityCache {
 
         inventories.put(humanEntity, items);
     }
-    
+
+    /**
+     * Restores the contents of the specified human entity, clearing the cache afterwards.
+     * This method will fail silently if no cache is available.
+     *
+     * @param humanEntity the human entity to restore its cache for
+     * @since 0.5.19
+     */
     public void restoreAndForget(@NotNull HumanEntity humanEntity) {
         restore(humanEntity);
         clearCache(humanEntity);
     }
-    
+
+    /**
+     * Restores all players' contents into their inventory, clearing the cache afterwards.
+     *
+     * @since 0.5.19
+     */
     public void restoreAndForgetAll() {
         restoreAll();
         clearCache();

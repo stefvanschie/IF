@@ -203,7 +203,7 @@ public class Gui implements InventoryHolder {
 
     /**
      * Gets a mutable snapshot of the current {@link HumanEntity} viewers of this GUI.
-     * This is a snapshot (copy) and a not a view, therefore modifications aren't visible.
+     * This is a snapshot (copy) and not a view, therefore modifications aren't visible.
      *
      * @return a snapshot of the current viewers
      * @see #getViewerCount()
