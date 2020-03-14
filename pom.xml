@@ -12,7 +12,7 @@
 
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF</artifactId>
-    <version>0.5.18</version>
+    <version>0.5.19</version>
     <packaging>jar</packaging>
 
     <name>IF</name>
