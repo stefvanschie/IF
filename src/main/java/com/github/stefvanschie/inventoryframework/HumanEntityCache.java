@@ -38,24 +38,6 @@ public class HumanEntityCache {
     }
 
     /**
-     * Stores this player's inventory in the cache. If the player was already stored, their cache will be overwritten.
-     *
-     * @param humanEntity the human entity to keep in the cache
-     * @since 0.4.0
-     * @deprecated use {@link #storeAndClear(HumanEntity)} instead
-     */
-    @Deprecated
-    public void store(@NotNull HumanEntity humanEntity) {
-        ItemStack[] items = new ItemStack[36];
-
-        for (int i = 0 ; i < 36; i++) {
-            items[i] = humanEntity.getInventory().getItem(i);
-        }
-
-        inventories.put(humanEntity, items);
-    }
-
-    /**
      * Restores the contents of the specified human entity, clearing the cache afterwards.
      * This method will fail silently if no cache is available.
      *
@@ -78,15 +60,29 @@ public class HumanEntityCache {
     }
 
     /**
+     * Stores this player's inventory in the cache. If the player was already stored, their cache will be overwritten.
+     *
+     * @param humanEntity the human entity to keep in the cache
+     * @since 0.4.0
+     */
+    private void store(@NotNull HumanEntity humanEntity) {
+        ItemStack[] items = new ItemStack[36];
+
+        for (int i = 0 ; i < 36; i++) {
+            items[i] = humanEntity.getInventory().getItem(i);
+        }
+
+        inventories.put(humanEntity, items);
+    }
+
+    /**
      * Restores the contents of the specified human entity. This method will fail silently if no cache is available. The
      * cache will not be cleared.
      *
      * @param humanEntity the human entity to restore its cache for
      * @since 0.4.0
-     * @deprecated use {@link #restoreAndForget(HumanEntity)} instead
      */
-    @Deprecated
-    public void restore(@NotNull HumanEntity humanEntity) {
+    private void restore(@NotNull HumanEntity humanEntity) {
         ItemStack[] items = inventories.get(humanEntity);
 
         if (items == null) {
@@ -102,10 +98,8 @@ public class HumanEntityCache {
      * Restores all players' contents into their inventory. The cache will not be cleared.
      *
      * @since 0.4.0
-     * @deprecated use {@link #restoreAndForgetAll()} instead
      */
-    @Deprecated
-    public void restoreAll() {
+    private void restoreAll() {
         inventories.keySet().forEach(this::restore);
     }
 
@@ -114,10 +108,8 @@ public class HumanEntityCache {
      *
      * @param humanEntity the human entity to clear the cache for
      * @since 0.4.0
-     * @deprecated use {@link #restoreAndForget(HumanEntity)} instead
      */
-    @Deprecated
-    public void clearCache(@NotNull HumanEntity humanEntity) {
+    private void clearCache(@NotNull HumanEntity humanEntity) {
         inventories.remove(humanEntity);
     }
 
@@ -125,10 +117,8 @@ public class HumanEntityCache {
      * This clears the cache.
      *
      * @since 0.4.0
-     * @deprecated use {@link #restoreAndForgetAll()} instead
      */
-    @Deprecated
-    public void clearCache() {
+    private void clearCache() {
         inventories.clear();
     }
 }

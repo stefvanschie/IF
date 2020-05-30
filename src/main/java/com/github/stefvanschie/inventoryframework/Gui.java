@@ -491,17 +491,6 @@ public class Gui implements InventoryHolder {
     }
 
     /**
-     * Set the consumer that should be called whenever this gui is clicked in.
-     *
-     * @param onLocalClick the consumer that gets called
-     * @deprecated see {@link #setOnTopClick(Consumer)}
-     */
-    @Deprecated
-    public void setOnLocalClick(@NotNull Consumer<InventoryClickEvent> onLocalClick) {
-        this.onTopClick = onLocalClick;
-    }
-
-    /**
      * Set the consumer that should be called whenever this gui is closed.
      *
      * @param onClose the consumer that gets called
