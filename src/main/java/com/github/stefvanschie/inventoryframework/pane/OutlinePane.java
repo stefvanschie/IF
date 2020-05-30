@@ -8,6 +8,7 @@ import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.Contract;
@@ -200,11 +201,12 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         int height = Math.min(this.height, maxHeight);
 
         int slot = event.getSlot();
+        InventoryView inventoryView = event.getView();
+        Inventory inventory = inventoryView.getInventory(event.getRawSlot());
 
         int x, y;
 
-        //noinspection ConstantConditions
-        if (Gui.getInventory(event.getView(), event.getRawSlot()).equals(event.getView().getBottomInventory())) {
+        if (inventory != null && inventory.equals(inventoryView.getBottomInventory())) {
             x = (slot % 9) - getX() - paneOffsetX;
             y = ((slot / 9) + gui.getRows() - 1) - getY() - paneOffsetY;
 

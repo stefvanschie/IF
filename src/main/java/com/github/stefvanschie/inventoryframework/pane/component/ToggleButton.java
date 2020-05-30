@@ -8,6 +8,7 @@ import com.github.stefvanschie.inventoryframework.pane.Pane;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.Contract;
@@ -83,10 +84,12 @@ public class ToggleButton extends Pane {
         int height = Math.min(this.height, maxHeight);
 
         int slot = event.getSlot();
+        InventoryView view = event.getView();
+        Inventory inventory = view.getInventory(event.getRawSlot());
 
         int x, y;
 
-        if (Gui.getInventory(event.getView(), event.getRawSlot()).equals(event.getView().getBottomInventory())) {
+        if (inventory != null && inventory.equals(view.getBottomInventory())) {
             x = (slot % 9) - getX() - paneOffsetX;
             y = ((slot / 9) + gui.getRows() - 1) - getY() - paneOffsetY;
 

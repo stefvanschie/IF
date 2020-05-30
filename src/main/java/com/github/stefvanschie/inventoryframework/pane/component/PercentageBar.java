@@ -7,6 +7,8 @@ import com.github.stefvanschie.inventoryframework.pane.Orientable;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.component.util.VariableBar;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -37,10 +39,12 @@ public class PercentageBar extends VariableBar {
         int height = Math.min(this.height, maxHeight);
 
         int slot = event.getSlot();
+        InventoryView view = event.getView();
+        Inventory inventory = view.getInventory(event.getRawSlot());
 
         int x, y;
 
-        if (Gui.getInventory(event.getView(), event.getRawSlot()).equals(event.getView().getBottomInventory())) {
+        if (inventory != null && inventory.equals(view.getBottomInventory())) {
             x = (slot % 9) - getX() - paneOffsetX;
             y = ((slot / 9) + gui.getRows() - 1) - getY() - paneOffsetY;
 

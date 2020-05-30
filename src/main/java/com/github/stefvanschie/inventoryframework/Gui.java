@@ -12,7 +12,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -559,16 +558,6 @@ public class Gui implements InventoryHolder {
     @Contract(pure = true)
     protected boolean isUpdating() {
         return updating;
-    }
-
-    //Code taken from InventoryView#getInventory(rawSlot) to support for 1.12 where method doesn't exist
-    public static Inventory getInventory(InventoryView view, int rawSlot) {
-        if (rawSlot == InventoryView.OUTSIDE || rawSlot == -1) {
-            return null;
-        }
-        return rawSlot < view.getTopInventory().getSize()
-                ? view.getTopInventory()
-                : view.getBottomInventory();
     }
 
     /**
