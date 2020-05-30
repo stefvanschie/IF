@@ -564,17 +564,6 @@ public abstract class Pane {
     }
 
     /**
-     * Set the consumer that should be called whenever this gui is clicked in.
-     *
-     * @param onLocalClick the consumer that gets called
-     * @deprecated see {@link #setOnClick(Consumer)}
-     */
-    @Deprecated
-    public void setOnLocalClick(@Nullable Consumer<InventoryClickEvent> onLocalClick) {
-        this.onClick = onLocalClick;
-    }
-
-    /**
      * Registers a property that can be used inside an XML file to add additional new properties.
      * The use of {@link Gui#registerProperty(String, Function)} is preferred over this method.
      *
@@ -590,19 +579,6 @@ public abstract class Pane {
         }
     
         PROPERTY_MAPPINGS.put(attributeName, function);
-    }
-
-    /**
-     * Returns the property mappings used when loading properties from an XML file.
-     *
-     * @deprecated use {@link Gui#registerProperty(String, Function)} instead
-     * @return the property mappings
-     */
-    @NotNull
-    @Contract(pure = true)
-    @Deprecated
-    public static Map<String, Function<String, Object>> getPropertyMappings() {
-        return PROPERTY_MAPPINGS;
     }
 
     /**
