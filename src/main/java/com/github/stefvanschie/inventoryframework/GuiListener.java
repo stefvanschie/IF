@@ -77,7 +77,7 @@ public class GuiListener implements Listener {
         }
 
         InventoryView view = event.getView();
-        Inventory inventory = Gui.getInventory(view, event.getRawSlot());
+        Inventory inventory = view.getInventory(event.getRawSlot());
 
         if (inventory == null) {
             return;
