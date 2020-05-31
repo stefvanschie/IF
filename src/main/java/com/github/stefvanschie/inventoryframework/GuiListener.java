@@ -12,6 +12,7 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -33,22 +34,6 @@ public class GuiListener implements Listener {
      */
     @NotNull
     private final Set<Gui> activeGuiInstances = new HashSet<>();
-
-    /**
-     * The main plugin instance.
-     */
-    @NotNull
-    private final Plugin plugin;
-
-    /**
-     * Constructs a new listener
-     *
-     * @param plugin the main plugin
-     * @since 0.5.19
-     */
-    public GuiListener(@NotNull Plugin plugin) {
-        this.plugin = plugin;
-    }
 
     /**
      * Handles clicks in inventories
@@ -159,7 +144,8 @@ public class GuiListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPluginDisable(@NotNull PluginDisableEvent event) {
-        if (event.getPlugin() != plugin) {
+        Plugin thisPlugin = JavaPlugin.getProvidingPlugin(getClass());
+        if (event.getPlugin() != thisPlugin) {
             return;
         }
 
@@ -174,7 +160,7 @@ public class GuiListener implements Listener {
         }
 
         if (counter == maxCount) {
-			plugin.getLogger().warning("Unable to close GUIs on plugin disable: they keep getting opened "
+			thisPlugin.getLogger().warning("Unable to close GUIs on plugin disable: they keep getting opened "
 					+ "(tried: " + maxCount + " times)");
 		}
     }

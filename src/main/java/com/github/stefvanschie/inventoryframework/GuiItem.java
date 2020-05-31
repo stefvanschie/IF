@@ -1,9 +1,13 @@
 package com.github.stefvanschie.inventoryframework;
 
-import me.ialistannen.mininbt.ItemNBTUtil;
-import me.ialistannen.mininbt.NBTWrappers;
+import com.github.stefvanschie.inventoryframework.util.UUIDTagType;
+import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +19,12 @@ import java.util.function.Consumer;
  * An item for in an inventory
  */
 public class GuiItem {
+
+    /**
+     * The {@link NamespacedKey} that specifies the location of the (internal) {@link UUID} in {@link PersistentDataContainer}s.
+     * The {@link PersistentDataType} that should be used is {@link UUIDTagType}.
+     */
+    public static final NamespacedKey KEY_UUID = new NamespacedKey(JavaPlugin.getProvidingPlugin(GuiItem.class), "IF-uuid");
 
     /**
      * An action for the inventory
@@ -49,11 +59,14 @@ public class GuiItem {
         this.action = action == null ? event -> {} : action;
         this.visible = true;
 
-        NBTWrappers.NBTTagCompound compound = ItemNBTUtil.getTag(item);
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            throw new IllegalArgumentException("item must be able to have ItemMeta (it mustn't be AIR)");
+        }
 
-        compound.setString("IF-uuid", uuid.toString());
-
-        this.item = ItemNBTUtil.setNBTTag(compound, item);
+        meta.getPersistentDataContainer().set(KEY_UUID, UUIDTagType.INSTANCE, uuid);
+        item.setItemMeta(meta);
+        this.item = item;
     }
 
     /**

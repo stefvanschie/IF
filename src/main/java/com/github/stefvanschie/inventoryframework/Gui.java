@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -117,8 +118,21 @@ public class Gui implements InventoryHolder {
      * @param plugin the main plugin.
      * @param rows the amount of rows this gui should contain, in range 1..6.
      * @param title the title/name of this gui.
+     * @deprecated use {@link #Gui(int, String)} instead
      */
+    @Deprecated
     public Gui(@NotNull Plugin plugin, int rows, @NotNull String title) {
+        this(rows, title);
+    }
+
+    /**
+     * Constructs a new GUI
+     *
+     * @param rows the amount of rows this gui should contain, in range 1..6.
+     * @param title the title/name of this gui.
+     * @since 0.6.0
+     */
+    public Gui(int rows, @NotNull String title) {
         if (!(rows >= 1 && rows <= 6)) {
             throw new IllegalArgumentException("Rows should be between 1 and 6");
         }
@@ -128,7 +142,8 @@ public class Gui implements InventoryHolder {
         this.title = title;
 
         if (!hasRegisteredListeners) {
-            Bukkit.getPluginManager().registerEvents(new GuiListener(plugin), plugin);
+            Bukkit.getPluginManager().registerEvents(new GuiListener(),
+                    JavaPlugin.getProvidingPlugin(getClass()));
 
             hasRegisteredListeners = true;
         }
@@ -325,12 +340,28 @@ public class Gui implements InventoryHolder {
      * @param instance the class instance for all reflection lookups
      * @param inputStream the file
      * @return the gui or null if the loading failed
-     * @see #loadOrThrow(Plugin, Object, InputStream)
+     * @see #loadOrThrow(Object, InputStream)
+     * @deprecated use {@link #load(Object, InputStream)} instead
      */
     @Nullable
+    @Deprecated
     public static Gui load(@NotNull Plugin plugin, @NotNull Object instance, @NotNull InputStream inputStream) {
+        return load(instance, inputStream);
+    }
+
+    /**
+     * Loads a Gui from a given input stream.
+     * Returns null instead of throwing an exception in case of a failure.
+     *
+     * @param instance the class instance for all reflection lookups
+     * @param inputStream the file
+     * @return the gui or null if the loading failed
+     * @see #loadOrThrow(Object, InputStream)
+     */
+    @Nullable
+    public static Gui load(@NotNull Object instance, @NotNull InputStream inputStream) {
         try {
-            return loadOrThrow(plugin, instance, inputStream);
+            return loadOrThrow(instance, inputStream);
         } catch (RuntimeException e) {
             e.printStackTrace();
             return null;
@@ -345,10 +376,27 @@ public class Gui implements InventoryHolder {
      * @param instance the class instance for all reflection lookups
      * @param inputStream the file
      * @return the gui
-     * @see #load(Plugin, Object, InputStream)
+     * @see #load(Object, InputStream)
+     * @deprecated use {@link #loadOrThrow(Object, InputStream)} instead
      */
     @NotNull
+    @Deprecated
     public static Gui loadOrThrow(@NotNull Plugin plugin, @NotNull Object instance, @NotNull InputStream inputStream) {
+        return loadOrThrow(instance, inputStream);
+    }
+
+    /**
+     * Loads a Gui from a given input stream.
+     * Throws a {@link RuntimeException} instead of returning null in case of a failure.
+     *
+     * @param instance the class instance for all reflection lookups
+     * @param inputStream the file
+     * @return the gui
+     * @see #load(Object, InputStream)
+     */
+    @NotNull
+    public static Gui loadOrThrow(@NotNull Object instance, @NotNull InputStream inputStream) {
+        Plugin plugin = JavaPlugin.getProvidingPlugin(Gui.class);
         try {
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
             Element documentElement = document.getDocumentElement();
