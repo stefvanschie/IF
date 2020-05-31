@@ -5,10 +5,9 @@ import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.exception.XMLReflectionException;
 import com.github.stefvanschie.inventoryframework.util.SkullUtil;
+import com.github.stefvanschie.inventoryframework.util.UUIDTagType;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.google.common.primitives.Primitives;
-import me.ialistannen.mininbt.ItemNBTUtil;
-import me.ialistannen.mininbt.NBTWrappers;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -501,17 +500,19 @@ public abstract class Pane {
     @Nullable
     @Contract(pure = true)
     protected static <T extends GuiItem> T findMatchingItem(@NotNull Collection<T> items, @NotNull ItemStack item) {
-        return items.stream().filter(guiItem -> {
-            NBTWrappers.NBTTagCompound tag = ItemNBTUtil.getTag(item);
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return null;
+        }
 
-            if (tag == null) {
-                return false;
-            }
+        UUID uuid = meta.getPersistentDataContainer().get(GuiItem.KEY_UUID, UUIDTagType.INSTANCE);
+        if (uuid == null) {
+            return null;
+        }
 
-            String stringUUID = tag.getString("IF-uuid");
-
-            return stringUUID != null && guiItem.getUUID().equals(UUID.fromString(stringUUID));
-        }).findAny().orElse(null);
+        return items.stream()
+                .filter(guiItem -> guiItem.getUUID().equals(uuid))
+                .findAny().orElse(null);
     }
 
     /**
