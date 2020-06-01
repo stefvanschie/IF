@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * Listens to events for {@link Gui}s. Only one instance of this class gets constructed.
@@ -48,36 +47,19 @@ public class GuiListener implements Listener {
         }
 
         Gui gui = (Gui) event.getInventory().getHolder();
-        Consumer<InventoryClickEvent> onOutsideClick = gui.getOnOutsideClick();
-
-        if (onOutsideClick != null && event.getClickedInventory() == null) {
-            onOutsideClick.accept(event);
-            return;
-        }
-
-        Consumer<InventoryClickEvent> onGlobalClick = gui.getOnGlobalClick();
-
-        if (onGlobalClick != null) {
-            onGlobalClick.accept(event);
-        }
-
         InventoryView view = event.getView();
         Inventory inventory = view.getInventory(event.getRawSlot());
 
         if (inventory == null) {
+            gui.callOnOutsideClick(event);
             return;
         }
 
-        Consumer<InventoryClickEvent> onTopClick = gui.getOnTopClick();
-
-        if (onTopClick != null && inventory.equals(view.getTopInventory())) {
-            onTopClick.accept(event);
-        }
-
-        Consumer<InventoryClickEvent> onBottomClick = gui.getOnBottomClick();
-
-        if (onBottomClick != null && inventory.equals(view.getBottomInventory())) {
-            onBottomClick.accept(event);
+        gui.callOnGlobalClick(event);
+        if (inventory.equals(view.getTopInventory())) {
+            gui.callOnTopClick(event);
+        } else {
+            gui.callOnBottomClick(event);
         }
 
         if ((inventory.equals(view.getBottomInventory()) && gui.getState() == Gui.State.TOP) ||
@@ -108,9 +90,8 @@ public class GuiListener implements Listener {
 
         Gui gui = (Gui) event.getInventory().getHolder();
 
-        Consumer<InventoryCloseEvent> onClose = gui.getOnClose();
-        if (!gui.isUpdating() && onClose != null) {
-            onClose.accept(event);
+        if (!gui.isUpdating()) {
+            gui.callOnClose(event);
         }
 
         gui.getHumanEntityCache().restoreAndForget(event.getPlayer());

@@ -222,8 +222,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         if (x < 0 || x >= length || y < 0 || y >= height)
             return false;
 
-        if (onClick != null)
-            onClick.accept(event);
+        callOnClick(event);
 
         ItemStack itemStack = event.getCurrentItem();
 
@@ -237,7 +236,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
             return false;
         }
 
-        item.getAction().accept(event);
+        item.callAction(event);
 
         return true;
     }

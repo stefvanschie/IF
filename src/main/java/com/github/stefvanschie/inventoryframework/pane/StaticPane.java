@@ -151,8 +151,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 		if (x < 0 || x >= length || y < 0 || y >= height)
 			return false;
 
-        if (onClick != null)
-            onClick.accept(event);
+		callOnClick(event);
 
         ItemStack itemStack = event.getCurrentItem();
 
@@ -166,7 +165,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
             return false;
         }
 
-        clickedItem.getAction().accept(event);
+        clickedItem.callAction(event);
 
         return true;
 	}
