@@ -225,8 +225,7 @@ public class PaginatedPane extends Pane {
             return false;
         }
 
-        if (onClick != null)
-            onClick.accept(event);
+		callOnClick(event);
 
         List<Pane> panes = this.panes.get(page);
 

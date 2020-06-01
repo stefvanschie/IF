@@ -106,8 +106,7 @@ public class ToggleButton extends Pane {
             return false;
         }
 
-        if (onClick != null)
-            onClick.accept(event);
+        callOnClick(event);
 
         int newX = paneOffsetX + x;
         int newY = paneOffsetY + y;
