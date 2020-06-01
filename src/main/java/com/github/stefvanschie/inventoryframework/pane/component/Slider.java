@@ -60,9 +60,7 @@ public class Slider extends VariableBar {
             return false;
         }
 
-        if (onClick != null) {
-            onClick.accept(event);
-        }
+        callOnClick(event);
 
         int newPaneOffsetX = paneOffsetX + getX();
         int newPaneOffsetY = paneOffsetY + getY();

@@ -74,8 +74,7 @@ public class CycleButton extends Pane {
             return false;
         }
 
-        if (onClick != null)
-            onClick.accept(event);
+        callOnClick(event);
 
         panes.get(position).click(gui, event, paneOffsetX + x, paneOffsetY + y, length, height);
 

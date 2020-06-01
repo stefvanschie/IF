@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
@@ -28,6 +29,8 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -463,15 +466,15 @@ public class Gui implements InventoryHolder {
     }
 
     /**
-     * Gets the top click event assigned to this gui, or null if there is no top click assigned.
+     * Calls the consumer (if it's not null) that was specified using {@link #setOnTopClick(Consumer)},
+     * so the consumer that should be called whenever this gui is clicked in.
+     * Catches and logs all exceptions the consumer might throw.
      *
-     * @return the top click
-     * @since 0.5.4
+     * @param event the event to handle
+     * @since 0.6.0
      */
-    @Nullable
-    @Contract(pure = true)
-    public Consumer<InventoryClickEvent> getOnTopClick() {
-        return onTopClick;
+    public void callOnTopClick(@NotNull InventoryClickEvent event) {
+        callCallback(onTopClick, event, "onTopClick");
     }
 
     /**
@@ -484,15 +487,15 @@ public class Gui implements InventoryHolder {
     }
 
     /**
-     * Gets the bottom click event assigned to this gui, or null if there is no bottom click assigned.
+     * Calls the consumer (if it's not null) that was specified using {@link #setOnBottomClick(Consumer)},
+     * so the consumer that should be called whenever the inventory is clicked in.
+     * Catches and logs all exceptions the consumer might throw.
      *
-     * @return the bottom click
-     * @since 0.5.4
+     * @param event the event to handle
+     * @since 0.6.0
      */
-    @Nullable
-    @Contract(pure = true)
-    public Consumer<InventoryClickEvent> getOnBottomClick() {
-        return onBottomClick;
+    public void callOnBottomClick(@NotNull InventoryClickEvent event) {
+        callCallback(onBottomClick, event, "onBottomClick");
     }
 
     /**
@@ -505,15 +508,15 @@ public class Gui implements InventoryHolder {
     }
 
     /**
-     * Gets the global click event assigned to this gui, or null if there is no global click assigned.
+     * Calls the consumer (if it's not null) that was specified using {@link #setOnGlobalClick(Consumer)},
+     * so the consumer that should be called whenever this gui or inventory is clicked in.
+     * Catches and logs all exceptions the consumer might throw.
      *
-     * @return the global click
-     * @since 0.5.4
+     * @param event the event to handle
+     * @since 0.6.0
      */
-    @Nullable
-    @Contract(pure = true)
-    public Consumer<InventoryClickEvent> getOnGlobalClick() {
-        return onGlobalClick;
+    public void callOnGlobalClick(@NotNull InventoryClickEvent event) {
+        callCallback(onGlobalClick, event, "onGlobalClick");
     }
 
     /**
@@ -527,15 +530,15 @@ public class Gui implements InventoryHolder {
     }
 
     /**
-     * Gets the outside click event assigned to this gui, or null if there is no outside click assigned.
+     * Calls the consumer (if it's not null) that was specified using {@link #setOnOutsideClick(Consumer)},
+     * so the consumer that should be called whenever a player clicks outside the gui.
+     * Catches and logs all exceptions the consumer might throw.
      *
-     * @return the outside click
-     * @since 0.5.7
+     * @param event the event to handle
+     * @since 0.6.0
      */
-    @Nullable
-    @Contract(pure = true)
-    public Consumer<InventoryClickEvent> getOnOutsideClick() {
-        return onOutsideClick;
+    public void callOnOutsideClick(@NotNull InventoryClickEvent event) {
+        callCallback(onOutsideClick, event, "onOutsideClick");
     }
 
     /**
@@ -548,15 +551,43 @@ public class Gui implements InventoryHolder {
     }
 
     /**
-     * Gets the on close event assigned to this gui, or null if no close event is assigned.
+     * Calls the consumer (if it's not null) that was specified using {@link #setOnClose(Consumer)},
+     * so the consumer that should be called whenever this gui is closed.
+     * Catches and logs all exceptions the consumer might throw.
      *
-     * @return the on close event
-     * @since 0.5.4
+     * @param event the event to handle
+     * @since 0.6.0
      */
-    @Nullable
-    @Contract(pure = true)
-    public Consumer<InventoryCloseEvent> getOnClose() {
-        return onClose;
+    public void callOnClose(@NotNull InventoryCloseEvent event) {
+        callCallback(onClose, event, "onClose");
+    }
+
+    /**
+     * Calls the specified consumer (if it's not null) with the specified parameter,
+     * catching and logging all exceptions it might throw.
+     *
+     * @param callback the consumer to call if it isn't null
+     * @param event the value the consumer should accept
+     * @param callbackName the name of the action, used for logging
+     * @param <T> the type of the value the consumer is accepting
+     */
+    private <T extends InventoryEvent> void callCallback(@Nullable Consumer<T> callback,
+            @NotNull T event, @NotNull String callbackName) {
+        if (callback == null) {
+            return;
+        }
+
+        try {
+            callback.accept(event);
+        } catch (Throwable t) {
+            Logger logger = JavaPlugin.getProvidingPlugin(getClass()).getLogger();
+            String message = "Exception while handling " + callbackName + " in inventory '" + title + "', state=" + state;
+            if (event instanceof InventoryClickEvent) {
+                InventoryClickEvent clickEvent = (InventoryClickEvent) event;
+                message += ", slot=" + clickEvent.getSlot();
+            }
+            logger.log(Level.SEVERE, message, t);
+        }
     }
 
     /**

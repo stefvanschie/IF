@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,6 +32,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The base class for all panes.
@@ -59,10 +62,10 @@ public abstract class Pane {
     private Priority priority;
 
     /**
-     * The consumer that will be called once a players clicks in the gui
+     * The consumer that will be called once a players clicks in this pane
      */
     @Nullable
-    protected Consumer<InventoryClickEvent> onClick;
+    private Consumer<InventoryClickEvent> onClick;
 
     /**
      * A map containing the mappings for properties for items
@@ -555,13 +558,36 @@ public abstract class Pane {
     public abstract void clear();
 
     /**
-     * Set the consumer that should be called whenever this gui is clicked in.
+     * Set the consumer that should be called whenever this pane is clicked in.
      *
      * @param onClick the consumer that gets called
      * @since 0.4.0
      */
     public void setOnClick(@Nullable Consumer<InventoryClickEvent> onClick) {
         this.onClick = onClick;
+    }
+    
+    /**
+     * Calls the consumer (if it's not null) that was specified using {@link #setOnClick(Consumer)},
+     * so the consumer that should be called whenever this pane is clicked in.
+     * Catches and logs all exceptions the consumer might throw.
+     *
+     * @param event the event to handle
+     * @since 0.6.0
+     */
+    protected void callOnClick(@NotNull InventoryClickEvent event) {
+        if (onClick == null) {
+            return;
+        }
+    
+        try {
+            onClick.accept(event);
+        } catch (Throwable t) {
+            Logger logger = JavaPlugin.getProvidingPlugin(getClass()).getLogger();
+            logger.log(Level.SEVERE, "Exception while handling click event in inventory '"
+                    + event.getView().getTitle() + "', slot=" + event.getSlot() + ", for "
+                    + getClass().getSimpleName() + ", x=" + x + ", y=" + y + ", length=" + length + ", height=" + height, t);
+        }
     }
 
     /**

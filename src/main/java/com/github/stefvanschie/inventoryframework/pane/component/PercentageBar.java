@@ -60,9 +60,7 @@ public class PercentageBar extends VariableBar {
             return false;
         }
 
-        if (onClick != null) {
-            onClick.accept(event);
-        }
+        callOnClick(event);
 
         event.setCancelled(true);
 

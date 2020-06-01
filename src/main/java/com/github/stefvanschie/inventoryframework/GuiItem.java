@@ -14,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An item for in an inventory
@@ -29,7 +31,7 @@ public class GuiItem {
     /**
      * An action for the inventory
      */
-    @NotNull
+    @Nullable
     private final Consumer<InventoryClickEvent> action;
 
     /**
@@ -56,7 +58,7 @@ public class GuiItem {
      * @param action the action called whenever an interaction with this item happens
      */
     public GuiItem(@NotNull ItemStack item, @Nullable Consumer<InventoryClickEvent> action) {
-        this.action = action == null ? event -> {} : action;
+        this.action = action;
         this.visible = true;
 
         ItemMeta meta = item.getItemMeta();
@@ -79,14 +81,25 @@ public class GuiItem {
     }
 
     /**
-     * Returns the action for this item
+     * Calls the handler of the {@link InventoryClickEvent}
+     * if such a handler was specified in the constructor.
+     * Catches and logs all exceptions the handler might throw.
      *
-     * @return the action called when clicked on this item
+     * @param event the event to handle
+     * @since 0.6.0
      */
-    @NotNull
-    @Contract(pure = true)
-    public Consumer<InventoryClickEvent> getAction() {
-        return action;
+    public void callAction(@NotNull InventoryClickEvent event) {
+        if (action == null) {
+            return;
+        }
+
+        try {
+            action.accept(event);
+        } catch (Throwable t) {
+            Logger logger = JavaPlugin.getProvidingPlugin(getClass()).getLogger();
+            logger.log(Level.SEVERE, "Exception while handling click event in inventory '"
+                    + event.getView().getTitle() + "', slot=" + event.getSlot() + ", item=" + item.getType(), t);
+        }
     }
 
     /**
