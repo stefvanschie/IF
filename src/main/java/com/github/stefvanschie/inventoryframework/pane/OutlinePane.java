@@ -148,19 +148,24 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
             Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(newX, newY, length, height,
                     rotation);
 
-            int finalRow = getY() + coordinates.getValue() + paneOffsetY;
-            int finalColumn = getX() + coordinates.getKey() + paneOffsetX;
+            newX = coordinates.getKey();
+            newY = coordinates.getValue();
 
-            if (finalRow >= gui.getRows()) {
-                gui.setState(Gui.State.BOTTOM);
+            if (newX >= 0 || newX < length || newY >= 0 || newY < height) {
+                int finalRow = getY() + newY + paneOffsetY;
+                int finalColumn = getX() + newX + paneOffsetX;
 
-                if (finalRow == gui.getRows() + 3) {
-                    playerInventory.setItem(finalColumn, item.getItem());
+                if (finalRow >= gui.getRows()) {
+                    gui.setState(Gui.State.BOTTOM);
+
+                    if (finalRow == gui.getRows() + 3) {
+                        playerInventory.setItem(finalColumn, item.getItem());
+                    } else {
+                        playerInventory.setItem(((finalRow - gui.getRows()) + 1) * 9 + finalColumn, item.getItem());
+                    }
                 } else {
-                    playerInventory.setItem(((finalRow - gui.getRows()) + 1) * 9 + finalColumn, item.getItem());
+                    inventory.setItem(finalRow * 9 + finalColumn, item.getItem());
                 }
-            } else {
-                inventory.setItem(finalRow * 9 + finalColumn, item.getItem());
             }
 
             int gapCount = gap;

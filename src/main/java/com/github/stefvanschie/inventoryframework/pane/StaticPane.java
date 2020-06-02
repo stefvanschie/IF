@@ -80,10 +80,17 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 			Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y, length, height,
 				rotation);
 
+			x = coordinates.getKey();
+			y = coordinates.getValue();
+
+			if (x < 0 || x >= length || y < 0 || y >= height) {
+			    return;
+            }
+
 			ItemStack item = entry.getValue().getItem();
 
-			int finalRow = getY() + coordinates.getValue() + paneOffsetY;
-			int finalColumn = getX() + coordinates.getKey() + paneOffsetX;
+			int finalRow = getY() + y + paneOffsetY;
+			int finalColumn = getX() + x + paneOffsetX;
 
 			if (finalRow >= gui.getRows()) {
 			    gui.setState(Gui.State.BOTTOM);
