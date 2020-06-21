@@ -5,9 +5,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -15,10 +13,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Listens to events for {@link Gui}s. Only one instance of this class gets constructed.
@@ -74,6 +69,43 @@ public class GuiListener implements Listener {
             if (panes.get(i).click(gui, event, 0, 0, 9, gui.getRows() + 4))
                 break;
         }
+    }
+
+    /**
+     * Handles small drag events which are likely clicks instead. These small drags will be interpreted as clicks and
+     * will fire a click event.
+     *
+     * @param event the event fired
+     * @since 0.6.1
+     */
+    @EventHandler
+    public void onInventoryDrag(@NotNull InventoryDragEvent event) {
+        if (!(event.getInventory().getHolder() instanceof Gui)) {
+            return;
+        }
+
+        Set<Integer> inventorySlots = event.getInventorySlots();
+
+        if (inventorySlots.size() > 1) {
+            return;
+        }
+
+        InventoryView view = event.getView();
+        int index = inventorySlots.toArray(new Integer[0])[0];
+        InventoryType.SlotType slotType = view.getSlotType(index);
+
+        boolean even = event.getType() == DragType.EVEN;
+
+        ClickType clickType = even ? ClickType.LEFT : ClickType.RIGHT;
+        InventoryAction inventoryAction = even ? InventoryAction.PLACE_SOME : InventoryAction.PLACE_ONE;
+
+        //this is a fake click event, firing this may cause other plugins to function incorrectly, so keep it local
+        InventoryClickEvent inventoryClickEvent = new InventoryClickEvent(view, slotType, index, clickType,
+            inventoryAction);
+
+        onInventoryClick(inventoryClickEvent);
+
+        event.setCancelled(inventoryClickEvent.isCancelled());
     }
 
     /**
