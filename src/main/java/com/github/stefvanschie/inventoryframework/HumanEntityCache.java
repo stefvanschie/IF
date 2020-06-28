@@ -60,6 +60,58 @@ public class HumanEntityCache {
     }
 
     /**
+     * Adds the given item stack to the human entity's cached inventory. The returned amount is the amount of items of
+     * the provided item stack that could not be put into the cached inventory. This number will always be equal or
+     * less than the amount of items in the provided item stack, but no less than zero. The item stack provided will not
+     * be updated with this leftover amount. If the human entity provided is not in the human entity cache, this method
+     * will return an {@link IllegalStateException}. The items will be added to the inventory in the same way as the
+     * items are stored. The items may be added to an already existing item stack, but the item stack's amount will
+     * never go over the maximum stack size.
+     *
+     * @param humanEntity the human entity to add the item to
+     * @param item the item to add to the cached inventory
+     * @return the amount of leftover items that couldn't be fit in the cached inventory
+     * @throws IllegalStateException if the human entity's inventory is not cached
+     * @since 0.6.1
+     */
+    protected int add(@NotNull HumanEntity humanEntity, @NotNull ItemStack item) {
+        ItemStack[] items = inventories.get(humanEntity);
+
+        if (items == null) {
+            throw new IllegalStateException("The human entity '" + humanEntity.getUniqueId().toString() +
+                "' does not have a cached inventory");
+        }
+
+        int amountPutIn = 0;
+
+        for (int i = 0; i < items.length; i++) {
+            ItemStack itemStack = items[i];
+
+            if (itemStack == null) {
+                items[i] = item.clone();
+                items[i].setAmount(item.getAmount() - amountPutIn);
+                amountPutIn = item.getAmount();
+                break;
+            }
+
+            if (!itemStack.isSimilar(item)) {
+                continue;
+            }
+
+            int additionalAmount = Math.min(itemStack.getMaxStackSize() - itemStack.getAmount(), item.getAmount());
+
+            itemStack.setAmount(itemStack.getAmount() + additionalAmount);
+            amountPutIn += additionalAmount;
+
+            if (amountPutIn == item.getAmount()) {
+                break;
+            }
+        }
+
+        return item.getAmount() - amountPutIn;
+    }
+
+    /**
      * Stores this player's inventory in the cache. If the player was already stored, their cache will be overwritten.
      *
      * @param humanEntity the human entity to keep in the cache

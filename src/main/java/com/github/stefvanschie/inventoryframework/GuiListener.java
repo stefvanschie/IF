@@ -5,10 +5,13 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -69,6 +72,45 @@ public class GuiListener implements Listener {
             if (panes.get(i).click(gui, event, 0, 0, 9, gui.getRows() + 4))
                 break;
         }
+    }
+
+    /**
+     * Handles users picking up items while their bottom inventory is in use.
+     *
+     * @param event the event fired when an entity picks up an item
+     * @since 0.6.1
+     */
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onEntityPickupItem(@NotNull EntityPickupItemEvent event) {
+        if (!(event.getEntity() instanceof HumanEntity)) {
+            return;
+        }
+
+        InventoryHolder holder = ((HumanEntity) event.getEntity()).getOpenInventory().getTopInventory().getHolder();
+
+        if (!(holder instanceof Gui)) {
+            return;
+        }
+
+        Gui gui = (Gui) holder;
+
+        if (gui.getState() != Gui.State.BOTTOM) {
+            return;
+        }
+
+        int leftOver = gui.getHumanEntityCache().add((HumanEntity) event.getEntity(), event.getItem().getItemStack());
+
+        if (leftOver == 0) {
+            event.getItem().remove();
+        } else {
+            ItemStack itemStack = event.getItem().getItemStack();
+
+            itemStack.setAmount(leftOver);
+
+            event.getItem().setItemStack(itemStack);
+        }
+
+        event.setCancelled(true);
     }
 
     /**
