@@ -81,6 +81,25 @@ public class GuiItem {
     }
 
     /**
+     * Makes a copy of this gui item and returns it. This makes a deep copy of the gui item. This entails that the
+     * underlying item will be copied as per their {@link ItemStack#clone()} and miscellaneous data will be copied in
+     * such a way that they are identical with exception to the underlying unique identifier. The returned gui item will
+     * never be reference equal to the current gui item.
+     *
+     * @return a copy of the gui item
+     * @since 0.6.2
+     */
+    @NotNull
+    @Contract(pure = true)
+    public GuiItem copy() {
+        GuiItem guiItem = new GuiItem(item.clone(), action);
+
+        guiItem.visible = visible;
+
+        return guiItem;
+    }
+
+    /**
      * Calls the handler of the {@link InventoryClickEvent}
      * if such a handler was specified in the constructor.
      * Catches and logs all exceptions the handler might throw.

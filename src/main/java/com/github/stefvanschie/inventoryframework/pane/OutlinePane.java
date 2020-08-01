@@ -246,6 +246,30 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         return true;
     }
 
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public OutlinePane copy() {
+        OutlinePane outlinePane = new OutlinePane(x, y, length, height, getPriority());
+
+        for (GuiItem item : items) {
+            outlinePane.addItem(item.copy());
+        }
+
+        outlinePane.setVisible(isVisible());
+        outlinePane.onClick = onClick;
+
+        outlinePane.orientation = orientation;
+        outlinePane.rotation = rotation;
+        outlinePane.gap = gap;
+        outlinePane.repeat = repeat;
+        outlinePane.flipHorizontally = flipHorizontally;
+        outlinePane.flipVertically = flipVertically;
+        outlinePane.mask = mask;
+
+        return outlinePane;
+    }
+
     @Override
     public void setRotation(int rotation) {
         if (length != height) {
@@ -373,6 +397,18 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
     @Override
     public List<GuiItem> getItems() {
         return items;
+    }
+
+    /**
+     * Gets the mask applied to this pane.
+     *
+     * @return the mask
+     * @since 0.6.2
+     */
+    @NotNull
+    @Contract(pure = true)
+    public Mask getMask() {
+        return mask;
     }
 
     /**

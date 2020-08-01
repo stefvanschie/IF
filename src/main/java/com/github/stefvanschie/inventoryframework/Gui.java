@@ -189,6 +189,33 @@ public class Gui implements InventoryHolder {
     }
 
     /**
+     * Makes a copy of this gui and returns it. This makes a deep copy of the gui. This entails that the underlying
+     * panes will be copied as per their {@link Pane#copy} and miscellaneous data will be copied. The copy of this gui,
+     * will however have no viewers even if this gui currently has viewers. With this, cache data for viewers will also
+     * be non-existent for the copied gui. The returned gui will never be reference equal to the current gui.
+     *
+     * @return a copy of the gui
+     * @since 0.6.2
+     */
+    @NotNull
+    @Contract(pure = true)
+    public Gui copy() {
+		Gui gui = new Gui(getRows(), getTitle());
+
+		for (Pane pane : panes) {
+			gui.addPane(pane.copy());
+		}
+
+		gui.onTopClick = onTopClick;
+		gui.onBottomClick = onBottomClick;
+		gui.onGlobalClick = onGlobalClick;
+		gui.onOutsideClick = onOutsideClick;
+		gui.onClose = onClose;
+
+		return gui;
+	}
+
+    /**
      * Sets the amount of rows for this inventory.
      * This will (unlike most other methods) directly update itself in order to ensure all viewers will still be viewing the new inventory as well.
      *

@@ -177,7 +177,29 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
         return true;
 	}
 
+    @NotNull
+    @Contract(pure = true)
 	@Override
+    public StaticPane copy() {
+        StaticPane staticPane = new StaticPane(x, y, length, height, getPriority());
+
+        for (Map.Entry<Map.Entry<Integer, Integer>, GuiItem> entry : items.entrySet()) {
+            Map.Entry<Integer, Integer> coordinates = entry.getKey();
+
+            staticPane.addItem(entry.getValue().copy(), coordinates.getKey(), coordinates.getValue());
+        }
+
+        staticPane.setVisible(isVisible());
+        staticPane.onClick = onClick;
+
+        staticPane.rotation = rotation;
+        staticPane.flipHorizontally = flipHorizontally;
+        staticPane.flipVertically = flipVertically;
+
+        return staticPane;
+    }
+
+    @Override
 	public void setRotation(int rotation) {
 		if (length != height) {
 			throw new UnsupportedOperationException("length and height are different");
