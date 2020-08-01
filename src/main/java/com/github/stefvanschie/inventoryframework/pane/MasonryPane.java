@@ -7,6 +7,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.PlayerInventory;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -187,6 +188,23 @@ public class MasonryPane extends Pane implements Orientable {
 
         return success;
     }
+
+    @NotNull
+	@Contract(pure = true)
+	@Override
+    public MasonryPane copy() {
+		MasonryPane masonryPane = new MasonryPane(x, y, length, height, getPriority());
+
+		for (Pane pane : panes) {
+            masonryPane.addPane(pane.copy());
+        }
+
+        masonryPane.setVisible(isVisible());
+		masonryPane.onClick = onClick;
+		masonryPane.orientation = orientation;
+
+		return masonryPane;
+	}
 
     /**
      * Adds a pane to this masonry pane

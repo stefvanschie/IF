@@ -246,6 +246,26 @@ public class PaginatedPane extends Pane {
     @NotNull
     @Contract(pure = true)
     @Override
+    public PaginatedPane copy() {
+	    PaginatedPane paginatedPane = new PaginatedPane(x, y, length, height, getPriority());
+
+        for (Map.Entry<Integer, List<Pane>> entry : panes.entrySet()) {
+            for (Pane pane : entry.getValue()) {
+                paginatedPane.addPane(entry.getKey(), pane.copy());
+            }
+        }
+
+        paginatedPane.setVisible(isVisible());
+        paginatedPane.onClick = onClick;
+
+        paginatedPane.page = page;
+
+        return paginatedPane;
+    }
+
+    @NotNull
+    @Contract(pure = true)
+    @Override
     public Collection<Pane> getPanes() {
         Collection<Pane> panes = new HashSet<>();
 

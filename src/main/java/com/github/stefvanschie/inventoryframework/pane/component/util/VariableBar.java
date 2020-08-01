@@ -114,6 +114,33 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         this.backgroundPane.setHeight(height);
     }
 
+    /**
+     * Applies the contents of this variable bar onto the provided copy of this variable bar. This variable bar will not
+     * be modified.
+     *
+     * @param copy the copy of the variable bar
+     * @since 0.6.2
+     */
+    protected void applyContents(@NotNull VariableBar copy) {
+        copy.x = x;
+        copy.y = y;
+        copy.length = length;
+        copy.height = height;
+        copy.setPriority(getPriority());
+
+        copy.setVisible(isVisible());
+        copy.onClick = onClick;
+
+        copy.setFillItem(fillPane.getItems().get(0).copy());
+        copy.setBackgroundItem(backgroundPane.getItems().get(0).copy());
+
+        copy.value = value;
+        copy.orientation = orientation;
+
+        copy.flipHorizontally = flipHorizontally;
+        copy.flipVertically = flipVertically;
+    }
+
     @Override
     public void setOrientation(@NotNull Orientation orientation) {
         this.orientation = orientation;

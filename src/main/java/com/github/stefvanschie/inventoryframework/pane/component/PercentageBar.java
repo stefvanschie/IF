@@ -103,6 +103,17 @@ public class PercentageBar extends VariableBar {
         }
     }
 
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public PercentageBar copy() {
+        PercentageBar percentageBar = new PercentageBar(x, y, length, height, getPriority());
+
+        applyContents(percentageBar);
+
+        return percentageBar;
+    }
+
     /**
      * Gets the percentage as a float in between (0,1) this bar is currently set at.
      *

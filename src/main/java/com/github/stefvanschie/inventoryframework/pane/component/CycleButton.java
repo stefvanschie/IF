@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.PlayerInventory;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -99,6 +100,24 @@ public class CycleButton extends Pane {
         int newMaxHeight = Math.min(maxHeight, height);
 
         panes.get(position).display(gui, inventory, playerInventory, newX, newY, newMaxLength, newMaxHeight);
+    }
+
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public CycleButton copy() {
+        CycleButton cycleButton = new CycleButton(x, y, length, height, getPriority());
+
+        for (Pane pane : panes) {
+            cycleButton.addPane(pane);
+        }
+
+        cycleButton.setVisible(isVisible());
+        cycleButton.onClick = onClick;
+
+        cycleButton.position = position;
+
+        return cycleButton;
     }
 
     @NotNull

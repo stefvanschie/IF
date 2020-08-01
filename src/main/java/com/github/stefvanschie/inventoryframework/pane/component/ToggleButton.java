@@ -124,6 +124,23 @@ public class ToggleButton extends Pane {
         return true;
     }
 
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public ToggleButton copy() {
+        ToggleButton toggleButton = new ToggleButton(x, y, length, height, getPriority());
+
+        toggleButton.setVisible(isVisible());
+        toggleButton.onClick = onClick;
+
+        toggleButton.setEnabledItem(enabledPane.getItems().get(0).copy());
+        toggleButton.setDisabledItem(disabledPane.getItems().get(0).copy());
+
+        toggleButton.enabled = enabled;
+
+        return toggleButton;
+    }
+
     /**
      * Sets the item to use when the button is set to disabled
      *

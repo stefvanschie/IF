@@ -27,6 +27,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.lang.UnsupportedOperationException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -65,7 +66,7 @@ public abstract class Pane {
      * The consumer that will be called once a players clicks in this pane
      */
     @Nullable
-    private Consumer<InventoryClickEvent> onClick;
+    protected Consumer<InventoryClickEvent> onClick;
 
     /**
      * A map containing the mappings for properties for items
@@ -118,6 +119,19 @@ public abstract class Pane {
     protected Pane(int x, int y, int length, int height) {
         this(x, y, length, height, Priority.NORMAL);
     }
+
+    /**
+	 * Makes a copy of this pane and returns it. This makes a deep copy of the pane. This entails that the underlying
+	 * panes and/or items will be copied as well. The returned pane will never be reference equal to the current pane.
+	 *
+	 * @return a copy of this pane
+	 * @since 0.6.2
+	 */
+	@NotNull
+	@Contract(pure = true)
+    public Pane copy() {
+		throw new UnsupportedOperationException("The implementing pane hasn't overridden the copy method");
+	}
 
     /**
      * Set the length of this pane

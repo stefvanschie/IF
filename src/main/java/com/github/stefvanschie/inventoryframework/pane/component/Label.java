@@ -109,6 +109,32 @@ public class Label extends OutlinePane {
         }
     }
 
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public Label copy() {
+        Label label = new Label(x, y, length, height, getPriority(), font);
+
+        for (GuiItem item : getItems()) {
+            label.addItem(item.copy());
+        }
+
+        label.setVisible(isVisible());
+        label.onClick = onClick;
+
+        label.setOrientation(getOrientation());
+        label.setRotation(getRotation());
+        label.setGap(getGap());
+        label.setRepeat(doesRepeat());
+        label.flipHorizontally(isFlippedHorizontally());
+        label.flipVertically(isFlippedVertically());
+        label.applyMask(getMask());
+
+        label.text = text;
+
+        return label;
+    }
+
     @Override
     public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int paneOffsetX, int paneOffsetY,
                          int maxLength, int maxHeight) {

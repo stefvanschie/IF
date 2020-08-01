@@ -113,6 +113,17 @@ public class Slider extends VariableBar {
         }
     }
 
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public Slider copy() {
+        Slider slider = new Slider(x, y, length, height, getPriority());
+
+        applyContents(slider);
+
+        return slider;
+    }
+
     /**
      * Gets the value as a float in between (0,1) this bar is currently set at.
      *
