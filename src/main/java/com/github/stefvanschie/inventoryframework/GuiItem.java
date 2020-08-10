@@ -49,7 +49,7 @@ public class GuiItem {
      * Internal UUID for keeping track of this item
      */
     @NotNull
-    private final UUID uuid = UUID.randomUUID();
+    private UUID uuid = UUID.randomUUID();
 
     /**
      * Creates a new gui item based on the item stack and action
@@ -83,8 +83,7 @@ public class GuiItem {
     /**
      * Makes a copy of this gui item and returns it. This makes a deep copy of the gui item. This entails that the
      * underlying item will be copied as per their {@link ItemStack#clone()} and miscellaneous data will be copied in
-     * such a way that they are identical with exception to the underlying unique identifier. The returned gui item will
-     * never be reference equal to the current gui item.
+     * such a way that they are identical. The returned gui item will never be reference equal to the current gui item.
      *
      * @return a copy of the gui item
      * @since 0.6.2
@@ -95,6 +94,16 @@ public class GuiItem {
         GuiItem guiItem = new GuiItem(item.clone(), action);
 
         guiItem.visible = visible;
+        guiItem.uuid = uuid;
+
+        ItemMeta meta = guiItem.item.getItemMeta();
+
+        if (meta == null) {
+            throw new IllegalArgumentException("item must be able to have ItemMeta (it mustn't be AIR)");
+        }
+
+        meta.getPersistentDataContainer().set(KEY_UUID, UUIDTagType.INSTANCE, guiItem.uuid);
+        guiItem.item.setItemMeta(meta);
 
         return guiItem;
     }
