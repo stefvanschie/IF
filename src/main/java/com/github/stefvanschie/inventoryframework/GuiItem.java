@@ -32,7 +32,7 @@ public class GuiItem {
      * An action for the inventory
      */
     @Nullable
-    private final Consumer<InventoryClickEvent> action;
+    private Consumer<InventoryClickEvent> action;
 
     /**
      * The items shown
@@ -128,6 +128,16 @@ public class GuiItem {
             logger.log(Level.SEVERE, "Exception while handling click event in inventory '"
                     + event.getView().getTitle() + "', slot=" + event.getSlot() + ", item=" + item.getType(), t);
         }
+    }
+
+    /**
+     * Sets the action to be executed when a human entity clicks on this item.
+     *
+     * @param action the action of this item
+     * @since 0.7.1
+     */
+    public void setAction(@NotNull Consumer<InventoryClickEvent> action) {
+        this.action = action;
     }
 
     /**
