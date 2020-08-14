@@ -139,6 +139,8 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
 
         copy.flipHorizontally = flipHorizontally;
         copy.flipVertically = flipVertically;
+
+        copy.uuid = uuid;
     }
 
     @Override

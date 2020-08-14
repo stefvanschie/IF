@@ -35,5 +35,6 @@ public class PaginatedPaneTest {
         assertEquals(original.isVisible(), copy.isVisible());
         assertEquals(original.getPage(), copy.getPage());
         assertEquals(original.getPages(), copy.getPages());
+        assertEquals(original.getUUID(), copy.getUUID());
     }
 }

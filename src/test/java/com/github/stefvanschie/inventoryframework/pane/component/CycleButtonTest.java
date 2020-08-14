@@ -25,5 +25,6 @@ public class CycleButtonTest {
         assertEquals(original.getPriority(), copy.getPriority());
         assertEquals(original.isVisible(), copy.isVisible());
         assertEquals(original.getPanes().size(), copy.getPanes().size());
+        assertEquals(original.getUUID(), copy.getUUID());
     }
 }

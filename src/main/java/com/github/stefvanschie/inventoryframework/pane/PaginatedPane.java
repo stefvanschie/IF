@@ -258,6 +258,8 @@ public class PaginatedPane extends Pane {
         paginatedPane.setVisible(isVisible());
         paginatedPane.onClick = onClick;
 
+        paginatedPane.uuid = uuid;
+
         paginatedPane.page = page;
 
         return paginatedPane;

@@ -117,6 +117,8 @@ public class CycleButton extends Pane {
 
         cycleButton.position = position;
 
+        cycleButton.uuid = uuid;
+
         return cycleButton;
     }
 

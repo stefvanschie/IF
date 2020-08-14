@@ -27,5 +27,6 @@ public class StaticPaneTest {
         assertEquals(original.getRotation(), copy.getRotation());
         assertEquals(original.isFlippedHorizontally(), copy.isFlippedHorizontally());
         assertEquals(original.isFlippedVertically(), copy.isFlippedVertically());
+        assertEquals(original.getUUID(), copy.getUUID());
     }
 }
