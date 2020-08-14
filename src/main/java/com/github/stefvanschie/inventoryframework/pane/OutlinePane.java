@@ -259,6 +259,8 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         outlinePane.setVisible(isVisible());
         outlinePane.onClick = onClick;
 
+        outlinePane.uuid = uuid;
+
         outlinePane.orientation = orientation;
         outlinePane.rotation = rotation;
         outlinePane.gap = gap;

@@ -69,6 +69,11 @@ public abstract class Pane {
     protected Consumer<InventoryClickEvent> onClick;
 
     /**
+     * A unique identifier for panes to locate them by
+     */
+    protected UUID uuid;
+
+    /**
      * A map containing the mappings for properties for items
      */
     @NotNull
@@ -92,6 +97,8 @@ public abstract class Pane {
 
         this.priority = priority;
         this.visible = true;
+
+        this.uuid = UUID.randomUUID();
     }
 
     /**
@@ -106,6 +113,8 @@ public abstract class Pane {
 
         this.priority = Priority.NORMAL;
         this.visible = true;
+
+        this.uuid = UUID.randomUUID();
     }
 
     /**
@@ -187,6 +196,18 @@ public abstract class Pane {
     @Contract(pure = true)
     public int getHeight() {
         return height;
+    }
+
+    /**
+     * Gets the {@link UUID} associated with this pane.
+     *
+     * @return the uuid
+     * @since 0.7.1
+     */
+    @NotNull
+    @Contract(pure = true)
+    public UUID getUUID() {
+        return uuid;
     }
 
     /**

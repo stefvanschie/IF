@@ -192,6 +192,8 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
         staticPane.setVisible(isVisible());
         staticPane.onClick = onClick;
 
+        staticPane.uuid = uuid;
+
         staticPane.rotation = rotation;
         staticPane.flipHorizontally = flipHorizontally;
         staticPane.flipVertically = flipVertically;

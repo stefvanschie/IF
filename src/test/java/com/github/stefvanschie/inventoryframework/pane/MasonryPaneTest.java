@@ -32,5 +32,6 @@ public class MasonryPaneTest {
         assertEquals(original.isVisible(), copy.isVisible());
         assertEquals(original.getOrientation(), copy.getOrientation());
         assertEquals(original.getPanes().size(), copy.getPanes().size());
+        assertEquals(original.getUUID(), copy.getUUID());
     }
 }

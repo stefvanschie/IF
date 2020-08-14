@@ -203,6 +203,8 @@ public class MasonryPane extends Pane implements Orientable {
 		masonryPane.onClick = onClick;
 		masonryPane.orientation = orientation;
 
+		masonryPane.uuid = uuid;
+
 		return masonryPane;
 	}
 

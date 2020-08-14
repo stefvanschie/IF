@@ -133,6 +133,8 @@ public class ToggleButton extends Pane {
         toggleButton.setVisible(isVisible());
         toggleButton.onClick = onClick;
 
+        toggleButton.uuid = uuid;
+
         toggleButton.setEnabledItem(enabledPane.getItems().get(0).copy());
         toggleButton.setDisabledItem(disabledPane.getItems().get(0).copy());
 

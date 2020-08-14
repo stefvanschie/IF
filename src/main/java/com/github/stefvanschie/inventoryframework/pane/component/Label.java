@@ -129,6 +129,7 @@ public class Label extends OutlinePane {
         label.flipHorizontally(isFlippedHorizontally());
         label.flipVertically(isFlippedVertically());
         label.applyMask(getMask());
+        label.uuid = uuid;
 
         label.text = text;
 

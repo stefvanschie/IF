@@ -42,5 +42,6 @@ public class OutlinePaneTest {
         assertEquals(original.isFlippedHorizontally(), copy.isFlippedHorizontally());
         assertEquals(original.isFlippedVertically(), copy.isFlippedVertically());
         assertEquals(original.getMask(), copy.getMask());
+        assertEquals(original.getUUID(), copy.getUUID());
     }
 }
