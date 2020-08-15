@@ -16,6 +16,8 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * An item for in an inventory
@@ -33,6 +35,12 @@ public class GuiItem {
      */
     @Nullable
     private Consumer<InventoryClickEvent> action;
+    
+    /**
+     * List of item's properties
+     */
+    @Nullable
+    private List<Object> properties;
 
     /**
      * The items shown
@@ -60,6 +68,7 @@ public class GuiItem {
     public GuiItem(@NotNull ItemStack item, @Nullable Consumer<InventoryClickEvent> action) {
         this.action = action;
         this.visible = true;
+        this.properties = new ArrayList<>();
 
         ItemMeta meta = item.getItemMeta();
         if (meta == null) {
@@ -95,7 +104,7 @@ public class GuiItem {
 
         guiItem.visible = visible;
         guiItem.uuid = uuid;
-
+        guiItem.properties = new ArrayList<>(properties);
         ItemMeta meta = guiItem.item.getItemMeta();
 
         if (meta == null) {
@@ -138,6 +147,14 @@ public class GuiItem {
      */
     public void setAction(@NotNull Consumer<InventoryClickEvent> action) {
         this.action = action;
+    }
+    
+    public List<Object> getProperties(){
+        return properties;
+    }
+    
+    public void setProperties(List<Object> properties){
+        this.properties = properties;
     }
 
     /**
