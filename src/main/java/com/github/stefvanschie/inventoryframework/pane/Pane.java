@@ -479,6 +479,8 @@ public abstract class Pane {
                 throw new XMLLoadException(exception);
             }
         }
+		
+		item.setProperties(properties);
 
         return item;
     }
