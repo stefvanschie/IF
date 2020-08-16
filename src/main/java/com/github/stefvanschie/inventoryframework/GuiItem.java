@@ -39,7 +39,7 @@ public class GuiItem {
     /**
      * List of item's properties
      */
-    @Nullable
+    @NotNull
     private List<Object> properties;
 
     /**
@@ -149,11 +149,23 @@ public class GuiItem {
         this.action = action;
     }
     
+    /**
+     * Returns the list of properties
+     *
+     * @return the list of properties that belong to this gui item
+     */
+    @NotNull
+    @Contract(pure = true)
     public List<Object> getProperties(){
         return properties;
     }
     
-    public void setProperties(List<Object> properties){
+    /**
+     * Sets the list of properties for this gui item
+     *
+     * @param list of new properties
+     */
+    public void setProperties(@NotNull List<Object> properties){
         this.properties = properties;
     }
 
