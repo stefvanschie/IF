@@ -163,7 +163,7 @@ public class GuiItem {
     /**
      * Sets the list of properties for this gui item
      *
-     * @param list of new properties
+     * @param properties list of new properties
      */
     public void setProperties(@NotNull List<Object> properties){
         this.properties = properties;
