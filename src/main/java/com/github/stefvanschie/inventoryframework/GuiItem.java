@@ -153,6 +153,7 @@ public class GuiItem {
      * Returns the list of properties
      *
      * @return the list of properties that belong to this gui item
+     * @since 0.7.2
      */
     @NotNull
     @Contract(pure = true)
@@ -164,6 +165,7 @@ public class GuiItem {
      * Sets the list of properties for this gui item
      *
      * @param properties list of new properties
+     * @since 0.7.2
      */
     public void setProperties(@NotNull List<Object> properties){
         this.properties = properties;
