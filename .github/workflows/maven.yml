@@ -8,7 +8,8 @@ on:
     branches: [ '*' ]
   pull_request:
     branches: [ '*' ]
-  workflow_dispatch: {}
+  workflow_dispatch:
+    branches: [ '*' ]
 
 jobs:
   set-up-1-14-R1:
