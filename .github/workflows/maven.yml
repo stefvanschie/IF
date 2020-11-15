@@ -19,6 +19,12 @@ jobs:
       - run: |
           wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
           java -jar BuildTools.jar --rev 1.14.4
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
   set-up-1-15-R1:
     runs-on: ubuntu-latest
     name: 'Set up 1.15 R1'
@@ -26,6 +32,12 @@ jobs:
       - run: |
           wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
           java -jar BuildTools.jar --rev 1.15.2
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
   set-up-1-16-R1:
     runs-on: ubuntu-latest
     name: 'Set up 1.16 R1'
@@ -33,6 +45,12 @@ jobs:
       - run: |
           wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
           java -jar BuildTools.jar --rev 1.16.1
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
   set-up-1-16-R2:
     runs-on: ubuntu-latest
     name: 'Set up 1.16 R2'
@@ -40,6 +58,12 @@ jobs:
       - run: |
           wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
           java -jar BuildTools.jar --rev 1.16.3
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
   set-up-1-16-R3:
     runs-on: ubuntu-latest
     name: 'Set up 1.16 R3'
@@ -47,6 +71,12 @@ jobs:
       - run: |
           wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
           java -jar BuildTools.jar --rev 1.16.4
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
   build:
     runs-on: ubuntu-latest
     needs: [set-up-1-14-R1, set-up-1-15-R1, set-up-1-16-R1, set-up-1-16-R2, set-up-1-16-R3]
