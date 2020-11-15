@@ -2,58 +2,81 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>IF-parent</artifactId>
+        <groupId>com.github.stefvanschie.inventoryframework</groupId>
+        <version>0.7.2</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <modules>
-        <module>IF</module>
-        <module>nms/abstraction</module>
-        <module>nms/1_16_R3</module>
-        <module>nms/1_16_R2</module>
-        <module>nms/1_16_R1</module>
-        <module>nms/1_15_R1</module>
-        <module>nms/1_14_R1</module>
-    </modules>
+    <artifactId>IF</artifactId>
+    <packaging>jar</packaging>
 
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <groupId>com.github.stefvanschie.inventoryframework</groupId>
-    <artifactId>IF-parent</artifactId>
-    <version>0.7.2</version>
-    <packaging>pom</packaging>
-
-    <name>IF</name>
-    <description>An inventory framework for managing GUIs</description>
-    <url>https://github.com/stefvanschie/IF</url>
-
-    <licenses>
-        <license>
-            <name>The Unlicense</name>
-            <url>http://unlicense.org/</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <scm>
-        <url>https://github.com/stefvanschie/IF.git</url>
-    </scm>
-
-    <developers>
-        <developer>
-            <name>Stef van Schie</name>
-            <email>stefvanschiedev@gmail.com</email>
-        </developer>
-    </developers>
+    <repositories>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>mojang-repo</id>
+            <url>https://libraries.minecraft.net/</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>19.0.0</version>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>abstraction</artifactId>
+            <version>0.7.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_14_R1</artifactId>
+            <version>0.7.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_15_R1</artifactId>
+            <version>0.7.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_16_R1</artifactId>
+            <version>0.7.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_16_R2</artifactId>
+            <version>0.7.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_16_R3</artifactId>
+            <version>0.7.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.16.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>authlib</artifactId>
+            <version>1.5.21</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.3.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -93,6 +116,8 @@
     </profiles>
 
     <build>
+        <finalName>${project.parent.name}-${project.version}</finalName>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -110,6 +135,19 @@
                         <version>5.2.0</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
