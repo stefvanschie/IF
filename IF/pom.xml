@@ -5,12 +5,16 @@
     <parent>
         <artifactId>IF-parent</artifactId>
         <groupId>com.github.stefvanschie.inventoryframework</groupId>
-        <version>0.7.2</version>
+        <version>0.8.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>IF</artifactId>
     <packaging>jar</packaging>
+
+    <properties>
+        <maven.deploy.skip>false</maven.deploy.skip>
+    </properties>
 
     <repositories>
         <repository>
@@ -27,37 +31,37 @@
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>abstraction</artifactId>
-            <version>0.7.2</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>1_14_R1</artifactId>
-            <version>0.7.2</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>1_15_R1</artifactId>
-            <version>0.7.2</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>1_16_R1</artifactId>
-            <version>0.7.2</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>1_16_R2</artifactId>
-            <version>0.7.2</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>1_16_R3</artifactId>
-            <version>0.7.2</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
