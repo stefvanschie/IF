@@ -5,3 +5,4 @@ target
 IF-Test
 *.iml
 *.txt
+dependency-reduced-pom.xml
