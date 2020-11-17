@@ -12,6 +12,10 @@
 
     <artifactId>1_16_R3</artifactId>
 
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>

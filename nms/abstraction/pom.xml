@@ -12,6 +12,10 @@
 
     <artifactId>abstraction</artifactId>
 
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
     <repositories>
         <repository>
             <id>spigot-repo</id>
