@@ -1,4 +1,5 @@
-# IF
+# IF <a href="https://discord.gg/RXmy4HdR4x"><img style="text-align: right;" src="https://img.shields.io/discord/780514939293925407" alt="Discord guild"></a>
+
 *This framework works for Minecraft versions 1.14-1.16*
 
 An inventory framework for managing GUIs
