@@ -146,7 +146,11 @@ public class BrewingStandGui extends NamedGui {
     @Contract(pure = true)
     @Override
     public Inventory createInventory(@NotNull String title) {
-        return Bukkit.createInventory(this, InventoryType.BREWING, title);
+        Inventory inventory = Bukkit.createInventory(this, InventoryType.BREWING, title);
+
+        addInventory(inventory, this);
+
+        return inventory;
     }
 
     /**

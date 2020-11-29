@@ -106,7 +106,11 @@ public class DispenserGui extends NamedGui {
     @Contract(pure = true)
     @Override
     public Inventory createInventory(@NotNull String title) {
-        return Bukkit.createInventory(this, InventoryType.DISPENSER, title);
+        Inventory inventory = Bukkit.createInventory(this, InventoryType.DISPENSER, title);
+
+        addInventory(inventory, this);
+
+        return inventory;
     }
 
     /**

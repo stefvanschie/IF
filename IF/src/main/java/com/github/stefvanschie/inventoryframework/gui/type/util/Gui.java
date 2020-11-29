@@ -109,6 +109,14 @@ public abstract class Gui implements InventoryHolder {
         = new HashMap<>();
 
     /**
+     * A map containing the relations between inventories and their respective gui. This is needed because Bukkit and
+     * Spigot ignore inventory holders for beacons, brewing stands, dispensers, droppers, furnaces and hoppers. The
+     * inventory holder for beacons is already being set properly via NMS, but this contains the other inventory types.
+     */
+    @NotNull
+    private static final Map<Inventory, Gui> GUI_INVENTORIES = new WeakHashMap<>();
+
+    /**
      * Whether listeners have ben registered by some gui
      */
     private static boolean hasRegisteredListeners;
@@ -235,6 +243,31 @@ public abstract class Gui implements InventoryHolder {
         } else if (state == State.BOTTOM) {
             inventory.getViewers().forEach(humanEntityCache::storeAndClear);
         }
+    }
+
+    /**
+     * Adds the specified inventory and gui, so we can properly intercept clicks.
+     *
+     * @param inventory the inventory for the specified gui
+     * @param gui the gui belonging to the specified inventory
+     * @since 0.8.1
+     */
+    protected void addInventory(@NotNull Inventory inventory, @NotNull Gui gui) {
+        GUI_INVENTORIES.put(inventory, gui);
+    }
+
+    /**
+     * Gets a gui from the specified inventory. Only guis of type beacon, brewing stand, dispenser, dropper, furnace and
+     * hopper can be retrieved.
+     *
+     * @param inventory the inventory to get the gui from
+     * @return the gui or null if the inventory doesn't have an accompanying gui
+     * @since 0.8.1
+     */
+    @Nullable
+    @Contract(pure = true)
+    public static Gui getGui(@NotNull Inventory inventory) {
+        return GUI_INVENTORIES.get(inventory);
     }
 
     /**

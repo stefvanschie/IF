@@ -106,7 +106,11 @@ public class DropperGui extends NamedGui {
     @Contract(pure = true)
     @Override
     public Inventory createInventory(@NotNull String title) {
-        return Bukkit.createInventory(this, InventoryType.DROPPER, title);
+        Inventory inventory = Bukkit.createInventory(this, InventoryType.DROPPER, title);
+
+        addInventory(inventory, this);
+
+        return inventory;
     }
 
     /**
