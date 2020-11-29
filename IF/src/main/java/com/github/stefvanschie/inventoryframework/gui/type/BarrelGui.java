@@ -3,6 +3,7 @@ package com.github.stefvanschie.inventoryframework.gui.type;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.type.util.MergedGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import org.bukkit.Bukkit;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
  *
  * @since 0.8.0
  */
-public class BarrelGui extends NamedGui {
+public class BarrelGui extends NamedGui implements MergedGui {
 
     /**
      * Represents the inventory component for the entire gui
@@ -101,35 +102,21 @@ public class BarrelGui extends NamedGui {
         return getInventoryComponent().excludeRows(0, getInventoryComponent().getHeight() - 5).hasItem();
     }
 
-    /**
-     * Adds a pane to this gui
-     *
-     * @param pane the pane to add
-     * @since 0.8.0
-     */
+    @Override
     public void addPane(@NotNull Pane pane) {
         this.inventoryComponent.addPane(pane);
     }
 
-    /**
-     * Gets all the panes in this gui, this includes child panes from other panes
-     *
-     * @return all panes
-     * @since 0.8.0
-     */
     @NotNull
     @Contract(pure = true)
+    @Override
     public List<Pane> getPanes() {
         return this.inventoryComponent.getPanes();
     }
 
-    /**
-     * Gets all the items in all underlying panes
-     *
-     * @return all items
-     */
     @NotNull
     @Contract(pure = true)
+    @Override
     public Collection<GuiItem> getItems() {
         return getPanes().stream().flatMap(pane -> pane.getItems().stream()).collect(Collectors.toSet());
     }
@@ -141,14 +128,9 @@ public class BarrelGui extends NamedGui {
         return Bukkit.createInventory(this, InventoryType.BARREL, title);
     }
 
-    /**
-     * Gets the inventory component for this gui
-     *
-     * @return the inventory component
-     * @since 0.8.0
-     */
     @NotNull
     @Contract(pure = true)
+    @Override
     public InventoryComponent getInventoryComponent() {
         return inventoryComponent;
     }
