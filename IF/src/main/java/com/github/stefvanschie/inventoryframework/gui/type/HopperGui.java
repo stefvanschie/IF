@@ -106,7 +106,11 @@ public class HopperGui extends NamedGui {
     @Contract(pure = true)
     @Override
     public Inventory createInventory(@NotNull String title) {
-        return Bukkit.createInventory(this, InventoryType.HOPPER, title);
+        Inventory inventory = Bukkit.createInventory(this, InventoryType.HOPPER, title);
+
+        addInventory(inventory, this);
+
+        return inventory;
     }
 
     /**

@@ -17,7 +17,9 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -43,11 +45,12 @@ public class GuiListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(@NotNull InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof Gui)) {
+        Gui gui = getGui(event.getInventory());
+
+        if (gui == null) {
             return;
         }
 
-        Gui gui = (Gui) event.getInventory().getHolder();
         InventoryView view = event.getView();
         Inventory inventory = view.getInventory(event.getRawSlot());
 
@@ -197,15 +200,9 @@ public class GuiListener implements Listener {
             return;
         }
 
-        InventoryHolder holder = ((HumanEntity) event.getEntity()).getOpenInventory().getTopInventory().getHolder();
+        Gui gui = getGui(((HumanEntity) event.getEntity()).getOpenInventory().getTopInventory());
 
-        if (!(holder instanceof Gui)) {
-            return;
-        }
-
-        Gui gui = (Gui) holder;
-
-        if (!gui.isPlayerInventoryUsed()) {
+        if (gui == null || !gui.isPlayerInventoryUsed()) {
             return;
         }
 
@@ -233,7 +230,7 @@ public class GuiListener implements Listener {
      */
     @EventHandler
     public void onInventoryDrag(@NotNull InventoryDragEvent event) {
-        if (!(event.getInventory().getHolder() instanceof Gui)) {
+        if (Gui.getGui(event.getInventory()) == null) {
             return;
         }
 
@@ -269,11 +266,11 @@ public class GuiListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClose(@NotNull InventoryCloseEvent event) {
-        if (!(event.getInventory().getHolder() instanceof Gui)) {
+        Gui gui = getGui(event.getInventory());
+
+        if (gui == null) {
             return;
         }
-
-        Gui gui = (Gui) event.getInventory().getHolder();
 
         if (!gui.isUpdating()) {
             gui.callOnClose(event);
@@ -300,11 +297,12 @@ public class GuiListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public void onInventoryOpen(@NotNull InventoryOpenEvent event) {
-        if (!(event.getInventory().getHolder() instanceof Gui)) {
+        Gui gui = getGui(event.getInventory());
+
+        if (gui == null) {
             return;
         }
 
-        Gui gui = (Gui) event.getInventory().getHolder();
         activeGuiInstances.add(gui);
     }
 
@@ -335,5 +333,30 @@ public class GuiListener implements Listener {
 			thisPlugin.getLogger().warning("Unable to close GUIs on plugin disable: they keep getting opened "
 					+ "(tried: " + maxCount + " times)");
 		}
+    }
+
+    /**
+     * Gets the gui from the inventory or null if the inventory isn't a gui
+     *
+     * @param inventory the inventory to get the gui from
+     * @return the gui or null if the inventory doesn't have a gui
+     * @since 0.8.1
+     */
+    @Nullable
+    @Contract(pure = true)
+    private Gui getGui(@NotNull Inventory inventory) {
+        Gui gui = Gui.getGui(inventory);
+
+        if (gui != null) {
+            return gui;
+        }
+
+        InventoryHolder holder = inventory.getHolder();
+
+        if (holder instanceof Gui) {
+            return (Gui) holder;
+        }
+
+        return null;
     }
 }
