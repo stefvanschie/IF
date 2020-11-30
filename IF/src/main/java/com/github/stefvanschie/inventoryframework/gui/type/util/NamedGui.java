@@ -1,7 +1,9 @@
 package com.github.stefvanschie.inventoryframework.gui.type.util;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,7 +67,13 @@ public abstract class NamedGui extends Gui {
         this.inventory = createInventory(title);
         this.title = title;
 
-        viewers.forEach(humanEntity -> humanEntity.openInventory(getInventory()));
+        updating = true;
+
+        for (HumanEntity viewer : viewers) {
+            show(viewer);
+        }
+
+        updating = false;
     }
 
     /**
