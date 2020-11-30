@@ -93,7 +93,7 @@ public abstract class Gui implements InventoryHolder {
      * Whether this gui is updating (as invoked by {@link #update()}), true if this is the case, false otherwise. This
      * is used to indicate that inventory close events due to updating should be ignored.
      */
-    private boolean updating = false;
+    boolean updating = false;
 
     /**
      * The pane mapping which will allow users to register their own panes to be used in XML files
