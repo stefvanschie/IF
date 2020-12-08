@@ -76,13 +76,16 @@ public class ToggleButton extends Pane {
     }
 
     @Override
-    public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int slot, int paneOffsetX,
-                         int paneOffsetY, int maxLength, int maxHeight) {
+    public boolean click(@NotNull Gui gui, @NotNull InventoryComponent inventoryComponent,
+                         @NotNull InventoryClickEvent event, int slot, int paneOffsetX, int paneOffsetY, int maxLength,
+                         int maxHeight) {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
-        int x = (slot % 9) - getX() - paneOffsetX;
-        int y = (slot / 9) - getY() - paneOffsetY;
+        int adjustedSlot = slot - (getX() + paneOffsetX) - inventoryComponent.getLength() * (getY() + paneOffsetY);
+
+        int x = adjustedSlot % length;
+        int y = adjustedSlot / length;
 
         //this isn't our item
         if (x < 0 || x >= length || y < 0 || y >= height) {
@@ -95,9 +98,9 @@ public class ToggleButton extends Pane {
         int newY = paneOffsetY + y;
 
         if (enabled) {
-            enabledPane.click(gui, event, slot, newX, newY, length, height);
+            enabledPane.click(gui, inventoryComponent, event, slot, newX, newY, length, height);
         } else {
-            disabledPane.click(gui, event, slot, newX, newY, length, height);
+            disabledPane.click(gui, inventoryComponent, event, slot, newX, newY, length, height);
         }
 
         toggle();

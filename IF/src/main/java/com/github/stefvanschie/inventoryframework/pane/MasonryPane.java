@@ -145,13 +145,16 @@ public class MasonryPane extends Pane implements Orientable {
     }
 
     @Override
-    public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int slot, int paneOffsetX,
-                         int paneOffsetY, int maxLength, int maxHeight) {
+    public boolean click(@NotNull Gui gui, @NotNull InventoryComponent inventoryComponent,
+                         @NotNull InventoryClickEvent event, int slot, int paneOffsetX, int paneOffsetY, int maxLength,
+                         int maxHeight) {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
-        int x = (slot % length) - getX() - paneOffsetX;
-        int y = (slot / length) - getY() - paneOffsetY;
+        int adjustedSlot = slot - (getX() + paneOffsetX) - inventoryComponent.getLength() * (getY() + paneOffsetY);
+
+        int x = adjustedSlot % length;
+        int y = adjustedSlot / length;
 
         if (x < 0 || x >= length || y < 0 || y >= height) {
             return false;
@@ -162,7 +165,7 @@ public class MasonryPane extends Pane implements Orientable {
         boolean success = false;
 
         for (Pane pane : panes) {
-            success = success || pane.click(gui, event, slot, paneOffsetX + getX(),
+            success = success || pane.click(gui, inventoryComponent, event, slot, paneOffsetX + getX(),
                 paneOffsetY + getY(), length, height);
         }
 
