@@ -1,5 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane.component;
 
+import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.Flippable;
@@ -31,13 +32,16 @@ public class Slider extends VariableBar {
     }
 
     @Override
-    public boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int slot, int paneOffsetX,
-                         int paneOffsetY, int maxLength, int maxHeight) {
+    public boolean click(@NotNull Gui gui, @NotNull InventoryComponent inventoryComponent,
+                         @NotNull InventoryClickEvent event, int slot, int paneOffsetX, int paneOffsetY, int maxLength,
+                         int maxHeight) {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
-        int x = (slot % 9) - getX() - paneOffsetX;
-        int y = (slot / 9) - getY() - paneOffsetY;
+        int adjustedSlot = slot - (getX() + paneOffsetX) - inventoryComponent.getLength() * (getY() + paneOffsetY);
+
+        int x = adjustedSlot % length;
+        int y = adjustedSlot / length;
 
         if (x < 0 || x >= length || y < 0 || y >= height) {
             return false;
@@ -48,8 +52,11 @@ public class Slider extends VariableBar {
         int newPaneOffsetX = paneOffsetX + getX();
         int newPaneOffsetY = paneOffsetY + getY();
 
-        boolean success = this.fillPane.click(gui, event, slot, newPaneOffsetX, newPaneOffsetY, length, height) ||
-            this.backgroundPane.click(gui, event, slot, newPaneOffsetX, newPaneOffsetY, length, height);
+        boolean success = this.fillPane.click(
+            gui, inventoryComponent, event, slot, newPaneOffsetX, newPaneOffsetY, length, height
+        ) || this.backgroundPane.click(
+            gui, inventoryComponent, event, slot, newPaneOffsetX, newPaneOffsetY, length, height
+        );
 
         if (orientation == Orientation.HORIZONTAL) {
             setValue((float) (x + 1) / length);

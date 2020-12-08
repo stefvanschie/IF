@@ -264,6 +264,7 @@ public abstract class Pane {
      * Called whenever there is being clicked on this pane
      *
      * @param gui the gui in which was clicked
+     * @param inventoryComponent the inventory component in which this pane resides
      * @param event the event that occurred while clicking on this item
      * @param slot the slot that was clicked in
      * @param paneOffsetX the pane's offset on the x axis
@@ -272,8 +273,9 @@ public abstract class Pane {
      * @param maxHeight the maximum height of the pane
      * @return whether the item was found or not
      */
-    public abstract boolean click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int slot, int paneOffsetX,
-                                  int paneOffsetY, int maxLength, int maxHeight);
+    public abstract boolean click(@NotNull Gui gui, @NotNull InventoryComponent inventoryComponent,
+                                  @NotNull InventoryClickEvent event, int slot, int paneOffsetX, int paneOffsetY,
+                                  int maxLength, int maxHeight);
 
     /**
      * Sets the priority of this pane

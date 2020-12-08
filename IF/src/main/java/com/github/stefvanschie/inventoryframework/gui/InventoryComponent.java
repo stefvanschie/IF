@@ -186,8 +186,8 @@ public class InventoryComponent {
 
     /**
      * Delegates the handling of the specified click event to the panes of this component. This will call
-     * {@link Pane#click(Gui, InventoryClickEvent, int, int, int, int, int)} on each pane until the right item has been
-     * found.
+     * {@link Pane#click(Gui, InventoryComponent, InventoryClickEvent, int, int, int, int, int)} on each pane until the
+     * right item has been found.
      *
      * @param gui the gui this inventory component belongs to
      * @param event the event to delegate
@@ -199,7 +199,9 @@ public class InventoryComponent {
 
         //loop panes in reverse, because the highest priority pane (last in list) is most likely to have the right item
         for (int i = panes.size() - 1; i >= 0; i--) {
-            if (panes.get(i).click(gui, event, slot, 0, 0, getLength(), getHeight())) {
+            if (panes.get(i).click(
+                gui, this, event, slot, 0, 0, getLength(), getHeight()
+            )) {
                 break;
             }
         }
