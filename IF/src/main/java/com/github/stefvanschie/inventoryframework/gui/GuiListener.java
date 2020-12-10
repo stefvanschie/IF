@@ -222,40 +222,65 @@ public class GuiListener implements Listener {
     }
 
     /**
-     * Handles small drag events which are likely clicks instead. These small drags will be interpreted as clicks and
-     * will fire a click event.
+     * Handles drag events
      *
      * @param event the event fired
      * @since 0.6.1
      */
     @EventHandler
     public void onInventoryDrag(@NotNull InventoryDragEvent event) {
-        if (Gui.getGui(event.getInventory()) == null) {
-            return;
-        }
+        Gui gui = getGui(event.getInventory());
 
-        Set<Integer> inventorySlots = event.getInventorySlots();
-
-        if (inventorySlots.size() > 1) {
+        if (gui == null) {
             return;
         }
 
         InventoryView view = event.getView();
-        int index = inventorySlots.toArray(new Integer[0])[0];
-        InventoryType.SlotType slotType = view.getSlotType(index);
+        Set<Integer> inventorySlots = event.getInventorySlots();
 
-        boolean even = event.getType() == DragType.EVEN;
+        if (inventorySlots.size() > 1) {
+            boolean top = false, bottom = false;
 
-        ClickType clickType = even ? ClickType.LEFT : ClickType.RIGHT;
-        InventoryAction inventoryAction = even ? InventoryAction.PLACE_SOME : InventoryAction.PLACE_ONE;
+            for (int inventorySlot : event.getRawSlots()) {
+                Inventory inventory = view.getInventory(inventorySlot);
 
-        //this is a fake click event, firing this may cause other plugins to function incorrectly, so keep it local
-        InventoryClickEvent inventoryClickEvent = new InventoryClickEvent(view, slotType, index, clickType,
-            inventoryAction);
+                if (view.getTopInventory().equals(inventory)) {
+                    top = true;
+                } else if (view.getBottomInventory().equals(inventory)) {
+                    bottom = true;
+                }
 
-        onInventoryClick(inventoryClickEvent);
+                if (top && bottom) {
+                    break;
+                }
+            }
 
-        event.setCancelled(inventoryClickEvent.isCancelled());
+            gui.callOnGlobalDrag(event);
+
+            if (top) {
+                gui.callOnTopDrag(event);
+            }
+
+            if (bottom) {
+                gui.callOnBottomDrag(event);
+            }
+        } else {
+            int index = inventorySlots.toArray(new Integer[0])[0];
+            InventoryType.SlotType slotType = view.getSlotType(index);
+
+            boolean even = event.getType() == DragType.EVEN;
+
+            ClickType clickType = even ? ClickType.LEFT : ClickType.RIGHT;
+            InventoryAction inventoryAction = even ? InventoryAction.PLACE_SOME : InventoryAction.PLACE_ONE;
+
+            //this is a fake click event, firing this may cause other plugins to function incorrectly, so keep it local
+            InventoryClickEvent inventoryClickEvent = new InventoryClickEvent(view, slotType, index, clickType,
+                inventoryAction);
+
+            onInventoryClick(inventoryClickEvent);
+
+            event.setCancelled(inventoryClickEvent.isCancelled());
+        }
     }
 
     /**

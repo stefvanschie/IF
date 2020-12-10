@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -82,6 +83,24 @@ public abstract class Gui implements InventoryHolder {
      */
     @Nullable
     protected Consumer<InventoryClickEvent> onOutsideClick;
+
+    /**
+     * The consumer that will be called once a player drags in the top-half of the gui
+     */
+    @Nullable
+    protected Consumer<InventoryDragEvent> onTopDrag;
+
+    /**
+     * The consumer that will be called once a player drags in the bottom-half of the gui
+     */
+    @Nullable
+    protected Consumer<InventoryDragEvent> onBottomDrag;
+
+    /**
+     * The consumer that will be called once a player drags in the gui or their inventory
+     */
+    @Nullable
+    protected Consumer<InventoryDragEvent> onGlobalDrag;
 
     /**
      * The consumer that will be called once a player closes the gui
@@ -356,6 +375,21 @@ public abstract class Gui implements InventoryHolder {
                 element, InventoryClickEvent.class, "onOutsideClick"));
         }
 
+         if (element.hasAttribute("onTopDrag")) {
+             setOnTopDrag(XMLUtil.loadOnEventAttribute(instance,
+                 element, InventoryDragEvent.class, "onTopDrag"));
+         }
+
+         if (element.hasAttribute("onBottomDrag")) {
+             setOnBottomDrag(XMLUtil.loadOnEventAttribute(instance,
+                 element, InventoryDragEvent.class, "onBottomDrag"));
+         }
+
+         if (element.hasAttribute("onGlobalDrag")) {
+             setOnGlobalDrag(XMLUtil.loadOnEventAttribute(instance,
+                 element, InventoryDragEvent.class, "onGlobalDrag"));
+         }
+
         if (element.hasAttribute("onClose")) {
             setOnClose(XMLUtil.loadOnEventAttribute(instance,
                 element, InventoryCloseEvent.class, "onClose"));
@@ -456,6 +490,72 @@ public abstract class Gui implements InventoryHolder {
      */
     public void callOnOutsideClick(@NotNull InventoryClickEvent event) {
         callCallback(onOutsideClick, event, "onOutsideClick");
+    }
+
+    /**
+     * Set the consumer that should be called whenever this gui's top half is dragged in.
+     *
+     * @param onTopDrag the consumer that gets called
+     * @since 0.9.0
+     */
+    public void setOnTopDrag(@Nullable Consumer<InventoryDragEvent> onTopDrag) {
+        this.onTopDrag = onTopDrag;
+    }
+
+    /**
+     * Calls the consumer (if it's not null) that was specified using {@link #setOnTopDrag(Consumer)},
+     * so the consumer that should be called whenever this gui's top half is dragged in.
+     * Catches and logs all exceptions the consumer might throw.
+     *
+     * @param event the event to handle
+     * @since 0.9.0
+     */
+    public void callOnTopDrag(@NotNull InventoryDragEvent event) {
+        callCallback(onTopDrag, event, "onTopDrag");
+    }
+
+    /**
+     * Set the consumer that should be called whenever the inventory is dragged in.
+     *
+     * @param onBottomDrag the consumer that gets called
+     * @since 0.9.0
+     */
+    public void setOnBottomDrag(@Nullable Consumer<InventoryDragEvent> onBottomDrag) {
+        this.onBottomDrag = onBottomDrag;
+    }
+
+    /**
+     * Calls the consumer (if it's not null) that was specified using {@link #setOnBottomDrag(Consumer)},
+     * so the consumer that should be called whenever the inventory is dragged in.
+     * Catches and logs all exceptions the consumer might throw.
+     *
+     * @param event the event to handle
+     * @since 0.9.0
+     */
+    public void callOnBottomDrag(@NotNull InventoryDragEvent event) {
+        callCallback(onBottomDrag, event, "onBottomDrag");
+    }
+
+    /**
+     * Set the consumer that should be called whenever this gui or inventory is dragged in.
+     *
+     * @param onGlobalDrag the consumer that gets called
+     * @since 0.9.0
+     */
+    public void setOnGlobalDrag(@Nullable Consumer<InventoryDragEvent> onGlobalDrag) {
+        this.onGlobalDrag = onGlobalDrag;
+    }
+
+    /**
+     * Calls the consumer (if it's not null) that was specified using {@link #setOnGlobalDrag(Consumer)},
+     * so the consumer that should be called whenever this gui or inventory is dragged in.
+     * Catches and logs all exceptions the consumer might throw.
+     *
+     * @param event the event to handle
+     * @since 0.6.0
+     */
+    public void callOnGlobalDrag(@NotNull InventoryDragEvent event) {
+        callCallback(onGlobalDrag, event, "onGlobalDrag");
     }
 
     /**
