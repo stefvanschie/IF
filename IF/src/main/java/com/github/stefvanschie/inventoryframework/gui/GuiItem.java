@@ -71,12 +71,12 @@ public class GuiItem {
         this.properties = new ArrayList<>();
 
         ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            throw new IllegalArgumentException("item must be able to have ItemMeta (it mustn't be AIR)");
+
+        if (meta != null) {
+            meta.getPersistentDataContainer().set(KEY_UUID, UUIDTagType.INSTANCE, uuid);
+            item.setItemMeta(meta);
         }
 
-        meta.getPersistentDataContainer().set(KEY_UUID, UUIDTagType.INSTANCE, uuid);
-        item.setItemMeta(meta);
         this.item = item;
     }
 
