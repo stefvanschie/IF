@@ -49,12 +49,6 @@ public abstract class Gui implements InventoryHolder {
     protected Inventory inventory;
 
     /**
-     * The state of this gui
-     */
-    @NotNull
-    private State state = State.TOP;
-
-    /**
      * A player cache for storing player's inventories
      */
     @NotNull
@@ -242,29 +236,6 @@ public abstract class Gui implements InventoryHolder {
     }
 
     /**
-     * Calling this method will set the state of this gui. If this state is set to top state, it will restore all the
-     * stored inventories of the players and will assume no pane extends into the bottom inventory part. If the state is
-     * set to bottom state it will assume one or more panes overflow into the bottom half of the inventory and will
-     * store all players' inventories and clear those.
-     *
-     * Do not call this method if you just want the player's inventory to be cleared.
-     *
-     * @deprecated state will be removed entirely in a future version
-     * @param state the new gui state
-     * @since 0.4.0
-     */
-    @Deprecated
-    public void setState(@NotNull State state) {
-        this.state = state;
-
-        if (state == State.TOP) {
-            humanEntityCache.restoreAndForgetAll();
-        } else if (state == State.BOTTOM) {
-            inventory.getViewers().forEach(humanEntityCache::storeAndClear);
-        }
-    }
-
-    /**
      * Adds the specified inventory and gui, so we can properly intercept clicks.
      *
      * @param inventory the inventory for the specified gui
@@ -287,20 +258,6 @@ public abstract class Gui implements InventoryHolder {
     @Contract(pure = true)
     public static Gui getGui(@NotNull Inventory inventory) {
         return GUI_INVENTORIES.get(inventory);
-    }
-
-    /**
-     * Gets the state of this gui
-     *
-     * @deprecated state will be removed entirely in a future version
-     * @return the state
-     * @since 0.5.4
-     */
-    @NotNull
-    @Contract(pure = true)
-    @Deprecated
-    public State getState() {
-        return state;
     }
 
     /**
@@ -598,7 +555,7 @@ public abstract class Gui implements InventoryHolder {
             callback.accept(event);
         } catch (Throwable t) {
             Logger logger = JavaPlugin.getProvidingPlugin(getClass()).getLogger();
-            String message = "Exception while handling " + callbackName + ", state=" + state;
+            String message = "Exception while handling " + callbackName;
             if (event instanceof InventoryClickEvent) {
                 InventoryClickEvent clickEvent = (InventoryClickEvent) event;
                 message += ", slot=" + clickEvent.getSlot();
@@ -682,34 +639,6 @@ public abstract class Gui implements InventoryHolder {
     @NotNull
     public static Pane loadPane(@NotNull Object instance, @NotNull Node node) {
         return PANE_MAPPINGS.get(node.getNodeName()).apply(instance, (Element) node);
-    }
-
-    /**
-     * The gui state
-     *
-     * @deprecated state will be removed entirely in a future version
-     * @since 0.4.0
-     */
-    @Deprecated
-    public enum State {
-
-        /**
-         * This signals that only the top-half of the Gui is in use and the player's inventory will stay like it is
-         *
-         * @deprecated state will be removed entirely in a future version
-         * @since 0.4.0
-         */
-        @Deprecated
-        TOP,
-
-        /**
-         * This signals that the bottom-hal of the Gui is in use and the player's inventory will be cleared and stored
-         *
-         * @deprecated state will be removed entirely in a future version
-         * @since 0.4.0
-         */
-        @Deprecated
-        BOTTOM
     }
 
     static {
