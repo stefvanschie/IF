@@ -40,8 +40,8 @@ public class Slider extends VariableBar {
 
         int adjustedSlot = slot - (getX() + paneOffsetX) - inventoryComponent.getLength() * (getY() + paneOffsetY);
 
-        int x = adjustedSlot % length;
-        int y = adjustedSlot / length;
+        int x = adjustedSlot % inventoryComponent.getLength();
+        int y = adjustedSlot / inventoryComponent.getLength();
 
         if (x < 0 || x >= length || y < 0 || y >= height) {
             return false;
