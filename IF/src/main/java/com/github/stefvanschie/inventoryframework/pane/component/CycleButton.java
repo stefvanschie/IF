@@ -53,8 +53,8 @@ public class CycleButton extends Pane {
 
         int adjustedSlot = slot - (getX() + paneOffsetX) - inventoryComponent.getLength() * (getY() + paneOffsetY);
 
-        int x = adjustedSlot % length;
-        int y = adjustedSlot / length;
+        int x = adjustedSlot % inventoryComponent.getLength();
+        int y = adjustedSlot / inventoryComponent.getLength();
 
         //this isn't our item
         if (x < 0 || x >= length || y < 0 || y >= height) {
