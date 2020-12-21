@@ -11,10 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
@@ -310,7 +307,9 @@ public class GuiListener implements Listener {
             Bukkit.getScheduler().runTask(JavaPlugin.getProvidingPlugin(getClass()), () -> {
                 HumanEntity humanEntity = event.getPlayer();
 
-                humanEntity.closeInventory();
+                if (humanEntity.getOpenInventory().getTopInventory() instanceof PlayerInventory) {
+                    humanEntity.closeInventory();
+                }
             });
         }
     }
