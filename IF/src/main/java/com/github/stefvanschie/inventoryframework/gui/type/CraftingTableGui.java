@@ -61,14 +61,18 @@ public class CraftingTableGui extends NamedGui {
     public void show(@NotNull HumanEntity humanEntity) {
         getInventory().clear();
 
-        getHumanEntityCache().storeAndClear(humanEntity);
+        getHumanEntityCache().store(humanEntity);
 
         getOutputComponent().display(getInventory(), 0);
         getInputComponent().display(getInventory(), 1);
-        getPlayerInventoryComponent().display(humanEntity.getInventory(), 0);
+        getPlayerInventoryComponent().display();
 
-        if (!getPlayerInventoryComponent().hasItem()) {
-            getHumanEntityCache().restoreAndForget(humanEntity);
+        if (getPlayerInventoryComponent().hasItem()) {
+            humanEntity.getInventory().clear();
+
+            getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
+        } else {
+            getHumanEntityCache().clearCache(humanEntity);
         }
 
         humanEntity.openInventory(getInventory());

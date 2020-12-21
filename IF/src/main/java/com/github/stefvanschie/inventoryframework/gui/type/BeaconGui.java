@@ -63,10 +63,14 @@ public class BeaconGui extends Gui {
         getHumanEntityCache().storeAndClear(humanEntity);
 
         getPaymentItemComponent().display(getInventory(), 0);
-        getPlayerInventoryComponent().display(humanEntity.getInventory(), 0);
+        getPlayerInventoryComponent().display();
 
-        if (!getPlayerInventoryComponent().hasItem()) {
-            getHumanEntityCache().restoreAndForget(humanEntity);
+        if (getPlayerInventoryComponent().hasItem()) {
+            humanEntity.getInventory().clear();
+
+            getPlayerInventoryComponent().display(humanEntity.getInventory(), 0);
+        } else {
+            getHumanEntityCache().clearCache(humanEntity);
         }
 
         beaconInventory.openInventory((Player) humanEntity, getPaymentItemComponent().getItem(0, 0));

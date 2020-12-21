@@ -117,7 +117,7 @@ public class HumanEntityCache {
      * @param humanEntity the human entity to keep in the cache
      * @since 0.4.0
      */
-    private void store(@NotNull HumanEntity humanEntity) {
+    public void store(@NotNull HumanEntity humanEntity) {
         ItemStack[] items = new ItemStack[36];
 
         for (int i = 0 ; i < 36; i++) {
@@ -161,7 +161,7 @@ public class HumanEntityCache {
      * @param humanEntity the human entity to clear the cache for
      * @since 0.4.0
      */
-    private void clearCache(@NotNull HumanEntity humanEntity) {
+    public void clearCache(@NotNull HumanEntity humanEntity) {
         inventories.remove(humanEntity);
     }
 
