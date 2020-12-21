@@ -85,15 +85,19 @@ public class CartographyTableGui extends NamedGui {
 
         getInventory().clear();
 
-        getHumanEntityCache().storeAndClear(humanEntity);
+        getHumanEntityCache().store(humanEntity);
 
         getMapComponent().display(getInventory(), 0);
         getPaperComponent().display(getInventory(), 1);
         getOutputComponent().display(getInventory(), 2);
-        getPlayerInventoryComponent().display(humanEntity.getInventory(), 0);
+        getPlayerInventoryComponent().display();
 
-        if (!getPlayerInventoryComponent().hasItem()) {
-            getHumanEntityCache().restoreAndForget(humanEntity);
+        if (getPlayerInventoryComponent().hasItem()) {
+            humanEntity.getInventory().clear();
+
+            getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
+        } else {
+            getHumanEntityCache().clearCache(humanEntity);
         }
 
         cartographyTableInventory.openInventory((Player) humanEntity, getTitle(), getTopItems());

@@ -84,15 +84,19 @@ public class SmithingTableGui extends NamedGui {
 
         getInventory().clear();
 
-        getHumanEntityCache().storeAndClear(humanEntity);
+        getHumanEntityCache().store(humanEntity);
 
         getFirstItemComponent().display(getInventory(), 0);
         getSecondItemComponent().display(getInventory(), 1);
         getResultComponent().display(getInventory(), 2);
-        getPlayerInventoryComponent().display(humanEntity.getInventory(), 0);
+        getPlayerInventoryComponent().display();
 
-        if (!getPlayerInventoryComponent().hasItem()) {
-            getHumanEntityCache().restoreAndForget(humanEntity);
+        if (getPlayerInventoryComponent().hasItem()) {
+            humanEntity.getInventory().clear();
+
+            getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
+        } else {
+            getHumanEntityCache().clearCache(humanEntity);
         }
 
         smithingTableInventory.openInventory((Player) humanEntity, getTitle(), getTopItems());

@@ -71,13 +71,17 @@ public class EnchantingTableGui extends NamedGui {
 
         getInventory().clear();
 
-        getHumanEntityCache().storeAndClear(humanEntity);
+        getHumanEntityCache().store(humanEntity);
 
         getInputComponent().display(getInventory(), 0);
-        getPlayerInventoryComponent().display(humanEntity.getInventory(), 0);
+        getPlayerInventoryComponent().display();
 
-        if (!getPlayerInventoryComponent().hasItem()) {
-            getHumanEntityCache().restoreAndForget(humanEntity);
+        if (getPlayerInventoryComponent().hasItem()) {
+            humanEntity.getInventory().clear();
+
+            getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
+        } else {
+            getHumanEntityCache().clearCache(humanEntity);
         }
 
         enchantingTableInventory.openInventory((Player) humanEntity, getTitle(), getTopItems());

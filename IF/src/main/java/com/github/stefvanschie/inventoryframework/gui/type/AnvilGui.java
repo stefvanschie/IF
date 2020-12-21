@@ -83,15 +83,20 @@ public class AnvilGui extends NamedGui {
 
         getInventory().clear();
 
-        getHumanEntityCache().storeAndClear(humanEntity);
+        getHumanEntityCache().store(humanEntity);
 
         getFirstItemComponent().display(getInventory(), 0);
         getSecondItemComponent().display(getInventory(), 1);
         getResultComponent().display(getInventory(), 2);
-        getPlayerInventoryComponent().display(humanEntity.getInventory(), 0);
 
-        if (!getPlayerInventoryComponent().hasItem()) {
-            getHumanEntityCache().restoreAndForget(humanEntity);
+        getPlayerInventoryComponent().display();
+
+        if (getPlayerInventoryComponent().hasItem()) {
+            humanEntity.getInventory().clear();
+
+            getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
+        } else {
+            getHumanEntityCache().clearCache(humanEntity);
         }
 
         anvilInventory.openInventory((Player) humanEntity, getTitle(), getTopItems());

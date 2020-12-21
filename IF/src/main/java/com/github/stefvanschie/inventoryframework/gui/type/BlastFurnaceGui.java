@@ -67,15 +67,19 @@ public class BlastFurnaceGui extends NamedGui {
     public void show(@NotNull HumanEntity humanEntity) {
         getInventory().clear();
 
-        getHumanEntityCache().storeAndClear(humanEntity);
+        getHumanEntityCache().store(humanEntity);
 
         getIngredientComponent().display(getInventory(), 0);
         getFuelComponent().display(getInventory(), 1);
         getOutputComponent().display(getInventory(), 2);
-        getPlayerInventoryComponent().display(humanEntity.getInventory(), 0);
+        getPlayerInventoryComponent().display();
 
-        if (!getPlayerInventoryComponent().hasItem()) {
-            getHumanEntityCache().restoreAndForget(humanEntity);
+        if (getPlayerInventoryComponent().hasItem()) {
+            humanEntity.getInventory().clear();
+
+            getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
+        } else {
+            getHumanEntityCache().clearCache(humanEntity);
         }
 
         humanEntity.openInventory(getInventory());

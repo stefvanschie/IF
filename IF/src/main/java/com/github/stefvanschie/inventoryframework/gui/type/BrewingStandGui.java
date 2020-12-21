@@ -79,17 +79,21 @@ public class BrewingStandGui extends NamedGui {
     public void show(@NotNull HumanEntity humanEntity) {
         getInventory().clear();
 
-        getHumanEntityCache().storeAndClear(humanEntity);
+        getHumanEntityCache().store(humanEntity);
 
         getFirstBottleComponent().display(getInventory(), 0);
         getSecondBottleComponent().display(getInventory(), 1);
         getThirdBottleComponent().display(getInventory(), 2);
         getPotionIngredientComponent().display(getInventory(), 3);
         getBlazePowderComponent().display(getInventory(), 4);
-        getPlayerInventoryComponent().display(humanEntity.getInventory(), 0);
+        getPlayerInventoryComponent().display();
 
-        if (!getPlayerInventoryComponent().hasItem()) {
-            getHumanEntityCache().restoreAndForget(humanEntity);
+        if (getPlayerInventoryComponent().hasItem()) {
+            humanEntity.getInventory().clear();
+
+            getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
+        } else {
+            getHumanEntityCache().clearCache(humanEntity);
         }
 
         humanEntity.openInventory(getInventory());
