@@ -295,14 +295,14 @@ public class GuiListener implements Listener {
         }
 
         if (gui.isUpdating()) {
-            gui.callOnClose(event);
-
             gui.getHumanEntityCache().restoreAndForget(event.getPlayer());
 
             if (gui.getViewerCount() == 1) {
                 activeGuiInstances.remove(gui);
             }
         } else {
+            gui.callOnClose(event);
+
             //this is a hack to remove items correctly when players press the x button in a beacon
             Bukkit.getScheduler().runTask(JavaPlugin.getProvidingPlugin(getClass()), () -> {
                 HumanEntity humanEntity = event.getPlayer();
