@@ -74,4 +74,70 @@ public class MaskTest {
             "01"
         ).getHeight());
     }
+
+    @Test
+    void testSetLengthLonger() {
+        assertEquals(new Mask(
+           "101",
+           "011"
+        ), new Mask(
+            "10",
+            "01"
+        ).setLength(3));
+    }
+
+    @Test
+    void testSetLengthShorter() {
+        assertEquals(new Mask(
+            "1",
+            "0"
+        ), new Mask(
+            "10",
+            "01"
+        ).setLength(1));
+    }
+
+    @Test
+    void testSetLengthEqual() {
+        assertEquals(new Mask(
+            "10",
+            "01"
+        ), new Mask(
+            "10",
+            "01"
+        ).setLength(2));
+    }
+
+    @Test
+    void testSetHeightLonger() {
+        assertEquals(new Mask(
+            "10",
+            "01",
+            "11"
+        ), new Mask(
+            "10",
+            "01"
+        ).setHeight(3));
+    }
+
+    @Test
+    void testSetHeightSmaller() {
+        assertEquals(new Mask(
+            "10"
+        ), new Mask(
+            "10",
+            "01"
+        ).setHeight(1));
+    }
+
+    @Test
+    void testSetHeightEqual() {
+        assertEquals(new Mask(
+            "10",
+            "01"
+        ), new Mask(
+            "10",
+            "01"
+        ).setHeight(2));
+    }
 }

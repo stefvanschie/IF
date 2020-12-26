@@ -313,6 +313,20 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
     }
 
     @Override
+    public void setLength(int length) {
+        super.setLength(length);
+
+        applyMask(getMask().setLength(length));
+    }
+
+    @Override
+    public void setHeight(int height) {
+        super.setHeight(height);
+
+        applyMask(getMask().setHeight(height));
+    }
+
+    @Override
     public void flipHorizontally(boolean flipHorizontally) {
         this.flipHorizontally = flipHorizontally;
     }
