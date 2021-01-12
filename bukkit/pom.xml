@@ -32,6 +32,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework.core</groupId>
+            <artifactId>IF-core</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>abstraction</artifactId>
             <version>${project.version}</version>
@@ -123,7 +129,7 @@
     </profiles>
 
     <build>
-        <finalName>${project.parent.name}-${project.version}</finalName>
+        <finalName>${project.name}-${project.version}</finalName>
 
         <plugins>
             <plugin>

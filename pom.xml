@@ -5,13 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <modules>
-        <module>IF</module>
-        <module>nms/abstraction</module>
-        <module>nms/1_16_R3</module>
-        <module>nms/1_16_R2</module>
-        <module>nms/1_16_R1</module>
-        <module>nms/1_15_R1</module>
-        <module>nms/1_14_R1</module>
+        <module>bukkit</module>
+        <module>bukkit/nms/abstraction</module>
+        <module>bukkit/nms/1_16_R3</module>
+        <module>bukkit/nms/1_16_R2</module>
+        <module>bukkit/nms/1_16_R1</module>
+        <module>bukkit/nms/1_15_R1</module>
+        <module>bukkit/nms/1_14_R1</module>
+        <module>core</module>
     </modules>
 
     <properties>
