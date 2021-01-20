@@ -88,6 +88,10 @@ public abstract class Pane {
      * @param priority the priority of the pane
      */
     protected Pane(int x, int y, int length, int height, @NotNull Priority priority) {
+        if (length == 0 || height == 0) {
+            throw new IllegalArgumentException("Length and height of pane must be greater than zero");
+        }
+
         this.x = x;
         this.y = y;
 
@@ -107,6 +111,10 @@ public abstract class Pane {
      * @param height the height of the pane
      */
     protected Pane(int length, int height) {
+        if (length == 0 || height == 0) {
+            throw new IllegalArgumentException("Length and height of pane must be greater than zero");
+        }
+
         this.length = length;
         this.height = height;
 
