@@ -340,6 +340,8 @@ public class InventoryComponent {
      * @see #display(Inventory, int)
      */
     public void display() {
+        clearItems();
+
         for (Pane pane : getPanes()) {
             if (!pane.isVisible()) {
                 continue;
@@ -449,6 +451,17 @@ public class InventoryComponent {
     @Contract(pure = true)
     public int getLength() {
         return this.length;
+    }
+
+    /**
+     * Clears the items of this inventory component.
+     *
+     * @since 0.9.2
+     */
+    private void clearItems() {
+        for (ItemStack[] items : this.items) {
+            Arrays.fill(items, null);
+        }
     }
 
     /**
