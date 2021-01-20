@@ -420,7 +420,7 @@ public abstract class Pane {
                             throw new XMLReflectionException(exception);
                         }
                     };
-                else if (InventoryClickEvent.class.isAssignableFrom(parameterTypes[0])) {
+                else if (parameterTypes[0].isAssignableFrom(InventoryClickEvent.class)) {
                     if (parameterCount == 1)
                         action = event -> {
                             try {
