@@ -70,12 +70,8 @@ public class GuiItem {
         this.visible = true;
         this.properties = new ArrayList<>();
 
-        ItemMeta meta = item.getItemMeta();
-
-        if (meta != null) {
-            meta.getPersistentDataContainer().set(KEY_UUID, UUIDTagType.INSTANCE, uuid);
-            item.setItemMeta(meta);
-        }
+        //remove this call after the removal of InventoryComponent#setItem(ItemStack, int, int)
+        applyUUID();
 
         this.item = item;
     }
@@ -136,6 +132,21 @@ public class GuiItem {
             Logger logger = JavaPlugin.getProvidingPlugin(getClass()).getLogger();
             logger.log(Level.SEVERE, "Exception while handling click event in inventory '"
                     + event.getView().getTitle() + "', slot=" + event.getSlot() + ", item=" + item.getType(), t);
+        }
+    }
+
+    /**
+     * Sets the internal UUID of this gui item onto the underlying item. Previously set UUID will be overwritten by the
+     * current UUID. If the underlying item does not have an item meta, this method will silently do nothing.
+     *
+     * @since 0.9.3
+     */
+    public void applyUUID() {
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta != null) {
+            meta.getPersistentDataContainer().set(KEY_UUID, UUIDTagType.INSTANCE, uuid);
+            item.setItemMeta(meta);
         }
     }
 
