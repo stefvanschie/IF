@@ -69,11 +69,10 @@ public class GuiItem {
         this.action = action;
         this.visible = true;
         this.properties = new ArrayList<>();
+        this.item = item;
 
         //remove this call after the removal of InventoryComponent#setItem(ItemStack, int, int)
         applyUUID();
-
-        this.item = item;
     }
 
     /**
