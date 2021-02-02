@@ -153,7 +153,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
                 int finalRow = getY() + newY + paneOffsetY;
                 int finalColumn = getX() + newX + paneOffsetX;
 
-                inventoryComponent.setItem(item.getItem(), finalColumn, finalRow);
+                inventoryComponent.setItem(item, finalColumn, finalRow);
             }
 
             int gapCount = gap;

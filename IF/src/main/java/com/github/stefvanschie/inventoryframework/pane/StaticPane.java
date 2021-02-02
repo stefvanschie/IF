@@ -85,7 +85,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 			int finalRow = getY() + y + paneOffsetY;
 			int finalColumn = getX() + x + paneOffsetX;
 
-			inventoryComponent.setItem(item.getItem(), finalColumn, finalRow);
+			inventoryComponent.setItem(item, finalColumn, finalRow);
 		});
 	}
 
