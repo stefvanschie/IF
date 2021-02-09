@@ -13,6 +13,7 @@
         <module>bukkit/nms/1_15_R1</module>
         <module>bukkit/nms/1_14_R1</module>
         <module>core</module>
+        <module>minestom</module>
     </modules>
 
     <properties>
@@ -24,7 +25,7 @@
 
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF-parent</artifactId>
-    <version>0.9.1</version>
+    <version>0.9.4</version>
     <packaging>pom</packaging>
 
     <name>IF</name>

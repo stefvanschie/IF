@@ -22,7 +22,7 @@ public class InventoryComponentTest {
     void testAddPane() {
         InventoryComponent inventoryComponent = new InventoryComponent(0, 0);
 
-        inventoryComponent.addPane(new StaticPane(0, 0));
+        inventoryComponent.addPane(new StaticPane(1, 1));
 
         List<Pane> panes = inventoryComponent.getPanes();
 
@@ -34,8 +34,8 @@ public class InventoryComponentTest {
     void testCopy() {
         InventoryComponent original = new InventoryComponent(0, 0);
 
-        original.addPane(new StaticPane(0, 0));
-        original.addPane(new OutlinePane(0, 0));
+        original.addPane(new StaticPane(1, 1));
+        original.addPane(new OutlinePane(1, 1));
 
         InventoryComponent copy = original.copy();
 
@@ -50,10 +50,10 @@ public class InventoryComponentTest {
     void testExcludeRowsValid() {
         InventoryComponent original = new InventoryComponent(0, 6);
 
-        original.addPane(new StaticPane(0, 0));
-        original.addPane(new OutlinePane(0, 0));
-        original.addPane(new PaginatedPane(0, 0));
-        original.addPane(new MasonryPane(0, 0));
+        original.addPane(new StaticPane(1, 1));
+        original.addPane(new OutlinePane(1, 1));
+        original.addPane(new PaginatedPane(1, 1));
+        original.addPane(new MasonryPane(1, 1));
 
         InventoryComponent shrunk = original.excludeRows(4, 4);
 
@@ -82,9 +82,9 @@ public class InventoryComponentTest {
     void testGetPanesSorted() {
         InventoryComponent inventoryComponent = new InventoryComponent(0, 0);
 
-        inventoryComponent.addPane(new StaticPane(0, 0, 0, 0, Pane.Priority.HIGHEST));
-        inventoryComponent.addPane(new OutlinePane(0, 0, 0, 0, Pane.Priority.LOW));
-        inventoryComponent.addPane(new PaginatedPane(0, 0, 0, 0, Pane.Priority.MONITOR));
+        inventoryComponent.addPane(new StaticPane(0, 0, 1, 1, Pane.Priority.HIGHEST));
+        inventoryComponent.addPane(new OutlinePane(0, 0, 1, 1, Pane.Priority.LOW));
+        inventoryComponent.addPane(new PaginatedPane(0, 0, 1, 1, Pane.Priority.MONITOR));
 
         List<Pane> panes = inventoryComponent.getPanes();
 

@@ -13,7 +13,7 @@ public class PaginatedPaneTest {
 
     @Test
     void testGetPanesNonExistentPage() {
-        PaginatedPane pane = new PaginatedPane(0, 0);
+        PaginatedPane pane = new PaginatedPane(1, 1);
 
         //noinspection ResultOfMethodCallIgnored
         assertThrows(IllegalArgumentException.class, () -> pane.getPanes(0));
@@ -21,11 +21,11 @@ public class PaginatedPaneTest {
 
     @Test
     void testGetPanesCollectionContents() {
-        PaginatedPane paginatedPane = new PaginatedPane(0, 0);
+        PaginatedPane paginatedPane = new PaginatedPane(1, 1);
 
-        StaticPane pane0 = new StaticPane(0, 0);
-        StaticPane pane1 = new StaticPane(0, 0);
-        StaticPane pane2 = new StaticPane(0, 0);
+        StaticPane pane0 = new StaticPane(1, 1);
+        StaticPane pane1 = new StaticPane(1, 1);
+        StaticPane pane2 = new StaticPane(1, 1);
 
         paginatedPane.addPane(0, pane0);
         paginatedPane.addPane(0, pane1);
@@ -39,11 +39,11 @@ public class PaginatedPaneTest {
 
     @Test
     void testGetPanesCollectionSize() {
-        PaginatedPane paginatedPane = new PaginatedPane(0, 0);
+        PaginatedPane paginatedPane = new PaginatedPane(1, 1);
 
-        StaticPane pane0 = new StaticPane(0, 0);
-        StaticPane pane1 = new StaticPane(0, 0);
-        StaticPane pane2 = new StaticPane(0, 0);
+        StaticPane pane0 = new StaticPane(1, 1);
+        StaticPane pane1 = new StaticPane(1, 1);
+        StaticPane pane2 = new StaticPane(1, 1);
 
         paginatedPane.addPane(0, pane0);
         paginatedPane.addPane(0, pane1);

@@ -16,6 +16,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -133,6 +134,8 @@ public class InventoryComponent extends AbstractInventoryComponent {
 
     @Override
     public void display() {
+        clearItems();
+
         for (Pane pane : getPanes()) {
             if (!pane.isVisible()) {
                 continue;
@@ -382,11 +385,35 @@ public class InventoryComponent extends AbstractInventoryComponent {
      * resides in the same position as specified. If the position specified is outside of the boundaries set by this
      * component, an {@link IllegalArgumentException} will be thrown.
      *
+     * @param guiItem the item to place in this inventory component
+     * @param x the x coordinate of the item
+     * @param y the y coordinate of the item
+     * @since 0.9.3
+     */
+    public void setItem(@NotNull GuiItem guiItem, int x, int y) {
+        if (!isInBounds(x, y)) {
+            throw new IllegalArgumentException("Coordinates must be in-bounds: x = " + x + ", y = " + y +
+                "; should be below " + getLength() + " and " + getHeight());
+        }
+
+        guiItem.applyUUID();
+
+        this.items[x][y] = guiItem.getItem();
+    }
+
+    /**
+     * Adds the specified item in the slot at the specified positions. This will override an already set item if it
+     * resides in the same position as specified. If the position specified is outside of the boundaries set by this
+     * component, an {@link IllegalArgumentException} will be thrown.
+     *
      * @param item the item to place in this inventory component
      * @param x the x coordinate of the item
      * @param y the y coordinate of the item
      * @since 0.8.0
+     * @deprecated usage of {@link #setItem(GuiItem, int, int)} is preferred so gui item's item meta can be freely
+     * edited without losing important internal data
      */
+    @Deprecated
     public void setItem(@NotNull ItemStack item, int x, int y) {
         if (!isInBounds(x, y)) {
             throw new IllegalArgumentException("Coordinates must be in-bounds: x = " + x + ", y = " + y +
@@ -394,5 +421,16 @@ public class InventoryComponent extends AbstractInventoryComponent {
         }
 
         this.items[x][y] = item;
+    }
+
+    /**
+     * Clears the items of this inventory component.
+     *
+     * @since 0.9.2
+     */
+    private void clearItems() {
+        for (ItemStack[] items : this.items) {
+            Arrays.fill(items, null);
+        }
     }
 }

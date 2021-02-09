@@ -5,12 +5,12 @@
     <parent>
         <artifactId>IF-parent</artifactId>
         <groupId>com.github.stefvanschie.inventoryframework</groupId>
-        <version>0.9.1</version>
+        <version>0.9.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <name>IF-core</name>
-    <version>0.9.1</version>
+    <version>0.9.4</version>
     <artifactId>IF-core</artifactId>
     <groupId>com.github.stefvanschie.inventoryframework.core</groupId>
 

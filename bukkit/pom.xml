@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>IF-bukkit</name>
-    <version>0.9.1</version>
+    <version>0.9.4</version>
     <artifactId>IF-bukkit</artifactId>
     <groupId>com.github.stefvanschie.inventoryframework.bukkit</groupId>
     <packaging>jar</packaging>
