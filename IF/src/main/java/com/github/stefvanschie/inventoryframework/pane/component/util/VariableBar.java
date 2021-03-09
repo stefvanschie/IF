@@ -49,7 +49,7 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         this.value = 0F;
         this.orientation = Orientation.HORIZONTAL;
 
-        this.fillPane = new OutlinePane(0, 0, 0, height);
+        this.fillPane = new OutlinePane(0, 0, length, height);
         this.backgroundPane = new OutlinePane(0, 0, length, height);
 
         this.fillPane.addItem(new GuiItem(new ItemStack(Material.GREEN_STAINED_GLASS_PANE),
@@ -59,6 +59,8 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
 
         this.fillPane.setRepeat(true);
         this.backgroundPane.setRepeat(true);
+
+        this.fillPane.setVisible(false);
     }
 
     protected VariableBar(int x, int y, int length, int height, @NotNull Priority priority) {
@@ -74,12 +76,65 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         this(x, y, length, height, Priority.NORMAL);
     }
 
+    /**
+     * Sets the value of this bar. The value has to be in (0,1). If not, this method will throw an
+     * {@link IllegalArgumentException}.
+     *
+     * @param value the new value.
+     * @throws IllegalArgumentException when the value is out of range
+     * @since 0.9.5
+     */
+    protected void setValue(float value) {
+        if (value < 0 || value > 1) {
+            throw new IllegalArgumentException("Value is out of range (0,1)");
+        }
+
+        this.value = value;
+
+        if (orientation == Orientation.HORIZONTAL) {
+            int length = Math.round(getLength() * value);
+            boolean positiveLength = length != 0;
+
+            this.fillPane.setVisible(positiveLength);
+
+            if (positiveLength) {
+                this.fillPane.setLength(length);
+            }
+
+            if (flipHorizontally) {
+                this.fillPane.setX(getLength() - this.fillPane.getLength());
+            }
+        } else if (orientation == Orientation.VERTICAL) {
+            int height = Math.round(getHeight() * value);
+            boolean positiveHeight = height != 0;
+
+            this.fillPane.setVisible(positiveHeight);
+
+            if (positiveHeight) {
+                this.fillPane.setHeight(height);
+            }
+
+            if (flipVertically) {
+                this.fillPane.setY(getHeight() - this.fillPane.getHeight());
+            }
+        } else {
+            throw new UnsupportedOperationException("Unknown orientation");
+        }
+    }
+
     @Override
     public void setLength(int length) {
         super.setLength(length);
 
         if (orientation == Orientation.HORIZONTAL) {
-            this.fillPane.setLength(Math.round(length * value));
+            int fillLength = Math.round(length * value);
+            boolean positiveLength = fillLength != 0;
+
+            this.fillPane.setVisible(positiveLength);
+
+            if (positiveLength) {
+                this.fillPane.setLength(fillLength);
+            }
 
             if (flipHorizontally) {
                 this.fillPane.setX(getLength() - this.fillPane.getLength());
@@ -100,7 +155,14 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         if (orientation == Orientation.HORIZONTAL) {
             this.fillPane.setHeight(height);
         } else if (orientation == Orientation.VERTICAL) {
-            this.fillPane.setHeight(Math.round(height * value));
+            int fillHeight = Math.round(height * value);
+            boolean positiveHeight = fillHeight != 0;
+
+            this.fillPane.setVisible(positiveHeight);
+
+            if (positiveHeight) {
+                this.fillPane.setHeight(fillHeight);
+            }
 
             if (flipVertically) {
                 this.fillPane.setY(getHeight() - this.fillPane.getHeight());
@@ -146,11 +208,26 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         this.orientation = orientation;
 
         if (orientation == Orientation.HORIZONTAL) {
-            fillPane.setLength(Math.round(getLength() * value));
+            int fillLength = Math.round(getLength() * value);
+            boolean positiveLength = fillLength != 0;
+
+            fillPane.setVisible(fillLength != 0);
+
+            if (positiveLength) {
+                fillPane.setLength(fillLength);
+            }
+
             fillPane.setHeight(getHeight());
         } else if (orientation == Orientation.VERTICAL) {
+            int fillHeight = Math.round(getHeight() * value);
+            boolean positiveHeight = fillHeight != 0;
+
+            fillPane.setVisible(fillHeight != 0);
             fillPane.setLength(getLength());
-            fillPane.setHeight(Math.round(getHeight() * value));
+
+            if (positiveHeight) {
+                fillPane.setHeight(fillHeight);
+            }
         } else {
             throw new IllegalArgumentException("Unknown orientation");
         }

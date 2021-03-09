@@ -78,29 +78,10 @@ public class Slider extends VariableBar {
      * @param value the new value.
      * @throws IllegalArgumentException when the value is out of range
      * @since 0.5.0
+     * @see VariableBar#setValue(float) the implementation
      */
     public void setValue(float value) {
-        if (value < 0 || value > 1) {
-            throw new IllegalArgumentException("Value is out of range (0,1)");
-        }
-
-        this.value = value;
-
-        if (orientation == Orientation.HORIZONTAL) {
-            this.fillPane.setLength(Math.round(getLength() * value));
-
-            if (flipHorizontally) {
-                this.fillPane.setX(getLength() - this.fillPane.getLength());
-            }
-        } else if (orientation == Orientation.VERTICAL) {
-            this.fillPane.setHeight(Math.round(getHeight() * value));
-
-            if (flipVertically) {
-                this.fillPane.setY(getHeight() - this.fillPane.getHeight());
-            }
-        } else {
-            throw new UnsupportedOperationException("Unknown orientation");
-        }
+        super.setValue(value);
     }
 
     @NotNull
