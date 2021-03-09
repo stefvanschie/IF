@@ -69,29 +69,10 @@ public class PercentageBar extends VariableBar {
      * @param percentage the new percentage.
      * @throws IllegalArgumentException when the percentage is out of range
      * @since 0.5.0
+     * @see VariableBar#setValue(float) the implementation
      */
     public void setPercentage(float percentage) {
-        if (percentage < 0 || percentage > 1) {
-            throw new IllegalArgumentException("Percentage is out of range (0,1)");
-        }
-
-        this.value = percentage;
-
-        if (orientation == Orientation.HORIZONTAL) {
-            this.fillPane.setLength(Math.round(getLength() * percentage));
-
-            if (flipHorizontally) {
-                this.fillPane.setX(getLength() - this.fillPane.getLength());
-            }
-        } else if (orientation == Orientation.VERTICAL) {
-            this.fillPane.setHeight(Math.round(getHeight() * percentage));
-
-            if (flipVertically) {
-                this.fillPane.setY(getHeight() - this.fillPane.getHeight());
-            }
-        } else {
-            throw new UnsupportedOperationException("Unknown orientation");
-        }
+        super.setValue(percentage);
     }
 
     @NotNull
