@@ -61,17 +61,17 @@ public class CycleButton extends Pane {
             return false;
         }
 
-        callOnClick(event);
-
-        Pane pane = panes.get(position);
-        pane.click(gui, inventoryComponent, event, slot, paneOffsetX + x, paneOffsetY + y,
-            length, height);
-
         position++;
 
         if (position == panes.size()) {
             position = 0;
         }
+
+        callOnClick(event);
+
+        Pane pane = panes.get(position);
+        pane.click(gui, inventoryComponent, event, slot, paneOffsetX + x, paneOffsetY + y,
+            length, height);
 
         gui.update();
 

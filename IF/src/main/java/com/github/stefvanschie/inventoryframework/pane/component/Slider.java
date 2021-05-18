@@ -47,6 +47,14 @@ public class Slider extends VariableBar {
             return false;
         }
 
+        if (orientation == Orientation.HORIZONTAL) {
+            setValue((float) (x + 1) / length);
+        } else if (orientation == Orientation.VERTICAL) {
+            setValue((float) (y + 1) / height);
+        } else {
+            throw new UnsupportedOperationException("Unknown orientation");
+        }
+
         callOnClick(event);
 
         int newPaneOffsetX = paneOffsetX + getX();
@@ -57,14 +65,6 @@ public class Slider extends VariableBar {
         ) || this.backgroundPane.click(
             gui, inventoryComponent, event, slot, newPaneOffsetX, newPaneOffsetY, length, height
         );
-
-        if (orientation == Orientation.HORIZONTAL) {
-            setValue((float) (x + 1) / length);
-        } else if (orientation == Orientation.VERTICAL) {
-            setValue((float) (y + 1) / height);
-        } else {
-            throw new UnsupportedOperationException("Unknown orientation");
-        }
 
         gui.update();
 
