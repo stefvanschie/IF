@@ -92,6 +92,8 @@ public class ToggleButton extends Pane {
             return false;
         }
 
+        toggle();
+
         callOnClick(event);
 
         int newX = paneOffsetX + x;
@@ -102,8 +104,6 @@ public class ToggleButton extends Pane {
         } else {
             disabledPane.click(gui, inventoryComponent, event, slot, newX, newY, length, height);
         }
-
-        toggle();
 
         gui.update();
 
@@ -163,6 +163,17 @@ public class ToggleButton extends Pane {
     @Override
     public Collection<Pane> getPanes() {
         return Stream.of(enabledPane, disabledPane).collect(Collectors.toSet());
+    }
+
+    /**
+     * Gets whether this toggle button is currently enabled or disabled.
+     *
+     * @return whether the button is enabled or disabled
+     * @since 0.9.6
+     */
+    @Contract(pure = true)
+    public boolean isEnabled() {
+        return enabled;
     }
 
     /**
