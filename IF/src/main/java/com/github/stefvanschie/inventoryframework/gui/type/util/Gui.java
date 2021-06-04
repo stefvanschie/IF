@@ -645,6 +645,7 @@ public abstract class Gui implements InventoryHolder {
         registerPane("masonrypane", MasonryPane::load);
         registerPane("outlinepane", OutlinePane::load);
         registerPane("paginatedpane", PaginatedPane::load);
+        registerPane("patternpane", PatternPane::load);
         registerPane("staticpane", StaticPane::load);
 
         registerPane("cyclebutton", CycleButton::load);
