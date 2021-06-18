@@ -22,12 +22,12 @@ jobs:
         java-version: 16
     - run: |
         wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
-        java -jar BuildTools.jar --rev 1.14.4
-        java -jar BuildTools.jar --rev 1.15.2
-        java -jar BuildTools.jar --rev 1.16.1
-        java -jar BuildTools.jar --rev 1.16.3
-        java -jar BuildTools.jar --rev 1.16.4
-        java -jar BuildTools.jar --rev 1.17 --remapped
+        java -jar BuildTools.jar --rev 1.14.4 --disable-java-check
+        java -jar BuildTools.jar --rev 1.15.2 --disable-java-check
+        java -jar BuildTools.jar --rev 1.16.1 --disable-java-check
+        java -jar BuildTools.jar --rev 1.16.3 --disable-java-check
+        java -jar BuildTools.jar --rev 1.16.4 --disable-java-check
+        java -jar BuildTools.jar --rev 1.17 --remapped --disable-java-check
       name: Run BuildTools
     - uses: actions/checkout@v2
       name: Checkout code
