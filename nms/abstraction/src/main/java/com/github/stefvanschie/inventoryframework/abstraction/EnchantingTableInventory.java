@@ -1,5 +1,7 @@
 package com.github.stefvanschie.inventoryframework.abstraction;
 
+import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -37,7 +39,11 @@ public abstract class EnchantingTableInventory {
      * @param items the top items
      * @since 0.8.0
      */
-    public abstract void openInventory(@NotNull Player player, @NotNull String title, @Nullable ItemStack[] items);
+    public final void openInventory(@NotNull Player player, @NotNull String title, @Nullable ItemStack[] items) {
+        openInventory(player, StringHolder.of(title), items);
+    }
+
+    public abstract void openInventory(@NotNull Player player, @NotNull TextHolder title, @Nullable ItemStack[] items);
 
     /**
      * Sends the top items to the inventory for the specified player.

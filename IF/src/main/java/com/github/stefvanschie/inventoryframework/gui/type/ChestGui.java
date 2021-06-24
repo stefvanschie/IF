@@ -1,12 +1,15 @@
 package com.github.stefvanschie.inventoryframework.gui.type;
 
+import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
+import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.MergedGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -54,6 +57,14 @@ public class ChestGui extends NamedGui implements MergedGui {
      * @since 0.8.0
      */
     public ChestGui(int rows, @NotNull String title) {
+        this(rows, StringHolder.of(title));
+    }
+    
+    public ChestGui(int rows, @NotNull Component title) {
+        this(rows, ComponentHolder.of(title));
+    }
+    
+    public ChestGui(int rows, @NotNull TextHolder title) {
         super(title);
 
         if (!(rows >= 1 && rows <= 6)) {
@@ -135,7 +146,7 @@ public class ChestGui extends NamedGui implements MergedGui {
         //copy the viewers
         List<HumanEntity> viewers = getViewers();
 
-        this.inventory = Bukkit.createInventory(this, rows * 9, getTitle());
+        this.inventory = createInventory();
 
         viewers.forEach(humanEntity -> humanEntity.openInventory(inventory));
     }
@@ -162,8 +173,8 @@ public class ChestGui extends NamedGui implements MergedGui {
     @NotNull
     @Contract(pure = true)
     @Override
-    public Inventory createInventory(@NotNull String title) {
-        return Bukkit.createInventory(this, getRows() * 9, title);
+    protected Inventory createInventory() {
+        return getTitleHolder().asInventoryTitle(this, getRows() * 9);
     }
 
     /**

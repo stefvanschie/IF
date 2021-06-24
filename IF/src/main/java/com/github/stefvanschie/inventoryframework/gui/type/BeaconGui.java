@@ -114,7 +114,7 @@ public class BeaconGui extends Gui {
     @NotNull
     @Contract(pure = true)
     @Override
-    public Inventory createInventory() {
+    protected Inventory createInventory() {
         return Bukkit.createInventory(this, InventoryType.BEACON);
     }
 

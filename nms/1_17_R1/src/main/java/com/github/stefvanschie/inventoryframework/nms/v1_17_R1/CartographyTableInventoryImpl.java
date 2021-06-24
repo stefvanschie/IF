@@ -1,9 +1,11 @@
 package com.github.stefvanschie.inventoryframework.nms.v1_17_R1;
 
 import com.github.stefvanschie.inventoryframework.abstraction.CartographyTableInventory;
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
+import com.github.stefvanschie.inventoryframework.nms.v1_17_R1.util.AdventureSupportUtil;
 import com.github.stefvanschie.inventoryframework.nms.v1_17_R1.util.CustomInventoryUtil;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
@@ -38,7 +40,7 @@ public class CartographyTableInventoryImpl extends CartographyTableInventory {
     }
 
     @Override
-    public void openInventory(@NotNull Player player, @NotNull String title,
+    public void openInventory(@NotNull Player player, @NotNull TextHolder title,
                               @Nullable org.bukkit.inventory.ItemStack[] items) {
         int itemAmount = items.length;
 
@@ -56,7 +58,7 @@ public class CartographyTableInventoryImpl extends CartographyTableInventory {
         serverPlayer.containerMenu = containerCartographyTable;
 
         int id = containerCartographyTable.containerId;
-        TranslatableComponent message = new TranslatableComponent(title);
+        Component message = AdventureSupportUtil.toComponent(title);
 
         serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.CARTOGRAPHY_TABLE, message));
 

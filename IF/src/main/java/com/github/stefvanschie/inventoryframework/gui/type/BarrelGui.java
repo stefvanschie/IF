@@ -6,7 +6,7 @@ import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.MergedGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -48,6 +48,10 @@ public class BarrelGui extends NamedGui implements MergedGui {
      * @since 0.8.0
      */
     public BarrelGui(@NotNull String title) {
+        super(title);
+    }
+    
+    public BarrelGui(@NotNull Component title) {
         super(title);
     }
 
@@ -128,8 +132,8 @@ public class BarrelGui extends NamedGui implements MergedGui {
     @NotNull
     @Contract(pure = true)
     @Override
-    public Inventory createInventory(@NotNull String title) {
-        return Bukkit.createInventory(this, InventoryType.BARREL, title);
+    protected Inventory createInventory() {
+        return getTitleHolder().asInventoryTitle(this, InventoryType.BARREL);
     }
 
     @NotNull

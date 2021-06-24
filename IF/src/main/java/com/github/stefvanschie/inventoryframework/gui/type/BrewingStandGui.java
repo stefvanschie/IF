@@ -3,7 +3,7 @@ package com.github.stefvanschie.inventoryframework.gui.type;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -72,6 +72,10 @@ public class BrewingStandGui extends NamedGui {
      * @since 0.8.0
      */
     public BrewingStandGui(@NotNull String title) {
+        super(title);
+    }
+    
+    public BrewingStandGui(@NotNull Component title) {
         super(title);
     }
 
@@ -149,8 +153,8 @@ public class BrewingStandGui extends NamedGui {
     @NotNull
     @Contract(pure = true)
     @Override
-    public Inventory createInventory(@NotNull String title) {
-        Inventory inventory = Bukkit.createInventory(this, InventoryType.BREWING, title);
+    protected Inventory createInventory() {
+        Inventory inventory = getTitleHolder().asInventoryTitle(this, InventoryType.BREWING);
 
         addInventory(inventory, this);
 
