@@ -1,5 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
@@ -10,7 +11,6 @@ import com.github.stefvanschie.inventoryframework.util.UUIDTagType;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.google.common.primitives.Primitives;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -358,12 +358,7 @@ public abstract class Pane {
                                 if (!innerNode.getNodeName().equals("line"))
                                     continue;
 
-                                boolean hasLore = itemMeta.hasLore();
-                                List<String> lore = hasLore ? Objects.requireNonNull(itemMeta.getLore()) : new ArrayList<>();
-
-                                lore.add(ChatColor.translateAlternateColorCodes('&', innerNode
-                                        .getTextContent()));
-                                itemMeta.setLore(lore);
+								TextHolder.fromNodeTextContent(innerNode).asItemLoreAtEnd(itemMeta);
                                 itemStack.setItemMeta(itemMeta);
                                 break;
                             case "enchantments":
@@ -388,8 +383,7 @@ public abstract class Pane {
                 } else if (nodeName.equals("displayname")) {
                     ItemMeta itemMeta = Objects.requireNonNull(itemStack.getItemMeta());
 
-                    itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', item
-                            .getTextContent()));
+                    TextHolder.fromNodeTextContent(item).asItemDisplayName(itemMeta);
 
                     itemStack.setItemMeta(itemMeta);
                 } else if (nodeName.equals("skull") && itemStack.getItemMeta() instanceof SkullMeta) {

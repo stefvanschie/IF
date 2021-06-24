@@ -1,6 +1,8 @@
 package com.github.stefvanschie.inventoryframework.nms.v1_16_R1;
 
 import com.github.stefvanschie.inventoryframework.abstraction.SmithingTableInventory;
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
+import com.github.stefvanschie.inventoryframework.nms.v1_16_R1.util.AdventureSupportUtil;
 import net.minecraft.server.v1_16_R1.*;
 import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftInventory;
@@ -25,7 +27,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
     }
 
     @Override
-    public void openInventory(@NotNull Player player, @NotNull String title,
+    public void openInventory(@NotNull Player player, @NotNull TextHolder title,
                               @Nullable org.bukkit.inventory.ItemStack[] items) {
         int itemAmount = items.length;
 
@@ -41,7 +43,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
         entityPlayer.activeContainer = containerSmithingTable;
 
         int id = containerSmithingTable.windowId;
-        ChatMessage message = new ChatMessage(title);
+        IChatBaseComponent message = AdventureSupportUtil.toComponent(title);
         PacketPlayOutOpenWindow packet = new PacketPlayOutOpenWindow(id, Containers.SMITHING, message);
 
         entityPlayer.playerConnection.sendPacket(packet);

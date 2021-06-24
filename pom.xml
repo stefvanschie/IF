@@ -13,6 +13,7 @@
         <module>nms/1_16_R1</module>
         <module>nms/1_15_R1</module>
         <module>nms/1_14_R1</module>
+        <module>adventure-support</module>
     </modules>
 
     <properties>
@@ -20,6 +21,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.deploy.skip>true</maven.deploy.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <adventure.version>4.8.1</adventure.version>
     </properties>
 
     <groupId>com.github.stefvanschie.inventoryframework</groupId>

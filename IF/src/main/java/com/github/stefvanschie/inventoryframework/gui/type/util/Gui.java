@@ -151,14 +151,14 @@ public abstract class Gui implements InventoryHolder {
     }
 
     /**
-     * Creates a new inventory of the type of the implementing class with the provided title.
+     * Creates a new inventory of the type of the implementing class.
      *
      * @return the new inventory
      * @since 0.8.0
      */
     @NotNull
     @Contract(pure = true)
-    public abstract Inventory createInventory();
+    protected abstract Inventory createInventory();
 
     /**
      * Shows a gui to a player

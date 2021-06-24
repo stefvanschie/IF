@@ -87,3 +87,11 @@ If you want to build this project from source, run the following from Git Bash:
     mvn clean package
 
 The build can then be found in /IF/target/.
+
+TODO adventure support notes
+- proper adventure support is only achieved if you run paper:
+    we can only create adventure inventory titles on paper
+  
+TODO actual TODO for me:
+ - which adventure versions to use? same one in all places?
+    even in 1.14 NMS?
