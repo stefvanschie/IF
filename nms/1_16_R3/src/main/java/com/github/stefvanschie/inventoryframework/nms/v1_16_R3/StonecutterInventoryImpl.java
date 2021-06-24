@@ -1,6 +1,8 @@
 package com.github.stefvanschie.inventoryframework.nms.v1_16_R3;
 
 import com.github.stefvanschie.inventoryframework.abstraction.StonecutterInventory;
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
+import com.github.stefvanschie.inventoryframework.nms.v1_16_R3.util.AdventureSupportUtil;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftInventory;
@@ -27,7 +29,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
     }
 
     @Override
-    public void openInventory(@NotNull Player player, @NotNull String title,
+    public void openInventory(@NotNull Player player, @NotNull TextHolder title,
                               @Nullable org.bukkit.inventory.ItemStack[] items) {
         int itemAmount = items.length;
 
@@ -43,7 +45,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
         entityPlayer.activeContainer = containerEnchantmentTable;
 
         int id = containerEnchantmentTable.windowId;
-        ChatMessage message = new ChatMessage(title);
+        IChatBaseComponent message = AdventureSupportUtil.toComponent(title);
         PacketPlayOutOpenWindow packet = new PacketPlayOutOpenWindow(id, Containers.STONECUTTER, message);
 
         entityPlayer.playerConnection.sendPacket(packet);

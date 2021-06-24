@@ -1,10 +1,12 @@
 package com.github.stefvanschie.inventoryframework.nms.v1_17_R1;
 
 import com.github.stefvanschie.inventoryframework.abstraction.AnvilInventory;
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
+import com.github.stefvanschie.inventoryframework.nms.v1_17_R1.util.AdventureSupportUtil;
 import com.github.stefvanschie.inventoryframework.nms.v1_17_R1.util.CustomInventoryUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
@@ -39,7 +41,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
     }
 
     @Override
-    public void openInventory(@NotNull Player player, @NotNull String title,
+    public void openInventory(@NotNull Player player, @NotNull TextHolder title,
                               @Nullable org.bukkit.inventory.ItemStack[] items) {
         int itemAmount = items.length;
 
@@ -55,7 +57,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
         serverPlayer.containerMenu = containerAnvil;
 
         int id = containerAnvil.containerId;
-        TranslatableComponent message = new TranslatableComponent(title);
+        Component message = AdventureSupportUtil.toComponent(title);
 
         serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.ANVIL, message));
 

@@ -1,8 +1,10 @@
 package com.github.stefvanschie.inventoryframework.nms.v1_17_R1;
 
 import com.github.stefvanschie.inventoryframework.abstraction.EnchantingTableInventory;
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
+import com.github.stefvanschie.inventoryframework.nms.v1_17_R1.util.AdventureSupportUtil;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
@@ -37,7 +39,7 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
     }
 
     @Override
-    public void openInventory(@NotNull Player player, @NotNull String title,
+    public void openInventory(@NotNull Player player, @NotNull TextHolder title,
                               @Nullable org.bukkit.inventory.ItemStack[] items) {
         int itemAmount = items.length;
 
@@ -53,7 +55,7 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
         serverPlayer.containerMenu = containerEnchantmentTable;
 
         int id = containerEnchantmentTable.containerId;
-        TranslatableComponent message = new TranslatableComponent(title);
+        Component message = AdventureSupportUtil.toComponent(title);
 
         serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.ENCHANTMENT, message));
 

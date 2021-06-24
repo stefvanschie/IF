@@ -1,9 +1,10 @@
 package com.github.stefvanschie.inventoryframework.gui.type.util;
 
-import org.bukkit.Bukkit;
+import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
+import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +16,7 @@ public abstract class NamedGui extends Gui {
      * The title of this gui
      */
     @NotNull
-    private String title;
+    private TextHolder title;
 
     /**
      * Constructs a new gui with a title
@@ -24,34 +25,15 @@ public abstract class NamedGui extends Gui {
      * @since 0.8.0
      */
     public NamedGui(@NotNull String title) {
+        this(StringHolder.of(title));
+    }
+    
+    public NamedGui(@NotNull Component title) {
+        this(ComponentHolder.of(title));
+    }
+    
+    protected NamedGui(@NotNull TextHolder title) {
         this.title = title;
-    }
-
-    /**
-     * Creates a new inventory of the type of the implementing class with the provided title.
-     *
-     * @param title the title for the new inventory
-     * @return the new inventory
-     * @since 0.8.0
-     */
-    @NotNull
-    @Contract(pure = true)
-    public abstract Inventory createInventory(@NotNull String title);
-
-    @NotNull
-    @Override
-    public Inventory getInventory() {
-        if (this.inventory == null) {
-            this.inventory = createInventory(getTitle());
-        }
-
-        return inventory;
-    }
-
-    @NotNull
-    @Override
-    public Inventory createInventory() {
-        return createInventory(title);
     }
 
     /**
@@ -61,11 +43,19 @@ public abstract class NamedGui extends Gui {
      * @param title the title
      */
     public void setTitle(@NotNull String title) {
+        setTitle(StringHolder.of(title));
+    }
+    
+    public void setTitle(@NotNull Component title) {
+        setTitle(ComponentHolder.of(title));
+    }
+    
+    private void setTitle(@NotNull TextHolder title) {
         //copy the viewers
         List<HumanEntity> viewers = getViewers();
 
-        this.inventory = createInventory(title);
         this.title = title;
+        this.inventory = createInventory();
 
         updating = true;
 
@@ -85,6 +75,18 @@ public abstract class NamedGui extends Gui {
     @NotNull
     @Contract(pure = true)
     public String getTitle() {
+        return title.asLegacyString();
+    }
+    
+    @NotNull
+    @Contract(pure = true)
+    public Component title() {
+        return title.asComponent();
+    }
+    
+    @NotNull
+    @Contract(pure = true)
+    protected TextHolder getTitleHolder() {
         return title;
     }
 }

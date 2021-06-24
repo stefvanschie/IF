@@ -6,7 +6,7 @@ import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.util.version.Version;
 import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -67,6 +67,10 @@ public class StonecutterGui extends NamedGui {
      * @since 0.8.0
      */
     public StonecutterGui(@NotNull String title) {
+        super(title);
+    }
+    
+    public StonecutterGui(@NotNull Component title) {
         super(title);
     }
 
@@ -136,8 +140,8 @@ public class StonecutterGui extends NamedGui {
     @NotNull
     @Contract(pure = true)
     @Override
-    public Inventory createInventory(@NotNull String title) {
-        return Bukkit.createInventory(this, InventoryType.STONECUTTER, title);
+    protected Inventory createInventory() {
+        return getTitleHolder().asInventoryTitle(this, InventoryType.STONECUTTER);
     }
 
     /**
