@@ -1,12 +1,12 @@
 package com.github.stefvanschie.inventoryframework.gui.type;
 
 import com.github.stefvanschie.inventoryframework.abstraction.CartographyTableInventory;
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.util.version.Version;
 import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -77,8 +77,8 @@ public class CartographyTableGui extends NamedGui {
     public CartographyTableGui(@NotNull String title) {
         super(title);
     }
-    
-    public CartographyTableGui(@NotNull Component title) {
+
+    public CartographyTableGui(@NotNull TextHolder title) {
         super(title);
     }
 

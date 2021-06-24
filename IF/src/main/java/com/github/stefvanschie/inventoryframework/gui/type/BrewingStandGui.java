@@ -1,9 +1,9 @@
 package com.github.stefvanschie.inventoryframework.gui.type;
 
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -74,8 +74,8 @@ public class BrewingStandGui extends NamedGui {
     public BrewingStandGui(@NotNull String title) {
         super(title);
     }
-    
-    public BrewingStandGui(@NotNull Component title) {
+
+    public BrewingStandGui(@NotNull TextHolder title) {
         super(title);
     }
 

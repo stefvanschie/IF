@@ -1,7 +1,5 @@
 package com.github.stefvanschie.inventoryframework.adventuresupport;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryType;
@@ -65,14 +63,9 @@ public final class StringHolder extends TextHolder {
     
     @NotNull
     @Contract(pure = true)
+    @Override
     public String asLegacyString() {
         return value;
-    }
-    
-    @NotNull
-    @Contract(pure = true)
-    public Component asComponent() {
-        return LegacyComponentSerializer.legacySection().deserialize(value);
     }
     
     @NotNull

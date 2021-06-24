@@ -358,7 +358,8 @@ public abstract class Pane {
                                 if (!innerNode.getNodeName().equals("line"))
                                     continue;
 
-								TextHolder.fromNodeTextContent(innerNode).asItemLoreAtEnd(itemMeta);
+								TextHolder.deserialize(innerNode.getTextContent())
+                                        .asItemLoreAtEnd(itemMeta);
                                 itemStack.setItemMeta(itemMeta);
                                 break;
                             case "enchantments":
@@ -383,7 +384,8 @@ public abstract class Pane {
                 } else if (nodeName.equals("displayname")) {
                     ItemMeta itemMeta = Objects.requireNonNull(itemStack.getItemMeta());
 
-                    TextHolder.fromNodeTextContent(item).asItemDisplayName(itemMeta);
+                    TextHolder.deserialize(item.getTextContent())
+                            .asItemDisplayName(itemMeta);
 
                     itemStack.setItemMeta(itemMeta);
                 } else if (nodeName.equals("skull") && itemStack.getItemMeta() instanceof SkullMeta) {
