@@ -1,12 +1,12 @@
 package com.github.stefvanschie.inventoryframework.gui.type;
 
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.MergedGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -50,8 +50,8 @@ public class BarrelGui extends NamedGui implements MergedGui {
     public BarrelGui(@NotNull String title) {
         super(title);
     }
-    
-    public BarrelGui(@NotNull Component title) {
+
+    public BarrelGui(@NotNull TextHolder title) {
         super(title);
     }
 

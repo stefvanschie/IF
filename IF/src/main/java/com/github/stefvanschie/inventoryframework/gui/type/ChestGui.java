@@ -1,6 +1,5 @@
 package com.github.stefvanschie.inventoryframework.gui.type;
 
-import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
@@ -9,7 +8,6 @@ import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.MergedGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -58,10 +56,6 @@ public class ChestGui extends NamedGui implements MergedGui {
      */
     public ChestGui(int rows, @NotNull String title) {
         this(rows, StringHolder.of(title));
-    }
-    
-    public ChestGui(int rows, @NotNull Component title) {
-        this(rows, ComponentHolder.of(title));
     }
     
     public ChestGui(int rows, @NotNull TextHolder title) {

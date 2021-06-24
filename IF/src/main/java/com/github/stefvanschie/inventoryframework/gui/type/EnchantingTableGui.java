@@ -1,12 +1,12 @@
 package com.github.stefvanschie.inventoryframework.gui.type;
 
 import com.github.stefvanschie.inventoryframework.abstraction.EnchantingTableInventory;
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.util.version.Version;
 import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -62,8 +62,8 @@ public class EnchantingTableGui extends NamedGui {
     public EnchantingTableGui(@NotNull String title) {
         super(title);
     }
-    
-    public EnchantingTableGui(@NotNull Component title) {
+
+    public EnchantingTableGui(@NotNull TextHolder title) {
         super(title);
     }
 

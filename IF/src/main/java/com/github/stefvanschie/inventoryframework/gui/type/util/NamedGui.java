@@ -1,9 +1,7 @@
 package com.github.stefvanschie.inventoryframework.gui.type.util;
 
-import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.HumanEntity;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -27,12 +25,8 @@ public abstract class NamedGui extends Gui {
     public NamedGui(@NotNull String title) {
         this(StringHolder.of(title));
     }
-    
-    public NamedGui(@NotNull Component title) {
-        this(ComponentHolder.of(title));
-    }
-    
-    protected NamedGui(@NotNull TextHolder title) {
+
+    public NamedGui(@NotNull TextHolder title) {
         this.title = title;
     }
 
@@ -45,12 +39,8 @@ public abstract class NamedGui extends Gui {
     public void setTitle(@NotNull String title) {
         setTitle(StringHolder.of(title));
     }
-    
-    public void setTitle(@NotNull Component title) {
-        setTitle(ComponentHolder.of(title));
-    }
-    
-    private void setTitle(@NotNull TextHolder title) {
+
+    public void setTitle(@NotNull TextHolder title) {
         //copy the viewers
         List<HumanEntity> viewers = getViewers();
 
@@ -77,16 +67,10 @@ public abstract class NamedGui extends Gui {
     public String getTitle() {
         return title.asLegacyString();
     }
-    
+
     @NotNull
     @Contract(pure = true)
-    public Component title() {
-        return title.asComponent();
-    }
-    
-    @NotNull
-    @Contract(pure = true)
-    protected TextHolder getTitleHolder() {
+    public TextHolder getTitleHolder() {
         return title;
     }
 }

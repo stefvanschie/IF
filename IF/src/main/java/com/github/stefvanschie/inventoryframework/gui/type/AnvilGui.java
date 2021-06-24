@@ -1,12 +1,12 @@
 package com.github.stefvanschie.inventoryframework.gui.type;
 
 import com.github.stefvanschie.inventoryframework.abstraction.AnvilInventory;
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.util.version.Version;
 import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -74,8 +74,8 @@ public class AnvilGui extends NamedGui {
     public AnvilGui(@NotNull String title) {
         super(title);
     }
-    
-    public AnvilGui(@NotNull Component title) {
+
+    public AnvilGui(@NotNull TextHolder title) {
         super(title);
     }
 

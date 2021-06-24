@@ -86,15 +86,10 @@ public abstract class ComponentHolder extends TextHolder {
     
     @NotNull
     @Contract(pure = true)
+    @Override
     public String asLegacyString() {
         //TODO this down samples colors to the nearest ChatColor
         // is this a bug or a feature?
         return LegacyComponentSerializer.legacySection().serialize(value);
-    }
-    
-    @NotNull
-    @Contract(pure = true)
-    public Component asComponent() {
-        return value;
     }
 }
