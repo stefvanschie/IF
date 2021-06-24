@@ -1,6 +1,5 @@
 package com.github.stefvanschie.inventoryframework.adventuresupport;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -8,16 +7,13 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Node;
 
 /**
  * Immutable wrapper of a text-like value.
- * Support for both Adventure-based Paper
- * and non-Adventure Spigot is achieved through this class.
- * <p>
- * This class is an implementation detail.
- * It must not be exposed to the users of the IF library.
- * </p>
+ * Support for both Adventure and legacy strings is achieved through this class.
+ *
+ * @see StringHolder
+ * @see ComponentHolder
  */
 public abstract class TextHolder {
     
@@ -33,24 +29,20 @@ public abstract class TextHolder {
     }
     
     /**
-     * Deserializes the specified node's {@link Node#getTextContent()}
-     * as a {@link TextHolder}.
+     * Deserializes the specified {@link String} as a {@link TextHolder}.
      * This method is still WIP and may change drastically in the future:
      * <ul>
-     *     <li>Should it take a {@link Node} or a {@link String} as parameter?</li>
-     *     <li>Are we ever gonna use anything other than {@link Node#getTextContent()}?</li>
-     *     <li>Are we going to use minimessage if it's present?</li>
-     *     <li>Is minimessage going to be opt-in? If yes, how do we opt-in?</li>
+     *     <li>Are we going to use MiniMessage if it's present?</li>
+     *     <li>Is MiniMessage going to be opt-in? If yes, how do we opt-in?</li>
      * </ul>
      *
-     * @param node the node whose text content to deserialize
-     * @return an instance containing the text from the node
+     * @param string the raw data to deserialize
+     * @return an instance containing the text from the string
      */
     @NotNull
     @Contract(pure = true)
-    public static TextHolder fromNodeTextContent(@NotNull Node node) {
-        String legacy = ChatColor.translateAlternateColorCodes('&', node.getTextContent());
-        return StringHolder.of(legacy);
+    public static TextHolder deserialize(@NotNull String string) {
+        return StringHolder.of(ChatColor.translateAlternateColorCodes('&', string));
     }
     
     TextHolder() {
@@ -71,10 +63,6 @@ public abstract class TextHolder {
     @NotNull
     @Contract(pure = true)
     public abstract String asLegacyString();
-    
-    @NotNull
-    @Contract(pure = true)
-    public abstract Component asComponent();
     
     @NotNull
     @Contract(pure = true)

@@ -1,9 +1,9 @@
 package com.github.stefvanschie.inventoryframework.gui.type;
 
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -62,8 +62,8 @@ public class FurnaceGui extends NamedGui {
     public FurnaceGui(@NotNull String title) {
         super(title);
     }
-    
-    public FurnaceGui(@NotNull Component title) {
+
+    public FurnaceGui(@NotNull TextHolder title) {
         super(title);
     }
 
