@@ -5,31 +5,58 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
-public final class ComponentHolder extends TextHolder {
+public abstract class ComponentHolder extends TextHolder {
+    
+    private static Boolean nativeAdventureSupport;
     
     @NotNull
     @Contract(pure = true)
     public static ComponentHolder of(@NotNull Component value) {
         Validate.notNull(value, "value mustn't be null");
-        return new ComponentHolder(value);
+        return isNativeAdventureSupport()
+            ? new NativeComponentHolder(value)
+            : new ForeignComponentHolder(value);
+    }
+    
+    private static boolean isNativeAdventureSupport() {
+        if (nativeAdventureSupport == null) {
+            try {
+                Component component = Component.text("test");
+                NativeComponentHolder holder = new NativeComponentHolder(component);
+                
+                //If NoSuchMethodError or something is thrown we can assume that
+                //Adventure components are not natively supported by the server platform
+                
+                //noinspection unused
+                Object ignored1 = holder.asInventoryTitle(null, 9);
+                //noinspection unused
+                Object ignored2 = holder.asInventoryTitle(null, InventoryType.HOPPER);
+                
+                ItemMeta meta = new ItemStack(Material.STONE).getItemMeta();
+                holder.asItemDisplayName(meta);
+                holder.asItemLoreAtEnd(meta);
+                
+                nativeAdventureSupport = true;
+            } catch (Throwable t) {
+                nativeAdventureSupport = false;
+            }
+        }
+        return nativeAdventureSupport;
     }
     
     @NotNull
-    private final Component value;
+    protected final Component value;
     
-    private ComponentHolder(@NotNull Component value) {
+    ComponentHolder(@NotNull Component value) {
         this.value = value;
     }
     
@@ -60,6 +87,8 @@ public final class ComponentHolder extends TextHolder {
     @NotNull
     @Contract(pure = true)
     public String asLegacyString() {
+        //TODO this down samples colors to the nearest ChatColor
+        // is this a bug or a feature?
         return LegacyComponentSerializer.legacySection().serialize(value);
     }
     
@@ -67,33 +96,5 @@ public final class ComponentHolder extends TextHolder {
     @Contract(pure = true)
     public Component asComponent() {
         return value;
-    }
-    
-    @NotNull
-    @Contract(pure = true)
-    @Override
-    public Inventory asInventoryTitle(InventoryHolder holder, InventoryType type) {
-        return Bukkit.createInventory(holder, type, value);
-    }
-    
-    @NotNull
-    @Contract(pure = true)
-    @Override
-    public Inventory asInventoryTitle(InventoryHolder holder, int size) {
-        return Bukkit.createInventory(holder, size, value);
-    }
-    
-    @Override
-    public void asItemDisplayName(ItemMeta meta) {
-        meta.displayName(value);
-    }
-    
-    @Override
-    public void asItemLoreAtEnd(ItemMeta meta) {
-        List<Component> lore = meta.hasLore()
-            ? Objects.requireNonNull(meta.lore())
-            : new ArrayList<>();
-        lore.add(value);
-        meta.lore(lore);
     }
 }

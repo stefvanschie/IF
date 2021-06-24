@@ -88,10 +88,12 @@ If you want to build this project from source, run the following from Git Bash:
 
 The build can then be found in /IF/target/.
 
-TODO adventure support notes
-- proper adventure support is only achieved if you run paper:
-    we can only create adventure inventory titles on paper
-  
-TODO actual TODO for me:
- - which adventure versions to use? same one in all places?
-    even in 1.14 NMS?
+## Adventure support
+
+TODO actually write this part of the readme
+
+https://docs.adventure.kyori.net/platform/index.html
+
+full support is obviously only achieved when your platform
+(spigot/Paper) natively supports adventure...
+but adventure also works on spigot: stuff get converted to legacy
