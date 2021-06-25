@@ -62,6 +62,12 @@ public abstract class ComponentHolder extends TextHolder {
     
     @NotNull
     @Contract(pure = true)
+    public Component getComponent() {
+        return value;
+    }
+    
+    @NotNull
+    @Contract(pure = true)
     public JsonElement asJson() {
         return GsonComponentSerializer.gson().serializeToTree(value);
     }
