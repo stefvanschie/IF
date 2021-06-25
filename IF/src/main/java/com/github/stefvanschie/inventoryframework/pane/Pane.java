@@ -358,7 +358,7 @@ public abstract class Pane {
                                 if (!innerNode.getNodeName().equals("line"))
                                     continue;
 
-								TextHolder.deserialize(innerNode.getTextContent())
+                                TextHolder.deserialize(innerNode.getTextContent())
                                         .asItemLoreAtEnd(itemMeta);
                                 itemStack.setItemMeta(itemMeta);
                                 break;
