@@ -90,10 +90,39 @@ The build can then be found in /IF/target/.
 
 ## Adventure support
 
-TODO actually write this part of the readme
+IF supports [Adventure](https://github.com/KyoriPowered/adventure), but does not shade it in itself.
+The use of Adventure `Component`s instead of legacy `String`s completely optional.
+If you do not wish to use Adventure you can safely ignore all `TextHolder` related methods.
 
-https://docs.adventure.kyori.net/platform/index.html
+### What is Adventure?
 
-full support is obviously only achieved when your platform
-(spigot/Paper) natively supports adventure...
-but adventure also works on spigot: stuff get converted to legacy
+Adventure is a library that adds proper modern text support to Minecraft.
+Modern text is represented using bungee-chat and `BaseComponent` instances in Spigot.
+Adventure is an alternative to bungee-chat and offers more features.
+
+### Using Adventure on 1.16.5+ Paper
+
+You don't need to import/shade anything for Adventure support in this case!
+
+*Note: Paper only supports Adventure on build 473 and above. If you aren't running months old builds, then you are fine.*
+
+### Using Adventure on Spigot and older Paper
+
+On Spigot Adventure isn't included in the server, therefore you have to shade and relocate it yourself.
+The following dependencies need to be imported and shaded:
+- adventure-api
+- adventure-platform-bukkit
+
+Please consult the [Adventure documentation](https://docs.adventure.kyori.net/) for more information.
+
+### How to use Adventure `Component`s
+
+Example of migration from legacy `String` to Adventure `Component`:
+ - legacy: `namedGui.setTitle("My Title!");`
+ - Adventure: `namedGui.setTitle(ComponentHolder.of(Component.text("My Title!")));`
+
+We apologize for the boilerplate (the `ComponentHolder.of(...)` call), but that was the only way to not make IF hard-depend on Adventure.
+
+Full Adventure support is only achieved when your server natively supports Adventure.
+In other words, you won't benefit from Adventure as much if you use Spigot instead of Paper.
+This is because for Spigot we have to convert everything back to legacy `String`s before passing them to the Bukkit API.
