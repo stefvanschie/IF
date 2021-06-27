@@ -18,6 +18,8 @@ public abstract class ComponentHolder extends TextHolder {
     
     private static Boolean nativeAdventureSupport;
     
+    private static LegacyComponentSerializer legacySerializer;
+    
     @NotNull
     @Contract(pure = true)
     public static ComponentHolder of(@NotNull Component value) {
@@ -51,6 +53,20 @@ public abstract class ComponentHolder extends TextHolder {
             }
         }
         return nativeAdventureSupport;
+    }
+    
+    private static LegacyComponentSerializer getLegacySerializer() {
+        if (legacySerializer == null) {
+            LegacyComponentSerializer.Builder builder = LegacyComponentSerializer.builder()
+                    .character(LegacyComponentSerializer.SECTION_CHAR);
+            if (!net.md_5.bungee.api.ChatColor.class.isEnum()) {
+                //1.16+ Spigot (or Paper), hex colors are supported, no need to down sample them
+                builder.hexColors()
+                        .useUnusualXRepeatedCharacterHexFormat();
+            }
+            legacySerializer = builder.build();
+        }
+        return legacySerializer;
     }
     
     @NotNull
@@ -94,8 +110,6 @@ public abstract class ComponentHolder extends TextHolder {
     @Contract(pure = true)
     @Override
     public String asLegacyString() {
-        //TODO this down samples colors to the nearest ChatColor
-        // is this a bug or a feature?
-        return LegacyComponentSerializer.legacySection().serialize(value);
+        return getLegacySerializer().serialize(value);
     }
 }
