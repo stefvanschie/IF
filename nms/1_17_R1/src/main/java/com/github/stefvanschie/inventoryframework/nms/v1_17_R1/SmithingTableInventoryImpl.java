@@ -2,7 +2,7 @@ package com.github.stefvanschie.inventoryframework.nms.v1_17_R1;
 
 import com.github.stefvanschie.inventoryframework.abstraction.SmithingTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_17_R1.util.AdventureSupportUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_17_R1.util.TextHolderUtil;
 import com.github.stefvanschie.inventoryframework.nms.v1_17_R1.util.CustomInventoryUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -56,7 +56,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
         serverPlayer.containerMenu = containerSmithingTable;
 
         int id = containerSmithingTable.containerId;
-        Component message = AdventureSupportUtil.toComponent(title);
+        Component message = TextHolderUtil.toComponent(title);
 
         serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.SMITHING, message));
 

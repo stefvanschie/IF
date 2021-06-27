@@ -43,11 +43,6 @@ public class ChestGui extends NamedGui implements MergedGui {
     private InventoryComponent inventoryComponent;
 
     /**
-     * The amount of rows this gui has
-     */
-    private int rows;
-
-    /**
      * Constructs a new chest GUI
      *
      * @param rows the amount of rows this gui should contain, in range 1..6.
@@ -57,7 +52,14 @@ public class ChestGui extends NamedGui implements MergedGui {
     public ChestGui(int rows, @NotNull String title) {
         this(rows, StringHolder.of(title));
     }
-    
+
+    /**
+     * Constructs a new chest GUI
+     *
+     * @param rows the amount of rows this gui should contain, in range 1..6.
+     * @param title the title/name of this gui.
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     public ChestGui(int rows, @NotNull TextHolder title) {
         super(title);
 

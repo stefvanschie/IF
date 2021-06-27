@@ -2,7 +2,7 @@ package com.github.stefvanschie.inventoryframework.nms.v1_17_R1;
 
 import com.github.stefvanschie.inventoryframework.abstraction.CartographyTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_17_R1.util.AdventureSupportUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_17_R1.util.TextHolderUtil;
 import com.github.stefvanschie.inventoryframework.nms.v1_17_R1.util.CustomInventoryUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -58,7 +58,7 @@ public class CartographyTableInventoryImpl extends CartographyTableInventory {
         serverPlayer.containerMenu = containerCartographyTable;
 
         int id = containerCartographyTable.containerId;
-        Component message = AdventureSupportUtil.toComponent(title);
+        Component message = TextHolderUtil.toComponent(title);
 
         serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.CARTOGRAPHY_TABLE, message));
 
