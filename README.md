@@ -123,6 +123,6 @@ Example of migration from legacy `String` to Adventure `Component`:
 
 We apologize for the boilerplate (the `ComponentHolder.of(...)` call), but that was the only way to not make IF hard-depend on Adventure.
 
-Full Adventure support is only achieved when your server natively supports Adventure.
+Full Adventure support is only achieved when your server natively supports Adventure (it is running Paper) and your plugin depends on Paper (instead of Spigot).
 In other words, you won't benefit from Adventure as much if you use Spigot instead of Paper.
-This is because for Spigot we have to convert everything back to legacy `String`s before passing them to the Bukkit API.
+This is because when Adventure is relocated we have to convert everything back to legacy `String`s before passing them to the Bukkit API.
