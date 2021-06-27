@@ -8,10 +8,26 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A {@link ComponentHolder} implementation for platforms where Adventure isn't natively supported.
+ * Adventure components are converted to legacy Strings before passed to the Bukkit API.
+ *
+ * @see NativeComponentHolder
+ */
 class ForeignComponentHolder extends ComponentHolder {
     
+    /**
+     * A {@link StringHolder} wrapping {@link #asLegacyString()}.
+     * This class depends on {@link StringHolder} to reduce code duplication.
+     */
+    @NotNull
     private final StringHolder legacy;
     
+    /**
+     * Creates and initializes a new instance.
+     *
+     * @param value the Adventure component this instance should wrap
+     */
     ForeignComponentHolder(@NotNull Component value) {
         super(value);
         legacy = StringHolder.of(asLegacyString());

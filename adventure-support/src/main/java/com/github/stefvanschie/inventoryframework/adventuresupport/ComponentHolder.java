@@ -11,24 +11,54 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+/**
+ * Wrapper of an Adventure {@link Component}.
+ *
+ * @since $ADVENTURE-SUPPORT-SINCE$
+ */
 public abstract class ComponentHolder extends TextHolder {
     
+    /**
+     * Whether the server platform natively supports Adventure.
+     * A null value indicates that we don't yet know this: it hasn't been determined yet.
+     * This field should not be used directly, use {@link #isNativeAdventureSupport()} instead.
+     */
+    @Nullable
     private static Boolean nativeAdventureSupport;
     
+    /**
+     * The serializer to use when converting wrapped values to legacy strings.
+     * A null value indicates that we haven't created the serializer yet.
+     * This field should not be used directly, use {@link #getLegacySerializer()} instead.
+     */
+    @Nullable
     private static LegacyComponentSerializer legacySerializer;
     
+    /**
+     * Wraps the specified Adventure component.
+     *
+     * @param value the value to wrap
+     * @return an instance that wraps the specified value
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     @NotNull
     @Contract(pure = true)
     public static ComponentHolder of(@NotNull Component value) {
         Validate.notNull(value, "value mustn't be null");
         return isNativeAdventureSupport()
-            ? new NativeComponentHolder(value)
-            : new ForeignComponentHolder(value);
+                ? new NativeComponentHolder(value)
+                : new ForeignComponentHolder(value);
     }
     
+    /**
+     * Gets whether the server platform natively supports Adventure.
+     * Native Adventure support means that eg. {@link ItemMeta#displayName(Component)}
+     * is a valid method.
+     */
     private static boolean isNativeAdventureSupport() {
         if (nativeAdventureSupport == null) {
             try {
@@ -55,6 +85,10 @@ public abstract class ComponentHolder extends TextHolder {
         return nativeAdventureSupport;
     }
     
+    /**
+     * Gets the serializer to use when converting wrapped values to legacy strings.
+     * Main use case being the implementation of {@link #asLegacyString()}.
+     */
     private static LegacyComponentSerializer getLegacySerializer() {
         if (legacySerializer == null) {
             LegacyComponentSerializer.Builder builder = LegacyComponentSerializer.builder()
@@ -69,19 +103,39 @@ public abstract class ComponentHolder extends TextHolder {
         return legacySerializer;
     }
     
+    /**
+     * The Adventure component this instance wraps.
+     */
     @NotNull
     protected final Component value;
     
+    /**
+     * Creates and initializes a new instance.
+     *
+     * @param value the Adventure component this instance should wrap
+     */
     ComponentHolder(@NotNull Component value) {
         this.value = value;
     }
     
+    /**
+     * Gets the Adventure component this instance wraps.
+     *
+     * @return the contained Adventure component
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     @NotNull
     @Contract(pure = true)
     public Component getComponent() {
         return value;
     }
     
+    /**
+     * Gets the wrapped Adventure component in a JSON representation.
+     *
+     * @return the contained Adventure component as JSON
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     @NotNull
     @Contract(pure = true)
     public JsonElement asJson() {
@@ -103,7 +157,7 @@ public abstract class ComponentHolder extends TextHolder {
     @Override
     public boolean equals(Object other) {
         return other != null && getClass() == other.getClass()
-            && Objects.equals(value, ((ComponentHolder) other).value);
+                && Objects.equals(value, ((ComponentHolder) other).value);
     }
     
     @NotNull

@@ -13,11 +13,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Wrapper of a legacy string value.
+ * {@link org.bukkit.ChatColor} based formatting is used.
+ *
+ * @since $ADVENTURE-SUPPORT-SINCE$
+ */
 public final class StringHolder extends TextHolder {
     
+    /**
+     * Cached instance which wraps an empty {@link String}.
+     */
     @NotNull
     private static final StringHolder EMPTY = StringHolder.of("");
     
+    /**
+     * Wraps the specified legacy string.
+     *
+     * @param value the value to wrap
+     * @return an instance that wraps the specified value
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     @NotNull
     @Contract(pure = true)
     public static StringHolder of(@NotNull String value) {
@@ -29,6 +45,7 @@ public final class StringHolder extends TextHolder {
      * Gets an instance that contains no characters.
      *
      * @return an instance without any characters
+     * @since $ADVENTURE-SUPPORT-SINCE$
      */
     @NotNull
     @Contract(pure = true)
@@ -36,9 +53,17 @@ public final class StringHolder extends TextHolder {
         return EMPTY;
     }
     
+    /**
+     * The legacy string this instance wraps.
+     */
     @NotNull
     private final String value;
     
+    /**
+     * Creates and initializes a new instance.
+     *
+     * @param value the legacy string this instance should wrap
+     */
     private StringHolder(@NotNull String value) {
         this.value = value;
     }
@@ -58,7 +83,7 @@ public final class StringHolder extends TextHolder {
     @Override
     public boolean equals(Object other) {
         return other != null && getClass() == other.getClass()
-            && Objects.equals(value, ((StringHolder) other).value);
+                && Objects.equals(value, ((StringHolder) other).value);
     }
     
     @NotNull
@@ -94,8 +119,8 @@ public final class StringHolder extends TextHolder {
     public void asItemLoreAtEnd(ItemMeta meta) {
         //noinspection deprecation
         List<String> lore = meta.hasLore()
-            ? Objects.requireNonNull(meta.getLore())
-            : new ArrayList<>();
+                ? Objects.requireNonNull(meta.getLore())
+                : new ArrayList<>();
         lore.add(value);
         //noinspection deprecation
         meta.setLore(lore);

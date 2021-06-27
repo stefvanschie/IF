@@ -51,6 +51,12 @@ public class BarrelGui extends NamedGui implements MergedGui {
         super(title);
     }
 
+    /**
+     * Constructs a new GUI
+     *
+     * @param title the title/name of this gui.
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     public BarrelGui(@NotNull TextHolder title) {
         super(title);
     }

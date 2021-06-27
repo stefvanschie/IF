@@ -2,7 +2,7 @@ package com.github.stefvanschie.inventoryframework.nms.v1_17_R1;
 
 import com.github.stefvanschie.inventoryframework.abstraction.EnchantingTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_17_R1.util.AdventureSupportUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_17_R1.util.TextHolderUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
@@ -55,7 +55,7 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
         serverPlayer.containerMenu = containerEnchantmentTable;
 
         int id = containerEnchantmentTable.containerId;
-        Component message = AdventureSupportUtil.toComponent(title);
+        Component message = TextHolderUtil.toComponent(title);
 
         serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.ENCHANTMENT, message));
 

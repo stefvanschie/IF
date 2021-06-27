@@ -1,21 +1,33 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_16_R3.util;
+package com.github.stefvanschie.inventoryframework.nms.v1_16_R2.util;
 
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import net.minecraft.server.v1_16_R3.ChatComponentText;
-import net.minecraft.server.v1_16_R3.IChatBaseComponent;
+import net.minecraft.server.v1_16_R2.ChatComponentText;
+import net.minecraft.server.v1_16_R2.IChatBaseComponent;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public final class AdventureSupportUtil {
+/**
+ * A utility class for adding {@link TextHolder} support.
+ *
+ * @since $ADVENTURE-SUPPORT-SINCE$
+ */
+public final class TextHolderUtil {
     
-    private AdventureSupportUtil() {
+    private TextHolderUtil() {
         //private constructor to prevent construction
     }
     
+    /**
+     * Converts the specified value to a vanilla component.
+     *
+     * @param holder the value to convert
+     * @return the value as a vanilla component
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     @NotNull
     @Contract(pure = true)
     public static IChatBaseComponent toComponent(@NotNull TextHolder holder) {
@@ -26,12 +38,26 @@ public final class AdventureSupportUtil {
         }
     }
     
+    /**
+     * Converts the specified legacy string holder to a vanilla component.
+     *
+     * @param holder the value to convert
+     * @return the value as a vanilla component
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     @NotNull
     @Contract(pure = true)
     private static IChatBaseComponent toComponent(@NotNull StringHolder holder) {
         return new ChatComponentText(holder.asLegacyString());
     }
     
+    /**
+     * Converts the specified Adventure component holder to a vanilla component.
+     *
+     * @param holder the value to convert
+     * @return the value as a vanilla component
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     @NotNull
     @Contract(pure = true)
     private static IChatBaseComponent toComponent(@NotNull ComponentHolder holder) {

@@ -2,7 +2,7 @@ package com.github.stefvanschie.inventoryframework.nms.v1_16_R2;
 
 import com.github.stefvanschie.inventoryframework.abstraction.GrindstoneInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_16_R2.util.AdventureSupportUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_16_R2.util.TextHolderUtil;
 import net.minecraft.server.v1_16_R2.*;
 import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R2.inventory.*;
@@ -42,7 +42,7 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
         entityPlayer.activeContainer = containerGrindstone;
 
         int id = containerGrindstone.windowId;
-        IChatBaseComponent message = AdventureSupportUtil.toComponent(title);
+        IChatBaseComponent message = TextHolderUtil.toComponent(title);
         PacketPlayOutOpenWindow packet = new PacketPlayOutOpenWindow(id, Containers.GRINDSTONE, message);
 
         entityPlayer.playerConnection.sendPacket(packet);

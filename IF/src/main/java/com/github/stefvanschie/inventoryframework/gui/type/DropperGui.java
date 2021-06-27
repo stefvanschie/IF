@@ -51,6 +51,12 @@ public class DropperGui extends NamedGui {
         super(title);
     }
 
+    /**
+     * Constructs a new GUI
+     *
+     * @param title the title/name of this gui.
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     public DropperGui(@NotNull TextHolder title) {
         super(title);
     }
