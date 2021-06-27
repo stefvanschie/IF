@@ -70,6 +70,12 @@ public class StonecutterGui extends NamedGui {
         super(title);
     }
 
+    /**
+     * Constructs a new GUI
+     *
+     * @param title the title/name of this gui.
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     public StonecutterGui(@NotNull TextHolder title) {
         super(title);
     }

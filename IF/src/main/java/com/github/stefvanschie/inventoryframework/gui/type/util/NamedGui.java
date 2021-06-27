@@ -26,6 +26,12 @@ public abstract class NamedGui extends Gui {
         this(StringHolder.of(title));
     }
 
+    /**
+     * Constructs a new gui with a title
+     *
+     * @param title the title/name of this gui
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     public NamedGui(@NotNull TextHolder title) {
         this.title = title;
     }
@@ -40,6 +46,13 @@ public abstract class NamedGui extends Gui {
         setTitle(StringHolder.of(title));
     }
 
+    /**
+     * Sets the title for this inventory. This will (unlike most other methods) directly update itself in order
+     * to ensure all viewers will still be viewing the new inventory as well.
+     *
+     * @param title the title
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     public void setTitle(@NotNull TextHolder title) {
         //copy the viewers
         List<HumanEntity> viewers = getViewers();
@@ -57,7 +70,7 @@ public abstract class NamedGui extends Gui {
     }
 
     /**
-     * Returns the title of this gui
+     * Returns the title of this gui as a legacy string.
      *
      * @return the title
      * @since 0.8.0
@@ -68,6 +81,12 @@ public abstract class NamedGui extends Gui {
         return title.asLegacyString();
     }
 
+    /**
+     * Returns the title of this GUI in a wrapped form.
+     *
+     * @return the title
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     @NotNull
     @Contract(pure = true)
     public TextHolder getTitleHolder() {

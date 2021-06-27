@@ -75,6 +75,12 @@ public class BrewingStandGui extends NamedGui {
         super(title);
     }
 
+    /**
+     * Constructs a new GUI
+     *
+     * @param title the title/name of this gui.
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     public BrewingStandGui(@NotNull TextHolder title) {
         super(title);
     }

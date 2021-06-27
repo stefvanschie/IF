@@ -2,7 +2,7 @@ package com.github.stefvanschie.inventoryframework.nms.v1_16_R3;
 
 import com.github.stefvanschie.inventoryframework.abstraction.StonecutterInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_16_R3.util.AdventureSupportUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_16_R3.util.TextHolderUtil;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftInventory;
@@ -45,7 +45,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
         entityPlayer.activeContainer = containerEnchantmentTable;
 
         int id = containerEnchantmentTable.windowId;
-        IChatBaseComponent message = AdventureSupportUtil.toComponent(title);
+        IChatBaseComponent message = TextHolderUtil.toComponent(title);
         PacketPlayOutOpenWindow packet = new PacketPlayOutOpenWindow(id, Containers.STONECUTTER, message);
 
         entityPlayer.playerConnection.sendPacket(packet);

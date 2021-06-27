@@ -13,8 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * A {@link ComponentHolder} implementation for platforms where Adventure is natively supported.
+ * Adventure components are directly passed to the Bukkit (Paper) API.
+ *
+ * @see ForeignComponentHolder
+ */
 class NativeComponentHolder extends ComponentHolder {
     
+    /**
+     * Creates and initializes a new instance.
+     *
+     * @param value the Adventure component this instance should wrap
+     */
     NativeComponentHolder(@NotNull Component value) {
         super(value);
     }
@@ -41,8 +52,8 @@ class NativeComponentHolder extends ComponentHolder {
     @Override
     public void asItemLoreAtEnd(ItemMeta meta) {
         List<Component> lore = meta.hasLore()
-            ? Objects.requireNonNull(meta.lore())
-            : new ArrayList<>();
+                ? Objects.requireNonNull(meta.lore())
+                : new ArrayList<>();
         lore.add(value);
         meta.lore(lore);
     }

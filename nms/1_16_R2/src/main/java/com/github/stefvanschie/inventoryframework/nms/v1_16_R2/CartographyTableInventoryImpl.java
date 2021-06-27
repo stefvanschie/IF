@@ -2,7 +2,7 @@ package com.github.stefvanschie.inventoryframework.nms.v1_16_R2;
 
 import com.github.stefvanschie.inventoryframework.abstraction.CartographyTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_16_R2.util.AdventureSupportUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_16_R2.util.TextHolderUtil;
 import net.minecraft.server.v1_16_R2.*;
 import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R2.inventory.*;
@@ -44,7 +44,7 @@ public class CartographyTableInventoryImpl extends CartographyTableInventory {
         entityPlayer.activeContainer = containerCartographyTable;
 
         int id = containerCartographyTable.windowId;
-        IChatBaseComponent message = AdventureSupportUtil.toComponent(title);
+        IChatBaseComponent message = TextHolderUtil.toComponent(title);
         PacketPlayOutOpenWindow packet = new PacketPlayOutOpenWindow(id, Containers.CARTOGRAPHY_TABLE, message);
 
         entityPlayer.playerConnection.sendPacket(packet);

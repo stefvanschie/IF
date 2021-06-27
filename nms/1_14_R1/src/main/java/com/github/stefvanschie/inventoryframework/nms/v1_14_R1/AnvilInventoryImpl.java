@@ -2,7 +2,7 @@ package com.github.stefvanschie.inventoryframework.nms.v1_14_R1;
 
 import com.github.stefvanschie.inventoryframework.abstraction.AnvilInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_14_R1.util.AdventureSupportUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_14_R1.util.TextHolderUtil;
 import net.minecraft.server.v1_14_R1.*;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
@@ -46,7 +46,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
         entityPlayer.activeContainer = containerAnvil;
 
         int id = containerAnvil.windowId;
-        IChatBaseComponent message = AdventureSupportUtil.toComponent(title);
+        IChatBaseComponent message = TextHolderUtil.toComponent(title);
 
         entityPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(id, Containers.ANVIL, message));
 

@@ -75,6 +75,12 @@ public class AnvilGui extends NamedGui {
         super(title);
     }
 
+    /**
+     * Constructs a new anvil gui
+     *
+     * @param title the title/name of this gui.
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     public AnvilGui(@NotNull TextHolder title) {
         super(title);
     }

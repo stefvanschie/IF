@@ -1,5 +1,6 @@
 package com.github.stefvanschie.inventoryframework.adventuresupport;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -11,16 +12,22 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Immutable wrapper of a text-like value.
  * Support for both Adventure and legacy strings is achieved through this class.
+ * To get an instance of this class please refer to either {@link StringHolder#of(String)}
+ * or {@link ComponentHolder#of(Component)}.
+ * Other methods like {@link #empty()} and {@link #deserialize(String)}
+ * also exist, but their use cases are very limited.
  *
  * @see StringHolder
  * @see ComponentHolder
+ * @since $ADVENTURE-SUPPORT-SINCE$
  */
 public abstract class TextHolder {
     
     /**
-     * Gets an instance that contains no characters.
+     * Gets an instance that contains no characters and no formatting.
      *
-     * @return an instance without any characters
+     * @return an instance without any characters or formatting
+     * @since $ADVENTURE-SUPPORT-SINCE$
      */
     @NotNull
     @Contract(pure = true)
@@ -38,6 +45,7 @@ public abstract class TextHolder {
      *
      * @param string the raw data to deserialize
      * @return an instance containing the text from the string
+     * @since $ADVENTURE-SUPPORT-SINCE$
      */
     @NotNull
     @Contract(pure = true)
@@ -60,19 +68,54 @@ public abstract class TextHolder {
     @Override
     public abstract boolean equals(Object other);
     
+    /**
+     * Converts the text wrapped by this class instance to a legacy string,
+     * keeping the original formatting.
+     *
+     * @return the wrapped value represented as a legacy string
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     @NotNull
     @Contract(pure = true)
     public abstract String asLegacyString();
     
+    /**
+     * Creates a new inventory with the wrapped value as the inventory's title.
+     *
+     * @param holder the holder to use for the new inventory
+     * @param type the type of inventory to create
+     * @return a newly created inventory with the wrapped value as its title
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     @NotNull
     @Contract(pure = true)
     public abstract Inventory asInventoryTitle(InventoryHolder holder, InventoryType type);
     
+    /**
+     * Creates a new inventory with the wrapped value as the inventory's title.
+     *
+     * @param holder the holder to use for the new inventory
+     * @param size the count of slots the inventory should have (normal size restrictions apply)
+     * @return a newly created inventory with the wrapped value as its title
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     @NotNull
     @Contract(pure = true)
     public abstract Inventory asInventoryTitle(InventoryHolder holder, int size);
     
+    /**
+     * Modifies the specified meta: sets the display name to the wrapped value.
+     *
+     * @param meta the meta whose display name to set
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     public abstract void asItemDisplayName(ItemMeta meta);
     
+    /**
+     * Modifies the specified meta: adds the wrapped value as a new lore line at the end
+     *
+     * @param meta the meta whose lore to append to
+     * @since $ADVENTURE-SUPPORT-SINCE$
+     */
     public abstract void asItemLoreAtEnd(ItemMeta meta);
 }
