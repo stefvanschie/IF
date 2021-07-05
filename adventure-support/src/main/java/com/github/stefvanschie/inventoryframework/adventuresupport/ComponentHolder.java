@@ -58,6 +58,8 @@ public abstract class ComponentHolder extends TextHolder {
      * Gets whether the server platform natively supports Adventure.
      * Native Adventure support means that eg. {@link ItemMeta#displayName(Component)}
      * is a valid method.
+     *
+     * @return whether the server platform natively supports Adventure
      */
     private static boolean isNativeAdventureSupport() {
         if (nativeAdventureSupport == null) {
@@ -88,6 +90,8 @@ public abstract class ComponentHolder extends TextHolder {
     /**
      * Gets the serializer to use when converting wrapped values to legacy strings.
      * Main use case being the implementation of {@link #asLegacyString()}.
+     *
+     * @return a serializer for converting wrapped values to legacy strings
      */
     private static LegacyComponentSerializer getLegacySerializer() {
         if (legacySerializer == null) {
