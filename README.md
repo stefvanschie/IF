@@ -91,7 +91,7 @@ The build can then be found in /IF/target/.
 ## Adventure support
 
 IF supports [Adventure](https://github.com/KyoriPowered/adventure), but does not shade it in itself.
-The use of Adventure `Component`s instead of legacy `String`s completely optional.
+The use of Adventure `Component`s instead of legacy `String`s is completely optional.
 If you do not wish to use Adventure you can safely ignore all `TextHolder` related methods.
 
 ### What is Adventure?
