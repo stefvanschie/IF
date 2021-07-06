@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @see StringHolder
  * @see ComponentHolder
- * @since $ADVENTURE-SUPPORT-SINCE$
+ * @since 0.10.0
  */
 public abstract class TextHolder {
     
@@ -27,7 +27,7 @@ public abstract class TextHolder {
      * Gets an instance that contains no characters and no formatting.
      *
      * @return an instance without any characters or formatting
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     @NotNull
     @Contract(pure = true)
@@ -45,7 +45,7 @@ public abstract class TextHolder {
      *
      * @param string the raw data to deserialize
      * @return an instance containing the text from the string
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     @NotNull
     @Contract(pure = true)
@@ -73,7 +73,7 @@ public abstract class TextHolder {
      * keeping the original formatting.
      *
      * @return the wrapped value represented as a legacy string
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     @NotNull
     @Contract(pure = true)
@@ -85,7 +85,7 @@ public abstract class TextHolder {
      * @param holder the holder to use for the new inventory
      * @param type the type of inventory to create
      * @return a newly created inventory with the wrapped value as its title
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     @NotNull
     @Contract(pure = true)
@@ -97,7 +97,7 @@ public abstract class TextHolder {
      * @param holder the holder to use for the new inventory
      * @param size the count of slots the inventory should have (normal size restrictions apply)
      * @return a newly created inventory with the wrapped value as its title
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     @NotNull
     @Contract(pure = true)
@@ -107,7 +107,7 @@ public abstract class TextHolder {
      * Modifies the specified meta: sets the display name to the wrapped value.
      *
      * @param meta the meta whose display name to set
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     public abstract void asItemDisplayName(ItemMeta meta);
     
@@ -115,7 +115,7 @@ public abstract class TextHolder {
      * Modifies the specified meta: adds the wrapped value as a new lore line at the end
      *
      * @param meta the meta whose lore to append to
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     public abstract void asItemLoreAtEnd(ItemMeta meta);
 }

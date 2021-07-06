@@ -18,7 +18,7 @@ import java.util.Objects;
 /**
  * Wrapper of an Adventure {@link Component}.
  *
- * @since $ADVENTURE-SUPPORT-SINCE$
+ * @since 0.10.0
  */
 public abstract class ComponentHolder extends TextHolder {
     
@@ -43,7 +43,7 @@ public abstract class ComponentHolder extends TextHolder {
      *
      * @param value the value to wrap
      * @return an instance that wraps the specified value
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     @NotNull
     @Contract(pure = true)
@@ -60,6 +60,7 @@ public abstract class ComponentHolder extends TextHolder {
      * is a valid method.
      *
      * @return whether the server platform natively supports Adventure
+     * @since 0.10.0
      */
     private static boolean isNativeAdventureSupport() {
         if (nativeAdventureSupport == null) {
@@ -92,6 +93,7 @@ public abstract class ComponentHolder extends TextHolder {
      * Main use case being the implementation of {@link #asLegacyString()}.
      *
      * @return a serializer for converting wrapped values to legacy strings
+     * @since 0.10.0
      */
     private static LegacyComponentSerializer getLegacySerializer() {
         if (legacySerializer == null) {
@@ -117,6 +119,7 @@ public abstract class ComponentHolder extends TextHolder {
      * Creates and initializes a new instance.
      *
      * @param value the Adventure component this instance should wrap
+     * @since 0.10.0
      */
     ComponentHolder(@NotNull Component value) {
         this.value = value;
@@ -126,7 +129,7 @@ public abstract class ComponentHolder extends TextHolder {
      * Gets the Adventure component this instance wraps.
      *
      * @return the contained Adventure component
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     @NotNull
     @Contract(pure = true)
@@ -138,7 +141,7 @@ public abstract class ComponentHolder extends TextHolder {
      * Gets the wrapped Adventure component in a JSON representation.
      *
      * @return the contained Adventure component as JSON
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     @NotNull
     @Contract(pure = true)
