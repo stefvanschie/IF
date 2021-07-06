@@ -30,7 +30,7 @@ public abstract class NamedGui extends Gui {
      * Constructs a new gui with a title
      *
      * @param title the title/name of this gui
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     public NamedGui(@NotNull TextHolder title) {
         this.title = title;
@@ -51,7 +51,7 @@ public abstract class NamedGui extends Gui {
      * to ensure all viewers will still be viewing the new inventory as well.
      *
      * @param title the title
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     public void setTitle(@NotNull TextHolder title) {
         //copy the viewers
@@ -85,7 +85,7 @@ public abstract class NamedGui extends Gui {
      * Returns the title of this GUI in a wrapped form.
      *
      * @return the title
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     @NotNull
     @Contract(pure = true)

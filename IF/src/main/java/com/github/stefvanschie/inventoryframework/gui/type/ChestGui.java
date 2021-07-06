@@ -58,7 +58,7 @@ public class ChestGui extends NamedGui implements MergedGui {
      *
      * @param rows the amount of rows this gui should contain, in range 1..6.
      * @param title the title/name of this gui.
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     public ChestGui(int rows, @NotNull TextHolder title) {
         super(title);

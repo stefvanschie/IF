@@ -17,7 +17,7 @@ import java.util.Objects;
  * Wrapper of a legacy string value.
  * {@link org.bukkit.ChatColor} based formatting is used.
  *
- * @since $ADVENTURE-SUPPORT-SINCE$
+ * @since 0.10.0
  */
 public final class StringHolder extends TextHolder {
     
@@ -32,7 +32,7 @@ public final class StringHolder extends TextHolder {
      *
      * @param value the value to wrap
      * @return an instance that wraps the specified value
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     @NotNull
     @Contract(pure = true)
@@ -45,7 +45,7 @@ public final class StringHolder extends TextHolder {
      * Gets an instance that contains no characters.
      *
      * @return an instance without any characters
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     @NotNull
     @Contract(pure = true)
@@ -63,6 +63,7 @@ public final class StringHolder extends TextHolder {
      * Creates and initializes a new instance.
      *
      * @param value the legacy string this instance should wrap
+     * @since 0.10.0
      */
     private StringHolder(@NotNull String value) {
         this.value = value;

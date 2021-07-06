@@ -55,7 +55,7 @@ public class ShulkerBoxGui extends NamedGui implements MergedGui {
      * Constructs a new GUI
      *
      * @param title the title/name of this gui.
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     public ShulkerBoxGui(@NotNull TextHolder title) {
         super(title);

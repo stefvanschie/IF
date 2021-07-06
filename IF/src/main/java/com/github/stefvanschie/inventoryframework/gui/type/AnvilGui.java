@@ -79,7 +79,7 @@ public class AnvilGui extends NamedGui {
      * Constructs a new anvil gui
      *
      * @param title the title/name of this gui.
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     public AnvilGui(@NotNull TextHolder title) {
         super(title);

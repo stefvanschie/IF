@@ -67,7 +67,7 @@ public class SmokerGui extends NamedGui {
      * Constructs a new GUI
      *
      * @param title the title/name of this gui.
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     public SmokerGui(@NotNull TextHolder title) {
         super(title);

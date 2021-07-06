@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * Adventure components are converted to legacy Strings before passed to the Bukkit API.
  *
  * @see NativeComponentHolder
+ * @since 0.10.0
  */
 class ForeignComponentHolder extends ComponentHolder {
     
@@ -27,6 +28,7 @@ class ForeignComponentHolder extends ComponentHolder {
      * Creates and initializes a new instance.
      *
      * @param value the Adventure component this instance should wrap
+     * @since 0.10.0
      */
     ForeignComponentHolder(@NotNull Component value) {
         super(value);
