@@ -18,6 +18,7 @@ import java.util.Objects;
  * Adventure components are directly passed to the Bukkit (Paper) API.
  *
  * @see ForeignComponentHolder
+ * @since 0.10.0
  */
 class NativeComponentHolder extends ComponentHolder {
     
@@ -25,6 +26,7 @@ class NativeComponentHolder extends ComponentHolder {
      * Creates and initializes a new instance.
      *
      * @param value the Adventure component this instance should wrap
+     * @since 0.10.0
      */
     NativeComponentHolder(@NotNull Component value) {
         super(value);

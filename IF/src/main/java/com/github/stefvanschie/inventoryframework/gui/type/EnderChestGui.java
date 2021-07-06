@@ -55,7 +55,7 @@ public class EnderChestGui extends NamedGui implements MergedGui {
      * Constructs a new GUI
      *
      * @param title the title/name of this gui.
-     * @since $ADVENTURE-SUPPORT-SINCE$
+     * @since 0.10.0
      */
     public EnderChestGui(@NotNull TextHolder title) {
         super(title);
