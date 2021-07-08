@@ -93,7 +93,7 @@ public class DispenserGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public DispenserGui copy() {
-        DispenserGui gui = new DispenserGui(getTitle());
+        DispenserGui gui = new DispenserGui(getTitleHolder());
 
         gui.contentsComponent = contentsComponent.copy();
         gui.playerInventoryComponent = playerInventoryComponent.copy();

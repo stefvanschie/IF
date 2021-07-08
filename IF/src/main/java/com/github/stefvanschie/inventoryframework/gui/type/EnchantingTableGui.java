@@ -109,7 +109,7 @@ public class EnchantingTableGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public EnchantingTableGui copy() {
-        EnchantingTableGui gui = new EnchantingTableGui(getTitle());
+        EnchantingTableGui gui = new EnchantingTableGui(getTitleHolder());
 
         gui.inputComponent = inputComponent.copy();
         gui.playerInventoryComponent = playerInventoryComponent.copy();

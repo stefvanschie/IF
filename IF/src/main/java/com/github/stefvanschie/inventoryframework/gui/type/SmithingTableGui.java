@@ -124,7 +124,7 @@ public class SmithingTableGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public SmithingTableGui copy() {
-        SmithingTableGui gui = new SmithingTableGui(getTitle());
+        SmithingTableGui gui = new SmithingTableGui(getTitleHolder());
 
         gui.firstItemComponent = firstItemComponent.copy();
         gui.secondItemComponent = secondItemComponent.copy();

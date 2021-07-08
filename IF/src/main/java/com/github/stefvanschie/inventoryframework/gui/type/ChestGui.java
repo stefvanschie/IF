@@ -114,7 +114,7 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
     @Contract(pure = true)
     @Override
     public ChestGui copy() {
-        ChestGui gui = new ChestGui(getRows(), getTitle());
+        ChestGui gui = new ChestGui(getRows(), getTitleHolder());
 
         gui.inventoryComponent = inventoryComponent.copy();
 

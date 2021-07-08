@@ -124,7 +124,7 @@ public class AnvilGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public AnvilGui copy() {
-        AnvilGui gui = new AnvilGui(getTitle());
+        AnvilGui gui = new AnvilGui(getTitleHolder());
 
         gui.firstItemComponent = firstItemComponent.copy();
         gui.secondItemComponent = secondItemComponent.copy();

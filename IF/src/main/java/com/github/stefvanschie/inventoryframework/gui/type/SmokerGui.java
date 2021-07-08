@@ -107,7 +107,7 @@ public class SmokerGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public SmokerGui copy() {
-        SmokerGui gui = new SmokerGui(getTitle());
+        SmokerGui gui = new SmokerGui(getTitleHolder());
 
         gui.ingredientComponent = ingredientComponent.copy();
         gui.fuelComponent = fuelComponent.copy();

@@ -93,7 +93,7 @@ public class HopperGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public HopperGui copy() {
-        HopperGui gui = new HopperGui(getTitle());
+        HopperGui gui = new HopperGui(getTitleHolder());
 
         gui.slotsComponent = slotsComponent.copy();
         gui.playerInventoryComponent = playerInventoryComponent.copy();

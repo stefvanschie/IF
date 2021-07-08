@@ -99,7 +99,7 @@ public class EnderChestGui extends NamedGui implements MergedGui, InventoryBased
     @Contract(pure = true)
     @Override
     public EnderChestGui copy() {
-        EnderChestGui gui = new EnderChestGui(getTitle());
+        EnderChestGui gui = new EnderChestGui(getTitleHolder());
 
         gui.inventoryComponent = inventoryComponent.copy();
 
