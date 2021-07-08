@@ -16,7 +16,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,7 +42,7 @@ import java.util.logging.Logger;
 /**
  * The base class of all GUIs
  */
-public abstract class Gui implements InventoryHolder {
+public abstract class Gui {
 
     /**
      * The inventory of this gui
@@ -151,16 +150,6 @@ public abstract class Gui implements InventoryHolder {
     }
 
     /**
-     * Creates a new inventory of the type of the implementing class.
-     *
-     * @return the new inventory
-     * @since 0.8.0
-     */
-    @NotNull
-    @Contract(pure = true)
-    protected abstract Inventory createInventory();
-
-    /**
      * Shows a gui to a player
      *
      * @param humanEntity the human entity to show the gui to
@@ -205,9 +194,7 @@ public abstract class Gui implements InventoryHolder {
      * @since 0.5.19
      */
     @Contract(pure = true)
-    public int getViewerCount() {
-        return getInventory().getViewers().size();
-    }
+    public abstract int getViewerCount();
 
     /**
      * Gets a mutable snapshot of the current {@link HumanEntity} viewers of this GUI.
@@ -219,9 +206,7 @@ public abstract class Gui implements InventoryHolder {
      */
     @NotNull
     @Contract(pure = true)
-    public List<HumanEntity> getViewers() {
-        return new ArrayList<>(getInventory().getViewers());
-    }
+    public abstract List<HumanEntity> getViewers();
 
     /**
      * Update the gui for everyone
@@ -573,16 +558,6 @@ public abstract class Gui implements InventoryHolder {
         }
     }
 
-    @NotNull
-    @Override
-    public Inventory getInventory() {
-        if (this.inventory == null) {
-            this.inventory = createInventory();
-        }
-
-        return inventory;
-    }
-
     /**
      * Gets whether this gui is being updated, as invoked by {@link #update()}. This returns true if this is the case
      * and false otherwise.
@@ -678,6 +653,7 @@ public abstract class Gui implements InventoryHolder {
         registerGui("furnace", FurnaceGui::load);
         registerGui("grindstone", GrindstoneGui::load);
         registerGui("hopper", HopperGui::load);
+        registerGui("merchant", MerchantGui::load);
         registerGui("shulker-box", ShulkerBoxGui::load);
         registerGui("smithing-table", SmithingTableGui::load);
         registerGui("smoker", SmokerGui::load);

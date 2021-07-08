@@ -305,7 +305,12 @@ public abstract class Pane {
     @Contract(pure = true)
     public static GuiItem loadItem(@NotNull Object instance, @NotNull Element element) {
         String id = element.getAttribute("id");
-        Material material = Objects.requireNonNull(Material.matchMaterial(id.toUpperCase(Locale.getDefault())));
+        Material material = Material.matchMaterial(id.toUpperCase(Locale.getDefault()));
+
+        if (material == null) {
+            throw new XMLLoadException("Can't find material for '" + id + "'");
+        }
+
         boolean hasAmount = element.hasAttribute("amount");
         boolean hasDamage = element.hasAttribute("damage");
         int amount = hasAmount ? Integer.parseInt(element.getAttribute("amount")) : 1;

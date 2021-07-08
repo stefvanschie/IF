@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.abstraction.BeaconInventory;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
+import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.util.version.Version;
 import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
 import org.bukkit.Bukkit;
@@ -25,13 +26,15 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a gui in the form of a beacon
  *
  * @since 0.8.0
  */
-public class BeaconGui extends Gui {
+public class BeaconGui extends Gui implements InventoryBased {
 
     /**
      * Represents the payment item inventory component
@@ -105,6 +108,16 @@ public class BeaconGui extends Gui {
         }
     }
 
+    @NotNull
+    @Override
+    public Inventory getInventory() {
+        if (this.inventory == null) {
+            this.inventory = createInventory();
+        }
+
+        return inventory;
+    }
+
     @Contract(pure = true)
     @Override
     public boolean isPlayerInventoryUsed() {
@@ -114,8 +127,21 @@ public class BeaconGui extends Gui {
     @NotNull
     @Contract(pure = true)
     @Override
-    protected Inventory createInventory() {
+    public Inventory createInventory() {
         return Bukkit.createInventory(this, InventoryType.BEACON);
+    }
+
+    @Contract(pure = true)
+    @Override
+    public int getViewerCount() {
+        return getInventory().getViewers().size();
+    }
+
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public List<HumanEntity> getViewers() {
+        return new ArrayList<>(getInventory().getViewers());
     }
 
     /**

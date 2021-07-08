@@ -1,9 +1,11 @@
 package com.github.stefvanschie.inventoryframework.adventuresupport;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -47,6 +49,13 @@ class ForeignComponentHolder extends ComponentHolder {
     @Override
     public Inventory asInventoryTitle(InventoryHolder holder, int size) {
         return legacy.asInventoryTitle(holder, size);
+    }
+
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public Merchant asMerchantTitle() {
+        return legacy.asMerchantTitle();
     }
     
     @Override
