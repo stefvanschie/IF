@@ -121,7 +121,7 @@ public class MerchantGui extends NamedGui {
     @NotNull
     @Override
     public Gui copy() {
-        MerchantGui gui = new MerchantGui(getTitle());
+        MerchantGui gui = new MerchantGui(getTitleHolder());
 
         gui.inputComponent = inputComponent.copy();
         gui.playerInventoryComponent = playerInventoryComponent.copy();

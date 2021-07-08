@@ -116,7 +116,7 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public GrindstoneGui copy() {
-        GrindstoneGui gui = new GrindstoneGui(getTitle());
+        GrindstoneGui gui = new GrindstoneGui(getTitleHolder());
 
         gui.itemsComponent = itemsComponent.copy();
         gui.resultComponent = resultComponent.copy();

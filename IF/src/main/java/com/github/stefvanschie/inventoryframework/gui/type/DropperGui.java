@@ -93,7 +93,7 @@ public class DropperGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public DropperGui copy() {
-        DropperGui gui = new DropperGui(getTitle());
+        DropperGui gui = new DropperGui(getTitleHolder());
 
         gui.contentsComponent = contentsComponent.copy();
         gui.playerInventoryComponent = playerInventoryComponent.copy();

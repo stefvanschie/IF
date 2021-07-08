@@ -99,7 +99,7 @@ public class BarrelGui extends NamedGui implements MergedGui, InventoryBased {
     @Contract(pure = true)
     @Override
     public BarrelGui copy() {
-        BarrelGui gui = new BarrelGui(getTitle());
+        BarrelGui gui = new BarrelGui(getTitleHolder());
 
         gui.inventoryComponent = inventoryComponent.copy();
 

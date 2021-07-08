@@ -100,7 +100,7 @@ public class CraftingTableGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public CraftingTableGui copy() {
-        CraftingTableGui gui = new CraftingTableGui(getTitle());
+        CraftingTableGui gui = new CraftingTableGui(getTitleHolder());
 
         gui.inputComponent = inputComponent.copy();
         gui.outputComponent = outputComponent.copy();

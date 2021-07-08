@@ -121,7 +121,7 @@ public class BrewingStandGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public BrewingStandGui copy() {
-        BrewingStandGui gui = new BrewingStandGui(getTitle());
+        BrewingStandGui gui = new BrewingStandGui(getTitleHolder());
 
         gui.firstBottleComponent = firstBottleComponent.copy();
         gui.secondBottleComponent = secondBottleComponent.copy();

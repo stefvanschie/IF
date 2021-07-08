@@ -99,7 +99,7 @@ public class ShulkerBoxGui extends NamedGui implements MergedGui, InventoryBased
     @Contract(pure = true)
     @Override
     public ShulkerBoxGui copy() {
-        ShulkerBoxGui gui = new ShulkerBoxGui(getTitle());
+        ShulkerBoxGui gui = new ShulkerBoxGui(getTitleHolder());
 
         gui.inventoryComponent = inventoryComponent.copy();
 

@@ -117,7 +117,7 @@ public class StonecutterGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public StonecutterGui copy() {
-        StonecutterGui gui = new StonecutterGui(getTitle());
+        StonecutterGui gui = new StonecutterGui(getTitleHolder());
 
         gui.inputComponent = inputComponent.copy();
         gui.resultComponent = resultComponent.copy();

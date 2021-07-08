@@ -107,7 +107,7 @@ public class BlastFurnaceGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public BlastFurnaceGui copy() {
-        BlastFurnaceGui gui = new BlastFurnaceGui(getTitle());
+        BlastFurnaceGui gui = new BlastFurnaceGui(getTitleHolder());
 
         gui.ingredientComponent = ingredientComponent.copy();
         gui.fuelComponent = fuelComponent.copy();

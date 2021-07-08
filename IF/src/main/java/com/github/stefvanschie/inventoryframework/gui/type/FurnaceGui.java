@@ -107,7 +107,7 @@ public class FurnaceGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public FurnaceGui copy() {
-        FurnaceGui gui = new FurnaceGui(getTitle());
+        FurnaceGui gui = new FurnaceGui(getTitleHolder());
 
         gui.ingredientComponent = ingredientComponent.copy();
         gui.fuelComponent = fuelComponent.copy();
