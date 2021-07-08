@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.MergedGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
@@ -24,6 +25,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +35,7 @@ import java.util.stream.Collectors;
  *
  * @since 0.8.0
  */
-public class BarrelGui extends NamedGui implements MergedGui {
+public class BarrelGui extends NamedGui implements MergedGui, InventoryBased {
 
     /**
      * Represents the inventory component for the entire gui
@@ -63,6 +65,11 @@ public class BarrelGui extends NamedGui implements MergedGui {
 
     @Override
     public void show(@NotNull HumanEntity humanEntity) {
+        if (isDirty()) {
+            this.inventory = createInventory();
+            markChanges();
+        }
+
         getInventory().clear();
 
         getHumanEntityCache().store(humanEntity);
@@ -105,6 +112,16 @@ public class BarrelGui extends NamedGui implements MergedGui {
         return gui;
     }
 
+    @NotNull
+    @Override
+    public Inventory getInventory() {
+        if (this.inventory == null) {
+            this.inventory = createInventory();
+        }
+
+        return inventory;
+    }
+
     @Override
     public void click(@NotNull InventoryClickEvent event) {
         getInventoryComponent().click(this, event, event.getRawSlot());
@@ -138,8 +155,21 @@ public class BarrelGui extends NamedGui implements MergedGui {
     @NotNull
     @Contract(pure = true)
     @Override
-    protected Inventory createInventory() {
+    public Inventory createInventory() {
         return getTitleHolder().asInventoryTitle(this, InventoryType.BARREL);
+    }
+
+    @Contract(pure = true)
+    @Override
+    public int getViewerCount() {
+        return getInventory().getViewers().size();
+    }
+
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public List<HumanEntity> getViewers() {
+        return new ArrayList<>(getInventory().getViewers());
     }
 
     @NotNull

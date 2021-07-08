@@ -5,7 +5,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +47,14 @@ class NativeComponentHolder extends ComponentHolder {
     public Inventory asInventoryTitle(InventoryHolder holder, int size) {
         return Bukkit.createInventory(holder, size, value);
     }
-    
+
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public Merchant asMerchantTitle() {
+        return Bukkit.createMerchant(value);
+    }
+
     @Override
     public void asItemDisplayName(ItemMeta meta) {
         meta.displayName(value);

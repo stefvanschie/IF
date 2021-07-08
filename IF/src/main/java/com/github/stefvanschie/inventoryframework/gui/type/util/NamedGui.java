@@ -2,11 +2,8 @@ package com.github.stefvanschie.inventoryframework.gui.type.util;
 
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import org.bukkit.entity.HumanEntity;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public abstract class NamedGui extends Gui {
 
@@ -15,6 +12,11 @@ public abstract class NamedGui extends Gui {
      */
     @NotNull
     private TextHolder title;
+
+    /**
+     * Whether the title is dirty i.e., has changed
+     */
+    private boolean dirty = false;
 
     /**
      * Constructs a new gui with a title
@@ -37,8 +39,7 @@ public abstract class NamedGui extends Gui {
     }
 
     /**
-     * Sets the title for this inventory. This will (unlike most other methods) directly update itself in order
-     * to ensure all viewers will still be viewing the new inventory as well.
+     * Sets the title for this inventory.
      *
      * @param title the title
      */
@@ -47,26 +48,14 @@ public abstract class NamedGui extends Gui {
     }
 
     /**
-     * Sets the title for this inventory. This will (unlike most other methods) directly update itself in order
-     * to ensure all viewers will still be viewing the new inventory as well.
+     * Sets the title for this inventory.
      *
      * @param title the title
      * @since 0.10.0
      */
     public void setTitle(@NotNull TextHolder title) {
-        //copy the viewers
-        List<HumanEntity> viewers = getViewers();
-
         this.title = title;
-        this.inventory = createInventory();
-
-        updating = true;
-
-        for (HumanEntity viewer : viewers) {
-            show(viewer);
-        }
-
-        updating = false;
+        this.dirty = true;
     }
 
     /**
@@ -91,5 +80,26 @@ public abstract class NamedGui extends Gui {
     @Contract(pure = true)
     public TextHolder getTitleHolder() {
         return title;
+    }
+
+    /**
+     * Gets whether this title is dirty or not i.e. whether the title has changed.
+     *
+     * @return whether the title is dirty
+     * @since 0.10.0
+     */
+    @Contract(pure = true)
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    /**
+     * Marks that the changes present here have been accepted. This sets dirty to false. If dirty was already false,
+     * this will do nothing.
+     *
+     * @since 0.10.0
+     */
+    public void markChanges() {
+        this.dirty = false;
     }
 }

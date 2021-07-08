@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.abstraction.AnvilInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.util.version.Version;
 import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
@@ -26,13 +27,15 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a gui in the form of an anvil
  *
  * @since 0.8.0
  */
-public class AnvilGui extends NamedGui {
+public class AnvilGui extends NamedGui implements InventoryBased {
 
     /**
      * Represents the inventory component for the first item
@@ -89,6 +92,11 @@ public class AnvilGui extends NamedGui {
     public void show(@NotNull HumanEntity humanEntity) {
         if (!(humanEntity instanceof Player)) {
             throw new IllegalArgumentException("Anvils can only be opened by players");
+        }
+
+        if (isDirty()) {
+            this.inventory = createInventory();
+            markChanges();
         }
 
         getInventory().clear();
@@ -148,9 +156,19 @@ public class AnvilGui extends NamedGui {
     }
 
     @NotNull
+    @Override
+    public Inventory getInventory() {
+        if (this.inventory == null) {
+            this.inventory = createInventory();
+        }
+
+        return inventory;
+    }
+
+    @NotNull
     @Contract(pure = true)
     @Override
-    protected Inventory createInventory() {
+    public Inventory createInventory() {
         return getTitleHolder().asInventoryTitle(this, InventoryType.ANVIL);
     }
 
@@ -171,6 +189,19 @@ public class AnvilGui extends NamedGui {
     @Override
     public boolean isPlayerInventoryUsed() {
         return getPlayerInventoryComponent().hasItem();
+    }
+
+    @Contract(pure = true)
+    @Override
+    public int getViewerCount() {
+        return getInventory().getViewers().size();
+    }
+
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public List<HumanEntity> getViewers() {
+        return new ArrayList<>(getInventory().getViewers());
     }
 
     /**

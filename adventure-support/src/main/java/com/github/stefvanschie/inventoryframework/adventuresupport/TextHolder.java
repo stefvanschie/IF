@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -102,6 +103,16 @@ public abstract class TextHolder {
     @NotNull
     @Contract(pure = true)
     public abstract Inventory asInventoryTitle(InventoryHolder holder, int size);
+
+    /**
+     * Creates a new merchant with the wrapped value as the merchant's title.
+     *
+     * @return a newly created inventory with the wrapped value as its title
+     * @since 0.10.0
+     */
+    @NotNull
+    @Contract(pure = true)
+    public abstract Merchant asMerchantTitle();
     
     /**
      * Modifies the specified meta: sets the display name to the wrapped value.

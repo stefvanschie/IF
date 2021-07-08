@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -109,7 +110,15 @@ public final class StringHolder extends TextHolder {
         //noinspection deprecation
         return Bukkit.createInventory(holder, size, value);
     }
-    
+
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public Merchant asMerchantTitle() {
+        //noinspection deprecation
+        return Bukkit.createMerchant(value);
+    }
+
     @Override
     public void asItemDisplayName(ItemMeta meta) {
         //noinspection deprecation

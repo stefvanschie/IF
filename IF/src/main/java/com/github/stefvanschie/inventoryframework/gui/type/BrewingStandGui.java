@@ -3,6 +3,7 @@ package com.github.stefvanschie.inventoryframework.gui.type;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -21,13 +22,15 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a gui in the form of a brewing stand
  *
  * @since 0.8.0
  */
-public class BrewingStandGui extends NamedGui {
+public class BrewingStandGui extends NamedGui implements InventoryBased {
 
     /**
      * Represents the inventory component for the first bottle
@@ -87,6 +90,11 @@ public class BrewingStandGui extends NamedGui {
 
     @Override
     public void show(@NotNull HumanEntity humanEntity) {
+        if (isDirty()) {
+            this.inventory = createInventory();
+            markChanges();
+        }
+
         getInventory().clear();
 
         getHumanEntityCache().store(humanEntity);
@@ -157,14 +165,37 @@ public class BrewingStandGui extends NamedGui {
     }
 
     @NotNull
+    @Override
+    public Inventory getInventory() {
+        if (this.inventory == null) {
+            this.inventory = createInventory();
+        }
+
+        return inventory;
+    }
+
+    @NotNull
     @Contract(pure = true)
     @Override
-    protected Inventory createInventory() {
+    public Inventory createInventory() {
         Inventory inventory = getTitleHolder().asInventoryTitle(this, InventoryType.BREWING);
 
         addInventory(inventory, this);
 
         return inventory;
+    }
+
+    @Contract(pure = true)
+    @Override
+    public int getViewerCount() {
+        return getInventory().getViewers().size();
+    }
+
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public List<HumanEntity> getViewers() {
+        return new ArrayList<>(getInventory().getViewers());
     }
 
     /**
