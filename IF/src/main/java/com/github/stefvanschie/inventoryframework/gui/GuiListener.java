@@ -300,11 +300,10 @@ public class GuiListener implements Listener {
         //due to a client issue off-hand items appear as ghost items, this updates the off-hand correctly client-side
         playerInventory.setItemInOffHand(playerInventory.getItemInOffHand());
 
-        if (!gui.isUpdating()) {
-            gui.callOnClose(event);
-
-            //this is a hack to remove items correctly when players press the x button in a beacon
+        if (!gui.isUpdating()) {//this is a hack to remove items correctly when players press the x button in a beacon
             Bukkit.getScheduler().runTask(JavaPlugin.getProvidingPlugin(getClass()), () -> {
+                gui.callOnClose(event);
+
                 if (humanEntity.getOpenInventory().getTopInventory() instanceof PlayerInventory) {
                     humanEntity.closeInventory();
                 }
