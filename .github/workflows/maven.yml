@@ -35,6 +35,7 @@ jobs:
     - run: |
         wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
         java -jar BuildTools.jar --rev 1.17 --remapped --disable-java-check
+        java -jar BuildTools.jar --rev 1.17.1 --remapped --disable-java-check
       name: Run BuildTools 1.17
     - uses: actions/checkout@v2
       name: Checkout code
