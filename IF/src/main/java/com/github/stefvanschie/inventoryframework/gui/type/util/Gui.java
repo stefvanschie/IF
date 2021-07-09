@@ -141,9 +141,19 @@ public abstract class Gui {
      * @since 0.8.0
      */
     public Gui() {
+        this(JavaPlugin.getProvidingPlugin(Gui.class));
+    }
+
+    /**
+     * Constructs a new gui with the provided plugin.
+     *
+     * @param plugin the plugin
+     * @see Gui#Gui() for a constructor that automatically detects the wanted plugin
+     * @since 0.10.0
+     */
+    public Gui(@NotNull JavaPlugin plugin) {
         if (!hasRegisteredListeners) {
-            Bukkit.getPluginManager().registerEvents(new GuiListener(),
-                    JavaPlugin.getProvidingPlugin(getClass()));
+            Bukkit.getPluginManager().registerEvents(new GuiListener(), plugin);
 
             hasRegisteredListeners = true;
         }
