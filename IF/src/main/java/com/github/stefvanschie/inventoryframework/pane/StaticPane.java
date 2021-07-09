@@ -113,6 +113,17 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
         items.values().removeIf(guiItem -> guiItem.equals(item));
     }
 
+    /**
+     * Removes the specified item from the pane
+     *
+     * @param x the x coordinate of the item to remove
+     * @param y the y coordinate of the item to remove
+     * @since 0.10.0
+     */
+    public void removeItem(int x, int y) {
+        items.remove(new AbstractMap.SimpleEntry<>(x, y));
+    }
+
 	@Override
 	public boolean click(@NotNull Gui gui, @NotNull InventoryComponent inventoryComponent,
                          @NotNull InventoryClickEvent event, int slot, int paneOffsetX, int paneOffsetY, int maxLength,
