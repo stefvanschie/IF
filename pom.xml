@@ -7,12 +7,13 @@
     <modules>
         <module>IF</module>
         <module>nms/abstraction</module>
-        <module>nms/1_17_R1</module>
-        <module>nms/1_16_R3</module>
-        <module>nms/1_16_R2</module>
-        <module>nms/1_16_R1</module>
-        <module>nms/1_15_R1</module>
-        <module>nms/1_14_R1</module>
+        <module>nms/1_17_1</module>
+        <module>nms/1_17_0</module>
+        <module>nms/1_16_4-5</module>
+        <module>nms/1_16_2-3</module>
+        <module>nms/1_16_1</module>
+        <module>nms/1_15</module>
+        <module>nms/1_14</module>
         <module>adventure-support</module>
     </modules>
 
