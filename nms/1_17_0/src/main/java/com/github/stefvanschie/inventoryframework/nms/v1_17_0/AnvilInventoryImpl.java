@@ -210,7 +210,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
 
             inputSlots.setItem(0, CraftItemStack.asNMSCopy(items[0]));
             inputSlots.setItem(1, CraftItemStack.asNMSCopy(items[1]));
-            inputSlots.setItem(0, CraftItemStack.asNMSCopy(items[2]));
+            resultSlots.setItem(0, CraftItemStack.asNMSCopy(items[2]));
         }
 
         @NotNull
