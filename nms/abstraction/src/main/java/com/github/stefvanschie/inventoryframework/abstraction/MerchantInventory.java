@@ -5,6 +5,7 @@ import org.bukkit.inventory.MerchantRecipe;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * A merchant inventory
@@ -22,6 +23,7 @@ public abstract class MerchantInventory {
      * @param experience the experience of the merchant
      * @since 0.10.1
      */
-    public abstract void sendMerchantOffers(@NotNull Player player, @NotNull List<? extends MerchantRecipe> trades,
+    public abstract void sendMerchantOffers(@NotNull Player player,
+                                            @NotNull List<? extends Map.Entry<? extends MerchantRecipe, ? extends Integer>> trades,
                                             int level, int experience);
 }

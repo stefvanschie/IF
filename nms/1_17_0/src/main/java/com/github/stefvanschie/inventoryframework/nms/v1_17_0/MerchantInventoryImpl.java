@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Internal merchant inventory for 1.17.0
@@ -22,11 +23,13 @@ import java.util.List;
 public class MerchantInventoryImpl extends MerchantInventory {
 
     @Override
-    public void sendMerchantOffers(@NotNull Player player, @NotNull List<? extends MerchantRecipe> trades,
+    public void sendMerchantOffers(@NotNull Player player,
+                                   @NotNull List<? extends Map.Entry<? extends MerchantRecipe, ? extends Integer>> trades,
                                    int level, int experience) {
         MerchantOffers offers = new MerchantOffers();
 
-        for (MerchantRecipe recipe : trades) {
+        for (Map.Entry<? extends MerchantRecipe, ? extends Integer> entry : trades) {
+            MerchantRecipe recipe = entry.getKey();
             List<ItemStack> ingredients = recipe.getIngredients();
 
             if (ingredients.size() < 1) {
@@ -56,6 +59,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
             MerchantOffer merchantOffer = new MerchantOffer(
                     nmsItemA, nmsItemB, nmsItemResult, uses, maxUses, exp, multiplier
             );
+            merchantOffer.setSpecialPriceDiff(entry.getValue());
 
             offers.add(merchantOffer);
         }
