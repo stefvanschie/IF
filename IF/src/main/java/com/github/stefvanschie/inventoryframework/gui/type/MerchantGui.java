@@ -1,5 +1,6 @@
 package com.github.stefvanschie.inventoryframework.gui.type;
 
+import com.github.stefvanschie.inventoryframework.abstraction.MerchantInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
@@ -7,7 +8,10 @@ import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.util.version.Version;
+import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -62,6 +66,22 @@ public class MerchantGui extends NamedGui {
     private final List<HumanEntity> viewers = new ArrayList<>();
 
     /**
+     * The experience of this merchant. Values below zero indicate that the experience should be hidden.
+     */
+    private int experience = -1;
+
+    /**
+     * The level of this merchant. A value of zero indicates this villager doesn't have a level.
+     */
+    private int level = 0;
+
+    /**
+     * The internal merchant inventory
+     */
+    @NotNull
+    private final MerchantInventory merchantInventory = VersionMatcher.newMerchantInventory(Version.getVersion());
+
+    /**
      * Creates a merchant gui with the given title.
      *
      * @param title the title
@@ -85,6 +105,10 @@ public class MerchantGui extends NamedGui {
 
     @Override
     public void show(@NotNull HumanEntity humanEntity) {
+        if (!(humanEntity instanceof Player)) {
+            throw new IllegalArgumentException("Merchants can only be opened by players");
+        }
+
         if (isDirty()) {
             this.merchant = getTitleHolder().asMerchantTitle();
             markChanges();
@@ -116,6 +140,12 @@ public class MerchantGui extends NamedGui {
         }
 
         this.viewers.add(humanEntity);
+
+        if (this.experience >= 0 || this.level > 0) {
+            Player player = (Player) humanEntity;
+
+            this.merchantInventory.sendMerchantOffers(player, merchant.getRecipes(), this.level, this.experience);
+        }
     }
 
     @NotNull
@@ -158,6 +188,43 @@ public class MerchantGui extends NamedGui {
         recipes.add(recipe);
 
         this.merchant.setRecipes(recipes);
+    }
+
+    /**
+     * Sets the experience of this merchant gui. Setting the experience will make the experience bar visible, even if
+     * the amount of experience is zero. Note that if the level of this merchant gui has not been set via
+     * {@link #setLevel(int)} that the experience will always show as zero even when set to something else. Experience
+     * must be greater than or equal to zero. Attempting to set the experience to below zero will throw an
+     * {@link IllegalArgumentException}.
+     *
+     * @param experience the experience to set
+     * @since 0.10.1
+     * @throws IllegalArgumentException when the experience is below zero
+     */
+    public void setExperience(int experience) {
+        if (experience < 0) {
+            throw new IllegalArgumentException("Experience must be greater than or equal to zero");
+        }
+
+        this.experience = experience;
+    }
+
+    /**
+     * Sets the level of this merchant gui. This is a value between one and five and will visibly change the gui by
+     * appending the level of the villager to the title. These are displayed as "Novice", "Apprentice", "Journeyman",
+     * "Expert" and "Master" respectively (when the player's locale is set to English). When an argument is supplied
+     * that is not within one and five, an {@link IllegalArgumentException} will be thrown.
+     *
+     * @param level the numeric level
+     * @since 0.10.1
+     * @throws IllegalArgumentException when the level is not between one and five
+     */
+    public void setLevel(int level) {
+        if (level < 0 || level > 5) {
+            throw new IllegalArgumentException("Level must be between one and five");
+        }
+
+        this.level = level;
     }
 
     /**
