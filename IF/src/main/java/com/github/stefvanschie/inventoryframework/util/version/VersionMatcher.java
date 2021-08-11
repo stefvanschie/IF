@@ -42,6 +42,11 @@ public class VersionMatcher {
     private static final EnumMap<Version, Class<? extends GrindstoneInventory>> GRINDSTONE_INVENTORIES;
 
     /**
+     * The different merchant inventories for different versions
+     */
+    private static final EnumMap<Version, Class<? extends MerchantInventory>> MERCHANT_INVENTORIES;
+
+    /**
      * The different smithing table inventories for different versions
      */
     private static final EnumMap<Version, Class<? extends SmithingTableInventory>> SMITHING_TABLE_INVENTORIES;
@@ -152,6 +157,24 @@ public class VersionMatcher {
             return clazz.getConstructor(InventoryHolder.class).newInstance(inventoryHolder);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
             NoSuchMethodException exception) {
+            throw new IllegalStateException(exception);
+        }
+    }
+
+    /**
+     * Gets a new merchant inventory for the specified version.
+     *
+     * @param version the version to get the inventory of
+     * @return the merchant inventory
+     * @since 0.10.1
+     */
+    @NotNull
+    @Contract(pure = true)
+    public static MerchantInventory newMerchantInventory(@NotNull Version version) {
+        try {
+            return MERCHANT_INVENTORIES.get(version).getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                NoSuchMethodException exception) {
             throw new IllegalStateException(exception);
         }
     }
@@ -287,6 +310,22 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_17_0.GrindstoneInventoryImpl.class);
         GRINDSTONE_INVENTORIES.put(Version.V1_17_1,
             com.github.stefvanschie.inventoryframework.nms.v1_17_1.GrindstoneInventoryImpl.class);
+
+        MERCHANT_INVENTORIES = new EnumMap<>(Version.class);
+        MERCHANT_INVENTORIES.put(Version.V1_14,
+                com.github.stefvanschie.inventoryframework.nms.v1_14.MerchantInventoryImpl.class);
+        MERCHANT_INVENTORIES.put(Version.V1_15,
+                com.github.stefvanschie.inventoryframework.nms.v1_15.MerchantInventoryImpl.class);
+        MERCHANT_INVENTORIES.put(Version.V1_16_1,
+                com.github.stefvanschie.inventoryframework.nms.v1_16_1.MerchantInventoryImpl.class);
+        MERCHANT_INVENTORIES.put(Version.V1_16_2_3,
+                com.github.stefvanschie.inventoryframework.nms.v1_16_2_3.MerchantInventoryImpl.class);
+        MERCHANT_INVENTORIES.put(Version.V1_16_4_5,
+                com.github.stefvanschie.inventoryframework.nms.v1_16_4_5.MerchantInventoryImpl.class);
+        MERCHANT_INVENTORIES.put(Version.V1_17_0,
+                com.github.stefvanschie.inventoryframework.nms.v1_17_0.MerchantInventoryImpl.class);
+        MERCHANT_INVENTORIES.put(Version.V1_17_1,
+                com.github.stefvanschie.inventoryframework.nms.v1_17_1.MerchantInventoryImpl.class);
 
         SMITHING_TABLE_INVENTORIES = new EnumMap<>(Version.class);
         SMITHING_TABLE_INVENTORIES.put(Version.V1_16_1,
