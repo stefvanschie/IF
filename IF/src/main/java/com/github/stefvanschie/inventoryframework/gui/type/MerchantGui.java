@@ -31,8 +31,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a gui in the form of a merchant.
@@ -64,6 +66,13 @@ public class MerchantGui extends NamedGui {
      */
     @NotNull
     private final List<HumanEntity> viewers = new ArrayList<>();
+
+    /**
+     * The trades of this merchant with their price differences. The differences are the difference between the new
+     * price and the original price.
+     */
+    @NotNull
+    private final List<Map.Entry<MerchantRecipe, Integer>> trades = new ArrayList<>();
 
     /**
      * The experience of this merchant. Values below zero indicate that the experience should be hidden.
@@ -141,10 +150,22 @@ public class MerchantGui extends NamedGui {
 
         this.viewers.add(humanEntity);
 
-        if (this.experience >= 0 || this.level > 0) {
-            Player player = (Player) humanEntity;
+        Player player = (Player) humanEntity;
 
-            this.merchantInventory.sendMerchantOffers(player, merchant.getRecipes(), this.level, this.experience);
+        if (this.experience >= 0 || this.level > 0) {
+            this.merchantInventory.sendMerchantOffers(player, this.trades, this.level, this.experience);
+
+            return;
+        }
+
+        boolean discount = false;
+
+        for (Map.Entry<MerchantRecipe, Integer> trade : this.trades) {
+            if (trade.getValue() != 0) {
+                this.merchantInventory.sendMerchantOffers(player, this.trades, this.level, this.experience);
+
+                break;
+            }
         }
     }
 
@@ -177,12 +198,16 @@ public class MerchantGui extends NamedGui {
     }
 
     /**
-     * Adds a trade to this gui.
+     * Adds a trade to this gui. The specified discount is the difference between the old price and the new price. For
+     * example, if a price was decreased from five to two, the discount would be three.
      *
      * @param recipe the recipe to add
-     * @since 0.10.0
+     * @param discount the discount
+     * @since 0.10.1
      */
-    public void addTrade(@NotNull MerchantRecipe recipe) {
+    public void addTrade(@NotNull MerchantRecipe recipe, int discount) {
+        this.trades.add(new AbstractMap.SimpleImmutableEntry<>(recipe, -discount));
+
         List<MerchantRecipe> recipes = new ArrayList<>(this.merchant.getRecipes());
 
         recipes.add(recipe);
@@ -225,6 +250,17 @@ public class MerchantGui extends NamedGui {
         }
 
         this.level = level;
+    }
+
+    /**
+     * Adds a trade to this gui. This will not set a discount on the trade. For specifiying discounts, see
+     * {@link #addTrade(MerchantRecipe, int)}.
+     *
+     * @param recipe the recipe to add
+     * @since 0.10.0
+     */
+    public void addTrade(@NotNull MerchantRecipe recipe) {
+        addTrade(recipe, 0);
     }
 
     /**
