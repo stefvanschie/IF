@@ -55,6 +55,12 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
     private boolean flipHorizontally, flipVertically;
 
     /**
+     * The alignment of this pane
+     */
+    @NotNull
+    private Alignment alignment = Alignment.BEGIN;
+
+    /**
      * The mask for this pane
      */
     @NotNull
@@ -92,98 +98,116 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
-        int x = 0, y = 0;
+        int itemIndex = 0;
+        int gapCount = 0;
 
-        if (orientation == Orientation.HORIZONTAL) {
-            outerloop:
-            for (int rowIndex = 0; rowIndex < inventoryComponent.getHeight(); rowIndex++) {
-                boolean[] row = mask.getRow(rowIndex);
+        int size;
 
-                for (int columnIndex = 0; columnIndex < inventoryComponent.getLength(); columnIndex++) {
-                    if (!row[columnIndex]) {
-                        continue;
-                    }
-
-                    x = columnIndex;
-                    y = rowIndex;
-                    break outerloop;
-                }
-            }
-        } else if (orientation == Orientation.VERTICAL) {
-            outerloop:
-            for (int columnIndex = 0; columnIndex < inventoryComponent.getLength(); columnIndex++) {
-                boolean[] column = mask.getColumn(columnIndex);
-
-                for (int rowIndex = 0; rowIndex < inventoryComponent.getHeight(); rowIndex++) {
-                    if (!column[rowIndex]) {
-                        continue;
-                    }
-
-                    x = columnIndex;
-                    y = rowIndex;
-                    break outerloop;
-                }
-            }
+        if (getOrientation() == Orientation.HORIZONTAL) {
+            size = height;
+        } else if (getOrientation() == Orientation.VERTICAL) {
+            size = length;
+        } else {
+            throw new IllegalStateException("Unknown orientation '" + getOrientation() + "'");
         }
 
-        int itemAmount = items.size();
+        for (int vectorIndex = 0; vectorIndex < size && getItems().size() > itemIndex; vectorIndex++) {
+            boolean[] maskLine;
 
-        outerloop:
-        for (int i = 0; i < (doesRepeat() ? Math.max(mask.amountOfEnabledSlots(), inventoryComponent.getSize()) : itemAmount); i++) {
-            GuiItem item = items.get(i % itemAmount);
-
-            if (!item.isVisible())
-                continue;
-
-            int newX = x, newY = y;
-
-            if (flipHorizontally)
-                newX = length - x - 1;
-
-            if (flipVertically)
-                newY = height - y - 1;
-
-            Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(newX, newY, length, height,
-                    rotation);
-
-            newX = coordinates.getKey();
-            newY = coordinates.getValue();
-
-            if (newX >= 0 && newX < length && newY >= 0 && newY < height) {
-                int finalRow = getY() + newY + paneOffsetY;
-                int finalColumn = getX() + newX + paneOffsetX;
-
-                inventoryComponent.setItem(item, finalColumn, finalRow);
+            if (getOrientation() == Orientation.HORIZONTAL) {
+                maskLine = mask.getRow(vectorIndex);
+            } else if (getOrientation() == Orientation.VERTICAL) {
+                maskLine = mask.getColumn(vectorIndex);
+            } else {
+                throw new IllegalStateException("Unknown orientation '" + getOrientation() + "'");
             }
 
-            int gapCount = gap;
+            int enabled = 0;
 
-            do {
-                if (orientation == Orientation.HORIZONTAL) {
-                    x++;
-
-                    if (x >= length) {
-                        y++;
-                        x = 0;
-                    }
-                } else if (orientation == Orientation.VERTICAL) {
-                    y++;
-
-                    if (y >= height) {
-                        x++;
-                        y = 0;
-                    }
+            for (boolean bool : maskLine) {
+                if (bool) {
+                    enabled++;
                 }
+            }
 
-                //stop the loop when there is no more space in the pane
-                if (x >= length || y >= height) {
-                    break outerloop;
-                }
+            GuiItem[] items;
 
-                if (mask.isEnabled(x, y)) {
+            if (doesRepeat()) {
+                items = new GuiItem[enabled];
+            } else {
+                int remainingPositions = gapCount + (getItems().size() - itemIndex - 1) * (getGap() + 1) + 1;
+
+                items = new GuiItem[Math.min(enabled, remainingPositions)];
+            }
+
+            for (int index = 0; index < items.length; index++) {
+                if (gapCount == 0) {
+                    items[index] = getItems().get(itemIndex);
+
+                    itemIndex++;
+
+                    if (doesRepeat() && itemIndex >= getItems().size()) {
+                        itemIndex = 0;
+                    }
+
+                    gapCount = getGap();
+                } else {
+                    items[index] = null;
+
                     gapCount--;
                 }
-            } while (gapCount >= 0);
+            }
+
+            int index;
+
+            if (getAlignment() == Alignment.BEGIN) {
+                index = 0;
+            } else if (getAlignment() == Alignment.CENTER) {
+                index = -((enabled - items.length) / 2);
+            } else {
+                throw new IllegalStateException("Unknown alignment '" + getAlignment() + "'");
+            }
+
+            for (int opposingVectorIndex = 0; opposingVectorIndex < maskLine.length; opposingVectorIndex++) {
+                if (maskLine[opposingVectorIndex]) {
+                    if (index >= 0 && index < items.length && items[index] != null) {
+                        int x, y;
+
+                        if (getOrientation() == Orientation.HORIZONTAL) {
+                            x = opposingVectorIndex;
+                            y = vectorIndex;
+                        } else if (getOrientation() == Orientation.VERTICAL) {
+                            x = vectorIndex;
+                            y = opposingVectorIndex;
+                        } else {
+                            throw new IllegalStateException("Unknown orientation '" + getOrientation() + "'");
+                        }
+
+                        if (flipHorizontally) {
+                            x = length - x - 1;
+                        }
+
+                        if (flipVertically) {
+                            y = height - y - 1;
+                        }
+
+                        Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y,
+                                length, height, rotation);
+
+                        x = coordinates.getKey();
+                        y = coordinates.getValue();
+
+                        if (x >= 0 && x < length && y >= 0 && y < height) {
+                            int finalRow = getY() + y + paneOffsetY;
+                            int finalColumn = getX() + x + paneOffsetX;
+
+                            inventoryComponent.setItem(items[index], finalColumn, finalRow);
+                        }
+                    }
+
+                    index++;
+                }
+            }
         }
     }
 
@@ -245,6 +269,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         outlinePane.flipHorizontally = flipHorizontally;
         outlinePane.flipVertically = flipVertically;
         outlinePane.mask = mask;
+        outlinePane.alignment = alignment;
 
         return outlinePane;
     }
@@ -326,6 +351,16 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         applyMask(getMask().setHeight(height));
     }
 
+    /**
+     * Aligns the pane in the way specified by the provided alignment.
+     *
+     * @param alignment the new alignment
+     * @since 0.10.1
+     */
+    public void align(@NotNull Alignment alignment) {
+        this.alignment = alignment;
+    }
+
     @Override
     public void flipHorizontally(boolean flipHorizontally) {
         this.flipHorizontally = flipHorizontally;
@@ -364,6 +399,18 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
     @Override
     public Collection<Pane> getPanes() {
         return new HashSet<>();
+    }
+
+    /**
+     * Gets the alignment set on this pane.
+     *
+     * @return the alignment
+     * @since 0.10.1
+     */
+    @NotNull
+    @Contract(pure = true)
+    public Alignment getAlignment() {
+        return this.alignment;
     }
 
     /**
@@ -455,6 +502,10 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
             if (element.hasAttribute("repeat"))
                 outlinePane.setRepeat(Boolean.parseBoolean(element.getAttribute("repeat")));
 
+            if (element.hasAttribute("alignment")) {
+                outlinePane.align(Alignment.valueOf(element.getAttribute("alignment").toUpperCase()));
+            }
+
             Pane.load(outlinePane, instance, element);
             Flippable.load(outlinePane, element);
             Orientable.load(outlinePane, element);
@@ -481,5 +532,28 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         } catch (NumberFormatException exception) {
             throw new XMLLoadException(exception);
         }
+    }
+
+    /**
+     * An enum containing different alignments that can be used on the outline pane.
+     *
+     * @since 0.10.1
+     */
+    public enum Alignment {
+
+        /**
+         * Aligns the items at the start of the pane.
+         *
+         * @since 0.10.1
+         */
+        BEGIN,
+
+        /**
+         * Aligns the items in the center of the pane. If there is no exact center, this will preference the left (for a
+         * horizontal orientation) or the top (for a vertical orientation).
+         *
+         * @since 0.10.1
+         */
+        CENTER
     }
 }

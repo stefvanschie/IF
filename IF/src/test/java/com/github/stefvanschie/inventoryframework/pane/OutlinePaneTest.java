@@ -24,6 +24,7 @@ public class OutlinePaneTest {
         original.flipHorizontally(true);
         original.flipVertically(true);
         original.applyMask(new Mask("0"));
+        original.align(OutlinePane.Alignment.CENTER);
 
         OutlinePane copy = original.copy();
 
@@ -42,6 +43,7 @@ public class OutlinePaneTest {
         assertEquals(original.isFlippedHorizontally(), copy.isFlippedHorizontally());
         assertEquals(original.isFlippedVertically(), copy.isFlippedVertically());
         assertEquals(original.getMask(), copy.getMask());
+        assertEquals(original.getAlignment(), copy.getAlignment());
         assertEquals(original.getUUID(), copy.getUUID());
     }
 }
