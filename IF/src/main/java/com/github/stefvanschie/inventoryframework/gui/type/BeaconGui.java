@@ -63,17 +63,13 @@ public class BeaconGui extends Gui implements InventoryBased {
 
         getInventory().clear();
 
-        getHumanEntityCache().storeAndClear(humanEntity);
-
         getPaymentItemComponent().display(getInventory(), 0);
         getPlayerInventoryComponent().display();
 
         if (getPlayerInventoryComponent().hasItem()) {
-            humanEntity.getInventory().clear();
+            getHumanEntityCache().storeAndClear(humanEntity);
 
-            getPlayerInventoryComponent().display(humanEntity.getInventory(), 0);
-        } else {
-            getHumanEntityCache().clearCache(humanEntity);
+            getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
 
         beaconInventory.openInventory((Player) humanEntity, getPaymentItemComponent().getItem(0, 0));

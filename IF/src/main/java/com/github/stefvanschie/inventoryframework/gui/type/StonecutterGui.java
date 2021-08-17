@@ -96,18 +96,14 @@ public class StonecutterGui extends NamedGui implements InventoryBased {
 
         getInventory().clear();
 
-        getHumanEntityCache().store(humanEntity);
-
         getInputComponent().display(getInventory(), 0);
         getResultComponent().display(getInventory(), 1);
         getPlayerInventoryComponent().display();
 
         if (getPlayerInventoryComponent().hasItem()) {
-            humanEntity.getInventory().clear();
+            getHumanEntityCache().storeAndClear(humanEntity);
 
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
-        } else {
-            getHumanEntityCache().clearCache(humanEntity);
         }
 
         stonecutterInventory.openInventory((Player) humanEntity, getTitle(), getTopItems());

@@ -73,17 +73,13 @@ public class DropperGui extends NamedGui implements InventoryBased {
 
         getInventory().clear();
 
-        getHumanEntityCache().store(humanEntity);
-
         getContentsComponent().display(getInventory(), 0);
         getPlayerInventoryComponent().display();
 
         if (getPlayerInventoryComponent().hasItem()) {
-            humanEntity.getInventory().clear();
+            getHumanEntityCache().storeAndClear(humanEntity);
 
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
-        } else {
-            getHumanEntityCache().clearCache(humanEntity);
         }
 
         humanEntity.openInventory(getInventory());

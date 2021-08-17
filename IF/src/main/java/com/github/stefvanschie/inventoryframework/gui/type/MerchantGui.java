@@ -135,17 +135,13 @@ public class MerchantGui extends NamedGui {
 
         inventory.clear();
 
-        getHumanEntityCache().store(humanEntity);
-
         getInputComponent().display(inventory, 0);
         getPlayerInventoryComponent().display();
 
         if (getPlayerInventoryComponent().hasItem()) {
-            humanEntity.getInventory().clear();
+            getHumanEntityCache().storeAndClear(humanEntity);
 
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
-        } else {
-            getHumanEntityCache().clearCache(humanEntity);
         }
 
         this.viewers.add(humanEntity);

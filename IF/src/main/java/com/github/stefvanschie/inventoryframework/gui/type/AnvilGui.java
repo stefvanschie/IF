@@ -101,8 +101,6 @@ public class AnvilGui extends NamedGui implements InventoryBased {
 
         getInventory().clear();
 
-        getHumanEntityCache().store(humanEntity);
-
         getFirstItemComponent().display(getInventory(), 0);
         getSecondItemComponent().display(getInventory(), 1);
         getResultComponent().display(getInventory(), 2);
@@ -110,11 +108,9 @@ public class AnvilGui extends NamedGui implements InventoryBased {
         getPlayerInventoryComponent().display();
 
         if (getPlayerInventoryComponent().hasItem()) {
-            humanEntity.getInventory().clear();
+            getHumanEntityCache().storeAndClear(humanEntity);
 
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
-        } else {
-            getHumanEntityCache().clearCache(humanEntity);
         }
 
         anvilInventory.openInventory((Player) humanEntity, getTitle(), getTopItems());

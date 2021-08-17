@@ -72,8 +72,6 @@ public class EnderChestGui extends NamedGui implements MergedGui, InventoryBased
 
         getInventory().clear();
 
-        getHumanEntityCache().store(humanEntity);
-
         int height = getInventoryComponent().getHeight();
 
         getInventoryComponent().display();
@@ -82,14 +80,11 @@ public class EnderChestGui extends NamedGui implements MergedGui, InventoryBased
         InventoryComponent bottomComponent = getInventoryComponent().excludeRows(0, height - 5);
 
         topComponent.placeItems(getInventory(), 0);
-        bottomComponent.placeItems(humanEntity.getInventory(), 0);
 
         if (bottomComponent.hasItem()) {
-            humanEntity.getInventory().clear();
+            getHumanEntityCache().storeAndClear(humanEntity);
 
             bottomComponent.placeItems(humanEntity.getInventory(), 0);
-        } else {
-            getHumanEntityCache().clearCache(humanEntity);
         }
 
         humanEntity.openInventory(getInventory());
