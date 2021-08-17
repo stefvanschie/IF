@@ -318,7 +318,9 @@ public class GuiListener implements Listener {
                 activeGuiInstances.remove(gui);
             }
 
-            if (gui instanceof MerchantGui) {
+            if (gui instanceof AnvilGui) {
+                ((AnvilGui) gui).handleClose(humanEntity);
+            } else if (gui instanceof MerchantGui) {
                 ((MerchantGui) gui).handleClose(humanEntity);
             }
         });

@@ -28,6 +28,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -67,6 +69,12 @@ public class AnvilGui extends NamedGui implements InventoryBased {
     @NotNull
     private final AnvilInventory anvilInventory = VersionMatcher.newAnvilInventory(Version.getVersion(),
         this);
+
+    /**
+     * The viewers of this gui
+     */
+    @NotNull
+    private final Collection<HumanEntity> viewers = new HashSet<>();
 
     /**
      * Constructs a new anvil gui
@@ -114,6 +122,8 @@ public class AnvilGui extends NamedGui implements InventoryBased {
         }
 
         anvilInventory.openInventory((Player) humanEntity, getTitle(), getTopItems());
+
+        this.viewers.add(humanEntity);
     }
 
     @NotNull
@@ -190,14 +200,14 @@ public class AnvilGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public int getViewerCount() {
-        return getInventory().getViewers().size();
+        return this.viewers.size();
     }
 
     @NotNull
     @Contract(pure = true)
     @Override
     public List<HumanEntity> getViewers() {
-        return new ArrayList<>(getInventory().getViewers());
+        return new ArrayList<>(this.viewers);
     }
 
     /**
@@ -233,6 +243,16 @@ public class AnvilGui extends NamedGui implements InventoryBased {
                 anvilInventory.setCursor(player, resultItem);
             }
         }
+    }
+
+    /**
+     * Handles a human entity closing this gui.
+     *
+     * @param humanEntity the human entity closing the gui
+     * @since 0.10.1
+     */
+    public void handleClose(@NotNull HumanEntity humanEntity) {
+        this.viewers.remove(humanEntity);
     }
 
     /**
