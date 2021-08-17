@@ -95,18 +95,14 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
 
         getInventory().clear();
 
-        getHumanEntityCache().store(humanEntity);
-
         getItemsComponent().display(getInventory(), 0);
         getResultComponent().display(getInventory(), 2);
         getPlayerInventoryComponent().display();
 
         if (getPlayerInventoryComponent().hasItem()) {
-            humanEntity.getInventory().clear();
+            getHumanEntityCache().storeAndClear(humanEntity);
 
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
-        } else {
-            getHumanEntityCache().clearCache(humanEntity);
         }
 
         grindstoneInventory.openInventory((Player) humanEntity, getTitle(), getTopItems());
