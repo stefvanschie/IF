@@ -174,9 +174,9 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
         Player player = (Player) event.getWhoClicked();
 
         if (slot >= 3 && slot <= 38) {
-            grindstoneInventory.sendItems(player, getTopItems());
+            grindstoneInventory.sendItems(player, getTopItems(), event.getCurrentItem());
         } else if (slot >= 0 && slot <= 2) {
-            grindstoneInventory.sendItems(player, getTopItems());
+            grindstoneInventory.sendItems(player, getTopItems(), event.getCurrentItem());
 
             if (event.isCancelled()) {
                 grindstoneInventory.clearCursor(player);
