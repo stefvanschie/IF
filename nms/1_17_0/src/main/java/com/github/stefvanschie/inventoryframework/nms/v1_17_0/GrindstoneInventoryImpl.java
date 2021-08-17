@@ -60,11 +60,12 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
 
         serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.GRINDSTONE, message));
 
-        sendItems(player, items);
+        sendItems(player, items, null);
     }
 
     @Override
-    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items) {
+    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items,
+                          @Nullable org.bukkit.inventory.ItemStack cursor) {
         NonNullList<ItemStack> nmsItems = CustomInventoryUtil.convertToNMSItems(items);
         ServerPlayer serverPlayer = getServerPlayer(player);
         int containerId = getContainerId(serverPlayer);

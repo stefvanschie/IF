@@ -50,11 +50,12 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
 
         entityPlayer.playerConnection.sendPacket(packet);
 
-        sendItems(player, items);
+        sendItems(player, items, null);
     }
 
     @Override
-    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items) {
+    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items,
+                          @Nullable org.bukkit.inventory.ItemStack cursor) {
         NonNullList<ItemStack> nmsItems = NonNullList.a(
             ItemStack.a,
             CraftItemStack.asNMSCopy(items[0]),

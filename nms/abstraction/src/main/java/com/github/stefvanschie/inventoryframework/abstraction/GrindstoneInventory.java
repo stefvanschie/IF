@@ -50,9 +50,10 @@ public abstract class GrindstoneInventory {
      *
      * @param player the player for which to open the grindstone
      * @param items the items to send
+     * @param cursor the cursor item, this may be null on versions prior to 1.17.1
      * @since 0.8.0
      */
-    public abstract void sendItems(@NotNull Player player, @Nullable ItemStack[] items);
+    public abstract void sendItems(@NotNull Player player, @Nullable ItemStack[] items, @Nullable ItemStack cursor);
 
     /**
      * Clears the cursor of the specified player
