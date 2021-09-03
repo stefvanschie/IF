@@ -60,11 +60,12 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
 
         serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.SMITHING, message));
 
-        sendItems(player, items);
+        sendItems(player, items, null);
     }
 
     @Override
-    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items) {
+    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items,
+                          @Nullable org.bukkit.inventory.ItemStack item) {
         NonNullList<ItemStack> nmsItems = CustomInventoryUtil.convertToNMSItems(items);
         ServerPlayer serverPlayer = getServerPlayer(player);
         int containerId = getContainerId(serverPlayer);
