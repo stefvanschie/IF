@@ -185,7 +185,7 @@ public class SmithingTableGui extends NamedGui implements InventoryBased {
         Player player = (Player) event.getWhoClicked();
 
         if (slot >= 3 && slot <= 38) {
-            smithingTableInventory.sendItems(player, getTopItems());
+            smithingTableInventory.sendItems(player, getTopItems(), event.getCurrentItem());
         } else if (slot == 0 || slot == 1) {
             if (event.isCancelled()) {
                 if (slot == 0) {

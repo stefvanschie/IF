@@ -60,19 +60,20 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
 
         serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.SMITHING, message));
 
-        sendItems(player, items);
+        sendItems(player, items, player.getItemOnCursor());
     }
 
     @Override
-    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items) {
+    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items,
+                          @Nullable org.bukkit.inventory.ItemStack cursor) {
         NonNullList<ItemStack> nmsItems = CustomInventoryUtil.convertToNMSItems(items);
         ServerPlayer serverPlayer = getServerPlayer(player);
         int containerId = getContainerId(serverPlayer);
         int state = serverPlayer.containerMenu.incrementStateId();
-        ItemStack cursor = CraftItemStack.asNMSCopy(player.getItemOnCursor());
+        ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursor);
         ServerPlayerConnection playerConnection = getPlayerConnection(serverPlayer);
 
-        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, nmsItems, cursor));
+        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, nmsItems, nmsCursor));
     }
 
     @Override
