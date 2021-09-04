@@ -76,7 +76,7 @@ shadowJar {
 You can also specify your dependency directly in your plugin.yml. Please note that this downloads the dependency on the server, which means that you can only use the plugin on a server with an internet connection.
 ```yaml
 libraries:
-    - com.github.stefvanschie.inventoryframework:IF:0.10.1
+    - com.github.stefvanschie.inventoryframework:IF:0.10.2
 ```
 
 ## Building from source
