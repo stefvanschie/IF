@@ -10,7 +10,6 @@ import com.github.stefvanschie.inventoryframework.util.SkullUtil;
 import com.github.stefvanschie.inventoryframework.util.UUIDTagType;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.google.common.primitives.Primitives;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -482,11 +481,7 @@ public abstract class Pane {
             XMLUtil.loadFieldAttribute(instance, element, item);
 
         if (element.hasAttribute("populate")) {
-            try {
-                MethodUtils.invokeExactMethod(instance, "populate", item, GuiItem.class);
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException exception) {
-                throw new XMLLoadException(exception);
-            }
+            XMLUtil.invokeMethod(instance, element.getAttribute("populate"), item, GuiItem.class);
         }
 		
 		item.setProperties(properties);

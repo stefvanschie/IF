@@ -63,6 +63,30 @@ public class XMLUtil {
     }
 
     /**
+     * Invokes the method by the given name on the given instance with the provided argument. The method should have
+     * the exact name specified and the exact parameter as specified. If the method cannot be accessed or found, this
+     * will throw an {@link XMLLoadException}.
+     *
+     * @param instance the instance on which to call the method
+     * @param methodName the name of the method to invoke
+     * @param argument the argument to provide for the invocation
+     * @param parameter the parameter of the method
+     * @since 0.10.3
+     * @throws XMLLoadException if the method cannot be accessed or found
+     */
+    public static void invokeMethod(@NotNull Object instance, @NotNull String methodName, @NotNull Object argument,
+                                    @NotNull Class<?> parameter) {
+        try {
+            Method method = instance.getClass().getMethod(methodName, parameter);
+
+            method.setAccessible(true);
+            method.invoke(instance, argument);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException exception) {
+            throw new XMLLoadException(exception);
+        }
+    }
+
+    /**
      * Sets a field from the given instance and element to the specified value
      *
      * @param instance the class instance the field is located in
