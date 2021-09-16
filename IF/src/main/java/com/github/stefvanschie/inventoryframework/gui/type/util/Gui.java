@@ -7,7 +7,6 @@ import com.github.stefvanschie.inventoryframework.gui.type.*;
 import com.github.stefvanschie.inventoryframework.pane.*;
 import com.github.stefvanschie.inventoryframework.pane.component.*;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -17,7 +16,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +29,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -357,14 +354,7 @@ public abstract class Gui {
         }
 
         if (element.hasAttribute("populate")) {
-            try {
-                MethodUtils.invokeExactMethod(instance, "populate", this, Gui.class);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                Plugin plugin = JavaPlugin.getProvidingPlugin(Gui.class);
-
-                throw new XMLLoadException("Error loading " + plugin.getName() + "'s gui with associated class: "
-                    + instance.getClass().getSimpleName(), e);
-            }
+            XMLUtil.invokeMethod(instance, element.getAttribute("populate"), this, Gui.class);
         }
     }
 
