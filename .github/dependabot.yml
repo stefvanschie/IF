@@ -1,0 +1,46 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/IF"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/adventure-support"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_14"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_15"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_16_1"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_16_2-3"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_16_4-5"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_17_0"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_17_1"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/abstraction"
+    schedule:
+      interval: "daily"
