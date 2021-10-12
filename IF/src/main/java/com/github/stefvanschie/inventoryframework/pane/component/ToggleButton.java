@@ -40,6 +40,12 @@ public class ToggleButton extends Pane {
         setPriority(priority);
     }
 
+    public ToggleButton(int x, int y, int length, int height, @NotNull Priority priority, boolean enabled) {
+        this(x, y, length, height, priority);
+
+        this.enabled = enabled;
+    }
+
     public ToggleButton(int length, int height) {
         super(length, height);
 
@@ -52,11 +58,23 @@ public class ToggleButton extends Pane {
         this.disabledPane.setRepeat(true);
     }
 
+    public ToggleButton(int length, int height, boolean enabled) {
+        this(length, height);
+
+        this.enabled = enabled;
+    }
+
     public ToggleButton(int x, int y, int length, int height) {
         this(length, height);
 
         setX(x);
         setY(y);
+    }
+
+    public ToggleButton(int x, int y, int length, int height, boolean enabled) {
+        this(x, y, length, height);
+
+        this.enabled = enabled;
     }
 
     @Override
@@ -114,7 +132,7 @@ public class ToggleButton extends Pane {
     @Contract(pure = true)
     @Override
     public ToggleButton copy() {
-        ToggleButton toggleButton = new ToggleButton(x, y, length, height, getPriority());
+        ToggleButton toggleButton = new ToggleButton(x, y, length, height, getPriority(), enabled);
 
         toggleButton.setVisible(isVisible());
         toggleButton.onClick = onClick;
@@ -123,8 +141,6 @@ public class ToggleButton extends Pane {
 
         toggleButton.setEnabledItem(enabledPane.getItems().get(0).copy());
         toggleButton.setDisabledItem(disabledPane.getItems().get(0).copy());
-
-        toggleButton.enabled = enabled;
 
         return toggleButton;
     }
@@ -208,13 +224,10 @@ public class ToggleButton extends Pane {
             throw new XMLLoadException(exception);
         }
 
-        ToggleButton toggleButton = new ToggleButton(length, height);
+        boolean enabled = element.hasAttribute("enabled") && Boolean.parseBoolean(element.getAttribute("enabled"));
+        ToggleButton toggleButton = new ToggleButton(length, height, enabled);
 
         Pane.load(toggleButton, instance, element);
-
-        if (element.hasAttribute("enabled") && Boolean.parseBoolean(element.getAttribute("enabled"))) {
-            toggleButton.toggle();
-        }
 
         return toggleButton;
     }
