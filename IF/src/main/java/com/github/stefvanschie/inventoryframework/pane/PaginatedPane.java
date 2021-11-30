@@ -326,6 +326,9 @@ public class PaginatedPane extends Pane {
             NodeList childNodes = element.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node item = childNodes.item(i);
+                if(!item.getNodeName().equals("page")) {
+                    throw new XMLLoadException("Panes have to be inside page tag");
+                }
 
                 if (item.getNodeType() != Node.ELEMENT_NODE)
                     continue;
