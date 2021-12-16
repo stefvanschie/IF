@@ -25,7 +25,7 @@ jobs:
           paperclip
           ~/.m2/repository/io/papermc/paper
           ~/.m2/repository/org/spigotmc
-        key: ${{ runner.os }}-paperclip
+        key: ${{ runner.os }}-${{ secrets.CACHE_VERSION }}-paperclip
     - name: Download Paperclip Jars
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       run: |
