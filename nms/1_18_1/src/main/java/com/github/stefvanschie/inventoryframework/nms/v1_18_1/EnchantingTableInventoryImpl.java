@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_18;
+package com.github.stefvanschie.inventoryframework.nms.v1_18_1;
 
 import com.github.stefvanschie.inventoryframework.abstraction.EnchantingTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_18.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_18_1.util.TextHolderUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 /**
- * Internal enchanting table inventory for 1.18
+ * Internal enchanting table inventory for 1.18.1
  *
  * @since 0.10.4
  */

@@ -62,11 +62,18 @@ public enum Version {
     V1_17_1,
 
     /**
-     * Version 1.18
+     * Version 1.18.0
      *
      * @since 0.10.4
      */
-    V1_18;
+    V1_18_0,
+
+    /**
+     * Version 1.18.1
+     *
+     * @since 0.10.4
+     */
+    V1_18_1;
 
     /**
      * Gets the version currently being used. If the used version is not supported, an
@@ -104,7 +111,9 @@ public enum Version {
             case "1.17.1":
                 return V1_17_1;
             case "1.18":
-                return V1_18;
+                return V1_18_0;
+            case "1.18.1":
+                return V1_18_1;
             default:
                 throw new UnsupportedVersionException("The server version provided is not supported");
         }

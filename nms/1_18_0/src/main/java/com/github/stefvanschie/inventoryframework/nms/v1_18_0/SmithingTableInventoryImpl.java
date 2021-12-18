@@ -1,9 +1,9 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_18;
+package com.github.stefvanschie.inventoryframework.nms.v1_18_0;
 
-import com.github.stefvanschie.inventoryframework.abstraction.AnvilInventory;
+import com.github.stefvanschie.inventoryframework.abstraction.SmithingTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_18.util.CustomInventoryUtil;
-import com.github.stefvanschie.inventoryframework.nms.v1_18.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_18_0.util.CustomInventoryUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_18_0.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -13,14 +13,13 @@ import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.Container;
-import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.item.ItemStack;
-import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventoryAnvil;
+import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventorySmithing;
 import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventoryView;
 import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -30,13 +29,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal anvil inventory for 1.18
+ * Internal smithing table inventory for 1.18.0
  *
  * @since 0.10.4
  */
-public class AnvilInventoryImpl extends AnvilInventory {
+public class SmithingTableInventoryImpl extends SmithingTableInventory {
 
-    public AnvilInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
+    public SmithingTableInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
         super(inventoryHolder);
     }
 
@@ -47,40 +46,41 @@ public class AnvilInventoryImpl extends AnvilInventory {
 
         if (itemAmount != 3) {
             throw new IllegalArgumentException(
-                "The amount of items for an anvil should be 3, but is '" + itemAmount + "'"
+                "The amount of items for a smithing table should be 3, but is '" + itemAmount + "'"
             );
         }
 
         ServerPlayer serverPlayer = getServerPlayer(player);
-        ContainerAnvilImpl containerAnvil = new ContainerAnvilImpl(serverPlayer, items);
+        ContainerSmithingTableImpl containerSmithingTable = new ContainerSmithingTableImpl(serverPlayer, items);
 
-        serverPlayer.containerMenu = containerAnvil;
+        serverPlayer.containerMenu = containerSmithingTable;
 
-        int id = containerAnvil.containerId;
+        int id = containerSmithingTable.containerId;
         Component message = TextHolderUtil.toComponent(title);
 
-        serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.ANVIL, message));
+        serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.SMITHING, message));
 
-        sendItems(player, items);
+        sendItems(player, items, player.getItemOnCursor());
     }
 
     @Override
-    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items) {
+    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items,
+                          @Nullable org.bukkit.inventory.ItemStack cursor) {
         NonNullList<ItemStack> nmsItems = CustomInventoryUtil.convertToNMSItems(items);
         ServerPlayer serverPlayer = getServerPlayer(player);
         int containerId = getContainerId(serverPlayer);
         int state = serverPlayer.containerMenu.incrementStateId();
-        ItemStack cursor = CraftItemStack.asNMSCopy(player.getItemOnCursor());
+        ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursor);
         ServerPlayerConnection playerConnection = getPlayerConnection(serverPlayer);
 
-        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, nmsItems, cursor));
+        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, nmsItems, nmsCursor));
     }
 
     @Override
     public void sendFirstItem(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack item) {
         ServerPlayer serverPlayer = getServerPlayer(player);
-        int containerId = getContainerId(serverPlayer);
         ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+        int containerId = getContainerId(serverPlayer);
         int state = serverPlayer.containerMenu.incrementStateId();
 
         getPlayerConnection(serverPlayer).send(new ClientboundContainerSetSlotPacket(containerId, state, 0, nmsItem));
@@ -89,8 +89,8 @@ public class AnvilInventoryImpl extends AnvilInventory {
     @Override
     public void sendSecondItem(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack item) {
         ServerPlayer serverPlayer = getServerPlayer(player);
-        int containerId = getContainerId(serverPlayer);
         ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+        int containerId = getContainerId(serverPlayer);
         int state = serverPlayer.containerMenu.incrementStateId();
 
         getPlayerConnection(serverPlayer).send(new ClientboundContainerSetSlotPacket(containerId, state, 1, nmsItem));
@@ -187,32 +187,26 @@ public class AnvilInventoryImpl extends AnvilInventory {
     }
 
     /**
-     * A custom container anvil for responding to item renaming
+     * A custom container smithing table
      *
      * @since 0.10.4
      */
-    private class ContainerAnvilImpl extends AnvilMenu {
+    private class ContainerSmithingTableImpl extends SmithingMenu {
 
         /**
-         * The player for whom this anvil container is
+         * The player for this smithing table container
          */
         @NotNull
         private final Player player;
 
         /**
-         * The internal bukkit entity for this container anvil
+         * The internal bukkit entity for this container smithing table
          */
         @Nullable
         private CraftInventoryView bukkitEntity;
 
-        /**
-         * Creates a new custom anvil container for the specified player
-         *
-         * @param serverPlayer the player for who this anvil container is
-         * @since 0.10.4
-         */
-        public ContainerAnvilImpl(@NotNull ServerPlayer serverPlayer,
-                                  @Nullable org.bukkit.inventory.ItemStack[] items) {
+        public ContainerSmithingTableImpl(@NotNull ServerPlayer serverPlayer,
+                                          @Nullable org.bukkit.inventory.ItemStack[] items) {
             super(serverPlayer.nextContainerCounter(), serverPlayer.getInventory(),
                 ContainerLevelAccess.create(serverPlayer.getCommandSenderWorld(), new BlockPos(0, 0, 0)));
 
@@ -227,9 +221,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
         @Override
         public CraftInventoryView getBukkitView() {
             if (bukkitEntity == null) {
-                Location location = access.getLocation();
-                CraftInventory inventory = new CraftInventoryAnvil(location, inputSlots, resultSlots,
-                    this) {
+                CraftInventory inventory = new CraftInventorySmithing(access.getLocation(), inputSlots, resultSlots) {
                     @NotNull
                     @Contract(pure = true)
                     @Override
@@ -242,13 +234,6 @@ public class AnvilInventoryImpl extends AnvilInventory {
             }
 
             return bukkitEntity;
-        }
-
-        @Override
-        public void setItemName(@Nullable String name) {
-            text = name == null ? "" : name;
-
-            sendResultItem(player, resultSlots.getItem(0));
         }
 
         @Contract(pure = true, value = "_ -> true")

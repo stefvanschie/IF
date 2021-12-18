@@ -7,7 +7,8 @@
     <modules>
         <module>IF</module>
         <module>nms/abstraction</module>
-        <module>nms/1_18</module>
+        <module>nms/1_18_1</module>
+        <module>nms/1_18_0</module>
         <module>nms/1_17_1</module>
         <module>nms/1_17_0</module>
         <module>nms/1_16_4-5</module>

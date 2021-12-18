@@ -1,4 +1,4 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_18;
+package com.github.stefvanschie.inventoryframework.nms.v1_18_1;
 
 import com.github.stefvanschie.inventoryframework.abstraction.MerchantInventory;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Internal merchant inventory for 1.18
+ * Internal merchant inventory for 1.18.1
  *
  * @since 0.10.4
  */
