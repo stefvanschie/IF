@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Internal merchant inventory for 1.17.1
+ * Internal merchant inventory for 1.18
  *
- * @since 0.10.1
+ * @since 0.10.4
  */
 public class MerchantInventoryImpl extends MerchantInventory {
 
@@ -75,7 +75,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.1
+     * @since 0.10.4
      */
     @NotNull
     @Contract(pure = true)
@@ -88,7 +88,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
      *
      * @param nmsPlayer the player to get the containerId id for
      * @return the containerId id
-     * @since 0.10.1
+     * @since 0.10.4
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {

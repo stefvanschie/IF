@@ -26,9 +26,9 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 /**
- * Internal beacon inventory for 1.17 R1
+ * Internal beacon inventory for 1.18
  *
- * @since 0.10.0
+ * @since 0.10.4
  */
 public class BeaconInventoryImpl extends BeaconInventory {
 
@@ -80,7 +80,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
      *
      * @param nmsPlayer the player to get the container id for
      * @return the container id
-     * @since 0.10.0
+     * @since 0.10.4
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -92,7 +92,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
      *
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
-     * @since 0.10.0
+     * @since 0.10.4
      */
     @NotNull
     @Contract(pure = true)
@@ -105,7 +105,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.0
+     * @since 0.10.4
      */
     @NotNull
     @Contract(pure = true)
@@ -116,7 +116,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
     /**
      * A custom container beacon
      *
-     * @since 0.10.0
+     * @since 0.10.4
      */
     private class ContainerBeaconImpl extends BeaconMenu {
 

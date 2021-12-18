@@ -30,9 +30,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal anvil inventory for 1.17 R1
+ * Internal anvil inventory for 1.18
  *
- * @since 0.10.0
+ * @since 0.10.4
  */
 public class AnvilInventoryImpl extends AnvilInventory {
 
@@ -124,7 +124,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
      *
      * @param player the player to set the cursor
      * @param item the item to set the cursor to
-     * @since 0.10.0
+     * @since 0.10.4
      */
     private void setCursor(@NotNull Player player, @NotNull ItemStack item) {
         ServerPlayer serverPlayer = getServerPlayer(player);
@@ -138,7 +138,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
      *
      * @param player the player to send the result item to
      * @param item the result item
-     * @since 0.10.0
+     * @since 0.10.4
      */
     private void sendResultItem(@NotNull Player player, @NotNull ItemStack item) {
         ServerPlayer serverPlayer = getServerPlayer(player);
@@ -153,7 +153,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
      *
      * @param nmsPlayer the player to get the container id for
      * @return the container id
-     * @since 0.10.0
+     * @since 0.10.4
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -165,7 +165,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
      *
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
-     * @since 0.10.0
+     * @since 0.10.4
      */
     @NotNull
     @Contract(pure = true)
@@ -178,7 +178,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.0
+     * @since 0.10.4
      */
     @NotNull
     @Contract(pure = true)
@@ -189,7 +189,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
     /**
      * A custom container anvil for responding to item renaming
      *
-     * @since 0.10.0
+     * @since 0.10.4
      */
     private class ContainerAnvilImpl extends AnvilMenu {
 
@@ -209,7 +209,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
          * Creates a new custom anvil container for the specified player
          *
          * @param serverPlayer the player for who this anvil container is
-         * @since 0.10.0
+         * @since 0.10.4
          */
         public ContainerAnvilImpl(@NotNull ServerPlayer serverPlayer,
                                   @Nullable org.bukkit.inventory.ItemStack[] items) {

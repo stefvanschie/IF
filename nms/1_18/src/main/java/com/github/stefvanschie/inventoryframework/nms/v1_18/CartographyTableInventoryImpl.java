@@ -29,9 +29,9 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 /**
- * Internal cartography table inventory for 1.17 R1
+ * Internal cartography table inventory for 1.18
  *
- * @since 0.10.0
+ * @since 0.10.4
  */
 public class CartographyTableInventoryImpl extends CartographyTableInventory {
 
@@ -90,7 +90,7 @@ public class CartographyTableInventoryImpl extends CartographyTableInventory {
      *
      * @param nmsPlayer the player to get the container id for
      * @return the container id
-     * @since 0.10.0
+     * @since 0.10.4
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -102,7 +102,7 @@ public class CartographyTableInventoryImpl extends CartographyTableInventory {
      *
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
-     * @since 0.10.0
+     * @since 0.10.4
      */
     @NotNull
     @Contract(pure = true)
@@ -115,7 +115,7 @@ public class CartographyTableInventoryImpl extends CartographyTableInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.0
+     * @since 0.10.4
      */
     @NotNull
     @Contract(pure = true)
@@ -126,7 +126,7 @@ public class CartographyTableInventoryImpl extends CartographyTableInventory {
     /**
      * A custom container cartography table
      *
-     * @since 0.10.0
+     * @since 0.10.4
      */
     private class ContainerCartographyTableImpl extends CartographyTableMenu {
 

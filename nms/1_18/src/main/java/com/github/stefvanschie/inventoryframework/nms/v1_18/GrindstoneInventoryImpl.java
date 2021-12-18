@@ -29,9 +29,9 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 /**
- * Internal grindstone inventory for 1.17 R1
+ * Internal grindstone inventory for 1.18
  *
- * @since 0.10.0
+ * @since 0.10.4
  */
 public class GrindstoneInventoryImpl extends GrindstoneInventory {
 
@@ -93,7 +93,7 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
      *
      * @param nmsPlayer the player to get the containerId id for
      * @return the containerId id
-     * @since 0.10.0
+     * @since 0.10.4
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -105,7 +105,7 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
      *
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
-     * @since 0.10.0
+     * @since 0.10.4
      */
     @NotNull
     @Contract(pure = true)
@@ -118,7 +118,7 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.0
+     * @since 0.10.4
      */
     @NotNull
     @Contract(pure = true)
@@ -129,7 +129,7 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
     /**
      * A custom container grindstone
      *
-     * @since 0.10.0
+     * @since 0.10.4
      */
     private class ContainerGrindstoneImpl extends GrindstoneMenu {
 
@@ -216,7 +216,7 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
          * Gets the craft inventory
          *
          * @return the craft inventory
-         * @since 0.10.0
+         * @since 0.10.4
          */
         @NotNull
         @Contract(pure = true)
@@ -232,7 +232,7 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
          * Gets the result inventory
          *
          * @return the result inventory
-         * @since 0.10.0
+         * @since 0.10.4
          */
         @NotNull
         @Contract(pure = true)
