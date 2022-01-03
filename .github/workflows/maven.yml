@@ -25,7 +25,7 @@ jobs:
           paperclip
           ~/.m2/repository/io/papermc/paper
           ~/.m2/repository/org/spigotmc
-        key: ${{ runner.os }}-paperclip
+        key: ${{ runner.os }}-${{ secrets.CACHE_VERSION }}-paperclip
     - name: Download Paperclip Jars
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       run: |
@@ -71,6 +71,19 @@ jobs:
         wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
         java -jar BuildTools.jar --rev 1.17 --remapped --disable-java-check
         java -jar BuildTools.jar --rev 1.17.1 --remapped --disable-java-check
+        cd ../
+    - name: Set up JDK 17
+      uses: actions/setup-java@v1
+      with:
+        java-version: 17
+    - name: Run BuildTools 1.18
+      if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p build
+        cd build/
+        wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
+        java -jar BuildTools.jar --rev 1.18 --remapped --disable-java-check
+        java -jar BuildTools.jar --rev 1.18.1 --remapped --disable-java-check
         cd ../
     - uses: actions/checkout@v2
       name: Checkout code

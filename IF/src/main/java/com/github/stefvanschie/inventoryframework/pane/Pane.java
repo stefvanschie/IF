@@ -499,7 +499,7 @@ public abstract class Pane {
         }
 
         if (element.hasAttribute("priority"))
-            pane.setPriority(Priority.valueOf(element.getAttribute("priority")));
+            pane.setPriority(Priority.valueOf(element.getAttribute("priority").toUpperCase()));
 
         if (element.hasAttribute("visible"))
             pane.setVisible(Boolean.parseBoolean(element.getAttribute("visible")));
