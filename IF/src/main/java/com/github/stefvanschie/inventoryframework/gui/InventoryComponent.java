@@ -418,9 +418,10 @@ public class InventoryComponent {
                 "; should be below " + getLength() + " and " + getHeight());
         }
 
-        guiItem.applyUUID();
+        GuiItem copy = guiItem.copy();
+        copy.applyUUID();
 
-        this.items[x][y] = guiItem.getItem();
+        this.items[x][y] = copy.getItem();
     }
 
     /**
