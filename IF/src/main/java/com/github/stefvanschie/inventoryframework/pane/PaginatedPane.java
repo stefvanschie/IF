@@ -28,7 +28,7 @@ public class PaginatedPane extends Pane {
      * A set of panes for the different pages
      */
     @NotNull
-    private final Map<Integer, List<Pane>> panes = new HashMap<>();
+    private Map<Integer, List<Pane>> panes = new HashMap<>();
 
     /**
      * The current page
@@ -248,6 +248,36 @@ public class PaginatedPane extends Pane {
         paginatedPane.page = page;
 
         return paginatedPane;
+    }
+
+    /**
+     * Deletes a page and all its associated panes from this paginated pane. It also decrements the indexes of all pages
+     * beyond the specified page by one. For example, given a sequence of pages 0, 1, 2, 3, 4, upon removing page 2, the
+     * new sequence of pages will be 0, 1, 2, 3. If the specified page does not exist, then this method will silently do
+     * nothing.
+     *
+     * @param page the page to delete
+     * @since 0.10.5
+     */
+    public void deletePage(int page) {
+        if (this.panes.remove(page) == null) {
+            return;
+        }
+
+        Map<Integer, List<Pane>> newPanes = new HashMap<>();
+
+        for (Map.Entry<Integer, List<Pane>> entry : this.panes.entrySet()) {
+            int index = entry.getKey();
+            List<Pane> panes = entry.getValue();
+
+            if (index > page) {
+                newPanes.put(index - 1, panes);
+            } else {
+                newPanes.put(index, panes);
+            }
+        }
+
+        this.panes = newPanes;
     }
 
     @NotNull
