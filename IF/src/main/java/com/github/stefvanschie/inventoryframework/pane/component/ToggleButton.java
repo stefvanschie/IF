@@ -117,10 +117,11 @@ public class ToggleButton extends Pane {
         int newX = paneOffsetX + x;
         int newY = paneOffsetY + y;
 
+        //swap panes, since we will already have toggled the enabled state here
         if (enabled) {
-            enabledPane.click(gui, inventoryComponent, event, slot, newX, newY, length, height);
-        } else {
             disabledPane.click(gui, inventoryComponent, event, slot, newX, newY, length, height);
+        } else {
+            enabledPane.click(gui, inventoryComponent, event, slot, newX, newY, length, height);
         }
 
         gui.update();
