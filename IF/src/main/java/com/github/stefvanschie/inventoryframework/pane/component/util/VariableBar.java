@@ -241,8 +241,13 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         int newMaxLength = Math.min(maxLength, getLength());
         int newMaxHeight = Math.min(maxHeight, getHeight());
 
-        this.backgroundPane.display(inventoryComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
-        this.fillPane.display(inventoryComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
+        if (this.backgroundPane.isVisible()) {
+            this.backgroundPane.display(inventoryComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
+        }
+
+        if (this.fillPane.isVisible()) {
+            this.fillPane.display(inventoryComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
+        }
     }
 
     /**
