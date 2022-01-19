@@ -154,7 +154,7 @@ public class Mask {
      * @since 0.5.16
      */
     public boolean[] getColumn(int index) {
-        boolean[] column = new boolean[mask[0].length];
+        boolean[] column = new boolean[mask.length];
 
         for (int i = 0; i < getHeight(); i++) {
             column[i] = mask[i][index];

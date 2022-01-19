@@ -169,44 +169,46 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
             }
 
             for (int opposingVectorIndex = 0; opposingVectorIndex < maskLine.length; opposingVectorIndex++) {
-                if (maskLine[opposingVectorIndex]) {
-                    if (index >= 0 && index < items.length && items[index] != null) {
-                        int x, y;
+                if (!maskLine[opposingVectorIndex]) {
+                    continue;
+                }
 
-                        if (getOrientation() == Orientation.HORIZONTAL) {
-                            x = opposingVectorIndex;
-                            y = vectorIndex;
-                        } else if (getOrientation() == Orientation.VERTICAL) {
-                            x = vectorIndex;
-                            y = opposingVectorIndex;
-                        } else {
-                            throw new IllegalStateException("Unknown orientation '" + getOrientation() + "'");
-                        }
+                if (index >= 0 && index < items.length && items[index] != null) {
+                    int x, y;
 
-                        if (flipHorizontally) {
-                            x = length - x - 1;
-                        }
-
-                        if (flipVertically) {
-                            y = height - y - 1;
-                        }
-
-                        Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y,
-                                length, height, rotation);
-
-                        x = coordinates.getKey();
-                        y = coordinates.getValue();
-
-                        if (x >= 0 && x < length && y >= 0 && y < height) {
-                            int finalRow = getY() + y + paneOffsetY;
-                            int finalColumn = getX() + x + paneOffsetX;
-
-                            inventoryComponent.setItem(items[index], finalColumn, finalRow);
-                        }
+                    if (getOrientation() == Orientation.HORIZONTAL) {
+                        x = opposingVectorIndex;
+                        y = vectorIndex;
+                    } else if (getOrientation() == Orientation.VERTICAL) {
+                        x = vectorIndex;
+                        y = opposingVectorIndex;
+                    } else {
+                        throw new IllegalStateException("Unknown orientation '" + getOrientation() + "'");
                     }
 
-                    index++;
+                    if (flipHorizontally) {
+                        x = length - x - 1;
+                    }
+
+                    if (flipVertically) {
+                        y = height - y - 1;
+                    }
+
+                    Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y,
+                            length, height, rotation);
+
+                    x = coordinates.getKey();
+                    y = coordinates.getValue();
+
+                    if (x >= 0 && x < length && y >= 0 && y < height) {
+                        int finalRow = getY() + y + paneOffsetY;
+                        int finalColumn = getX() + x + paneOffsetX;
+
+                        inventoryComponent.setItem(items[index], finalColumn, finalRow);
+                    }
                 }
+
+                index++;
             }
         }
     }

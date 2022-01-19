@@ -39,6 +39,11 @@ public class MaskTest {
             "10",
             "00"
         ).getColumn(0));
+
+        assertArrayEquals(new boolean[] {true, false}, new Mask(
+            "1",
+            "0"
+        ).getColumn(0));
     }
 
     @Test
