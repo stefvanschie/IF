@@ -12,6 +12,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
+import java.util.function.BiFunction;
+
 /**
  * A label for displaying text.
  *
@@ -81,12 +83,18 @@ public class Label extends OutlinePane {
     }
 
     /**
-     * Sets the text to be displayed in this label
+     * Sets the text to be displayed in this label. If this label already had text, this text will be overwritten. The
+     * specified processor will be called for each character that is part of the specified text. The provided character
+     * will be the original character that was attempted to be shown - it is not subject to any transformations that may
+     * be applied for finding a valid item corresponding to this character, such as capitalization changes.
      *
      * @param text the new text
-     * @since 0.5.0
+     * @param processor processes each character before using them
+     * @since 0.10.4
      */
-    public void setText(@NotNull String text) {
+    public void setText(@NotNull String text,
+                        @NotNull BiFunction<? super @NotNull Character, ? super @NotNull ItemStack,
+                                ? extends @NotNull GuiItem> processor) {
         this.text = text;
 
         clear();
@@ -106,8 +114,19 @@ public class Label extends OutlinePane {
                 item = font.getDefaultItem();
             }
 
-            addItem(new GuiItem(item));
+            addItem(processor.apply(character, item.clone()));
         }
+    }
+
+    /**
+     * Sets the text to be displayed in this label. If this label already had text, this text will be overwritten.
+     *
+     * @param text the new text
+     * @see #setText(String, BiFunction)
+     * @since 0.5.0
+     */
+    public void setText(@NotNull String text) {
+        setText(text, (character, item) -> new GuiItem(item));
     }
 
     @NotNull
