@@ -118,7 +118,7 @@ public class CartographyTableGui extends NamedGui implements InventoryBased {
         //also let Bukkit know that we opened an inventory
         humanEntity.openInventory(getInventory());
 
-        cartographyTableInventory.openInventory((Player) humanEntity, getTitle(), getTopItems());
+        cartographyTableInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
     }
 
     @NotNull

@@ -108,7 +108,7 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
         //also let Bukkit know that we opened an inventory
         humanEntity.openInventory(getInventory());
 
-        grindstoneInventory.openInventory((Player) humanEntity, getTitle(), getTopItems());
+        grindstoneInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
     }
 
     @NotNull

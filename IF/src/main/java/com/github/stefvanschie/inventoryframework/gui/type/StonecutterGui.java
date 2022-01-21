@@ -109,7 +109,7 @@ public class StonecutterGui extends NamedGui implements InventoryBased {
         //also let Bukkit know that we opened an inventory
         humanEntity.openInventory(getInventory());
 
-        stonecutterInventory.openInventory((Player) humanEntity, getTitle(), getTopItems());
+        stonecutterInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
     }
 
     @NotNull
