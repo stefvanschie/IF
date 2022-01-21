@@ -116,7 +116,7 @@ public class SmithingTableGui extends NamedGui implements InventoryBased {
         //also let Bukkit know that we opened an inventory
         humanEntity.openInventory(getInventory());
 
-        smithingTableInventory.openInventory((Player) humanEntity, getTitle(), getTopItems());
+        smithingTableInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
     }
 
     @NotNull

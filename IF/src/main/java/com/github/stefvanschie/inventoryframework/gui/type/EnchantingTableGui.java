@@ -101,7 +101,7 @@ public class EnchantingTableGui extends NamedGui implements InventoryBased {
         //also let Bukkit know that we opened an inventory
         humanEntity.openInventory(getInventory());
 
-        enchantingTableInventory.openInventory((Player) humanEntity, getTitle(), getTopItems());
+        enchantingTableInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
     }
 
     @NotNull
