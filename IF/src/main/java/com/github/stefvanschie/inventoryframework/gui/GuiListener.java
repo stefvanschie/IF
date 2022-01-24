@@ -64,6 +64,16 @@ public class GuiListener implements Listener {
         }
 
         gui.click(event);
+
+        if (event.isCancelled()) {
+            Bukkit.getScheduler().runTask(JavaPlugin.getProvidingPlugin(getClass()), () -> {
+                PlayerInventory playerInventory = event.getWhoClicked().getInventory();
+
+                /* due to a client issue off-hand items appear as ghost items, this updates the off-hand correctly
+                   client-side */
+                playerInventory.setItemInOffHand(playerInventory.getItemInOffHand());
+            });
+        }
     }
 
     /**
