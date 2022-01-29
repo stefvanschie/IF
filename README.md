@@ -24,7 +24,7 @@ Now in order to shade the project into your project, add the following to your p
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-shade-plugin</artifactId>
-    <version>3.2.2</version>
+    <version>3.2.4</version>
     <configuration>
         <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
         <relocations>
