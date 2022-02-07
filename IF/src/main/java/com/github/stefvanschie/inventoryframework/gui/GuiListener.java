@@ -280,11 +280,18 @@ public class GuiListener implements Listener {
             ClickType clickType = even ? ClickType.LEFT : ClickType.RIGHT;
             InventoryAction inventoryAction = even ? InventoryAction.PLACE_SOME : InventoryAction.PLACE_ONE;
 
+            ItemStack previousViewCursor = view.getCursor();
+            // Overwrite getCursor in inventory click event to mimic real event fired by Bukkit.
+            view.setCursor(event.getOldCursor());
             //this is a fake click event, firing this may cause other plugins to function incorrectly, so keep it local
             InventoryClickEvent inventoryClickEvent = new InventoryClickEvent(view, slotType, index, clickType,
                 inventoryAction);
 
             onInventoryClick(inventoryClickEvent);
+            // Restore previous cursor only if someone has not changed it manually in onInventoryClick.
+            if (Objects.equals(view.getCursor(), event.getOldCursor())) {
+                view.setCursor(previousViewCursor);
+            }
 
             event.setCancelled(inventoryClickEvent.isCancelled());
         }
