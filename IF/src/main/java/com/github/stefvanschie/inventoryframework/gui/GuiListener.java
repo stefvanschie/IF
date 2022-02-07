@@ -243,12 +243,12 @@ public class GuiListener implements Listener {
         }
 
         InventoryView view = event.getView();
-        Set<Integer> inventorySlots = event.getInventorySlots();
+        Set<Integer> inventorySlots = event.getRawSlots();
 
         if (inventorySlots.size() > 1) {
             boolean top = false, bottom = false;
 
-            for (int inventorySlot : event.getRawSlots()) {
+            for (int inventorySlot : inventorySlots) {
                 Inventory inventory = view.getInventory(inventorySlot);
 
                 if (view.getTopInventory().equals(inventory)) {
