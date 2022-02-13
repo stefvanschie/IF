@@ -196,7 +196,7 @@ public class InventoryComponent {
      * @since 0.8.0
      */
     public void click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int slot) {
-        List<Pane> panes = getPanes();
+        List<Pane> panes = new ArrayList<>(getPanes());
 
         //loop panes in reverse, because the highest priority pane (last in list) is most likely to have the right item
         for (int i = panes.size() - 1; i >= 0; i--) {
