@@ -220,7 +220,7 @@ public class PaginatedPane extends Pane {
 
         boolean success = false;
 
-        for (Pane pane : this.panes.getOrDefault(page, Collections.emptyList())) {
+        for (Pane pane : new ArrayList<>(this.panes.getOrDefault(page, Collections.emptyList()))) {
             success = success || pane.click(gui, inventoryComponent, event, slot,paneOffsetX + getX(),
                 paneOffsetY + getY(), length, height);
         }

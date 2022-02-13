@@ -164,7 +164,7 @@ public class MasonryPane extends Pane implements Orientable {
 
         boolean success = false;
 
-        for (Pane pane : panes) {
+        for (Pane pane : new ArrayList<>(panes)) {
             success = success || pane.click(gui, inventoryComponent, event, slot, paneOffsetX + getX(),
                 paneOffsetY + getY(), length, height);
         }
