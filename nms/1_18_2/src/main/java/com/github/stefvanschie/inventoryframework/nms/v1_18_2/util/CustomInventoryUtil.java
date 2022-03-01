@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A utility class for custom inventories
  *
- * @since 0.10.4
+ * @since 0.10.5
  */
 public final class CustomInventoryUtil {
 
@@ -25,7 +25,7 @@ public final class CustomInventoryUtil {
      *
      * @param items the items to convert
      * @return a list of converted items
-     * @since 0.10.4
+     * @since 0.10.5
      */
     @NotNull
     @Contract(pure = true)

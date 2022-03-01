@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * A utility class for adding {@link TextHolder} support.
  *
- * @since 0.10.4
+ * @since 0.10.5
  */
 public final class TextHolderUtil {
     
@@ -26,7 +26,7 @@ public final class TextHolderUtil {
      *
      * @param holder the value to convert
      * @return the value as a vanilla component
-     * @since 0.10.4
+     * @since 0.10.5
      */
     @NotNull
     @Contract(pure = true)
@@ -43,7 +43,7 @@ public final class TextHolderUtil {
      *
      * @param holder the value to convert
      * @return the value as a vanilla component
-     * @since 0.10.4
+     * @since 0.10.5
      */
     @NotNull
     @Contract(pure = true)
@@ -56,7 +56,7 @@ public final class TextHolderUtil {
      *
      * @param holder the value to convert
      * @return the value as a vanilla component
-     * @since 0.10.4
+     * @since 0.10.5
      */
     @NotNull
     @Contract(pure = true)

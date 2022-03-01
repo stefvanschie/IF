@@ -28,9 +28,9 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 /**
- * Internal enchanting table inventory for 1.18.1
+ * Internal enchanting table inventory for 1.18.2
  *
- * @since 0.10.4
+ * @since 0.10.5
  */
 public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
 
@@ -92,7 +92,7 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
      *
      * @param nmsPlayer the player to get the containerId id for
      * @return the containerId id
-     * @since 0.10.4
+     * @since 0.10.5
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -104,7 +104,7 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
      *
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
-     * @since 0.10.4
+     * @since 0.10.5
      */
     @NotNull
     @Contract(pure = true)
@@ -117,7 +117,7 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.4
+     * @since 0.10.5
      */
     @NotNull
     @Contract(pure = true)
@@ -128,7 +128,7 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
     /**
      * A custom container enchanting table
      *
-     * @since 0.10.4
+     * @since 0.10.5
      */
     private class ContainerEnchantingTableImpl extends EnchantmentMenu {
 

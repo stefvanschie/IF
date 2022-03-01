@@ -28,9 +28,9 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 /**
- * Internal stonecutter inventory for 1.18.1
+ * Internal stonecutter inventory for 1.18.2
  *
- * @since 0.10.4
+ * @since 0.10.5
  */
 public class StonecutterInventoryImpl extends StonecutterInventory {
 
@@ -93,7 +93,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
      *
      * @param nmsPlayer the player to get the container id for
      * @return the container id
-     * @since 0.10.4
+     * @since 0.10.5
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -105,7 +105,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
      *
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
-     * @since 0.10.4
+     * @since 0.10.5
      */
     @NotNull
     @Contract(pure = true)
@@ -118,7 +118,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.4
+     * @since 0.10.5
      */
     @NotNull
     @Contract(pure = true)
@@ -129,7 +129,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
     /**
      * A custom container enchanting table
      *
-     * @since 0.10.4
+     * @since 0.10.5
      */
     private class ContainerStonecutterImpl extends StonecutterMenu {
 
@@ -204,7 +204,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
          * Gets the result inventory
          *
          * @return the result inventory
-         * @since 0.10.4
+         * @since 0.10.5
          */
         @NotNull
         @Contract(pure = true)
