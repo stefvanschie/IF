@@ -29,9 +29,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal smithing table inventory for 1.18.1
+ * Internal smithing table inventory for 1.18.2
  *
- * @since 0.10.4
+ * @since 0.10.5
  */
 public class SmithingTableInventoryImpl extends SmithingTableInventory {
 
@@ -124,7 +124,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param player the player to set the cursor
      * @param item the item to set the cursor to
-     * @since 0.10.4
+     * @since 0.10.5
      */
     private void setCursor(@NotNull Player player, @NotNull ItemStack item) {
         ServerPlayer serverPlayer = getServerPlayer(player);
@@ -138,7 +138,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param player the player to send the result item to
      * @param item the result item
-     * @since 0.10.4
+     * @since 0.10.5
      */
     private void sendResultItem(@NotNull Player player, @NotNull ItemStack item) {
         ServerPlayer serverPlayer = getServerPlayer(player);
@@ -153,7 +153,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param nmsPlayer the player to get the container id for
      * @return the container id
-     * @since 0.10.4
+     * @since 0.10.5
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -165,7 +165,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
-     * @since 0.10.4
+     * @since 0.10.5
      */
     @NotNull
     @Contract(pure = true)
@@ -178,7 +178,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.4
+     * @since 0.10.5
      */
     @NotNull
     @Contract(pure = true)
@@ -189,7 +189,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
     /**
      * A custom container smithing table
      *
-     * @since 0.10.4
+     * @since 0.10.5
      */
     private class ContainerSmithingTableImpl extends SmithingMenu {
 
