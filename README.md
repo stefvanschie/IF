@@ -86,8 +86,8 @@ If you want to build this project from source, run the following:
 
 This will clone this repository to your device. This project relies on NMS, for which the dependencies are not available online. Because of this, you'll need to follow additional steps to obtain all these dependencies locally.
 
-### Installing Paper
-For versions 1.14-1.16, we use Paper. Run the following scripts for each version to install the dependencies locally. Running these commands generate additional files in the folder where you execute them. To ensure that you don't accidentallly overwrite other files, execute this in an empty folder. The files that get created can be deleted afterwards (either after installing a single version or after installing all of them), since they're no longer necessary.
+### Installing Paper manually
+For versions 1.14-1.16, we have to manually install Paper. Run the following scripts for each version to install the dependencies locally. Running these commands generate additional files in the folder where you execute them. To ensure that you don't accidentallly overwrite other files, execute this in an empty folder. The files that get created can be deleted afterwards (either after installing a single version or after installing all of them), since they're no longer necessary.
 
 #### 1.14.4
 ```
@@ -124,15 +124,14 @@ java -jar paper-1.16.4.jar
 mvn install:install-file -Dfile=cache/patched_1.16.4.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.4-R0.1-SNAPSHOT" -Dpackaging="jar"
 ```
 
-### Installing Spigot
-For versions 1.17-1.18, we use Spigot. To install these versions locally, we use Spigot's BuildTools system. Using BuildTools will create additional files, so we recommend running the following in an empty folder. The files can be deleted afterwards.
+### Installing Paper via the maven plugin
+For versions 1.17-1.18, we use Paper via the [paper-nms-maven-plugin](https://github.com/Alvinn8/paper-nms-maven-plugin). To install these versions locally, we must run a few maven commands. These commands should be ran in the root directory of the project.
 ```
-wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
-java -jar BuildTools.jar --rev 1.17 --remapped --disable-java-check
-java -jar BuildTools.jar --rev 1.17.1 --remapped --disable-java-check
-java -jar BuildTools.jar --rev 1.18 --remapped --disable-java-check
-java -jar BuildTools.jar --rev 1.18.1 --remapped --disable-java-check
-java -jar BuildTools.jar --rev 1.18.2 --remapped --disable-java-check
+mvn paper-nms:init -pl nms/1_17_0
+mvn paper-nms:init -pl nms/1_17_1
+mvn paper-nms:init -pl nms/1_18_0
+mvn paper-nms:init -pl nms/1_18_1
+mvn paper-nms:init -pl nms/1_18_2
 ```
 
 Your environment is now set up correctly. To create a build, run the following inside the root folder of the project.
