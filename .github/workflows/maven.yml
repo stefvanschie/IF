@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     name: 'Build'
     steps:
-    - name: Cache Paperclip Jars
+    - name: Cache Paper(clip) jars
       id: cache-paperclip-jars
       uses: actions/cache@v2
       with:
@@ -24,9 +24,8 @@ jobs:
           build
           paperclip
           ~/.m2/repository/io/papermc/paper
-          ~/.m2/repository/org/spigotmc
         key: ${{ runner.os }}-${{ secrets.CACHE_VERSION }}-paperclip
-    - name: Download Paperclip Jars
+    - name: Download Paperclip jars
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       run: |
         mkdir -p paperclip
@@ -39,7 +38,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Generate 1.14 - 1.16 Paper Jars
+    - name: Generate 1.14 - 1.16 Paper jars
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       run: |
         cd paperclip/
@@ -49,7 +48,7 @@ jobs:
         java -jar paper-1.16.3.jar
         java -jar paper-1.16.4.jar
         cd ../
-    - name: Install 1.14 - 1.16 Paper Jars
+    - name: Install 1.14 - 1.16 Paper jars
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       run: |
         cd paperclip/
@@ -59,33 +58,18 @@ jobs:
         mvn install:install-file -Dfile=cache/patched_1.16.3.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.3-R0.1-SNAPSHOT" -Dpackaging="jar"
         mvn install:install-file -Dfile=cache/patched_1.16.4.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.4-R0.1-SNAPSHOT" -Dpackaging="jar"
         cd ../
-    - name: Set up JDK 16
-      uses: actions/setup-java@v1
-      with:
-        java-version: 16
-    - name: Run BuildTools 1.17
-      if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
-      run: |
-        mkdir -p build
-        cd build/
-        wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
-        java -jar BuildTools.jar --rev 1.17 --remapped --disable-java-check
-        java -jar BuildTools.jar --rev 1.17.1 --remapped --disable-java-check
-        cd ../
     - name: Set up JDK 17
       uses: actions/setup-java@v1
       with:
         java-version: 17
-    - name: Run BuildTools 1.18
+    - name: Run paper-nms init
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       run: |
-        mkdir -p build
-        cd build/
-        wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
-        java -jar BuildTools.jar --rev 1.18 --remapped --disable-java-check
-        java -jar BuildTools.jar --rev 1.18.1 --remapped --disable-java-check
-        java -jar BuildTools.jar --rev 1.18.2 --remapped --disable-java-check
-        cd ../
+        mvn paper-nms:init -pl nms/1_17_0
+        mvn paper-nms:init -pl nms/1_17_1
+        mvn paper-nms:init -pl nms/1_18_0
+        mvn paper-nms:init -pl nms/1_18_1
+        mvn paper-nms:init -pl nms/1_18_2
     - uses: actions/checkout@v2
       name: Checkout code
     - name: Build with Maven
