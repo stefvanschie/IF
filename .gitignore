@@ -7,3 +7,4 @@ IF-Test
 *.txt
 dependency-reduced-pom.xml
 *.log
+.paper-nms
