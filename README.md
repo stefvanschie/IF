@@ -73,11 +73,7 @@ shadowJar {
 ```
 
 ## Dependency via plugin.yml
-You can also specify your dependency directly in your plugin.yml. Please note that this downloads the dependency on the server, which means that you can only use the plugin on a server with an internet connection.
-```yaml
-libraries:
-    - com.github.stefvanschie.inventoryframework:IF:0.10.5
-```
+IF does **not** support declaring the dependency via the libraries section in the plugin.yml. Please make use of a build tool as described above to use IF as a dependency.
 
 ## Building from source
 If you want to build this project from source, run the following:
