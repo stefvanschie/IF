@@ -61,6 +61,8 @@ public class CycleButton extends Pane {
             return false;
         }
 
+        int previousPosition = position;
+
         position++;
 
         if (position == panes.size()) {
@@ -69,7 +71,8 @@ public class CycleButton extends Pane {
 
         callOnClick(event);
 
-        Pane pane = panes.get(position);
+        //use the previous position, since that will have the pane we clicked on
+        Pane pane = panes.get(previousPosition);
         pane.click(gui, inventoryComponent, event, slot, paneOffsetX + x, paneOffsetY + y,
             length, height);
 
