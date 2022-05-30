@@ -392,6 +392,12 @@ public abstract class Pane {
                             .asItemDisplayName(itemMeta);
 
                     itemStack.setItemMeta(itemMeta);
+                } else if (nodeName.equals("modeldata")) {
+                    ItemMeta itemMeta = Objects.requireNonNull(itemStack.getItemMeta());
+
+                    itemMeta.setCustomModelData(Integer.parseInt(item.getTextContent()));
+
+                    itemStack.setItemMeta(itemMeta);
                 } else if (nodeName.equals("skull") && itemStack.getItemMeta() instanceof SkullMeta) {
                     SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
 
