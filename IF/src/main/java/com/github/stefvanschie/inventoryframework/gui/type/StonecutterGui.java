@@ -111,7 +111,9 @@ public class StonecutterGui extends NamedGui implements InventoryBased {
             humanEntity.openInventory(getInventory());
 
             stonecutterInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
-        }
+        } else
+            stonecutterInventory.sendItems((Player) humanEntity, getTopItems());
+
     }
 
     @NotNull

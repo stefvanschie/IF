@@ -110,7 +110,8 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
             humanEntity.openInventory(getInventory());
 
             grindstoneInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
-        }
+        } else
+            grindstoneInventory.sendItems((Player) humanEntity, getTopItems(), humanEntity.getItemOnCursor());
     }
 
     @NotNull

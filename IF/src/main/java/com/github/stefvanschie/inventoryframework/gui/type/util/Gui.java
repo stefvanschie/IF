@@ -155,11 +155,22 @@ public abstract class Gui {
     }
 
     /**
+     * Used internally for guis updates,
+     * allows to update the content of the gui by choosing or not to reopen it
+     *
+     * @param humanEntity the human entity to show the gui to
+     * @param reopen should the inventory be reopened
+     */
+    protected abstract void show(@NotNull HumanEntity humanEntity, boolean reopen);
+
+    /**
      * Shows a gui to a player
      *
      * @param humanEntity the human entity to show the gui to
      */
-    public abstract void show(@NotNull HumanEntity humanEntity);
+    public void show(@NotNull HumanEntity humanEntity) {
+        show(humanEntity, true);
+    }
 
     /**
      * Makes a copy of this gui and returns it. This makes a deep copy of the gui. This entails that the underlying
@@ -220,7 +231,7 @@ public abstract class Gui {
         updating = true;
 
         for (HumanEntity viewer : getViewers()) {
-            show(viewer);
+            show(viewer, false);
         }
 
         if (!updating)

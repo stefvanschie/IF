@@ -120,7 +120,8 @@ public class CartographyTableGui extends NamedGui implements InventoryBased {
             humanEntity.openInventory(getInventory());
 
             cartographyTableInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
-        }
+        } else
+            cartographyTableInventory.sendItems((Player) humanEntity, getTopItems());
     }
 
     @NotNull

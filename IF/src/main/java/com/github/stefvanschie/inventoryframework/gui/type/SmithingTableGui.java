@@ -118,7 +118,8 @@ public class SmithingTableGui extends NamedGui implements InventoryBased {
             humanEntity.openInventory(getInventory());
 
             smithingTableInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
-        }
+        } else
+            smithingTableInventory.sendItems((Player) humanEntity, getTopItems(), humanEntity.getItemOnCursor());
     }
 
     @NotNull

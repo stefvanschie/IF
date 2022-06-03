@@ -89,12 +89,8 @@ public class CraftingTableGui extends NamedGui implements InventoryBased {
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
 
-        if (reopen) {
-            //also let Bukkit know that we opened an inventory
+        if (reopen)
             humanEntity.openInventory(getInventory());
-
-            humanEntity.openInventory(getInventory());
-        }
     }
 
     @NotNull

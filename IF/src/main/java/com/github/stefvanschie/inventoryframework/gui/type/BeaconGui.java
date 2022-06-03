@@ -56,7 +56,7 @@ public class BeaconGui extends Gui implements InventoryBased {
         this);
 
     @Override
-    public void show(@NotNull HumanEntity humanEntity) {
+    protected void show(@NotNull HumanEntity humanEntity, boolean reopen) {
         if (!(humanEntity instanceof Player)) {
             throw new IllegalArgumentException("Beacons can only be opened by players");
         }
@@ -75,7 +75,8 @@ public class BeaconGui extends Gui implements InventoryBased {
         //also let Bukkit know that we opened an inventory
         humanEntity.openInventory(getInventory());
 
-        beaconInventory.openInventory((Player) humanEntity, getPaymentItemComponent().getItem(0, 0));
+        if (reopen)
+            beaconInventory.openInventory((Player) humanEntity, getPaymentItemComponent().getItem(0, 0));
     }
 
     @NotNull

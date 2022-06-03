@@ -74,20 +74,8 @@ public abstract class NamedGui extends Gui {
     }
 
     /**
-     * Shows a gui to a player by deciding whether or not to reopen it
-     *
-     * @param humanEntity the human entity to show the gui to
-     * @param reopen should the inventory be reopened
-     */
-    protected abstract void show(@NotNull HumanEntity humanEntity, boolean reopen);
-
-    @Override
-    public void show(@NotNull HumanEntity humanEntity) {
-        show(humanEntity, true);
-    }
-
-    /**
-     * Update the gui for everyone
+     * Update the gui for everyone if the inventory is considered dirty (the name has changed)
+     * then it will be reopened, otherwise its content will simply be updated
      *
      */
     public void update() {

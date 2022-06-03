@@ -128,7 +128,8 @@ public class AnvilGui extends NamedGui implements InventoryBased {
             anvilInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
 
             this.viewers.add(humanEntity);
-        }
+        } else
+            anvilInventory.sendItems((Player) humanEntity, getTopItems());
     }
 
     @NotNull
