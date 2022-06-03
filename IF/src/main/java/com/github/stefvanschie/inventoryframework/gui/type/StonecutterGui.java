@@ -84,7 +84,7 @@ public class StonecutterGui extends NamedGui implements InventoryBased {
     }
 
     @Override
-    public void show(@NotNull HumanEntity humanEntity) {
+    protected void show(@NotNull HumanEntity humanEntity, boolean reopen) {
         if (!(humanEntity instanceof Player)) {
             throw new IllegalArgumentException("Enchanting tables can only be opened by players");
         }
@@ -106,10 +106,12 @@ public class StonecutterGui extends NamedGui implements InventoryBased {
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
 
-        //also let Bukkit know that we opened an inventory
-        humanEntity.openInventory(getInventory());
+        if (reopen) {
+            //also let Bukkit know that we opened an inventory
+            humanEntity.openInventory(getInventory());
 
-        stonecutterInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
+            stonecutterInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
+        }
     }
 
     @NotNull

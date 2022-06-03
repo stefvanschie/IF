@@ -2,6 +2,9 @@ package com.github.stefvanschie.inventoryframework.gui.type.util;
 
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
+import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -68,6 +71,46 @@ public abstract class NamedGui extends Gui {
     @Contract(pure = true)
     public String getTitle() {
         return title.asLegacyString();
+    }
+
+    /**
+     * Shows a gui to a player by deciding whether or not to reopen it
+     *
+     * @param humanEntity the human entity to show the gui to
+     * @param reopen should the inventory be reopened
+     */
+    protected abstract void show(@NotNull HumanEntity humanEntity, boolean reopen);
+
+    @Override
+    public void show(@NotNull HumanEntity humanEntity) {
+        show(humanEntity, true);
+    }
+
+    /**
+     * Update the gui for everyone
+     *
+     */
+    public void update() {
+        updating = true;
+
+        for (HumanEntity viewer : getViewers()) {
+            if (dirty) {
+                ItemStack cursor = viewer.getItemOnCursor();
+
+                viewer.setItemOnCursor(new ItemStack(Material.AIR));
+
+                show(viewer, true);
+
+                viewer.setItemOnCursor(cursor);
+            } else {
+                show(viewer, false);
+            }
+        }
+
+        if (!updating)
+            throw new AssertionError("Gui#isUpdating became false before Gui#update finished");
+
+        updating = false;
     }
 
     /**

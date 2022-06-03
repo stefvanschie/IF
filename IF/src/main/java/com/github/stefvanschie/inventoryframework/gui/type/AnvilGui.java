@@ -97,7 +97,7 @@ public class AnvilGui extends NamedGui implements InventoryBased {
     }
 
     @Override
-    public void show(@NotNull HumanEntity humanEntity) {
+    protected void show(@NotNull HumanEntity humanEntity, boolean reopen) {
         if (!(humanEntity instanceof Player)) {
             throw new IllegalArgumentException("Anvils can only be opened by players");
         }
@@ -121,12 +121,14 @@ public class AnvilGui extends NamedGui implements InventoryBased {
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
 
-        //also let Bukkit know that we opened an inventory
-        humanEntity.openInventory(getInventory());
+        if (reopen) {
+            //also let Bukkit know that we opened an inventory
+            humanEntity.openInventory(getInventory());
 
-        anvilInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
+            anvilInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
 
-        this.viewers.add(humanEntity);
+            this.viewers.add(humanEntity);
+        }
     }
 
     @NotNull

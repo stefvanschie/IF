@@ -113,7 +113,7 @@ public class MerchantGui extends NamedGui {
     }
 
     @Override
-    public void show(@NotNull HumanEntity humanEntity) {
+    protected void show(@NotNull HumanEntity humanEntity, boolean reopen) {
         if (!(humanEntity instanceof Player)) {
             throw new IllegalArgumentException("Merchants can only be opened by players");
         }

@@ -8,14 +8,12 @@ import com.github.stefvanschie.inventoryframework.pane.*;
 import com.github.stefvanschie.inventoryframework.pane.component.*;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -222,12 +220,7 @@ public abstract class Gui {
         updating = true;
 
         for (HumanEntity viewer : getViewers()) {
-            ItemStack cursor = viewer.getItemOnCursor();
-            viewer.setItemOnCursor(new ItemStack(Material.AIR));
-
             show(viewer);
-
-            viewer.setItemOnCursor(cursor);
         }
 
         if (!updating)

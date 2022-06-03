@@ -77,7 +77,7 @@ public class FurnaceGui extends NamedGui implements InventoryBased {
     }
 
     @Override
-    public void show(@NotNull HumanEntity humanEntity) {
+    protected void show(@NotNull HumanEntity humanEntity, boolean reopen) {
         if (isDirty()) {
             this.inventory = createInventory();
             markChanges();
@@ -96,7 +96,7 @@ public class FurnaceGui extends NamedGui implements InventoryBased {
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
 
-        humanEntity.openInventory(getInventory());
+        if (reopen) humanEntity.openInventory(getInventory());
     }
 
     @NotNull

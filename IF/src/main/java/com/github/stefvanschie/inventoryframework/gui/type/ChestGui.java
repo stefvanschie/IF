@@ -78,7 +78,7 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
     }
 
     @Override
-    public void show(@NotNull HumanEntity humanEntity) {
+    protected void show(@NotNull HumanEntity humanEntity, boolean reopen) {
         if (isDirty() || dirtyRows) {
             this.inventory = createInventory();
             this.dirtyRows = false;
@@ -103,7 +103,7 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
             bottomComponent.placeItems(humanEntity.getInventory(), 0);
         }
 
-        humanEntity.openInventory(getInventory());
+        if (dirtyRows || reopen) humanEntity.openInventory(getInventory());
     }
 
     @NotNull

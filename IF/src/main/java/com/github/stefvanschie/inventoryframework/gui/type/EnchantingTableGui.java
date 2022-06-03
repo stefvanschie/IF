@@ -77,7 +77,7 @@ public class EnchantingTableGui extends NamedGui implements InventoryBased {
     }
 
     @Override
-    public void show(@NotNull HumanEntity humanEntity) {
+    protected void show(@NotNull HumanEntity humanEntity, boolean reopen) {
         if (!(humanEntity instanceof Player)) {
             throw new IllegalArgumentException("Enchanting tables can only be opened by players");
         }
@@ -101,7 +101,7 @@ public class EnchantingTableGui extends NamedGui implements InventoryBased {
         //also let Bukkit know that we opened an inventory
         humanEntity.openInventory(getInventory());
 
-        enchantingTableInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
+        if (reopen) enchantingTableInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
     }
 
     @NotNull
