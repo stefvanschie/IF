@@ -81,7 +81,7 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
     public void show(@NotNull HumanEntity humanEntity) {
         if (isDirty() || dirtyRows) {
             this.inventory = createInventory();
-            this.dirtyRows = true;
+            this.dirtyRows = false;
 
             markChanges();
         }
