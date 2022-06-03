@@ -82,7 +82,8 @@ public class DispenserGui extends NamedGui implements InventoryBased {
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
 
-        if (reopen) humanEntity.openInventory(getInventory());
+        if (reopen)
+            humanEntity.openInventory(getInventory());
     }
 
     @NotNull

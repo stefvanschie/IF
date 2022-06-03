@@ -93,8 +93,8 @@ public abstract class NamedGui extends Gui {
     public void update() {
         updating = true;
 
-        for (HumanEntity viewer : getViewers()) {
-            if (dirty) {
+        if (dirty)
+            for (HumanEntity viewer : getViewers()) {
                 ItemStack cursor = viewer.getItemOnCursor();
 
                 viewer.setItemOnCursor(new ItemStack(Material.AIR));
@@ -102,10 +102,10 @@ public abstract class NamedGui extends Gui {
                 show(viewer, true);
 
                 viewer.setItemOnCursor(cursor);
-            } else {
-                show(viewer, false);
             }
-        }
+        else
+            for (HumanEntity viewer : getViewers())
+                show(viewer, false);
 
         if (!updating)
             throw new AssertionError("Gui#isUpdating became false before Gui#update finished");

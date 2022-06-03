@@ -103,7 +103,9 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
             bottomComponent.placeItems(humanEntity.getInventory(), 0);
         }
 
-        if (dirtyRows || reopen) humanEntity.openInventory(getInventory());
+        if (dirtyRows || reopen)
+            humanEntity.openInventory(getInventory());
+
     }
 
     @NotNull

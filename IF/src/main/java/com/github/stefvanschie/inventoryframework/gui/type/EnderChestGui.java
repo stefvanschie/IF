@@ -87,7 +87,8 @@ public class EnderChestGui extends NamedGui implements MergedGui, InventoryBased
             bottomComponent.placeItems(humanEntity.getInventory(), 0);
         }
 
-        if (reopen) humanEntity.openInventory(getInventory());
+        if (reopen)
+            humanEntity.openInventory(getInventory());
     }
 
     @NotNull
