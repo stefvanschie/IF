@@ -72,11 +72,13 @@ public class BeaconGui extends Gui implements InventoryBased {
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
 
-        //also let Bukkit know that we opened an inventory
-        humanEntity.openInventory(getInventory());
+        if (reopen) {
+            //also let Bukkit know that we opened an inventory
+            humanEntity.openInventory(getInventory());
 
-        if (reopen)
             beaconInventory.openInventory((Player) humanEntity, getPaymentItemComponent().getItem(0, 0));
+        } else
+            beaconInventory.sendItem((Player) humanEntity, getPaymentItemComponent().getItem(0, 0));
     }
 
     @NotNull
