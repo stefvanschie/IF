@@ -50,7 +50,7 @@ Replace [YOUR PACKAGE] with the top-level package of your project.
 To add this project as a dependency for your Gradle project, make sure your `dependencies` section of your build.gradle looks like the following:
 ```Groovy
 dependencies {
-    compile 'com.github.stefvanschie.inventoryframework:IF:0.10.6'
+    implementation 'com.github.stefvanschie.inventoryframework:IF:0.10.6'
     // ...
 }
 ```
@@ -63,7 +63,10 @@ repositories {
 ```
 In order to include the project in your own project, you will need to use the `shadowJar` plugin. If you don't have it already, add the following to the top of your file:
 ```Groovy
-apply plugin: 'com.github.johnrengelman.shadow'
+plugins {
+    // ...
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
 ```
 To relocate the project's classes to your own namespace, add the following, with [YOUR PACKAGE] being the top-level package of your project:
 ```Groovy
