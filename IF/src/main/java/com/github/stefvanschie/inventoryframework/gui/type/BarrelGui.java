@@ -1,5 +1,6 @@
 package com.github.stefvanschie.inventoryframework.gui.type;
 
+import com.github.stefvanschie.inventoryframework.HumanEntityCache;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
@@ -82,7 +83,11 @@ public class BarrelGui extends NamedGui implements MergedGui, InventoryBased {
         topComponent.placeItems(getInventory(), 0);
 
         if (bottomComponent.hasItem()) {
-            getHumanEntityCache().storeAndClear(humanEntity);
+            HumanEntityCache humanEntityCache = getHumanEntityCache();
+
+            if (!humanEntityCache.contains(humanEntity)) {
+                humanEntityCache.storeAndClear(humanEntity);
+            }
 
             bottomComponent.placeItems(humanEntity.getInventory(), 0);
         }

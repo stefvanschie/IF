@@ -156,6 +156,17 @@ public class HumanEntityCache {
     }
 
     /**
+     * Checks if the provided human entity appears in the cache, returning true if this is the case.
+     *
+     * @param humanEntity the human entity to check whether it is present in the cache
+     * @return true if the human entity is in the cache, false otherwise
+     * @since 0.10.7
+     */
+    public boolean contains(@NotNull HumanEntity humanEntity) {
+        return this.inventories.containsKey(humanEntity);
+    }
+
+    /**
      * Clear the cache for the specified human entity
      *
      * @param humanEntity the human entity to clear the cache for

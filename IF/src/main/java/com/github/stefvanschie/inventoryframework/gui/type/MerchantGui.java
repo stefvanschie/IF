@@ -1,5 +1,6 @@
 package com.github.stefvanschie.inventoryframework.gui.type;
 
+import com.github.stefvanschie.inventoryframework.HumanEntityCache;
 import com.github.stefvanschie.inventoryframework.abstraction.MerchantInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
@@ -139,7 +140,11 @@ public class MerchantGui extends NamedGui {
         getPlayerInventoryComponent().display();
 
         if (getPlayerInventoryComponent().hasItem()) {
-            getHumanEntityCache().storeAndClear(humanEntity);
+            HumanEntityCache humanEntityCache = getHumanEntityCache();
+
+            if (!humanEntityCache.contains(humanEntity)) {
+                humanEntityCache.storeAndClear(humanEntity);
+            }
 
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
