@@ -147,7 +147,13 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
             throw new IllegalArgumentException("Rows should be between 1 and 6");
         }
 
-        this.inventoryComponent = new InventoryComponent(9, rows + 4);
+        InventoryComponent inventoryComponent = new InventoryComponent(9, rows + 4);
+
+        for (Pane pane : this.inventoryComponent.getPanes()) {
+            inventoryComponent.addPane(pane);
+        }
+
+        this.inventoryComponent = inventoryComponent;
         this.dirtyRows = true;
     }
 
