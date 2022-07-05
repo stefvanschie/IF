@@ -325,22 +325,22 @@ public class GuiListener implements Listener {
                     humanEntity.closeInventory();
                 }
             });
+
+            //delay because merchants put items in slots back in the player inventory
+            Bukkit.getScheduler().runTask(JavaPlugin.getProvidingPlugin(getClass()), () -> {
+                gui.getHumanEntityCache().restoreAndForget(humanEntity);
+
+                if (gui.getViewerCount() == 1) {
+                    activeGuiInstances.remove(gui);
+                }
+
+                if (gui instanceof AnvilGui) {
+                    ((AnvilGui) gui).handleClose(humanEntity);
+                } else if (gui instanceof MerchantGui) {
+                    ((MerchantGui) gui).handleClose(humanEntity);
+                }
+            });
         }
-
-        //delay because merchants put items in slots back in the player inventory
-        Bukkit.getScheduler().runTask(JavaPlugin.getProvidingPlugin(getClass()), () -> {
-            gui.getHumanEntityCache().restoreAndForget(humanEntity);
-
-            if (gui.getViewerCount() == 1) {
-                activeGuiInstances.remove(gui);
-            }
-
-            if (gui instanceof AnvilGui) {
-                ((AnvilGui) gui).handleClose(humanEntity);
-            } else if (gui instanceof MerchantGui) {
-                ((MerchantGui) gui).handleClose(humanEntity);
-            }
-        });
     }
 
     /**
