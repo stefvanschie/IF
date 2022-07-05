@@ -49,11 +49,11 @@ public class ToggleButton extends Pane {
     public ToggleButton(int length, int height) {
         super(length, height);
 
-        this.enabledPane = new OutlinePane(0, 0, length, height);
+        this.enabledPane = new OutlinePane(this.x, this.y, length, height);
         this.enabledPane.addItem(new GuiItem(new ItemStack(Material.GREEN_STAINED_GLASS_PANE)));
         this.enabledPane.setRepeat(true);
 
-        this.disabledPane = new OutlinePane(0, 0, length, height);
+        this.disabledPane = new OutlinePane(this.x, this.y, length, height);
         this.disabledPane.addItem(new GuiItem(new ItemStack(Material.RED_STAINED_GLASS_PANE)));
         this.disabledPane.setRepeat(true);
     }
@@ -80,16 +80,13 @@ public class ToggleButton extends Pane {
     @Override
     public void display(@NotNull InventoryComponent inventoryComponent, int paneOffsetX, int paneOffsetY, int maxLength,
                         int maxHeight) {
-        int newX = paneOffsetX + x;
-        int newY = paneOffsetY + y;
-
         int newMaxLength = Math.min(maxLength, length);
         int newMaxHeight = Math.min(maxHeight, height);
 
         if (enabled) {
-            enabledPane.display(inventoryComponent, newX, newY, newMaxLength, newMaxHeight);
+            this.enabledPane.display(inventoryComponent, paneOffsetX, paneOffsetY, newMaxLength, newMaxHeight);
         } else {
-            disabledPane.display(inventoryComponent, newX, newY, newMaxLength, newMaxHeight);
+            this.disabledPane.display(inventoryComponent, paneOffsetX, paneOffsetY, newMaxLength, newMaxHeight);
         }
     }
 
@@ -144,6 +141,38 @@ public class ToggleButton extends Pane {
         toggleButton.setDisabledItem(disabledPane.getItems().get(0).copy());
 
         return toggleButton;
+    }
+
+    @Override
+    public void setLength(int length) {
+        super.setLength(length);
+
+        this.disabledPane.setLength(length);
+        this.enabledPane.setLength(length);
+    }
+
+    @Override
+    public void setHeight(int height) {
+        super.setHeight(height);
+
+        this.disabledPane.setHeight(height);
+        this.enabledPane.setHeight(height);
+    }
+
+    @Override
+    public void setX(int x) {
+        super.setX(x);
+
+        this.disabledPane.setX(x);
+        this.enabledPane.setX(x);
+    }
+
+    @Override
+    public void setY(int y) {
+        super.setY(y);
+
+        this.disabledPane.setY(y);
+        this.enabledPane.setY(y);
     }
 
     /**
