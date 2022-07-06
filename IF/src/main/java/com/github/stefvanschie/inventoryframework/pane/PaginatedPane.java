@@ -190,6 +190,10 @@ public class PaginatedPane extends Pane {
         }
 
         for (Pane pane : panes) {
+            if (!pane.isVisible()) {
+                continue;
+            }
+
             int newPaneOffsetX = paneOffsetX + getX();
             int newPaneOffsetY = paneOffsetY + getY();
             int newMaxLength = Math.min(length, maxLength);
@@ -221,6 +225,10 @@ public class PaginatedPane extends Pane {
         boolean success = false;
 
         for (Pane pane : new ArrayList<>(this.panes.getOrDefault(page, Collections.emptyList()))) {
+            if (!pane.isVisible()) {
+                continue;
+            }
+
             success = success || pane.click(gui, inventoryComponent, event, slot,paneOffsetX + getX(),
                 paneOffsetY + getY(), length, height);
         }

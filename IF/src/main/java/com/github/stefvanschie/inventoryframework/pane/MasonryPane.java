@@ -64,6 +64,10 @@ public class MasonryPane extends Pane implements Orientable {
         for (int paneIndex = 0; paneIndex < panes.size(); paneIndex++) {
             Pane pane = panes.get(paneIndex);
 
+            if (!pane.isVisible()) {
+                continue;
+            }
+
             if (orientation == Orientation.HORIZONTAL) {
                 outerLoop:
                 for (int y = 0; y < height; y++) {
@@ -165,6 +169,10 @@ public class MasonryPane extends Pane implements Orientable {
         boolean success = false;
 
         for (Pane pane : new ArrayList<>(panes)) {
+            if (!pane.isVisible()) {
+                continue;
+            }
+
             success = success || pane.click(gui, inventoryComponent, event, slot, paneOffsetX + getX(),
                 paneOffsetY + getY(), length, height);
         }
