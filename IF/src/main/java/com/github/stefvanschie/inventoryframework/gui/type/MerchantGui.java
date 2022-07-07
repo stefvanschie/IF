@@ -8,11 +8,13 @@ import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.github.stefvanschie.inventoryframework.util.version.Version;
 import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.TradeSelectEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -35,6 +37,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Represents a gui in the form of a merchant.
@@ -42,6 +45,12 @@ import java.util.Map;
  * @since 0.10.0
  */
 public class MerchantGui extends NamedGui {
+
+    /**
+     * The consumer that will be called once a players selects a trade listed
+     * on the left side of the gui
+     */
+    private Consumer<TradeSelectEvent> onTradeSelect;
 
     /**
      * Represents the inventory component for the input
@@ -110,6 +119,37 @@ public class MerchantGui extends NamedGui {
         super(title);
 
         this.merchant = getTitleHolder().asMerchantTitle();
+    }
+
+    /**
+     * Set the consumer that should be called whenever a trade is selected
+     * in this gui.
+     *
+     * @param onTradeSelect the consumer that gets called
+     */
+    public void setOnTradeSelect(@Nullable Consumer<TradeSelectEvent> onTradeSelect) {
+        this.onTradeSelect = onTradeSelect;
+    }
+
+    /**
+     * Calls the consumer (if it's not null) that was specified using {@link #setOnTradeSelect(Consumer)},
+     * so the consumer that should be called whenever a trade is selected in this gui.
+     * Catches and logs all exceptions the consumer might throw.
+     *
+     * @param event the event to handle
+     */
+    public void callOnTradeSelect(@NotNull TradeSelectEvent event) {
+        callCallback(onTradeSelect, event, "onTradeSelect");
+    }
+
+    @Override
+    protected void initializeOrThrow(@NotNull Object instance, @NotNull Element element) {
+        super.initializeOrThrow(instance, element);
+
+        if (element.hasAttribute("onTradeSelect")) {
+            setOnTradeSelect(XMLUtil.loadOnEventAttribute(instance,
+                    element, TradeSelectEvent.class, "onTradeSelect"));
+        }
     }
 
     @Override
