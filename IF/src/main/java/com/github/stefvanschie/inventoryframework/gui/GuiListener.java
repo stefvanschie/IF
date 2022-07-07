@@ -298,6 +298,22 @@ public class GuiListener implements Listener {
     }
 
     /**
+     * Handles the selection of trades in merchant guis
+     *
+     * @param event the event fired
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onTradeSelect(@NotNull TradeSelectEvent event) {
+        Gui gui = getGui(event.getInventory());
+
+        if (!(gui instanceof MerchantGui)) {
+            return;
+        }
+
+        ((MerchantGui) gui).callOnTradeSelect(event);
+    }
+
+    /**
      * Handles closing in inventories
      *
      * @param event the event fired
