@@ -51,7 +51,7 @@ public class MerchantGui extends NamedGui {
      * The consumer that will be called once a players selects a trade listed
      * on the left side of the gui
      */
-    private Consumer<TradeSelectEvent> onTradeSelect;
+    private Consumer<? super TradeSelectEvent> onTradeSelect;
 
     /**
      * Represents the inventory component for the input
@@ -128,7 +128,7 @@ public class MerchantGui extends NamedGui {
      *
      * @param onTradeSelect the consumer that gets called
      */
-    public void setOnTradeSelect(@Nullable Consumer<TradeSelectEvent> onTradeSelect) {
+    public void setOnTradeSelect(@Nullable Consumer<? super TradeSelectEvent> onTradeSelect) {
         this.onTradeSelect = onTradeSelect;
     }
 
