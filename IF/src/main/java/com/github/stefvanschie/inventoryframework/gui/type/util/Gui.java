@@ -539,7 +539,7 @@ public abstract class Gui {
      * @param callbackName the name of the action, used for logging
      * @param <T> the type of the value the consumer is accepting
      */
-    private <T extends InventoryEvent> void callCallback(@Nullable Consumer<T> callback,
+    protected <T extends InventoryEvent> void callCallback(@Nullable Consumer<T> callback,
             @NotNull T event, @NotNull String callbackName) {
         if (callback == null) {
             return;
