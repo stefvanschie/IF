@@ -217,6 +217,7 @@ public class MerchantGui extends NamedGui {
         gui.setOnBottomClick(this.onBottomClick);
         gui.setOnGlobalClick(this.onGlobalClick);
         gui.setOnOutsideClick(this.onOutsideClick);
+        gui.setOnTradeSelect(this.onTradeSelect);
         gui.setOnClose(this.onClose);
 
         return gui;
