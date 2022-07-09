@@ -218,6 +218,30 @@ public class MerchantGui extends NamedGui {
         gui.inputComponent = inputComponent.copy();
         gui.playerInventoryComponent = playerInventoryComponent.copy();
 
+        gui.experience = experience;
+        gui.level = level;
+
+        for (Map.Entry<MerchantRecipe, Integer> trade : trades) {
+            MerchantRecipe originalRecipe = trade.getKey();
+
+            ItemStack result = originalRecipe.getResult().clone();
+            int uses = originalRecipe.getUses();
+            int maxUses = originalRecipe.getMaxUses();
+            boolean experienceReward = originalRecipe.hasExperienceReward();
+            int villagerExperience = originalRecipe.getVillagerExperience();
+            float priceMultiplier = originalRecipe.getPriceMultiplier();
+
+            MerchantRecipe recipe = new MerchantRecipe(
+                    result, uses, maxUses, experienceReward, villagerExperience, priceMultiplier
+            );
+
+            for (ItemStack ingredient : originalRecipe.getIngredients()) {
+                recipe.addIngredient(ingredient.clone());
+            }
+
+            gui.trades.add(new AbstractMap.SimpleImmutableEntry<>(recipe, trade.getValue()));
+        }
+
         gui.setOnTopClick(this.onTopClick);
         gui.setOnBottomClick(this.onBottomClick);
         gui.setOnGlobalClick(this.onGlobalClick);
