@@ -6,6 +6,8 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.exception.XMLReflectionException;
+import com.github.stefvanschie.inventoryframework.pane.util.Mask;
+import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
 import com.github.stefvanschie.inventoryframework.util.SkullUtil;
 import com.github.stefvanschie.inventoryframework.util.UUIDTagType;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
@@ -638,6 +640,59 @@ public abstract class Pane {
     }
 
     /**
+     * Creates a pane which displays as a border around the outside of the pane consisting of the provided item. The x,
+     * y, length and height parameters are used for the respective properties of the pane. If either the length or
+     * height is negative an {@link IllegalArgumentException} will be thrown.
+     *
+     * @param x the x coordinate of the pane
+     * @param y the y coordinate of the pane
+     * @param length the length of the pane
+     * @param height the height of the pane
+     * @param item the item of which the border is made
+     * @return the created pane which displays a border
+     * @since 0.10.7
+     * @throws IllegalArgumentException if length or height is negative
+     */
+    @NotNull
+    @Contract(pure = true)
+    public static Pane createBorder(int x, int y, int length, int height, @NotNull GuiItem item) {
+        if (length < 0) {
+            throw new IllegalArgumentException("Length should be non-negative");
+        }
+
+        if (height < 0) {
+            throw new IllegalArgumentException("Height should be non-negative");
+        }
+
+        String[] mask = new String[height];
+
+        if (height > 0) {
+            mask[0] = createLine(length);
+        }
+
+        if (height > 1) {
+            mask[height - 1] = createLine(length);
+        }
+
+        for (int yIndex = 1; yIndex < height - 1; yIndex++) {
+            StringBuilder builder = new StringBuilder("1");
+
+            for (int i = 0; i < length - 2; i++) {
+                builder.append('0');
+            }
+
+            mask[yIndex] = builder.append('1').toString();
+        }
+
+        OutlinePane pane = new OutlinePane(x, y, length, height);
+        pane.applyMask(new Mask(mask));
+        pane.addItem(item);
+        pane.setRepeat(true);
+
+        return pane;
+    }
+
+    /**
      * Registers a property that can be used inside an XML file to add additional new properties.
      * The use of {@link Gui#registerProperty(String, Function)} is preferred over this method.
      *
@@ -653,6 +708,31 @@ public abstract class Pane {
         }
     
         PROPERTY_MAPPINGS.put(attributeName, function);
+    }
+
+    /**
+     * Creates a string containing the character '1' repeated length amount of times. If the provided length is negative
+     * an {@link IllegalArgumentException} will be thrown.
+     *
+     * @param length the length of the string
+     * @return the string containing '1's
+     * @since 0.10.7
+     * @throws IllegalArgumentException if length is negative
+     */
+    @NotNull
+    @Contract(pure = true)
+    private static String createLine(int length) {
+        if (length < 0) {
+            throw new IllegalArgumentException("Length should be non-negative");
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            builder.append('1');
+        }
+
+        return builder.toString();
     }
 
     /**
