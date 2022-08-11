@@ -1,4 +1,4 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_19.util;
+package com.github.stefvanschie.inventoryframework.nms.v1_19_0.util;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;

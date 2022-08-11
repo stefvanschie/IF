@@ -1,9 +1,9 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_19;
+package com.github.stefvanschie.inventoryframework.nms.v1_19_1;
 
 import com.github.stefvanschie.inventoryframework.abstraction.AnvilInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_19.util.CustomInventoryUtil;
-import com.github.stefvanschie.inventoryframework.nms.v1_19.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_19_1.util.CustomInventoryUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_19_1.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -30,9 +30,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal anvil inventory for 1.19
+ * Internal anvil inventory for 1.19.1
  *
- * @since 0.10.6
+ * @since 0.10.7
  */
 public class AnvilInventoryImpl extends AnvilInventory {
 
@@ -124,7 +124,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
      *
      * @param player the player to set the cursor
      * @param item the item to set the cursor to
-     * @since 0.10.6
+     * @since 0.10.7
      */
     private void setCursor(@NotNull Player player, @NotNull ItemStack item) {
         ServerPlayer serverPlayer = getServerPlayer(player);
@@ -138,7 +138,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
      *
      * @param player the player to send the result item to
      * @param item the result item
-     * @since 0.10.6
+     * @since 0.10.7
      */
     private void sendResultItem(@NotNull Player player, @NotNull ItemStack item) {
         ServerPlayer serverPlayer = getServerPlayer(player);
@@ -153,7 +153,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
      *
      * @param nmsPlayer the player to get the container id for
      * @return the container id
-     * @since 0.10.6
+     * @since 0.10.7
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -165,7 +165,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
      *
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
-     * @since 0.10.6
+     * @since 0.10.7
      */
     @NotNull
     @Contract(pure = true)
@@ -178,7 +178,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.6
+     * @since 0.10.7
      */
     @NotNull
     @Contract(pure = true)
@@ -189,7 +189,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
     /**
      * A custom container anvil for responding to item renaming
      *
-     * @since 0.10.6
+     * @since 0.10.7
      */
     private class ContainerAnvilImpl extends AnvilMenu {
 
@@ -209,7 +209,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
          * Creates a new custom anvil container for the specified player
          *
          * @param serverPlayer the player for who this anvil container is
-         * @since 0.10.6
+         * @since 0.10.7
          */
         public ContainerAnvilImpl(@NotNull ServerPlayer serverPlayer,
                                   @Nullable org.bukkit.inventory.ItemStack[] items) {

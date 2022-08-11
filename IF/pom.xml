@@ -102,7 +102,13 @@
         </dependency>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
-            <artifactId>1_19</artifactId>
+            <artifactId>1_19_0</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_19_1</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

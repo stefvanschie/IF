@@ -1,4 +1,4 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_19;
+package com.github.stefvanschie.inventoryframework.nms.v1_19_1;
 
 import com.github.stefvanschie.inventoryframework.abstraction.BeaconInventory;
 import net.minecraft.core.NonNullList;
@@ -26,9 +26,9 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 /**
- * Internal beacon inventory for 1.19
+ * Internal beacon inventory for 1.19.1
  *
- * @since 0.10.6
+ * @since 0.10.7
  */
 public class BeaconInventoryImpl extends BeaconInventory {
 
@@ -80,7 +80,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
      *
      * @param nmsPlayer the player to get the container id for
      * @return the container id
-     * @since 0.10.6
+     * @since 0.10.7
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -92,7 +92,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
      *
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
-     * @since 0.10.6
+     * @since 0.10.7
      */
     @NotNull
     @Contract(pure = true)
@@ -105,7 +105,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.6
+     * @since 0.10.7
      */
     @NotNull
     @Contract(pure = true)
@@ -116,7 +116,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
     /**
      * A custom container beacon
      *
-     * @since 0.10.6
+     * @since 0.10.7
      */
     private class ContainerBeaconImpl extends BeaconMenu {
 
