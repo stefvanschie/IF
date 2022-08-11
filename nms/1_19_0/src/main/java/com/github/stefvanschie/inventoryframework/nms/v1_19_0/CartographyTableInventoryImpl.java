@@ -1,9 +1,9 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_19;
+package com.github.stefvanschie.inventoryframework.nms.v1_19_0;
 
-import com.github.stefvanschie.inventoryframework.abstraction.GrindstoneInventory;
+import com.github.stefvanschie.inventoryframework.abstraction.CartographyTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_19.util.CustomInventoryUtil;
-import com.github.stefvanschie.inventoryframework.nms.v1_19.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_19_0.util.CustomInventoryUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_19_0.util.TextHolderUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
@@ -12,12 +12,12 @@ import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.Container;
-import net.minecraft.world.inventory.GrindstoneMenu;
+import net.minecraft.world.inventory.CartographyTableMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventoryGrindstone;
+import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventoryCartography;
 import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventoryView;
 import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -29,13 +29,13 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 /**
- * Internal grindstone inventory for 1.19
+ * Internal cartography table inventory for 1.19
  *
  * @since 0.10.6
  */
-public class GrindstoneInventoryImpl extends GrindstoneInventory {
+public class CartographyTableInventoryImpl extends CartographyTableInventory {
 
-    public GrindstoneInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
+    public CartographyTableInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
         super(inventoryHolder);
     }
 
@@ -46,38 +46,35 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
 
         if (itemAmount != 3) {
             throw new IllegalArgumentException(
-                "The amount of items for a grindstone should be 3, but is '" + itemAmount + "'"
+                "The amount of items for a cartography table should be 3, but is '" + itemAmount + "'"
             );
         }
 
         ServerPlayer serverPlayer = getServerPlayer(player);
-        ContainerGrindstoneImpl containerGrindstone = new ContainerGrindstoneImpl(serverPlayer, items);
+        ContainerCartographyTableImpl containerCartographyTable = new ContainerCartographyTableImpl(
+            serverPlayer, items
+        );
 
-        serverPlayer.containerMenu = containerGrindstone;
+        serverPlayer.containerMenu = containerCartographyTable;
 
-        int id = containerGrindstone.containerId;
+        int id = containerCartographyTable.containerId;
         Component message = TextHolderUtil.toComponent(title);
 
-        serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.GRINDSTONE, message));
+        serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.CARTOGRAPHY_TABLE, message));
 
-        sendItems(player, items, player.getItemOnCursor());
+        sendItems(player, items);
     }
 
     @Override
-    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items,
-                          @Nullable org.bukkit.inventory.ItemStack cursor) {
-        if (cursor == null) {
-            throw new IllegalArgumentException("Cursor may not be null on version 1.17.1");
-        }
-
+    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items) {
         NonNullList<ItemStack> nmsItems = CustomInventoryUtil.convertToNMSItems(items);
         ServerPlayer serverPlayer = getServerPlayer(player);
         int containerId = getContainerId(serverPlayer);
         int state = serverPlayer.containerMenu.incrementStateId();
-        ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursor);
+        ItemStack cursor = CraftItemStack.asNMSCopy(player.getItemOnCursor());
         ServerPlayerConnection playerConnection = getPlayerConnection(serverPlayer);
 
-        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, nmsItems, nmsCursor));
+        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, nmsItems, cursor));
     }
 
     @Override
@@ -89,10 +86,10 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
     }
 
     /**
-     * Gets the containerId id for the inventory view the player currently has open
+     * Gets the container id for the inventory view the player currently has open
      *
-     * @param nmsPlayer the player to get the containerId id for
-     * @return the containerId id
+     * @param nmsPlayer the player to get the container id for
+     * @return the container id
      * @since 0.10.6
      */
     @Contract(pure = true)
@@ -127,65 +124,55 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
     }
 
     /**
-     * A custom container grindstone
+     * A custom container cartography table
      *
      * @since 0.10.6
      */
-    private class ContainerGrindstoneImpl extends GrindstoneMenu {
+    private class ContainerCartographyTableImpl extends CartographyTableMenu {
 
         /**
-         * The player for this grindstone container
+         * The player for this cartography table container
          */
         @NotNull
         private final Player player;
 
         /**
-         * The internal bukkit entity for this container grindstone
+         * The internal bukkit entity for this container cartography table
          */
         @Nullable
         private CraftInventoryView bukkitEntity;
 
         /**
-         * Field for accessing the craft inventory field
-         */
-        @NotNull
-        private final Field repairSlotsField;
-
-        /**
          * Field for accessing the result inventory field
          */
         @NotNull
-        private final Field resultSlotsField;
+        private final Field resultContainerField;
 
-        public ContainerGrindstoneImpl(@NotNull ServerPlayer serverPlayer,
-                                       @Nullable org.bukkit.inventory.ItemStack[] items) {
+        public ContainerCartographyTableImpl(@NotNull ServerPlayer serverPlayer,
+                                             @Nullable org.bukkit.inventory.ItemStack[] items) {
             super(serverPlayer.nextContainerCounter(), serverPlayer.getInventory());
 
             this.player = serverPlayer.getBukkitEntity();
 
             try {
                 //noinspection JavaReflectionMemberAccess
-                this.repairSlotsField = GrindstoneMenu.class.getDeclaredField("t"); //repairSlots
-                this.repairSlotsField.setAccessible(true);
-
-                //noinspection JavaReflectionMemberAccess
-                this.resultSlotsField = GrindstoneMenu.class.getDeclaredField("s"); //resultSlots
-                this.resultSlotsField.setAccessible(true);
+                this.resultContainerField = CartographyTableMenu.class.getDeclaredField("u"); //resultContainer
+                this.resultContainerField.setAccessible(true);
             } catch (NoSuchFieldException exception) {
                 throw new RuntimeException(exception);
             }
 
-            getCraftInventory().setItem(0, CraftItemStack.asNMSCopy(items[0]));
-            getCraftInventory().setItem(1, CraftItemStack.asNMSCopy(items[1]));
+            container.setItem(0, CraftItemStack.asNMSCopy(items[0]));
+            container.setItem(1, CraftItemStack.asNMSCopy(items[1]));
 
-            getResultInventory().setItem(2, CraftItemStack.asNMSCopy(items[2]));
+            getResultInventory().setItem(0, CraftItemStack.asNMSCopy(items[2]));
         }
 
         @NotNull
         @Override
         public CraftInventoryView getBukkitView() {
             if (bukkitEntity == null) {
-                CraftInventory inventory = new CraftInventoryGrindstone(getCraftInventory(), getResultInventory()) {
+                CraftInventory inventory = new CraftInventoryCartography(super.container, getResultInventory()) {
                     @NotNull
                     @Contract(pure = true)
                     @Override
@@ -212,36 +199,15 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
         @Override
         public void removed(net.minecraft.world.entity.player.Player nmsPlayer) {}
 
-        /**
-         * Gets the craft inventory
-         *
-         * @return the craft inventory
-         * @since 0.10.6
-         */
         @NotNull
         @Contract(pure = true)
-        private Container getCraftInventory() {
+        private Container getResultInventory() {
             try {
-                return (Container) repairSlotsField.get(this);
+                return (Container) resultContainerField.get(this);
             } catch (IllegalAccessException exception) {
                 throw new RuntimeException(exception);
             }
         }
 
-        /**
-         * Gets the result inventory
-         *
-         * @return the result inventory
-         * @since 0.10.6
-         */
-        @NotNull
-        @Contract(pure = true)
-        private Container getResultInventory() {
-            try {
-                return (Container) resultSlotsField.get(this);
-            } catch (IllegalAccessException exception) {
-                throw new RuntimeException(exception);
-            }
-        }
     }
 }

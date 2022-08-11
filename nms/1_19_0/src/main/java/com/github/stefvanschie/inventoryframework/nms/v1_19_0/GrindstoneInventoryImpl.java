@@ -1,8 +1,9 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_19;
+package com.github.stefvanschie.inventoryframework.nms.v1_19_0;
 
-import com.github.stefvanschie.inventoryframework.abstraction.EnchantingTableInventory;
+import com.github.stefvanschie.inventoryframework.abstraction.GrindstoneInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_19.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_19_0.util.CustomInventoryUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_19_0.util.TextHolderUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
@@ -11,12 +12,12 @@ import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.Container;
-import net.minecraft.world.inventory.EnchantmentMenu;
+import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventoryEnchanting;
+import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventoryGrindstone;
 import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventoryView;
 import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -28,13 +29,13 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 /**
- * Internal enchanting table inventory for 1.19
+ * Internal grindstone inventory for 1.19
  *
  * @since 0.10.6
  */
-public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
+public class GrindstoneInventoryImpl extends GrindstoneInventory {
 
-    public EnchantingTableInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
+    public GrindstoneInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
         super(inventoryHolder);
     }
 
@@ -43,40 +44,40 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
                               @Nullable org.bukkit.inventory.ItemStack[] items) {
         int itemAmount = items.length;
 
-        if (itemAmount != 2) {
+        if (itemAmount != 3) {
             throw new IllegalArgumentException(
-                "The amount of items for an enchanting table should be 2, but is '" + itemAmount + "'"
+                "The amount of items for a grindstone should be 3, but is '" + itemAmount + "'"
             );
         }
 
         ServerPlayer serverPlayer = getServerPlayer(player);
-        ContainerEnchantingTableImpl containerEnchantmentTable = new ContainerEnchantingTableImpl(serverPlayer, items);
+        ContainerGrindstoneImpl containerGrindstone = new ContainerGrindstoneImpl(serverPlayer, items);
 
-        serverPlayer.containerMenu = containerEnchantmentTable;
+        serverPlayer.containerMenu = containerGrindstone;
 
-        int id = containerEnchantmentTable.containerId;
+        int id = containerGrindstone.containerId;
         Component message = TextHolderUtil.toComponent(title);
 
-        serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.ENCHANTMENT, message));
+        serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.GRINDSTONE, message));
 
-        sendItems(player, items);
+        sendItems(player, items, player.getItemOnCursor());
     }
 
     @Override
-    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items) {
-        NonNullList<ItemStack> nmsItems = NonNullList.of(
-            ItemStack.EMPTY,
-            CraftItemStack.asNMSCopy(items[0]),
-            CraftItemStack.asNMSCopy(items[1])
-        );
+    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items,
+                          @Nullable org.bukkit.inventory.ItemStack cursor) {
+        if (cursor == null) {
+            throw new IllegalArgumentException("Cursor may not be null on version 1.17.1");
+        }
 
+        NonNullList<ItemStack> nmsItems = CustomInventoryUtil.convertToNMSItems(items);
         ServerPlayer serverPlayer = getServerPlayer(player);
         int containerId = getContainerId(serverPlayer);
         int state = serverPlayer.containerMenu.incrementStateId();
-        ItemStack cursor = CraftItemStack.asNMSCopy(player.getItemOnCursor());
+        ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursor);
         ServerPlayerConnection playerConnection = getPlayerConnection(serverPlayer);
 
-        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, nmsItems, cursor));
+        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, nmsItems, nmsCursor));
     }
 
     @Override
@@ -126,72 +127,74 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
     }
 
     /**
-     * A custom container enchanting table
+     * A custom container grindstone
      *
      * @since 0.10.6
      */
-    private class ContainerEnchantingTableImpl extends EnchantmentMenu {
+    private class ContainerGrindstoneImpl extends GrindstoneMenu {
 
         /**
-         * The player for this enchanting table container
+         * The player for this grindstone container
          */
         @NotNull
         private final Player player;
 
         /**
-         * The internal bukkit entity for this container enchanting table
+         * The internal bukkit entity for this container grindstone
          */
         @Nullable
         private CraftInventoryView bukkitEntity;
 
         /**
-         * Field for accessing the enchant slots field
+         * Field for accessing the craft inventory field
          */
         @NotNull
-        private final Field enchantSlotsField;
+        private final Field repairSlotsField;
 
-        public ContainerEnchantingTableImpl(@NotNull ServerPlayer serverPlayer,
-                                            @Nullable org.bukkit.inventory.ItemStack[] items) {
+        /**
+         * Field for accessing the result inventory field
+         */
+        @NotNull
+        private final Field resultSlotsField;
+
+        public ContainerGrindstoneImpl(@NotNull ServerPlayer serverPlayer,
+                                       @Nullable org.bukkit.inventory.ItemStack[] items) {
             super(serverPlayer.nextContainerCounter(), serverPlayer.getInventory());
 
             this.player = serverPlayer.getBukkitEntity();
 
             try {
                 //noinspection JavaReflectionMemberAccess
-                this.enchantSlotsField = EnchantmentMenu.class.getDeclaredField("n"); //enchantSlots
-                this.enchantSlotsField.setAccessible(true);
+                this.repairSlotsField = GrindstoneMenu.class.getDeclaredField("t"); //repairSlots
+                this.repairSlotsField.setAccessible(true);
+
+                //noinspection JavaReflectionMemberAccess
+                this.resultSlotsField = GrindstoneMenu.class.getDeclaredField("s"); //resultSlots
+                this.resultSlotsField.setAccessible(true);
             } catch (NoSuchFieldException exception) {
                 throw new RuntimeException(exception);
             }
 
-            try {
-                Container input = (Container) enchantSlotsField.get(this);
+            getCraftInventory().setItem(0, CraftItemStack.asNMSCopy(items[0]));
+            getCraftInventory().setItem(1, CraftItemStack.asNMSCopy(items[1]));
 
-                input.setItem(0, CraftItemStack.asNMSCopy(items[0]));
-                input.setItem(1, CraftItemStack.asNMSCopy(items[1]));
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
+            getResultInventory().setItem(2, CraftItemStack.asNMSCopy(items[2]));
         }
 
         @NotNull
         @Override
         public CraftInventoryView getBukkitView() {
             if (bukkitEntity == null) {
-                try {
-                    CraftInventory inventory = new CraftInventoryEnchanting((Container) enchantSlotsField.get(this)) {
-                        @NotNull
-                        @Contract(pure = true)
-                        @Override
-                        public InventoryHolder getHolder() {
-                            return inventoryHolder;
-                        }
-                    };
+                CraftInventory inventory = new CraftInventoryGrindstone(getCraftInventory(), getResultInventory()) {
+                    @NotNull
+                    @Contract(pure = true)
+                    @Override
+                    public InventoryHolder getHolder() {
+                        return inventoryHolder;
+                    }
+                };
 
-                    bukkitEntity = new CraftInventoryView(player, inventory, this);
-                } catch (IllegalAccessException exception) {
-                    exception.printStackTrace();
-                }
+                bukkitEntity = new CraftInventoryView(player, inventory, this);
             }
 
             return bukkitEntity;
@@ -209,5 +212,36 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
         @Override
         public void removed(net.minecraft.world.entity.player.Player nmsPlayer) {}
 
+        /**
+         * Gets the craft inventory
+         *
+         * @return the craft inventory
+         * @since 0.10.6
+         */
+        @NotNull
+        @Contract(pure = true)
+        private Container getCraftInventory() {
+            try {
+                return (Container) repairSlotsField.get(this);
+            } catch (IllegalAccessException exception) {
+                throw new RuntimeException(exception);
+            }
+        }
+
+        /**
+         * Gets the result inventory
+         *
+         * @return the result inventory
+         * @since 0.10.6
+         */
+        @NotNull
+        @Contract(pure = true)
+        private Container getResultInventory() {
+            try {
+                return (Container) resultSlotsField.get(this);
+            } catch (IllegalAccessException exception) {
+                throw new RuntimeException(exception);
+            }
+        }
     }
 }
