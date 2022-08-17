@@ -9,6 +9,8 @@ import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -95,9 +97,11 @@ public class PaginatedPane extends Pane {
 	 * This can be helpful when dealing with lists of unknown size.
 	 *
 	 * @param items The list to populate the pane with
+     * @param plugin the plugin that will be the owner of the items created
+     * @see #populateWithItemStacks(List)
+     * @since 0.10.8
 	 */
-	@Contract("null -> fail")
-	public void populateWithItemStacks(@NotNull List<ItemStack> items) {
+	public void populateWithItemStacks(@NotNull List<@NotNull ItemStack> items, @NotNull Plugin plugin) {
 		//Don't do anything if the list is empty
 		if (items.isEmpty()) {
 		    return;
@@ -117,13 +121,22 @@ public class PaginatedPane extends Pane {
 				    break;
                 }
 
-				page.addItem(new GuiItem(items.get(index)));
+				page.addItem(new GuiItem(items.get(index), plugin));
 			}
 
 			this.addPane(i, page);
 		}
 	}
 
+    /**
+     * Populates the PaginatedPane based on the provided list by adding new pages until all items can fit.
+     * This can be helpful when dealing with lists of unknown size.
+     *
+     * @param items The list to populate the pane with
+     */
+    public void populateWithItemStacks(@NotNull List<ItemStack> items) {
+        populateWithItemStacks(items, JavaPlugin.getProvidingPlugin(PaginatedPane.class));
+    }
 
     /**
      * Populates the PaginatedPane based on the provided list by adding new pages until all items can fit.
@@ -166,9 +179,12 @@ public class PaginatedPane extends Pane {
 	 *
 	 * @param displayNames The display names for all the items
 	 * @param material The material to use for the {@link org.bukkit.inventory.ItemStack}s
+     * @param plugin the plugin that will be the owner of the created items
+     * @see #populateWithNames(List, Material)
+     * @since 0.10.8
 	 */
-	@Contract("null, _ -> fail")
-	public void populateWithNames(@NotNull List<String> displayNames, @Nullable Material material) {
+	public void populateWithNames(@NotNull List<String> displayNames, @Nullable Material material,
+                                  @NotNull Plugin plugin) {
 		if(material == null || material == Material.AIR) return;
 
 		populateWithItemStacks(displayNames.stream().map(name -> {
@@ -177,8 +193,20 @@ public class PaginatedPane extends Pane {
 			itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
 			itemStack.setItemMeta(itemMeta);
 			return itemStack;
-		}).collect(Collectors.toList()));
+		}).collect(Collectors.toList()), plugin);
 	}
+
+    /**
+     * This method creates a list of ItemStacks all with the given {@code material} and the display names.
+     * After that it calls {@link #populateWithItemStacks(List)}
+     * This method also translates the color char {@code &} for all names.
+     *
+     * @param displayNames The display names for all the items
+     * @param material The material to use for the {@link org.bukkit.inventory.ItemStack}s
+     */
+    public void populateWithNames(@NotNull List<String> displayNames, @Nullable Material material) {
+        populateWithNames(displayNames, material, JavaPlugin.getProvidingPlugin(PaginatedPane.class));
+    }
 
     @Override
     public void display(@NotNull InventoryComponent inventoryComponent, int paneOffsetX, int paneOffsetY, int maxLength,
@@ -344,10 +372,12 @@ public class PaginatedPane extends Pane {
      *
      * @param instance the instance class
      * @param element the element
+     * @param plugin the plugin that will be used to create the items
      * @return the paginated pane
+     * @since 0.10.8
      */
     @NotNull
-    public static PaginatedPane load(@NotNull Object instance, @NotNull Element element) {
+    public static PaginatedPane load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         try {
             PaginatedPane paginatedPane = new PaginatedPane(
                 Integer.parseInt(element.getAttribute("length")),
@@ -379,7 +409,7 @@ public class PaginatedPane extends Pane {
                         continue;
                     }
 
-					paginatedPane.addPane(pageCount, Gui.loadPane(instance, pane));
+					paginatedPane.addPane(pageCount, Gui.loadPane(instance, pane, plugin));
                 }
 
                 pageCount++;
@@ -389,5 +419,20 @@ public class PaginatedPane extends Pane {
         } catch (NumberFormatException exception) {
             throw new XMLLoadException(exception);
         }
+    }
+
+    /**
+     * Loads a paginated pane from a given element
+     *
+     * @param instance the instance class
+     * @param element the element
+     * @return the paginated pane
+     * @deprecated this method is no longer used internally and has been superseded by
+     *             {@link #load(Object, Element, Plugin)}
+     */
+    @NotNull
+    @Deprecated
+    public static PaginatedPane load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(PaginatedPane.class));
     }
 }

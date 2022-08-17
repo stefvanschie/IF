@@ -8,6 +8,8 @@ import com.github.stefvanschie.inventoryframework.pane.Orientable;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.component.util.VariableBar;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -18,6 +20,47 @@ import org.w3c.dom.Element;
  * @since 0.5.0
  */
 public class Slider extends VariableBar {
+
+    /**
+     * Creates a new slider
+     *
+     * @param x the x coordinate of the slider
+     * @param y the y coordinate of the slier
+     * @param length the length of the slider
+     * @param height the height of the slider
+     * @param priority the priority of the slider
+     * @param plugin the plugin that will be the owner of the slider's items
+     * @since 0.10.8
+     */
+    public Slider(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
+        super(x, y, length, height, priority, plugin);
+    }
+
+    /**
+     * Creates a new slider
+     *
+     * @param x the x coordinate of the slider
+     * @param y the y coordinate of the slier
+     * @param length the length of the slider
+     * @param height the height of the slider
+     * @param plugin the plugin that will be the owner of the slider's items
+     * @since 0.10.8
+     */
+    public Slider(int x, int y, int length, int height, @NotNull Plugin plugin) {
+        super(x, y, length, height, plugin);
+    }
+
+    /**
+     * Creates a new slider
+     *
+     * @param length the length of the slider
+     * @param height the height of the slider
+     * @param plugin the plugin that will be the owner of the slider's items
+     * @since 0.10.8
+     */
+    public Slider(int length, int height, @NotNull Plugin plugin) {
+        super(length, height, plugin);
+    }
 
     public Slider(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
@@ -109,12 +152,14 @@ public class Slider extends VariableBar {
      * Loads a percentage bar from a given element
      *
      * @param instance the instance class
-     * @param element  the element
+     * @param element the element
+     * @param plugin the plugin that will be the owner of the udnerlying items
      * @return the percentage bar
+     * @since 0.10.8
      */
     @NotNull
     @Contract(pure = true)
-    public static Slider load(@NotNull Object instance, @NotNull Element element) {
+    public static Slider load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         int length;
         int height;
 
@@ -125,7 +170,7 @@ public class Slider extends VariableBar {
             throw new XMLLoadException(exception);
         }
 
-        Slider slider = new Slider(length, height);
+        Slider slider = new Slider(length, height, plugin);
 
         Pane.load(slider, instance, element);
         Orientable.load(slider, element);
@@ -144,5 +189,21 @@ public class Slider extends VariableBar {
         }
 
         return slider;
+    }
+
+    /**
+     * Loads a percentage bar from a given element
+     *
+     * @param instance the instance class
+     * @param element the element
+     * @return the percentage bar
+     * @deprecated this method is no longer used internally and has been superseded by
+     *             {@link #load(Object, Element, Plugin)}
+     */
+    @NotNull
+    @Contract(pure = true)
+    @Deprecated
+    public static Slider load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(Slider.class));
     }
 }

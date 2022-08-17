@@ -13,12 +13,12 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Listens to events for {@link Gui}s. Only one instance of this class gets constructed.
@@ -29,10 +29,26 @@ import java.util.*;
 public class GuiListener implements Listener {
 
     /**
+     * The owning plugin of this listener.
+     */
+    @NotNull
+    private final Plugin plugin;
+
+    /**
      * A collection of all {@link Gui} instances that have at least one viewer.
      */
     @NotNull
     private final Set<Gui> activeGuiInstances = new HashSet<>();
+
+    /**
+     * Creates a new listener for all guis for the provided {@code plugin}.
+     *
+     * @param plugin the owning plugin of this listener
+     * @since 0.10.8
+     */
+    public GuiListener(@NotNull Plugin plugin) {
+        this.plugin = plugin;
+    }
 
     /**
      * Handles clicks in inventories
@@ -66,7 +82,7 @@ public class GuiListener implements Listener {
         gui.click(event);
 
         if (event.isCancelled()) {
-            Bukkit.getScheduler().runTask(JavaPlugin.getProvidingPlugin(getClass()), () -> {
+            Bukkit.getScheduler().runTask(this.plugin, () -> {
                 PlayerInventory playerInventory = event.getWhoClicked().getInventory();
 
                 /* due to a client issue off-hand items appear as ghost items, this updates the off-hand correctly
@@ -334,7 +350,7 @@ public class GuiListener implements Listener {
         playerInventory.setItemInOffHand(playerInventory.getItemInOffHand());
 
         if (!gui.isUpdating()) {//this is a hack to remove items correctly when players press the x button in a beacon
-            Bukkit.getScheduler().runTask(JavaPlugin.getProvidingPlugin(getClass()), () -> {
+            Bukkit.getScheduler().runTask(this.plugin, () -> {
                 gui.callOnClose(event);
 
                 if (humanEntity.getOpenInventory().getTopInventory() instanceof PlayerInventory) {
@@ -343,7 +359,7 @@ public class GuiListener implements Listener {
             });
 
             //delay because merchants put items in slots back in the player inventory
-            Bukkit.getScheduler().runTask(JavaPlugin.getProvidingPlugin(getClass()), () -> {
+            Bukkit.getScheduler().runTask(this.plugin, () -> {
                 gui.getHumanEntityCache().restoreAndForget(humanEntity);
 
                 if (gui.getViewerCount() == 1) {
@@ -384,8 +400,7 @@ public class GuiListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPluginDisable(@NotNull PluginDisableEvent event) {
-        Plugin thisPlugin = JavaPlugin.getProvidingPlugin(getClass());
-        if (event.getPlugin() != thisPlugin) {
+        if (event.getPlugin() != this.plugin) {
             return;
         }
 
@@ -400,8 +415,11 @@ public class GuiListener implements Listener {
         }
 
         if (counter == maxCount) {
-			thisPlugin.getLogger().warning("Unable to close GUIs on plugin disable: they keep getting opened "
-					+ "(tried: " + maxCount + " times)");
+            Logger logger = this.plugin.getLogger();
+
+            logger.warning(
+                "Unable to close GUIs on plugin disable: they keep getting opened (tried: " + maxCount + " times)"
+            );
 		}
     }
 

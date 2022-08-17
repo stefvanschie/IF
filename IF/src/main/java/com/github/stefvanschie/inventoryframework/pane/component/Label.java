@@ -8,6 +8,8 @@ import com.github.stefvanschie.inventoryframework.font.util.Font;
 import com.github.stefvanschie.inventoryframework.pane.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -34,6 +36,70 @@ public class Label extends OutlinePane {
     private String text;
 
     /**
+     * The plugin to be sed for creating items
+     */
+    @NotNull
+    private final Plugin plugin;
+
+    /**
+     * Creates a new label
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param length the length
+     * @param height the height
+     * @param priority the priority
+     * @param font the character set
+     * @param plugin the plugin that will be the owner for this label's items
+     * @see #Label(int, int, int, int, Priority, Font)
+     * @since 0.10.8
+     */
+    public Label(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Font font,
+                 @NotNull Plugin plugin) {
+        super(length, height);
+
+        this.x = x;
+        this.y = y;
+
+        this.font = font;
+        this.text = "";
+
+        this.plugin = plugin;
+
+        setPriority(priority);
+    }
+
+    /**
+     * Creates a new label
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param length the length
+     * @param height the height
+     * @param font the character set
+     * @param plugin the plugin that will be the owner for this label's items
+     * @see #Label(int, int, int, int, Font)
+     * @since 0.10.8
+     */
+    public Label(int x, int y, int length, int height, @NotNull Font font, @NotNull Plugin plugin) {
+        this(x, y, length, height, Priority.NORMAL, font, plugin);
+    }
+
+    /**
+     * Creates a new label
+     *
+     * @param length the length
+     * @param height the height
+     * @param font the character set
+     * @param plugin the plugin that will be the owner for this label's items
+     * @see #Label(int, int, Font)
+     * @since 0.10.8
+     */
+    public Label(int length, int height, @NotNull Font font, @NotNull Plugin plugin) {
+        this(0, 0, length, height, font, plugin);
+    }
+
+    /**
      * Creates a new label
      *
      * @param x the x coordinate
@@ -45,9 +111,7 @@ public class Label extends OutlinePane {
      * @since 0.5.0
      */
     public Label(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Font font) {
-        this(x, y, length, height, font);
-
-        setPriority(priority);
+        this(x, y, length, height, priority, font, JavaPlugin.getProvidingPlugin(Label.class));
     }
 
     /**
@@ -61,10 +125,7 @@ public class Label extends OutlinePane {
      * @since 0.5.0
      */
     public Label(int x, int y, int length, int height, @NotNull Font font) {
-        this(length, height, font);
-
-        this.x = x;
-        this.y = y;
+        this(x, y, length, height, Priority.NORMAL, font);
     }
 
     /**
@@ -76,10 +137,7 @@ public class Label extends OutlinePane {
      * @since 0.5.0
      */
     public Label(int length, int height, @NotNull Font font) {
-        super(length, height);
-
-        this.font = font;
-        this.text = "";
+        this(0, 0, length, height, font);
     }
 
     /**
@@ -126,14 +184,14 @@ public class Label extends OutlinePane {
      * @since 0.5.0
      */
     public void setText(@NotNull String text) {
-        setText(text, (character, item) -> new GuiItem(item));
+        setText(text, (character, item) -> new GuiItem(item, this.plugin));
     }
 
     @NotNull
     @Contract(pure = true)
     @Override
     public Label copy() {
-        Label label = new Label(x, y, length, height, getPriority(), font);
+        Label label = new Label(x, y, length, height, getPriority(), font, this.plugin);
 
         for (GuiItem item : getItems()) {
             label.addItem(item.copy());
@@ -193,12 +251,14 @@ public class Label extends OutlinePane {
      * Loads a label from a given element
      *
      * @param instance the instance class
-     * @param element  the element
+     * @param element the element
+     * @param plugin the plugin that will be the owner of the underlying items
      * @return the percentage bar
+     * @since 0.10.8
      */
     @NotNull
     @Contract(pure = true)
-    public static Label load(@NotNull Object instance, @NotNull Element element) {
+    public static Label load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         int length;
         int height;
 
@@ -219,7 +279,7 @@ public class Label extends OutlinePane {
             throw new XMLLoadException("Incorrect font specified for label");
         }
 
-        Label label = new Label(length, height, font);
+        Label label = new Label(length, height, font, plugin);
 
         Pane.load(label, instance, element);
         Orientable.load(label, element);
@@ -235,5 +295,21 @@ public class Label extends OutlinePane {
         }
 
         return label;
+    }
+
+    /**
+     * Loads a label from a given element
+     *
+     * @param instance the instance class
+     * @param element the element
+     * @return the percentage bar
+     * @deprecated this method is no longer used internally and has been superseded by
+     *             {@link #load(Object, Element, Plugin)}
+     */
+    @NotNull
+    @Contract(pure = true)
+    @Deprecated
+    public static Label load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(Label.class));
     }
 }

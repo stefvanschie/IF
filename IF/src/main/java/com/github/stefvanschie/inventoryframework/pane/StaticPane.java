@@ -7,6 +7,8 @@ import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -200,10 +202,13 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	 * Fills all empty space in the pane with the given {@code itemStack} and adds the given action
 	 *
 	 * @param itemStack The {@link ItemStack} to fill the empty space with
-	 * @param action    The action called whenever an interaction with the item happens
-     * @since 0.5.9
+	 * @param action The action called whenever an interaction with the item happens
+     * @param plugin the plugin that will be the owner of the created items
+     * @see #fillWith(ItemStack, Consumer)
+     * @since 0.10.8
 	 */
-	public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<InventoryClickEvent> action) {
+	public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<InventoryClickEvent> action,
+                         @NotNull Plugin plugin) {
 		//The non empty spots
 		Set<Map.Entry<Integer, Integer>> locations = this.items.keySet();
 
@@ -219,11 +224,22 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 				}
 
 				if (!found) {
-					this.addItem(new GuiItem(itemStack, action), x, y);
+					this.addItem(new GuiItem(itemStack, action, plugin), x, y);
 				}
 			}
 		}
 	}
+
+    /**
+     * Fills all empty space in the pane with the given {@code itemStack} and adds the given action
+     *
+     * @param itemStack The {@link ItemStack} to fill the empty space with
+     * @param action The action called whenever an interaction with the item happens
+     * @since 0.5.9
+     */
+    public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<InventoryClickEvent> action) {
+        fillWith(itemStack, action, JavaPlugin.getProvidingPlugin(StaticPane.class));
+    }
 
 	/**
 	 * Fills all empty space in the pane with the given {@code itemStack}
@@ -286,11 +302,13 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	 * Loads an outline pane from a given element
 	 *
 	 * @param instance the instance class
-	 * @param element  the element
+	 * @param element the element
+     * @param plugin the plugin that will be the owner of the udnerlying items
 	 * @return the outline pane
+     * @since 0.10.8
 	 */
 	@NotNull
-	public static StaticPane load(@NotNull Object instance, @NotNull Element element) {
+	public static StaticPane load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
 		try {
 			StaticPane staticPane = new StaticPane(
 				Integer.parseInt(element.getAttribute("length")),
@@ -323,4 +341,19 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 			throw new XMLLoadException(exception);
 		}
 	}
+
+    /**
+     * Loads an outline pane from a given element
+     *
+     * @param instance the instance class
+     * @param element  the element
+     * @return the outline pane
+     * @deprecated this method is no longer used internally and has been superseded by
+     *             {@link #load(Object, Element, Plugin)}
+     */
+    @NotNull
+    @Deprecated
+    public static StaticPane load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(StaticPane.class));
+    }
 }

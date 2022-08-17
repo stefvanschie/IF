@@ -7,7 +7,6 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.exception.XMLReflectionException;
 import com.github.stefvanschie.inventoryframework.pane.util.Mask;
-import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
 import com.github.stefvanschie.inventoryframework.util.SkullUtil;
 import com.github.stefvanschie.inventoryframework.util.UUIDTagType;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
@@ -19,6 +18,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -33,8 +33,6 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The base class for all panes.
@@ -300,11 +298,14 @@ public abstract class Pane {
      *
      * @param instance the instance
      * @param element the element
+     * @param plugin the plugin that will be the owner of the created item
      * @return the gui item
+     * @see #loadItem(Object, Element)
+     * @since 0.10.8
      */
     @NotNull
     @Contract(pure = true)
-    public static GuiItem loadItem(@NotNull Object instance, @NotNull Element element) {
+    public static GuiItem loadItem(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         String id = element.getAttribute("id");
         Material material = Material.matchMaterial(id.toUpperCase(Locale.getDefault()));
 
@@ -483,7 +484,7 @@ public abstract class Pane {
             }
         }
 
-        GuiItem item = new GuiItem(itemStack, action);
+        GuiItem item = new GuiItem(itemStack, action, plugin);
 
         if (element.hasAttribute("field"))
             XMLUtil.loadFieldAttribute(instance, element, item);
@@ -495,6 +496,19 @@ public abstract class Pane {
 		item.setProperties(properties);
 
         return item;
+    }
+
+    /**
+     * Loads an item from an instance and an element
+     *
+     * @param instance the instance
+     * @param element the element
+     * @return the gui item
+     */
+    @NotNull
+    @Contract(pure = true)
+    public static GuiItem loadItem(@NotNull Object instance, @NotNull Element element) {
+        return loadItem(instance, element, JavaPlugin.getProvidingPlugin(Pane.class));
     }
 
     public static void load(@NotNull Pane pane, @NotNull Object instance, @NotNull Element element) {
@@ -552,19 +566,21 @@ public abstract class Pane {
     @Nullable
     @Contract(pure = true)
     protected static <T extends GuiItem> T findMatchingItem(@NotNull Collection<T> items, @NotNull ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return null;
+        for (T guiItem : items) {
+            ItemMeta meta = item.getItemMeta();
+
+            if (meta == null) {
+                return null;
+            }
+
+            UUID uuid = meta.getPersistentDataContainer().get(guiItem.getKey(), UUIDTagType.INSTANCE);
+
+            if (guiItem.getUUID().equals(uuid)) {
+                return guiItem;
+            }
         }
 
-        UUID uuid = meta.getPersistentDataContainer().get(GuiItem.KEY_UUID, UUIDTagType.INSTANCE);
-        if (uuid == null) {
-            return null;
-        }
-
-        return items.stream()
-                .filter(guiItem -> guiItem.getUUID().equals(uuid))
-                .findAny().orElse(null);
+        return null;
     }
 
     /**
@@ -619,7 +635,6 @@ public abstract class Pane {
     /**
      * Calls the consumer (if it's not null) that was specified using {@link #setOnClick(Consumer)},
      * so the consumer that should be called whenever this pane is clicked in.
-     * Catches and logs all exceptions the consumer might throw.
      *
      * @param event the event to handle
      * @since 0.6.0
@@ -632,10 +647,13 @@ public abstract class Pane {
         try {
             onClick.accept(event);
         } catch (Throwable t) {
-            Logger logger = JavaPlugin.getProvidingPlugin(getClass()).getLogger();
-            logger.log(Level.SEVERE, "Exception while handling click event in inventory '"
+            throw new RuntimeException(
+                    "Exception while handling click event in inventory '"
                     + event.getView().getTitle() + "', slot=" + event.getSlot() + ", for "
-                    + getClass().getSimpleName() + ", x=" + x + ", y=" + y + ", length=" + length + ", height=" + height, t);
+                    + getClass().getSimpleName() + ", x=" + x + ", y=" + y
+                    + ", length=" + length + ", height=" + height,
+                    t
+            );
         }
     }
 

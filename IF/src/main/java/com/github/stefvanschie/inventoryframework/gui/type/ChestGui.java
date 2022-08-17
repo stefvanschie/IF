@@ -13,6 +13,8 @@ import com.github.stefvanschie.inventoryframework.pane.Pane;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -58,7 +60,7 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
      * @since 0.8.0
      */
     public ChestGui(int rows, @NotNull String title) {
-        this(rows, StringHolder.of(title));
+        this(rows, StringHolder.of(title), JavaPlugin.getProvidingPlugin(ChestGui.class));
     }
 
     /**
@@ -69,7 +71,33 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
      * @since 0.10.0
      */
     public ChestGui(int rows, @NotNull TextHolder title) {
-        super(title);
+        this(rows, title, JavaPlugin.getProvidingPlugin(ChestGui.class));
+    }
+
+    /**
+     * Constructs a new chest gui for the given {@code plugin}.
+     *
+     * @param rows the amount of rows this gui should contain, in range 1..6.
+     * @param title the title/name of this gui.
+     * @param plugin the owning plugin of this gui
+     * @see #ChestGui(int, String)
+     * @since 0.10.8
+     */
+    public ChestGui(int rows, @NotNull String title, @NotNull Plugin plugin) {
+        this(rows, StringHolder.of(title), plugin);
+    }
+
+    /**
+     * Constructs a new chest gui for the given {@code plugin}.
+     *
+     * @param rows the amount of rows this gui should contain, in range 1..6.
+     * @param title the title/name of this gui.
+     * @param plugin the owning plugin of this gui
+     * @see #ChestGui(int, TextHolder)
+     * @since 0.10.8
+     */
+    public ChestGui(int rows, @NotNull TextHolder title, @NotNull Plugin plugin) {
+        super(title, plugin);
 
         if (!(rows >= 1 && rows <= 6)) {
             throw new IllegalArgumentException("Rows should be between 1 and 6");
@@ -115,7 +143,7 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
     @Contract(pure = true)
     @Override
     public ChestGui copy() {
-        ChestGui gui = new ChestGui(getRows(), getTitleHolder());
+        ChestGui gui = new ChestGui(getRows(), getTitleHolder(), super.plugin);
 
         gui.inventoryComponent = inventoryComponent.copy();
 
@@ -234,19 +262,21 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
      *
      * @param instance the instance on which to reference fields and methods
      * @param inputStream the input stream containing the XML data
+     * @param plugin the plugin that will be the owner of the created gui
      * @return the loaded chest gui
-     * @since 0.8.0
+     * @see #load(Object, InputStream)
+     * @since 0.10.8
      */
     @Nullable
     @Contract(pure = true)
-    public static ChestGui load(@NotNull Object instance, @NotNull InputStream inputStream) {
+    public static ChestGui load(@NotNull Object instance, @NotNull InputStream inputStream, @NotNull Plugin plugin) {
         try {
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
             Element documentElement = document.getDocumentElement();
 
             documentElement.normalize();
 
-            return load(instance, documentElement);
+            return load(instance, documentElement, plugin);
         } catch (SAXException | ParserConfigurationException | IOException e) {
             e.printStackTrace();
             return null;
@@ -258,11 +288,13 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
      *
      * @param instance the instance on which to reference fields and methods
      * @param element the element to load the gui from
+     * @param plugin the plugin that will be the owner of the created gui
      * @return the loaded chest gui
-     * @since 0.8.0
+     * @see #load(Object, Element)
+     * @since 0.10.8
      */
     @NotNull
-    public static ChestGui load(@NotNull Object instance, @NotNull Element element) {
+    public static ChestGui load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         if (!element.hasAttribute("title")) {
             throw new XMLLoadException("Provided XML element's gui tag doesn't have the mandatory title attribute set");
         }
@@ -279,7 +311,7 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
             throw new XMLLoadException("Rows attribute is not an integer", exception);
         }
 
-        ChestGui chestGui = new ChestGui(rows, element.getAttribute("title"));
+        ChestGui chestGui = new ChestGui(rows, element.getAttribute("title"), plugin);
         chestGui.initializeOrThrow(instance, element);
 
         if (element.hasAttribute("populate")) {
@@ -308,5 +340,32 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
         }
 
         return chestGui;
+    }
+
+    /**
+     * Loads a chest gui from an XML file.
+     *
+     * @param instance the instance on which to reference fields and methods
+     * @param inputStream the input stream containing the XML data
+     * @return the loaded chest gui
+     * @since 0.8.0
+     */
+    @Nullable
+    @Contract(pure = true)
+    public static ChestGui load(@NotNull Object instance, @NotNull InputStream inputStream) {
+        return load(instance, inputStream, JavaPlugin.getProvidingPlugin(ChestGui.class));
+    }
+
+    /**
+     * Loads a chest gui from the specified element, applying code references to the provided instance.
+     *
+     * @param instance the instance on which to reference fields and methods
+     * @param element the element to load the gui from
+     * @return the loaded chest gui
+     * @since 0.8.0
+     */
+    @NotNull
+    public static ChestGui load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(ChestGui.class));
     }
 }

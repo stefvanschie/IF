@@ -8,6 +8,8 @@ import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -339,11 +341,13 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
      * Loads a pattern pane from a given element
      *
      * @param instance the instance class
-     * @param element  the element
+     * @param element the element
+     * @param plugin the plugin that will own the underlying items
      * @return the pattern pane
+     * @since 0.10.8
      */
     @NotNull
-    public static PatternPane load(@NotNull Object instance, @NotNull Element element) {
+    public static PatternPane load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         try {
             NodeList childNodes = element.getChildNodes();
 
@@ -421,5 +425,20 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
         } catch (NumberFormatException exception) {
             throw new XMLLoadException(exception);
         }
+    }
+
+    /**
+     * Loads a pattern pane from a given element
+     *
+     * @param instance the instance class
+     * @param element the element
+     * @return the pattern pane
+     * @deprecated this method is no longer used internally and has been superseded by
+     *             {@link #load(Object, Element, Plugin)}
+     */
+    @NotNull
+    @Deprecated
+    public static PatternPane load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(PatternPane.class));
     }
 }

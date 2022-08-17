@@ -9,6 +9,8 @@ import com.github.stefvanschie.inventoryframework.pane.Pane;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -32,22 +34,31 @@ public class ToggleButton extends Pane {
     /**
      * Whether the button is enabled or disabled
      */
-    private boolean enabled = false;
+    private boolean enabled;
 
-    public ToggleButton(int x, int y, int length, int height, @NotNull Priority priority) {
-        this(x, y, length, height);
+    /**
+     * Creates a new toggle button
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param length the length
+     * @param height the height
+     * @param priority the priority
+     * @param enabled whether the button should start in its enabled or disabled state
+     * @param plugin the plugin that will be the owner of this button's items
+     * @see #ToggleButton(int, int, int, int, Priority, boolean)
+     * @since 0.10.8
+     */
+    public ToggleButton(int x, int y, int length, int height, @NotNull Priority priority, boolean enabled,
+                        @NotNull Plugin plugin) {
+        super(length, height);
+
+        setX(x);
+        setY(y);
 
         setPriority(priority);
-    }
-
-    public ToggleButton(int x, int y, int length, int height, @NotNull Priority priority, boolean enabled) {
-        this(x, y, length, height, priority);
 
         this.enabled = enabled;
-    }
-
-    public ToggleButton(int length, int height) {
-        super(length, height);
 
         this.enabledPane = new OutlinePane(this.x, this.y, length, height);
         this.enabledPane.addItem(new GuiItem(new ItemStack(Material.GREEN_STAINED_GLASS_PANE)));
@@ -58,23 +69,102 @@ public class ToggleButton extends Pane {
         this.disabledPane.setRepeat(true);
     }
 
-    public ToggleButton(int length, int height, boolean enabled) {
-        this(length, height);
-
-        this.enabled = enabled;
+    /**
+     * Creates a new toggle button
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param length the length
+     * @param height the height
+     * @param priority the priority
+     * @param plugin the plugin that will be the owner of this button's items
+     * @see #ToggleButton(int, int, int, int, Priority)
+     * @since 0.10.8
+     */
+    public ToggleButton(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
+        this(x, y, length, height, priority, false);
     }
 
-    public ToggleButton(int x, int y, int length, int height) {
-        this(length, height);
+    /**
+     * Creates a new toggle button
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param length the length
+     * @param height the height
+     * @param enabled whether the button should start in its enabled or disabled state
+     * @param plugin the plugin that will be the owner of this button's items
+     * @see #ToggleButton(int, int, int, int, boolean)
+     * @since 0.10.8
+     */
+    public ToggleButton(int x, int y, int length, int height, boolean enabled, @NotNull Plugin plugin) {
+        this(x, y, length, height, Priority.NORMAL, enabled);
+    }
 
-        setX(x);
-        setY(y);
+    /**
+     * Creates a new toggle button
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param length the length
+     * @param height the height
+     * @param plugin the plugin that will be the owner of this button's items
+     * @see #ToggleButton(int, int, int, int)
+     * @since 0.10.8
+     */
+    public ToggleButton(int x, int y, int length, int height, @NotNull Plugin plugin) {
+        this(x, y, length, height, false);
+    }
+
+    /**
+     * Creates a new toggle button
+     *
+     * @param length the length
+     * @param height the height
+     * @param enabled whether the button should start in its enabled or disabled state
+     * @param plugin the plugin that will be the owner of this button's items
+     * @see #ToggleButton(int, int, boolean)
+     * @since 0.10.8
+     */
+    public ToggleButton(int length, int height, boolean enabled, @NotNull Plugin plugin) {
+        this(0, 0, length, height, enabled);
+    }
+
+    /**
+     * Creates a new toggle button
+     *
+     * @param length the length
+     * @param height the height
+     * @param plugin the plugin that will be the owner of this button's items
+     * @see #ToggleButton(int, int)
+     * @since 0.10.8
+     */
+    public ToggleButton(int length, int height, @NotNull Plugin plugin) {
+        this(length, height, false);
+    }
+
+    public ToggleButton(int x, int y, int length, int height, @NotNull Priority priority, boolean enabled) {
+        this(x, y, length, height, priority, enabled, JavaPlugin.getProvidingPlugin(ToggleButton.class));
+    }
+
+    public ToggleButton(int x, int y, int length, int height, @NotNull Priority priority) {
+        this(x, y, length, height, priority, false);
     }
 
     public ToggleButton(int x, int y, int length, int height, boolean enabled) {
-        this(x, y, length, height);
+        this(x, y, length, height, Priority.NORMAL, enabled);
+    }
 
-        this.enabled = enabled;
+    public ToggleButton(int x, int y, int length, int height) {
+        this(x, y, length, height, false);
+    }
+
+    public ToggleButton(int length, int height, boolean enabled) {
+        this(0, 0, length, height, enabled);
+    }
+
+    public ToggleButton(int length, int height) {
+        this(length, height, false);
     }
 
     @Override
@@ -239,12 +329,13 @@ public class ToggleButton extends Pane {
      *
      * @param instance the instance class
      * @param element the element
+     * @param plugin the plugin that will be the owner of the underlying items
      * @return the toggle button
-     * @since 0.5.0
+     * @since 0.10.8
      */
     @NotNull
     @Contract(pure = true)
-    public static ToggleButton load(@NotNull Object instance, @NotNull Element element) {
+    public static ToggleButton load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         int length, height;
 
         try {
@@ -255,10 +346,27 @@ public class ToggleButton extends Pane {
         }
 
         boolean enabled = element.hasAttribute("enabled") && Boolean.parseBoolean(element.getAttribute("enabled"));
-        ToggleButton toggleButton = new ToggleButton(length, height, enabled);
+        ToggleButton toggleButton = new ToggleButton(length, height, enabled, plugin);
 
         Pane.load(toggleButton, instance, element);
 
         return toggleButton;
+    }
+
+    /**
+     * Loads a toggle button from an XML element
+     *
+     * @param instance the instance class
+     * @param element the element
+     * @return the toggle button
+     * @since 0.5.0
+     * @deprecated this method is no longer used internally and has been superseded by
+     *             {@link #load(Object, Element, Plugin)}
+     */
+    @NotNull
+    @Contract(pure = true)
+    @Deprecated
+    public static ToggleButton load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(ToggleButton.class));
     }
 }

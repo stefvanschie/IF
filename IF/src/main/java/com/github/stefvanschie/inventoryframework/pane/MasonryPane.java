@@ -5,6 +5,8 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -249,10 +251,12 @@ public class MasonryPane extends Pane implements Orientable {
      *
      * @param instance the instance class
      * @param element the element
+     * @param plugin the plugin that will be the owner of the created items
      * @return the masonry pane
+     * @since 0.10.8
      */
     @NotNull
-    public static MasonryPane load(@NotNull Object instance, @NotNull Element element) {
+    public static MasonryPane load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         try {
             MasonryPane masonryPane = new MasonryPane(
                 Integer.parseInt(element.getAttribute("length")),
@@ -275,12 +279,27 @@ public class MasonryPane extends Pane implements Orientable {
                     continue;
                 }
 
-                masonryPane.addPane(Gui.loadPane(instance, pane));
+                masonryPane.addPane(Gui.loadPane(instance, pane, plugin));
             }
 
             return masonryPane;
         } catch (NumberFormatException exception) {
             throw new XMLLoadException(exception);
         }
+    }
+
+    /**
+     * Loads a masonry pane from a given element
+     *
+     * @param instance the instance class
+     * @param element the element
+     * @return the masonry pane
+     * @deprecated this method is no longer used internally and has been superseded by
+     *             {@link #load(Object, Element, Plugin)}
+     */
+    @NotNull
+    @Deprecated
+    public static MasonryPane load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(MasonryPane.class));
     }
 }

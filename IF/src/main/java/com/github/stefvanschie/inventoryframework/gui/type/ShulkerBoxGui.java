@@ -13,6 +13,8 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -64,6 +66,30 @@ public class ShulkerBoxGui extends NamedGui implements MergedGui, InventoryBased
         super(title);
     }
 
+    /**
+     * Constructs a new shulker box gui for the given {@code plugin}.
+     *
+     * @param title the title/name of this gui.
+     * @param plugin the owning plugin of this gui
+     * @see #ShulkerBoxGui(String)
+     * @since 0.10.8
+     */
+    public ShulkerBoxGui(@NotNull String title, @NotNull Plugin plugin) {
+        super(title, plugin);
+    }
+
+    /**
+     * Constructs a new shulker box gui for the given {@code plugin}.
+     *
+     * @param title the title/name of this gui.
+     * @param plugin the owning plugin of this gui
+     * @see #ShulkerBoxGui(TextHolder)
+     * @since 0.10.8
+     */
+    public ShulkerBoxGui(@NotNull TextHolder title, @NotNull Plugin plugin) {
+        super(title, plugin);
+    }
+
     @Override
     public void show(@NotNull HumanEntity humanEntity) {
         if (isDirty()) {
@@ -98,7 +124,7 @@ public class ShulkerBoxGui extends NamedGui implements MergedGui, InventoryBased
     @Contract(pure = true)
     @Override
     public ShulkerBoxGui copy() {
-        ShulkerBoxGui gui = new ShulkerBoxGui(getTitleHolder());
+        ShulkerBoxGui gui = new ShulkerBoxGui(getTitleHolder(), super.plugin);
 
         gui.inventoryComponent = inventoryComponent.copy();
 
@@ -183,19 +209,22 @@ public class ShulkerBoxGui extends NamedGui implements MergedGui, InventoryBased
      *
      * @param instance the instance on which to reference fields and methods
      * @param inputStream the input stream containing the XML data
+     * @param plugin the plugin that will be the owner of the created gui
      * @return the loaded shulker box gui
-     * @since 0.8.0
+     * @see #load(Object, InputStream)
+     * @since 0.10.8
      */
     @Nullable
     @Contract(pure = true)
-    public static ShulkerBoxGui load(@NotNull Object instance, @NotNull InputStream inputStream) {
+    public static ShulkerBoxGui load(@NotNull Object instance, @NotNull InputStream inputStream,
+                                     @NotNull Plugin plugin) {
         try {
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
             Element documentElement = document.getDocumentElement();
 
             documentElement.normalize();
 
-            return load(instance, documentElement);
+            return load(instance, documentElement, plugin);
         } catch (SAXException | ParserConfigurationException | IOException e) {
             e.printStackTrace();
             return null;
@@ -207,16 +236,18 @@ public class ShulkerBoxGui extends NamedGui implements MergedGui, InventoryBased
      *
      * @param instance the instance on which to reference fields and methods
      * @param element the element to load the gui from
+     * @param plugin the plugin that will be the owner of the created gui
      * @return the loaded shulker box gui
-     * @since 0.8.0
+     * @see #load(Object, Element)
+     * @since 0.10.8
      */
     @NotNull
-    public static ShulkerBoxGui load(@NotNull Object instance, @NotNull Element element) {
+    public static ShulkerBoxGui load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         if (!element.hasAttribute("title")) {
             throw new XMLLoadException("Provided XML element's gui tag doesn't have the mandatory title attribute set");
         }
 
-        ShulkerBoxGui shulkerBoxGui = new ShulkerBoxGui(element.getAttribute("title"));
+        ShulkerBoxGui shulkerBoxGui = new ShulkerBoxGui(element.getAttribute("title"), plugin);
         shulkerBoxGui.initializeOrThrow(instance, element);
 
         if (element.hasAttribute("populate")) {
@@ -245,5 +276,32 @@ public class ShulkerBoxGui extends NamedGui implements MergedGui, InventoryBased
         }
 
         return shulkerBoxGui;
+    }
+
+    /**
+     * Loads a shulker box gui from an XML file.
+     *
+     * @param instance the instance on which to reference fields and methods
+     * @param inputStream the input stream containing the XML data
+     * @return the loaded shulker box gui
+     * @since 0.8.0
+     */
+    @Nullable
+    @Contract(pure = true)
+    public static ShulkerBoxGui load(@NotNull Object instance, @NotNull InputStream inputStream) {
+        return load(instance, inputStream, JavaPlugin.getProvidingPlugin(ShulkerBoxGui.class));
+    }
+
+    /**
+     * Loads a shulker box gui from the specified element, applying code references to the provided instance.
+     *
+     * @param instance the instance on which to reference fields and methods
+     * @param element the element to load the gui from
+     * @return the loaded shulker box gui
+     * @since 0.8.0
+     */
+    @NotNull
+    public static ShulkerBoxGui load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(ShulkerBoxGui.class));
     }
 }

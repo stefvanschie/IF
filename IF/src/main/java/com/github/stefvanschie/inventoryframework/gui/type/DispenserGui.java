@@ -10,6 +10,8 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,6 +67,30 @@ public class DispenserGui extends NamedGui implements InventoryBased {
         super(title);
     }
 
+    /**
+     * Constructs a new dispenser gui for the given {@code plugin}.
+     *
+     * @param title the title/name of this gui.
+     * @param plugin the owning plugin of this gui
+     * @see #DispenserGui(String)
+     * @since 0.10.8
+     */
+    public DispenserGui(@NotNull String title, @NotNull Plugin plugin) {
+        super(title, plugin);
+    }
+
+    /**
+     * Constructs a new dispenser gui for the given {@code plugin}.
+     *
+     * @param title the title/name of this gui.
+     * @param plugin the owning plugin of this gui
+     * @see #DispenserGui(TextHolder)
+     * @since 0.10.8
+     */
+    public DispenserGui(@NotNull TextHolder title, @NotNull Plugin plugin) {
+        super(title, plugin);
+    }
+
     @Override
     public void show(@NotNull HumanEntity humanEntity) {
         if (isDirty()) {
@@ -94,7 +120,7 @@ public class DispenserGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public DispenserGui copy() {
-        DispenserGui gui = new DispenserGui(getTitleHolder());
+        DispenserGui gui = new DispenserGui(getTitleHolder(), super.plugin);
 
         gui.contentsComponent = contentsComponent.copy();
         gui.playerInventoryComponent = playerInventoryComponent.copy();
@@ -188,19 +214,22 @@ public class DispenserGui extends NamedGui implements InventoryBased {
      *
      * @param instance the instance on which to reference fields and methods
      * @param inputStream the input stream containing the XML data
+     * @param plugin the plugin that will be the owner of the created gui
      * @return the loaded dispenser gui
-     * @since 0.8.0
+     * @see #load(Object, InputStream)
+     * @since 0.10.8
      */
     @Nullable
     @Contract(pure = true)
-    public static DispenserGui load(@NotNull Object instance, @NotNull InputStream inputStream) {
+    public static DispenserGui load(@NotNull Object instance, @NotNull InputStream inputStream,
+                                    @NotNull Plugin plugin) {
         try {
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
             Element documentElement = document.getDocumentElement();
 
             documentElement.normalize();
 
-            return load(instance, documentElement);
+            return load(instance, documentElement, plugin);
         } catch (SAXException | ParserConfigurationException | IOException e) {
             e.printStackTrace();
             return null;
@@ -212,16 +241,18 @@ public class DispenserGui extends NamedGui implements InventoryBased {
      *
      * @param instance the instance on which to reference fields and methods
      * @param element the element to load the gui from
+     * @param plugin the plugin that will be the owner of the created gui
      * @return the loaded dispenser gui
-     * @since 0.8.0
+     * @see #load(Object, Element)
+     * @since 0.10.8
      */
     @NotNull
-    public static DispenserGui load(@NotNull Object instance, @NotNull Element element) {
+    public static DispenserGui load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         if (!element.hasAttribute("title")) {
             throw new XMLLoadException("Provided XML element's gui tag doesn't have the mandatory title attribute set");
         }
 
-        DispenserGui dispenserGui = new DispenserGui(element.getAttribute("title"));
+        DispenserGui dispenserGui = new DispenserGui(element.getAttribute("title"), plugin);
         dispenserGui.initializeOrThrow(instance, element);
 
         if (element.hasAttribute("populate")) {
@@ -264,5 +295,32 @@ public class DispenserGui extends NamedGui implements InventoryBased {
         }
 
         return dispenserGui;
+    }
+
+    /**
+     * Loads a dispenser gui from an XML file.
+     *
+     * @param instance the instance on which to reference fields and methods
+     * @param inputStream the input stream containing the XML data
+     * @return the loaded dispenser gui
+     * @since 0.8.0
+     */
+    @Nullable
+    @Contract(pure = true)
+    public static DispenserGui load(@NotNull Object instance, @NotNull InputStream inputStream) {
+        return load(instance, inputStream, JavaPlugin.getProvidingPlugin(DispenserGui.class));
+    }
+
+    /**
+     * Loads a dispenser gui from the specified element, applying code references to the provided instance.
+     *
+     * @param instance the instance on which to reference fields and methods
+     * @param element the element to load the gui from
+     * @return the loaded dispenser gui
+     * @since 0.8.0
+     */
+    @NotNull
+    public static DispenserGui load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(DispenserGui.class));
     }
 }

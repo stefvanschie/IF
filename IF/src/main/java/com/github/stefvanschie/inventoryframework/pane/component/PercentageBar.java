@@ -8,6 +8,8 @@ import com.github.stefvanschie.inventoryframework.pane.Orientable;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.component.util.VariableBar;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -18,6 +20,47 @@ import org.w3c.dom.Element;
  * @since 0.5.0
  */
 public class PercentageBar extends VariableBar {
+
+    /**
+     * Creates a new percentage bar
+     *
+     * @param x the x coordinate of the bar
+     * @param y the y coordinate of the bar
+     * @param length the length of the bar
+     * @param height the height of the bar
+     * @param priority the priority of the bar
+     * @param plugin the plugin that will be the owner for this percentage bar's items
+     * @since 0.10.8
+     */
+    public PercentageBar(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
+        super(x, y, length, height, priority, plugin);
+    }
+
+    /**
+     * Creates a new percentage bar
+     *
+     * @param x the x coordinate of the bar
+     * @param y the y coordinate of the bar
+     * @param length the length of the bar
+     * @param height the height of the bar
+     * @param plugin the plugin that will be the owner for this percentage bar's items
+     * @since 0.10.8
+     */
+    public PercentageBar(int x, int y, int length, int height, @NotNull Plugin plugin) {
+        super(x, y, length, height, plugin);
+    }
+
+    /**
+     * Creates a new percentage bar
+     *
+     * @param length the length of the bar
+     * @param height the height of the bar
+     * @param plugin the plugin that will be the owner for this percentage bar's items
+     * @since 0.10.8
+     */
+    public PercentageBar(int length, int height, @NotNull Plugin plugin) {
+        super(length, height, plugin);
+    }
 
     public PercentageBar(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
@@ -100,12 +143,14 @@ public class PercentageBar extends VariableBar {
      * Loads a percentage bar from a given element
      *
      * @param instance the instance class
-     * @param element  the element
+     * @param element the element
+     * @param plugin the plugin that will be the owner of the underlying items
      * @return the percentage bar
+     * @since 0.10.8
      */
     @NotNull
     @Contract(pure = true)
-    public static PercentageBar load(@NotNull Object instance, @NotNull Element element) {
+    public static PercentageBar load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         int length;
         int height;
 
@@ -116,7 +161,7 @@ public class PercentageBar extends VariableBar {
             throw new XMLLoadException(exception);
         }
 
-        PercentageBar percentageBar = new PercentageBar(length, height);
+        PercentageBar percentageBar = new PercentageBar(length, height, plugin);
 
         Pane.load(percentageBar, instance, element);
         Orientable.load(percentageBar, element);
@@ -135,5 +180,21 @@ public class PercentageBar extends VariableBar {
         }
 
         return percentageBar;
+    }
+
+    /**
+     * Loads a percentage bar from a given element
+     *
+     * @param instance the instance class
+     * @param element the element
+     * @return the percentage bar
+     * @deprecated this method is no longer used internally and has been superseded by
+     *             {@link #load(Object, Element, Plugin)}
+     */
+    @NotNull
+    @Contract(pure = true)
+    @Deprecated
+    public static PercentageBar load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(PercentageBar.class));
     }
 }

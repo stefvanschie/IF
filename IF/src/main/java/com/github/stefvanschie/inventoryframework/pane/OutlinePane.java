@@ -9,6 +9,8 @@ import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -488,10 +490,12 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
      *
      * @param instance the instance class
      * @param element the element
+     * @param plugin the plugin that will be the owner of the created items
      * @return the outline pane
+     * @since 0.10.8
      */
     @NotNull
-    public static OutlinePane load(@NotNull Object instance, @NotNull Element element) {
+    public static OutlinePane load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         try {
             OutlinePane outlinePane = new OutlinePane(
                 Integer.parseInt(element.getAttribute("length")),
@@ -525,7 +529,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
                     continue;
 
                 if (item.getNodeName().equals("empty"))
-                    outlinePane.addItem(new GuiItem(new ItemStack(Material.AIR)));
+                    outlinePane.addItem(new GuiItem(new ItemStack(Material.AIR), plugin));
                 else
                     outlinePane.addItem(Pane.loadItem(instance, (Element) item));
             }
@@ -534,6 +538,21 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         } catch (NumberFormatException exception) {
             throw new XMLLoadException(exception);
         }
+    }
+
+    /**
+     * Loads an outline pane from a given element
+     *
+     * @param instance the instance class
+     * @param element the element
+     * @return the outline pane
+     * @deprecated this method is no longer used internally and has been superseded by
+     *             {@link #load(Object, Element, Plugin)}
+     */
+    @NotNull
+    @Deprecated
+    public static OutlinePane load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(OutlinePane.class));
     }
 
     /**

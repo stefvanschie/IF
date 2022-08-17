@@ -8,6 +8,8 @@ import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -43,7 +45,32 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
      */
     protected boolean flipHorizontally, flipVertically;
 
-    protected VariableBar(int length, int height) {
+    /**
+     * Creates a new variable bar
+     *
+     * @param length the length of the bar
+     * @param height the height of the bar
+     * @param plugin the plugin that will be the owner for this variable bar's items
+     * @see #VariableBar(int, int)
+     * @since 0.10.8
+     */
+    protected VariableBar(int length, int height, @NotNull Plugin plugin) {
+        this(0, 0, length, height, plugin);
+    }
+
+    /**
+     * Creates a new variable bar
+     *
+     * @param x the x coordinate of the bar
+     * @param y the y coordinate of the bar
+     * @param length the length of the bar
+     * @param height the height of the bar
+     * @param priority the priority of the bar
+     * @param plugin the plugin that will be the owner for this variable bar's items
+     * @see #VariableBar(int, int)
+     * @since 0.10.8
+     */
+    protected VariableBar(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
         super(length, height);
 
         this.value = 0F;
@@ -53,23 +80,42 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         this.backgroundPane = new OutlinePane(0, 0, length, height);
 
         this.fillPane.addItem(new GuiItem(new ItemStack(Material.GREEN_STAINED_GLASS_PANE),
-            event -> event.setCancelled(true)));
+                event -> event.setCancelled(true), plugin));
         this.backgroundPane.addItem(new GuiItem(new ItemStack(Material.RED_STAINED_GLASS_PANE),
-            event -> event.setCancelled(true)));
+                event -> event.setCancelled(true), plugin));
 
         this.fillPane.setRepeat(true);
         this.backgroundPane.setRepeat(true);
 
         this.fillPane.setVisible(false);
-    }
-
-    protected VariableBar(int x, int y, int length, int height, @NotNull Priority priority) {
-        this(length, height);
 
         setX(x);
         setY(y);
 
         setPriority(priority);
+    }
+
+    /**
+     * Creates a new variable bar
+     *
+     * @param x the x coordinate of the bar
+     * @param y the y coordinate of the bar
+     * @param length the length of the bar
+     * @param height the height of the bar
+     * @param plugin the plugin that will be the owner for this variable bar's items
+     * @see #VariableBar(int, int)
+     * @since 0.10.8
+     */
+    protected VariableBar(int x, int y, int length, int height, @NotNull Plugin plugin) {
+        this(x, y, length, height, Priority.NORMAL, plugin);
+    }
+
+    protected VariableBar(int length, int height) {
+        this(0, 0, length, height);
+    }
+
+    protected VariableBar(int x, int y, int length, int height, @NotNull Priority priority) {
+        this(x, y, length, height, priority, JavaPlugin.getProvidingPlugin(VariableBar.class));
     }
 
     protected VariableBar(int x, int y, int length, int height) {
