@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,8 +40,33 @@ public class MasonryPane extends Pane implements Orientable {
     @NotNull
     private Orientation orientation = Orientation.HORIZONTAL;
 
+    /**
+     * Creates a new masonry pane
+     *
+     * @param slot the slot of the pane
+     * @param length the length of the pane
+     * @param height the height of the pane
+     * @param priority the priority of the pane
+     * @since 0.10.8
+     */
+    public MasonryPane(@NotNull Slot slot, int length, int height, @NotNull Priority priority) {
+        super(slot, length, height, priority);
+    }
+
     public MasonryPane(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
+    }
+
+    /**
+     * Creates a new masonry pane
+     *
+     * @param slot the slot of the pane
+     * @param length the length of the pane
+     * @param height the height of the pane
+     * @since 0.10.8
+     */
+    public MasonryPane(@NotNull Slot slot, int length, int height) {
+        super(slot, length, height);
     }
 
     public MasonryPane(int x, int y, int length, int height) {
@@ -99,8 +125,8 @@ public class MasonryPane extends Pane implements Orientable {
 
                             pane.display(
                                 inventoryComponent,
-                                paneOffsetX + getX(),
-                                paneOffsetY + getY(),
+                                paneOffsetX + x,
+                                paneOffsetY + y,
                                 Math.min(this.length, maxLength),
                                 Math.min(this.height, maxHeight)
                             );
@@ -137,8 +163,8 @@ public class MasonryPane extends Pane implements Orientable {
 
                             pane.display(
                                 inventoryComponent,
-                                paneOffsetX + getX(),
-                                paneOffsetY + getY(),
+                                paneOffsetX + x,
+                                paneOffsetY + y,
                                 Math.min(this.length, maxLength),
                                 Math.min(this.height, maxHeight)
                             );
@@ -157,10 +183,17 @@ public class MasonryPane extends Pane implements Orientable {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
-        int adjustedSlot = slot - (getX() + paneOffsetX) - inventoryComponent.getLength() * (getY() + paneOffsetY);
+        Slot paneSlot = getSlot();
 
-        int x = adjustedSlot % inventoryComponent.getLength();
-        int y = adjustedSlot / inventoryComponent.getLength();
+        int xPosition = paneSlot.getX(maxLength);
+        int yPosition = paneSlot.getY(maxLength);
+
+        int totalLength = inventoryComponent.getLength();
+
+        int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
+
+        int x = adjustedSlot % totalLength;
+        int y = adjustedSlot / totalLength;
 
         if (x < 0 || x >= length || y < 0 || y >= height) {
             return false;
@@ -175,8 +208,8 @@ public class MasonryPane extends Pane implements Orientable {
                 continue;
             }
 
-            success = success || pane.click(gui, inventoryComponent, event, slot, paneOffsetX + getX(),
-                paneOffsetY + getY(), length, height);
+            success = success || pane.click(gui, inventoryComponent, event, slot, paneOffsetX + xPosition,
+                paneOffsetY + yPosition, length, height);
         }
 
         return success;
@@ -186,7 +219,7 @@ public class MasonryPane extends Pane implements Orientable {
 	@Contract(pure = true)
 	@Override
     public MasonryPane copy() {
-		MasonryPane masonryPane = new MasonryPane(x, y, length, height, getPriority());
+		MasonryPane masonryPane = new MasonryPane(getSlot(), length, height, getPriority());
 
 		for (Pane pane : panes) {
             masonryPane.addPane(pane.copy());

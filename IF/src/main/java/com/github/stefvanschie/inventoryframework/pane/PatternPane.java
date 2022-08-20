@@ -5,6 +5,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -56,6 +57,29 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
     /**
      * Constructs a new pattern pane.
      *
+     * @param slot the slot of the pane
+     * @param length the length of the pane
+     * @param height the height of the pane
+     * @param priority the priority of the pane
+     * @param pattern the pattern of the pane
+     * @throws IllegalArgumentException when the pane and pattern dimensions don't match
+     * @since 0.10.8
+     */
+    public PatternPane(@NotNull Slot slot, int length, int height, @NotNull Priority priority, @NotNull Pattern pattern) {
+        super(slot, length, height, priority);
+
+        if (pattern.getLength() != length || pattern.getHeight() != height) {
+            throw new IllegalArgumentException(
+                    "Dimensions of the provided pattern do not match the dimensions of the pane"
+            );
+        }
+
+        this.pattern = pattern;
+    }
+
+    /**
+     * Constructs a new pattern pane.
+     *
      * @param x the upper left x coordinate of the pane
      * @param y the upper left y coordinate of the pane
      * @param length the length of the pane
@@ -66,15 +90,7 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
      * @since 0.9.8
      */
     public PatternPane(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Pattern pattern) {
-        super(x, y, length, height, priority);
-
-        if (pattern.getLength() != length || pattern.getHeight() != height) {
-            throw new IllegalArgumentException(
-                "Dimensions of the provided pattern do not match the dimensions of the pane"
-            );
-        }
-
-        this.pattern = pattern;
+        this(Slot.fromXY(x, y), length, height, priority, pattern);
     }
 
     /**
@@ -88,6 +104,20 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
      */
     public PatternPane(int length, int height, @NotNull Pattern pattern) {
         this(0, 0, length, height, pattern);
+    }
+
+    /**
+     * Constructs a new pattern pane.
+     *
+     * @param slot the slot of the pane
+     * @param length the length of the pane
+     * @param height the height of the pane
+     * @param pattern the pattern of the pane
+     * @throws IllegalArgumentException when the pane and pattern dimensions don't match
+     * @since 0.10.8
+     */
+    public PatternPane(@NotNull Slot slot, int length, int height, @NotNull Pattern pattern) {
+        this(slot, length, height, Priority.NORMAL, pattern);
     }
 
     /**
@@ -135,8 +165,10 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
                 newX = coordinates.getKey();
                 newY = coordinates.getValue();
 
-                int finalRow = getY() + newY + paneOffsetY;
-                int finalColumn = getX() + newX + paneOffsetX;
+                Slot slot = getSlot();
+
+                int finalRow = slot.getY(maxLength) + newY + paneOffsetY;
+                int finalColumn = slot.getX(maxLength) + newX + paneOffsetX;
 
                 inventoryComponent.setItem(item, finalColumn, finalRow);
             }
@@ -150,10 +182,17 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
-        int adjustedSlot = slot - (getX() + paneOffsetX) - inventoryComponent.getLength() * (getY() + paneOffsetY);
+        Slot paneSlot = getSlot();
 
-        int x = adjustedSlot % inventoryComponent.getLength();
-        int y = adjustedSlot / inventoryComponent.getLength();
+        int xPosition = paneSlot.getX(maxLength);
+        int yPosition = paneSlot.getY(maxLength);
+
+        int totalLength = inventoryComponent.getLength();
+
+        int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
+
+        int x = adjustedSlot % totalLength;
+        int y = adjustedSlot / totalLength;
 
         //this isn't our item
         if (x < 0 || x >= length || y < 0 || y >= height) {
@@ -183,7 +222,7 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
     @Contract(pure = true)
     @Override
     public PatternPane copy() {
-        PatternPane patternPane = new PatternPane(getX(), getY(), getLength(), getHeight(), getPriority(), getPattern());
+        PatternPane patternPane = new PatternPane(getSlot(), getLength(), getHeight(), getPriority(), getPattern());
 
         patternPane.setVisible(isVisible());
         patternPane.onClick = onClick;

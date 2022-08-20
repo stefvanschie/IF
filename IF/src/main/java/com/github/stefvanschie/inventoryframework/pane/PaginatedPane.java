@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -37,8 +38,33 @@ public class PaginatedPane extends Pane {
      */
     private int page;
 
+    /**
+     * Creates a new paginated pane
+     *
+     * @param slot the slot of the pane
+     * @param length the length of the pane
+     * @param height the height of the pane
+     * @param priority the priority of the pane
+     * @since 0.10.8
+     */
+    public PaginatedPane(@NotNull Slot slot, int length, int height, @NotNull Priority priority) {
+        super(slot, length, height, priority);
+    }
+
     public PaginatedPane(int x, int y, int length, int height, @NotNull Priority priority) {
-        super(x, y, length, height, priority);
+        this(Slot.fromXY(x, y), length, height, priority);
+    }
+
+    /**
+     * Creates a new paginated pane
+     *
+     * @param slot the slot of the pane
+     * @param length the length of the pane
+     * @param height the height of the pane
+     * @since 0.10.8
+     */
+    public PaginatedPane(@NotNull Slot slot, int length, int height) {
+        this(slot, length, height, Priority.NORMAL);
     }
 
     public PaginatedPane(int x, int y, int length, int height) {
@@ -222,8 +248,10 @@ public class PaginatedPane extends Pane {
                 continue;
             }
 
-            int newPaneOffsetX = paneOffsetX + getX();
-            int newPaneOffsetY = paneOffsetY + getY();
+            Slot slot = getSlot();
+
+            int newPaneOffsetX = paneOffsetX + slot.getX(maxLength);
+            int newPaneOffsetY = paneOffsetY + slot.getY(maxLength);
             int newMaxLength = Math.min(length, maxLength);
             int newMaxHeight = Math.min(height, maxHeight);
 
@@ -238,10 +266,17 @@ public class PaginatedPane extends Pane {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
-        int adjustedSlot = slot - (getX() + paneOffsetX) - inventoryComponent.getLength() * (getY() + paneOffsetY);
+        Slot paneSlot = getSlot();
 
-        int x = adjustedSlot % inventoryComponent.getLength();
-        int y = adjustedSlot / inventoryComponent.getLength();
+        int xPosition = paneSlot.getX(maxLength);
+        int yPosition = paneSlot.getY(maxLength);
+
+        int totalLength = inventoryComponent.getLength();
+
+        int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
+
+        int x = adjustedSlot % totalLength;
+        int y = adjustedSlot / totalLength;
 
         //this isn't our item
         if (x < 0 || x >= length || y < 0 || y >= height) {
@@ -257,8 +292,8 @@ public class PaginatedPane extends Pane {
                 continue;
             }
 
-            success = success || pane.click(gui, inventoryComponent, event, slot,paneOffsetX + getX(),
-                paneOffsetY + getY(), length, height);
+            success = success || pane.click(gui, inventoryComponent, event, slot,paneOffsetX + xPosition,
+                paneOffsetY + yPosition, length, height);
         }
 
         return success;
@@ -268,7 +303,7 @@ public class PaginatedPane extends Pane {
     @Contract(pure = true)
     @Override
     public PaginatedPane copy() {
-	    PaginatedPane paginatedPane = new PaginatedPane(x, y, length, height, getPriority());
+	    PaginatedPane paginatedPane = new PaginatedPane(getSlot(), length, height, getPriority());
 
         for (Map.Entry<Integer, List<Pane>> entry : panes.entrySet()) {
             for (Pane pane : entry.getValue()) {

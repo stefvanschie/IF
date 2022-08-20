@@ -6,6 +6,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.font.util.Font;
 import com.github.stefvanschie.inventoryframework.pane.*;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -44,6 +45,30 @@ public class Label extends OutlinePane {
     /**
      * Creates a new label
      *
+     * @param slot the slot
+     * @param length the length
+     * @param height the height
+     * @param priority the priority
+     * @param font the character set
+     * @param plugin the plugin that will be the owner for this label's items
+     * @see #Label(int, int, int, int, Priority, Font)
+     * @since 0.10.8
+     */
+    public Label(@NotNull Slot slot, int length, int height, @NotNull Priority priority, @NotNull Font font,
+                 @NotNull Plugin plugin) {
+        super(slot, length, height);
+
+        this.font = font;
+        this.text = "";
+
+        this.plugin = plugin;
+
+        setPriority(priority);
+    }
+
+    /**
+     * Creates a new label
+     *
      * @param x the x coordinate
      * @param y the y coordinate
      * @param length the length
@@ -56,17 +81,22 @@ public class Label extends OutlinePane {
      */
     public Label(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Font font,
                  @NotNull Plugin plugin) {
-        super(length, height);
+        this(Slot.fromXY(x, y), length, height, priority, font, plugin);
+    }
 
-        this.x = x;
-        this.y = y;
-
-        this.font = font;
-        this.text = "";
-
-        this.plugin = plugin;
-
-        setPriority(priority);
+    /**
+     * Creates a new label
+     *
+     * @param slot the slot
+     * @param length the length
+     * @param height the height
+     * @param font the character set
+     * @param plugin the plugin that will be the owner for this label's items
+     * @see #Label(int, int, int, int, Font)
+     * @since 0.10.8
+     */
+    public Label(@NotNull Slot slot, int length, int height, @NotNull Font font, @NotNull Plugin plugin) {
+        this(slot, length, height, Priority.NORMAL, font, plugin);
     }
 
     /**
@@ -102,6 +132,20 @@ public class Label extends OutlinePane {
     /**
      * Creates a new label
      *
+     * @param slot the slot
+     * @param length the length
+     * @param height the height
+     * @param priority the priority
+     * @param font the character set
+     * @since 0.10.8
+     */
+    public Label(@NotNull Slot slot, int length, int height, @NotNull Priority priority, @NotNull Font font) {
+        this(slot, length, height, priority, font, JavaPlugin.getProvidingPlugin(Label.class));
+    }
+
+    /**
+     * Creates a new label
+     *
      * @param x the x coordinate
      * @param y the y coordinate
      * @param length the length
@@ -112,6 +156,19 @@ public class Label extends OutlinePane {
      */
     public Label(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Font font) {
         this(x, y, length, height, priority, font, JavaPlugin.getProvidingPlugin(Label.class));
+    }
+
+    /**
+     * Creates a new label
+     *
+     * @param slot the slot
+     * @param length the length
+     * @param height the height
+     * @param font the character set
+     * @since 0.10.8
+     */
+    public Label(@NotNull Slot slot, int length, int height, @NotNull Font font) {
+        this(slot, length, height, Priority.NORMAL, font);
     }
 
     /**
@@ -191,7 +248,7 @@ public class Label extends OutlinePane {
     @Contract(pure = true)
     @Override
     public Label copy() {
-        Label label = new Label(x, y, length, height, getPriority(), font, this.plugin);
+        Label label = new Label(getSlot(), length, height, getPriority(), font, this.plugin);
 
         for (GuiItem item : getItems()) {
             label.addItem(item.copy());

@@ -7,6 +7,7 @@ import com.github.stefvanschie.inventoryframework.pane.Flippable;
 import com.github.stefvanschie.inventoryframework.pane.Orientable;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.component.util.VariableBar;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -24,6 +25,21 @@ public class PercentageBar extends VariableBar {
     /**
      * Creates a new percentage bar
      *
+     * @param slot the slot of the bar
+     * @param length the length of the bar
+     * @param height the height of the bar
+     * @param priority the priority of the bar
+     * @param plugin the plugin that will be the owner for this percentage bar's items
+     * @since 0.10.8
+     */
+    public PercentageBar(@NotNull Slot slot, int length, int height, @NotNull Priority priority,
+                         @NotNull Plugin plugin) {
+        super(slot, length, height, priority, plugin);
+    }
+
+    /**
+     * Creates a new percentage bar
+     *
      * @param x the x coordinate of the bar
      * @param y the y coordinate of the bar
      * @param length the length of the bar
@@ -34,6 +50,19 @@ public class PercentageBar extends VariableBar {
      */
     public PercentageBar(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
         super(x, y, length, height, priority, plugin);
+    }
+
+    /**
+     * Creates a new percentage bar
+     *
+     * @param slot the slot of the bar
+     * @param length the length of the bar
+     * @param height the height of the bar
+     * @param plugin the plugin that will be the owner for this percentage bar's items
+     * @since 0.10.8
+     */
+    public PercentageBar(@NotNull Slot slot, int length, int height, @NotNull Plugin plugin) {
+        super(slot, length, height, plugin);
     }
 
     /**
@@ -62,8 +91,33 @@ public class PercentageBar extends VariableBar {
         super(length, height, plugin);
     }
 
+    /**
+     * Creates a new percentage bar
+     *
+     * @param slot the slot of the bar
+     * @param length the length of the bar
+     * @param height the height of the bar
+     * @param priority the priority of the bar
+     * @since 0.10.8
+     */
+    public PercentageBar(@NotNull Slot slot, int length, int height, @NotNull Priority priority) {
+        super(slot, length, height, priority);
+    }
+
     public PercentageBar(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
+    }
+
+    /**
+     * Creates a new percentage bar
+     *
+     * @param slot the slot of the bar
+     * @param length the length of the bar
+     * @param height the height of the bar
+     * @since 0.10.8
+     */
+    public PercentageBar(@NotNull Slot slot, int length, int height) {
+        super(slot, length, height);
     }
 
     public PercentageBar(int x, int y, int length, int height) {
@@ -81,10 +135,17 @@ public class PercentageBar extends VariableBar {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
-        int adjustedSlot = slot - (getX() + paneOffsetX) - inventoryComponent.getLength() * (getY() + paneOffsetY);
+        Slot paneSlot = getSlot();
 
-        int x = adjustedSlot % inventoryComponent.getLength();
-        int y = adjustedSlot / inventoryComponent.getLength();
+        int xPosition = paneSlot.getX(maxLength);
+        int yPosition = paneSlot.getY(maxLength);
+
+        int totalLength = inventoryComponent.getLength();
+
+        int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
+
+        int x = adjustedSlot % totalLength;
+        int y = adjustedSlot / totalLength;
 
         if (x < 0 || x >= length || y < 0 || y >= height) {
             return false;
@@ -94,8 +155,8 @@ public class PercentageBar extends VariableBar {
 
         event.setCancelled(true);
 
-        int newPaneOffsetX = paneOffsetX + getX();
-        int newPaneOffsetY = paneOffsetY + getY();
+        int newPaneOffsetX = paneOffsetX + xPosition;
+        int newPaneOffsetY = paneOffsetY + yPosition;
 
 
         return this.fillPane.click(
@@ -122,7 +183,7 @@ public class PercentageBar extends VariableBar {
     @Contract(pure = true)
     @Override
     public PercentageBar copy() {
-        PercentageBar percentageBar = new PercentageBar(x, y, length, height, getPriority());
+        PercentageBar percentageBar = new PercentageBar(getSlot(), length, height, getPriority());
 
         applyContents(percentageBar);
 

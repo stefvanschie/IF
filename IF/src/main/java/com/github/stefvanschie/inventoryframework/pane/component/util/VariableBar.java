@@ -6,6 +6,7 @@ import com.github.stefvanschie.inventoryframework.pane.Flippable;
 import com.github.stefvanschie.inventoryframework.pane.Orientable;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -61,17 +62,17 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
     /**
      * Creates a new variable bar
      *
-     * @param x the x coordinate of the bar
-     * @param y the y coordinate of the bar
+     * @param slot the slot of the bar
      * @param length the length of the bar
      * @param height the height of the bar
      * @param priority the priority of the bar
      * @param plugin the plugin that will be the owner for this variable bar's items
-     * @see #VariableBar(int, int)
+     * @see #VariableBar(Slot, int, int, Priority)
      * @since 0.10.8
      */
-    protected VariableBar(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
-        super(length, height);
+    protected VariableBar(@NotNull Slot slot, int length, int height, @NotNull Priority priority,
+                          @NotNull Plugin plugin) {
+        super(slot, length, height);
 
         this.value = 0F;
         this.orientation = Orientation.HORIZONTAL;
@@ -89,10 +90,37 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
 
         this.fillPane.setVisible(false);
 
-        setX(x);
-        setY(y);
-
         setPriority(priority);
+    }
+
+    /**
+     * Creates a new variable bar
+     *
+     * @param x the x coordinate of the bar
+     * @param y the y coordinate of the bar
+     * @param length the length of the bar
+     * @param height the height of the bar
+     * @param priority the priority of the bar
+     * @param plugin the plugin that will be the owner for this variable bar's items
+     * @see #VariableBar(int, int)
+     * @since 0.10.8
+     */
+    protected VariableBar(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
+        this(Slot.fromXY(x, y), length, height, priority, plugin);
+    }
+
+    /**
+     * Creates a new variable bar
+     *
+     * @param slot the slot of the bar
+     * @param length the length of the bar
+     * @param height the height of the bar
+     * @param plugin the plugin that will be the owner for this variable bar's items
+     * @see #VariableBar(Slot, int, int)
+     * @since 0.10.8
+     */
+    protected VariableBar(@NotNull Slot slot, int length, int height, @NotNull Plugin plugin) {
+        this(slot, length, height, Priority.NORMAL, plugin);
     }
 
     /**
@@ -114,8 +142,33 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         this(0, 0, length, height);
     }
 
+    /**
+     * Creates a new variable bar
+     *
+     * @param slot the slot of the bar
+     * @param length the length of the bar
+     * @param height the height of the bar
+     * @param priority the priority of the bar
+     * @since 0.10.8
+     */
+    protected VariableBar(@NotNull Slot slot, int length, int height, @NotNull Priority priority) {
+        this(slot, length, height, priority, JavaPlugin.getProvidingPlugin(VariableBar.class));
+    }
+
     protected VariableBar(int x, int y, int length, int height, @NotNull Priority priority) {
         this(x, y, length, height, priority, JavaPlugin.getProvidingPlugin(VariableBar.class));
+    }
+
+    /**
+     * Creates a new variable bar
+     *
+     * @param slot the slot of the bar
+     * @param length the length of the bar
+     * @param height the height of the bar
+     * @since 0.10.8
+     */
+    protected VariableBar(@NotNull Slot slot, int length, int height) {
+        this(slot, length, height, Priority.NORMAL);
     }
 
     protected VariableBar(int x, int y, int length, int height) {
@@ -230,6 +283,7 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
     protected void applyContents(@NotNull VariableBar copy) {
         copy.x = x;
         copy.y = y;
+        copy.slot = slot;
         copy.length = length;
         copy.height = height;
         copy.setPriority(getPriority());
@@ -282,8 +336,10 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
     @Override
     public void display(@NotNull InventoryComponent inventoryComponent, int paneOffsetX, int paneOffsetY, int maxLength,
                         int maxHeight) {
-        int newPaneOffsetX = paneOffsetX + getX();
-        int newPaneOffsetY = paneOffsetY + getY();
+        Slot slot = getSlot();
+
+        int newPaneOffsetX = paneOffsetX + slot.getX(maxLength);
+        int newPaneOffsetY = paneOffsetY + slot.getY(maxLength);
         int newMaxLength = Math.min(maxLength, getLength());
         int newMaxHeight = Math.min(maxHeight, getHeight());
 

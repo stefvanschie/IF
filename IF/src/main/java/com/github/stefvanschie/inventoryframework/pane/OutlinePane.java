@@ -5,6 +5,7 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.util.Mask;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -68,8 +69,17 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
     @NotNull
     private Mask mask;
 
-    public OutlinePane(int x, int y, int length, int height, @NotNull Priority priority) {
-        super(x, y, length, height, priority);
+    /**
+     * Creates a new outline pane
+     *
+     * @param slot the slot of the pane
+     * @param length the length of the pane
+     * @param height the height of the pane
+     * @param priority the priority of the pane
+     * @since 0.10.8
+     */
+    public OutlinePane(@NotNull Slot slot, int length, int height, @NotNull Priority priority) {
+        super(slot, length, height, priority);
 
         this.items = new ArrayList<>(length * height);
         this.orientation = Orientation.HORIZONTAL;
@@ -84,6 +94,23 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         Arrays.fill(mask, maskString.toString());
 
         this.mask = new Mask(mask);
+    }
+
+    public OutlinePane(int x, int y, int length, int height, @NotNull Priority priority) {
+        this(Slot.fromXY(x, y), length, height, priority);
+    }
+
+
+    /**
+     * Creates a new outline pane
+     *
+     * @param slot the slot of the pane
+     * @param length the length of the pane
+     * @param height the height of the pane
+     * @since 0.10.8
+     */
+    public OutlinePane(@NotNull Slot slot, int length, int height) {
+        this(slot, length, height, Priority.NORMAL);
     }
 
     public OutlinePane(int x, int y, int length, int height) {
@@ -203,8 +230,10 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
                     y = coordinates.getValue();
 
                     if (x >= 0 && x < length && y >= 0 && y < height) {
-                        int finalRow = getY() + y + paneOffsetY;
-                        int finalColumn = getX() + x + paneOffsetX;
+                        Slot slot = getSlot();
+
+                        int finalRow = slot.getY(maxLength) + y + paneOffsetY;
+                        int finalColumn = slot.getX(maxLength) + x + paneOffsetX;
 
                         inventoryComponent.setItem(items[index], finalColumn, finalRow);
                     }
@@ -222,10 +251,17 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
-        int adjustedSlot = slot - (getX() + paneOffsetX) - inventoryComponent.getLength() * (getY() + paneOffsetY);
+        Slot paneSlot = getSlot();
 
-        int x = adjustedSlot % inventoryComponent.getLength();
-        int y = adjustedSlot / inventoryComponent.getLength();
+        int xPosition = paneSlot.getX(maxLength);
+        int yPosition = paneSlot.getY(maxLength);
+
+        int totalLength = inventoryComponent.getLength();
+
+        int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
+
+        int x = adjustedSlot % totalLength;
+        int y = adjustedSlot / totalLength;
 
         //this isn't our item
         if (x < 0 || x >= length || y < 0 || y >= height) {
@@ -255,7 +291,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
     @Contract(pure = true)
     @Override
     public OutlinePane copy() {
-        OutlinePane outlinePane = new OutlinePane(x, y, length, height, getPriority());
+        OutlinePane outlinePane = new OutlinePane(getSlot(), length, height, getPriority());
 
         for (GuiItem item : items) {
             outlinePane.addItem(item.copy());
