@@ -235,7 +235,11 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
                         int finalRow = slot.getY(maxLength) + y + paneOffsetY;
                         int finalColumn = slot.getX(maxLength) + x + paneOffsetX;
 
-                        inventoryComponent.setItem(items[index], finalColumn, finalRow);
+                        GuiItem item = items[index];
+                        if (!item.isVisible()) {
+                            continue;
+                        }
+                        inventoryComponent.setItem(item, finalColumn, finalRow);
                     }
                 }
 
