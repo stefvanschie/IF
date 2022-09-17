@@ -4,13 +4,12 @@ import com.github.stefvanschie.inventoryframework.abstraction.AnvilInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.nms.v1_16_1.util.TextHolderUtil;
 import net.minecraft.server.v1_16_R1.*;
-import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftInventoryAnvil;
-import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_16_R1.event.CraftEventFactory;
 import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -28,27 +27,38 @@ public class AnvilInventoryImpl extends AnvilInventory {
     }
 
     @Override
-    public void openInventory(@NotNull Player player, @NotNull TextHolder title,
-                              @Nullable org.bukkit.inventory.ItemStack[] items) {
+    public Inventory openInventory(@NotNull Player player, @NotNull TextHolder title,
+                                   @Nullable org.bukkit.inventory.ItemStack[] items) {
         int itemAmount = items.length;
 
         if (itemAmount != 3) {
             throw new IllegalArgumentException(
-                "The amount of items for an anvil should be 3, but is '" + itemAmount + "'"
+                    "The amount of items for an anvil should be 3, but is '" + itemAmount + "'"
             );
         }
 
         EntityPlayer entityPlayer = getEntityPlayer(player);
-        ContainerAnvilImpl containerAnvil = new ContainerAnvilImpl(entityPlayer, items);
 
-        entityPlayer.activeContainer = containerAnvil;
+        CraftEventFactory.handleInventoryCloseEvent(entityPlayer, InventoryCloseEvent.Reason.OPEN_NEW);
 
-        int id = containerAnvil.windowId;
+        entityPlayer.activeContainer = entityPlayer.defaultContainer;
+
         IChatBaseComponent message = TextHolderUtil.toComponent(title);
+        ContainerAnvilImpl containerAnvil = new ContainerAnvilImpl(entityPlayer, message);
 
-        entityPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(id, Containers.ANVIL, message));
+        Inventory inventory = containerAnvil.getBukkitView().getTopInventory();
 
-        sendItems(player, items);
+        inventory.setItem(0, items[0]);
+        inventory.setItem(1, items[1]);
+        inventory.setItem(2, items[2]);
+
+        int containerId = containerAnvil.getContainerId();
+
+        entityPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerId, Containers.ANVIL, message));
+        entityPlayer.activeContainer = containerAnvil;
+        entityPlayer.syncInventory();
+
+        return inventory;
     }
 
     @Override
@@ -107,7 +117,9 @@ public class AnvilInventoryImpl extends AnvilInventory {
      * @param player the player to set the cursor
      * @param item the item to set the cursor to
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
+    @Deprecated
     private void setCursor(@NotNull Player player, @NotNull ItemStack item) {
         getPlayerConnection(getEntityPlayer(player)).sendPacket(new PacketPlayOutSetSlot(-1, -1, item));
     }
@@ -118,7 +130,9 @@ public class AnvilInventoryImpl extends AnvilInventory {
      * @param player the player to send the result item to
      * @param item the result item
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
+    @Deprecated
     private void sendResultItem(@NotNull Player player, @NotNull ItemStack item) {
         EntityPlayer entityPlayer = getEntityPlayer(player);
 
@@ -131,8 +145,10 @@ public class AnvilInventoryImpl extends AnvilInventory {
      * @param entityPlayer the player to get the window id for
      * @return the window id
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
     @Contract(pure = true)
+    @Deprecated
     private int getWindowId(@NotNull EntityPlayer entityPlayer) {
         return entityPlayer.activeContainer.windowId;
     }
@@ -143,9 +159,11 @@ public class AnvilInventoryImpl extends AnvilInventory {
      * @param entityPlayer the player to get the player connection from
      * @return the player connection
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
     @NotNull
     @Contract(pure = true)
+    @Deprecated
     private PlayerConnection getPlayerConnection(@NotNull EntityPlayer entityPlayer) {
         return entityPlayer.playerConnection;
     }
@@ -171,73 +189,89 @@ public class AnvilInventoryImpl extends AnvilInventory {
     private class ContainerAnvilImpl extends ContainerAnvil {
 
         /**
-         * The player for whom this anvil container is
+         * The index of the result slot
          */
-        @NotNull
-        private final Player player;
+        private static final int RESULT_SLOT_INDEX = 2;
 
         /**
-         * The internal bukkit entity for this container anvil
+         * The player for whom this container is
          */
-        @Nullable
-        private CraftInventoryView bukkitEntity;
+        @NotNull
+        private final EntityPlayer entityPlayer;
 
         /**
          * Creates a new custom anvil container for the specified player
          *
-         * @param entityPlayer the player for who this anvil container is
-         * @since 0.8.0
+         * @param entityPlayer the player for whom this anvil container is
+         * @param title the title of the inventory
+         * @since 0.10.8
          */
-        public ContainerAnvilImpl(@NotNull EntityPlayer entityPlayer,
-                                  @Nullable org.bukkit.inventory.ItemStack[] items) {
+        public ContainerAnvilImpl(@NotNull EntityPlayer entityPlayer, @NotNull IChatBaseComponent title) {
             super(entityPlayer.nextContainerCounter(), entityPlayer.inventory,
-                ContainerAccess.at(entityPlayer.getWorld(), new BlockPosition(0, 0, 0)));
+                    ContainerAccess.at(entityPlayer.getWorld(), new BlockPosition(0, 0, 0)));
 
-            this.player = entityPlayer.getBukkitEntity();
+            this.entityPlayer = entityPlayer;
 
-            repairInventory.setItem(0, CraftItemStack.asNMSCopy(items[0]));
-            repairInventory.setItem(1, CraftItemStack.asNMSCopy(items[1]));
-            resultInventory.setItem(0, CraftItemStack.asNMSCopy(items[2]));
-        }
+            this.checkReachable = false;
 
-        @NotNull
-        @Override
-        public CraftInventoryView getBukkitView() {
-            if (bukkitEntity == null) {
-                Location location = containerAccess.getLocation();
-                CraftInventory inventory = new CraftInventoryAnvil(location, repairInventory, resultInventory,
-                    this) {
-                    @NotNull
-                    @Contract(pure = true)
-                    @Override
-                    public InventoryHolder getHolder() {
-                        return inventoryHolder;
-                    }
-                };
+            setTitle(title);
 
-                bukkitEntity = new CraftInventoryView(player, inventory, this);
-            }
+            Slot originalSlot = this.slots.get(RESULT_SLOT_INDEX);
 
-            return bukkitEntity;
+            Slot newSlot = new Slot(originalSlot.inventory, originalSlot.index, originalSlot.e, originalSlot.f) {
+                @Override
+                public boolean isAllowed(ItemStack itemStack) {
+                    return true;
+                }
+
+                @Override
+                public boolean isAllowed(EntityHuman entityHuman) {
+                    return true;
+                }
+
+                @Override
+                public ItemStack a(EntityHuman entityHuman, @NotNull ItemStack itemStack) {
+                    return originalSlot.a(entityHuman, itemStack);
+                }
+            };
+
+            this.slots.set(RESULT_SLOT_INDEX, newSlot);
         }
 
         @Override
         public void a(@Nullable String name) {
-            text = name == null ? "" : name;
+            AnvilInventoryImpl.super.text = name == null ? "" : name;
 
-            sendResultItem(player, resultInventory.getItem(0));
-        }
-
-        @Contract(pure = true, value = "_ -> true")
-        @Override
-        public boolean canUse(@Nullable EntityHuman entityhuman) {
-            return true;
+            //the client predicts the output result, so we broadcast the state again to override it
+            this.entityPlayer.updateInventory(entityPlayer.activeContainer);
         }
 
         @Override
-        public void a(IInventory inventory) {}
+        public void e() {}
 
         @Override
-        public void b(EntityHuman entityhuman) {}
+        public void b(EntityHuman entityHuman) {}
+
+        @Override
+        protected void a(EntityHuman entityHuman, World world, @NotNull IInventory inventory) {}
+
+        @Override
+        protected ItemStack a(EntityHuman entityHuman, @NotNull ItemStack itemStack) {
+            return itemStack;
+        }
+
+        @Override
+        public ItemStack a(int i, int j, InventoryClickType inventoryclicktype, EntityHuman entityhuman) {
+            ItemStack itemStack = super.a(i, j, inventoryclicktype, entityhuman);
+
+            //the client predicts the allowed movement of the item, so we broadcast the state again to override it
+            this.entityPlayer.updateInventory(entityPlayer.activeContainer);
+
+            return itemStack;
+        }
+
+        public int getContainerId() {
+            return this.windowId;
+        }
     }
 }

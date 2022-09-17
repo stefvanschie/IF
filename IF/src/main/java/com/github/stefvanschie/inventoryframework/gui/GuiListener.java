@@ -97,8 +97,9 @@ public class GuiListener implements Listener {
      *
      * @param event the event fired
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @Deprecated
     public void resetItemsAnvil(@NotNull InventoryClickEvent event) {
         InventoryHolder holder = event.getInventory().getHolder();
 
