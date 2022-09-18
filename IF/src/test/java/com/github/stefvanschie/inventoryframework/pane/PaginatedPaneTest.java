@@ -2,9 +2,58 @@ package com.github.stefvanschie.inventoryframework.pane;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PaginatedPaneTest {
+
+    @Test
+    void testAddPageEmpty() {
+        PaginatedPane paginatedPane = new PaginatedPane(0, 0, 1, 1);
+
+        StaticPane staticPane = new StaticPane(0, 0, 1, 1);
+
+        assertDoesNotThrow(() -> {
+            paginatedPane.addPage(staticPane);
+
+            Collection<Pane> panes = paginatedPane.getPanes(0);
+
+            assertEquals(1, panes.size());
+            assertSame(staticPane, panes.iterator().next());
+        });
+    }
+
+    @Test
+    void testAddPageNotEmpty() {
+        PaginatedPane paginatedPane = new PaginatedPane(0, 0, 1, 1);
+
+        StaticPane staticPane1 = new StaticPane(0, 0, 1, 1);
+        StaticPane staticPane2 = new StaticPane(0, 0, 1, 1);
+
+        paginatedPane.addPane(0, staticPane1);
+
+        assertDoesNotThrow(() -> {
+            paginatedPane.addPage(staticPane2);
+
+            Collection<Pane> panes = paginatedPane.getPanes(1);
+
+            assertEquals(1, panes.size());
+            assertSame(staticPane2, panes.iterator().next());
+        });
+    }
+
+    @Test
+    void testAddPageException() {
+        PaginatedPane paginatedPane = new PaginatedPane(0, 0, 1, 1);
+
+        StaticPane staticPane1 = new StaticPane(0, 0, 1, 1);
+        StaticPane staticPane2 = new StaticPane(0, 0, 1, 1);
+
+        paginatedPane.addPane(Integer.MAX_VALUE, staticPane1);
+
+        assertThrows(ArithmeticException.class, () -> paginatedPane.addPage(staticPane2));
+    }
 
     @Test
     void testCopy() {

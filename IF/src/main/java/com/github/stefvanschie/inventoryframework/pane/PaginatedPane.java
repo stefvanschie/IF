@@ -92,6 +92,43 @@ public class PaginatedPane extends Pane {
     public int getPages() {
         return panes.size();
     }
+
+    /**
+     * Adds the specified pane to a new page. The new page will be at the index one after the highest indexed page
+     * currently in this paginated pane. If the highest index pane is {@code Integer.MAX_VALUE}, this method will throw
+     * an {@link ArithmeticException}. If this paginated pane has no pages, the index of the newly created page will
+     * be zero.
+     *
+     * @param pane the pane to add to a new page
+     * @since 0.10.8
+     * @throws ArithmeticException if the highest indexed page is the maximum value
+     */
+    public void addPage(@NotNull Pane pane) {
+        List<Pane> list = new ArrayList<>(1);
+
+        list.add(pane);
+
+        if (this.panes.isEmpty()) {
+            this.panes.put(0, list);
+
+            return;
+        }
+
+        int highest = Integer.MIN_VALUE;
+
+        for (int page : this.panes.keySet()) {
+            if (page > highest) {
+                highest = page;
+            }
+        }
+
+        if (highest == Integer.MAX_VALUE) {
+            throw new ArithmeticException("Can't increment page index beyond its maximum value");
+        }
+
+        this.panes.put(highest + 1, list);
+    }
+
     /**
      * Assigns a pane to a selected page
      *
