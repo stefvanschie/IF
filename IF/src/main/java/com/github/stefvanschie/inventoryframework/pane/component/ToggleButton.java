@@ -38,6 +38,11 @@ public class ToggleButton extends Pane {
     private boolean enabled;
 
     /**
+     * Whether this button can be toggled by a player
+     */
+    private boolean allowToggle = true;
+
+    /**
      * Creates a new toggle button
      *
      * @param slot the slot
@@ -316,15 +321,20 @@ public class ToggleButton extends Pane {
             return false;
         }
 
-        toggle();
+        if (this.allowToggle) {
+            toggle();
+        }
 
         callOnClick(event);
 
         int newX = paneOffsetX + x;
         int newY = paneOffsetY + y;
 
-        //swap panes, since we will already have toggled the enabled state here
-        if (enabled) {
+        /*
+        Since we've toggled before, the click for the panes should be swapped around. If we haven't toggled due to
+        allowToggle being false, then we should click the pane corresponding to the current state. An XOR achieves this.
+         */
+        if (enabled == this.allowToggle) {
             disabledPane.click(gui, inventoryComponent, event, slot, newX, newY, length, height);
         } else {
             enabledPane.click(gui, inventoryComponent, event, slot, newX, newY, length, height);
@@ -340,6 +350,8 @@ public class ToggleButton extends Pane {
     @Override
     public ToggleButton copy() {
         ToggleButton toggleButton = new ToggleButton(getSlot(), length, height, getPriority(), enabled);
+
+        toggleButton.allowToggle = this.allowToggle;
 
         toggleButton.setVisible(isVisible());
         toggleButton.onClick = onClick;
@@ -418,6 +430,17 @@ public class ToggleButton extends Pane {
     @Override
     public Collection<Pane> getPanes() {
         return Stream.of(enabledPane, disabledPane).collect(Collectors.toSet());
+    }
+
+    /**
+     * Sets whether this toggle button can be toggled. This only prevents players from toggling the button and does not
+     * prevent toggling the button programmatically with methods such as {@link #toggle()}.
+     *
+     * @param allowToggle whether this button can be toggled
+     * @since 0.10.8
+     */
+    public void allowToggle(boolean allowToggle) {
+        this.allowToggle = allowToggle;
     }
 
     /**
