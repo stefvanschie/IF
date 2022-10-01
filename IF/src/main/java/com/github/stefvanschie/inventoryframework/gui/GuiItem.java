@@ -54,7 +54,7 @@ public class GuiItem {
      * The items shown
      */
     @NotNull
-    private final ItemStack item;
+    private ItemStack item;
 
     /**
      * Whether this item is visible or not
@@ -183,6 +183,16 @@ public class GuiItem {
             meta.getPersistentDataContainer().set(this.keyUUID, UUIDTagType.INSTANCE, uuid);
             item.setItemMeta(meta);
         }
+    }
+
+    /**
+     * Overwrites the current item with the provided item.
+     *
+     * @param item the item to set
+     * @since 0.10.8
+     */
+    public void setItem(@NotNull ItemStack item) {
+        this.item = item;
     }
 
     /**
