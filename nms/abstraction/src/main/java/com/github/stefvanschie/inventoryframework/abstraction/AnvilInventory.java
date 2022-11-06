@@ -30,6 +30,11 @@ public abstract class AnvilInventory {
     protected String text = "";
 
     /**
+     * The enchantment cost displayed
+     */
+    protected short cost;
+
+    /**
      * Creates a new anvil inventory for the specified inventory holder
      *
      * @param inventoryHolder the inventory holder
@@ -37,6 +42,23 @@ public abstract class AnvilInventory {
      */
     public AnvilInventory(@NotNull InventoryHolder inventoryHolder) {
         this.inventoryHolder = inventoryHolder;
+    }
+
+    /**
+     * Sets the enchantment level cost for this anvil gui. Taking the item from the result slot will not actually remove
+     * these levels. Having a cost specified does not impede a player's ability to take the item in the result item,
+     * even if the player does not have the specified amount of levels. The cost must be a non-negative number.
+     *
+     * @param cost the cost
+     * @since 0.10.8
+     * @throws IllegalArgumentException when the cost is less than zero
+     */
+    public void setCost(short cost) {
+        if (cost < 0){
+            throw new IllegalArgumentException("Cost must be non-negative");
+        }
+
+        this.cost = cost;
     }
 
     /**

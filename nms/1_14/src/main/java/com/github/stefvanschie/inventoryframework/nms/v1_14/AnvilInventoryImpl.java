@@ -15,6 +15,11 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
 /**
  * Internal anvil inventory for 1.14 R1
  *
@@ -194,10 +199,16 @@ public class AnvilInventoryImpl extends AnvilInventory {
         private static final int RESULT_SLOT_INDEX = 2;
 
         /**
-         * The player for whom this container is
+         * A unique item
          */
         @NotNull
-        private final EntityPlayer entityPlayer;
+        private final ItemStack uniqueItem;
+
+        /**
+         * The field containing the listeners for this container
+         */
+        @NotNull
+        private final Field listenersField;
 
         /**
          * Creates a new custom anvil container for the specified player
@@ -210,9 +221,52 @@ public class AnvilInventoryImpl extends AnvilInventory {
             super(entityPlayer.nextContainerCounter(), entityPlayer.inventory,
                     ContainerAccess.at(entityPlayer.getWorld(), new BlockPosition(0, 0, 0)));
 
-            this.entityPlayer = entityPlayer;
-
             this.checkReachable = false;
+
+            try {
+                //stores all the registered container properties
+                Field dField = Container.class.getDeclaredField("d");
+                dField.setAccessible(true);
+
+                //get rid of the level cost property
+                ((List<?>) dField.get(this)).clear();
+            } catch (NoSuchFieldException | IllegalAccessException exception) {
+                throw new RuntimeException("Unable to access field 'd'", exception);
+            }
+
+            try {
+                this.listenersField = Container.class.getDeclaredField("listeners");
+                this.listenersField.setAccessible(true);
+            } catch (NoSuchFieldException exception) {
+                throw new RuntimeException("Unable to access field 'listeners'", exception);
+            }
+
+            //register a new property for the level cost
+            ContainerProperty levelCost = a(new ContainerProperty() {
+                private int value;
+
+                @Override
+                public int get() {
+                    return value;
+                }
+
+                @Override
+                public void set(int value) {
+                    this.value = value;
+                }
+
+                /*
+                This checks whether there have been any changes, but we want to override the client prediction. This
+                means the server should be sending the data to the client, even if it didn't change server-side. To
+                force this, we tell the server the data has always changed.
+                 */
+                @Override
+                public boolean c() {
+                    return true;
+                }
+            });
+
+            levelCost.set(AnvilInventoryImpl.super.cost);
 
             setTitle(title);
 
@@ -236,6 +290,19 @@ public class AnvilInventoryImpl extends AnvilInventory {
             };
 
             this.slots.set(RESULT_SLOT_INDEX, newSlot);
+
+            this.uniqueItem = new ItemStack(Items.COOKIE);
+
+            //to make the item unique, we add a random uuid as nbt to it
+            UUID uuid = UUID.randomUUID();
+            NBTTagCompound nbtTagCompound = new NBTTagCompound();
+
+            nbtTagCompound.set("uuid", new NBTTagLongArray(new long [] {
+                    uuid.getLeastSignificantBits(),
+                    uuid.getMostSignificantBits()
+            }));
+
+            this.uniqueItem.setTag(nbtTagCompound);
         }
 
         @Override
@@ -243,7 +310,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
             AnvilInventoryImpl.super.text = name == null ? "" : name;
 
             //the client predicts the output result, so we broadcast the state again to override it
-            this.entityPlayer.updateInventory(entityPlayer.activeContainer);
+            forceUpdate();
         }
 
         @Override
@@ -260,13 +327,48 @@ public class AnvilInventoryImpl extends AnvilInventory {
             ItemStack itemStack = super.a(i, j, inventoryclicktype, entityhuman);
 
             //the client predicts the allowed movement of the item, so we broadcast the state again to override it
-            this.entityPlayer.updateInventory(entityPlayer.activeContainer);
+            forceUpdate();
 
             return itemStack;
         }
 
         public int getContainerId() {
             return this.windowId;
+        }
+
+        /**
+         * Forcefully updates the client state, sending all items, container properties and the held item.
+         *
+         * @since 0.10.8
+         */
+        public void forceUpdate() {
+            /*
+            The server will not send the items when they haven't changed, so we will overwrite every item with a unique
+            item first to ensure the server is going to send our items.
+             */
+            Collections.fill(this.items, this.uniqueItem);
+
+            c();
+
+            List<? extends ICrafting> listeners;
+
+            try {
+                //noinspection unchecked
+                listeners = (List<? extends ICrafting>) listenersField.get(this);
+            } catch (IllegalAccessException exception) {
+                throw new RuntimeException("Unable to access field 'listeners'", exception);
+            }
+
+            for (ICrafting listener : listeners) {
+                if (!(listener instanceof EntityPlayer)) {
+                    continue;
+                }
+
+                EntityPlayer player = (EntityPlayer) listener;
+
+                player.e = false;
+                player.broadcastCarriedItem();
+            }
         }
     }
 }

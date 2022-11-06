@@ -224,6 +224,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
                 ContainerLevelAccess.create(serverPlayer.getCommandSenderWorld(), new BlockPos(0, 0, 0)));
 
             this.checkReachable = false;
+            this.cost.set(AnvilInventoryImpl.super.cost);
 
             setTitle(title);
 
@@ -237,7 +238,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
 
                 @Override
                 public boolean mayPickup(net.minecraft.world.entity.player.@NotNull Player playerEntity) {
-                    return originalSlot.mayPickup(playerEntity);
+                    return true;
                 }
 
                 @Override

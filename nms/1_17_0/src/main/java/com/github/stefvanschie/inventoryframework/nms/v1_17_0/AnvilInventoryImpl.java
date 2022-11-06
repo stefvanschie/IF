@@ -230,6 +230,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
                     ContainerLevelAccess.create(serverPlayer.getCommandSenderWorld(), new BlockPos(0, 0, 0)));
 
             this.checkReachable = false;
+            this.cost.set(AnvilInventoryImpl.super.cost);
 
             setTitle(title);
 

@@ -204,6 +204,23 @@ public class AnvilGui extends NamedGui implements InventoryBased {
         return inventory;
     }
 
+    /**
+     * Sets the enchantment level cost for this anvil gui. Taking the item from the result slot will not actually remove
+     * these levels. Having a cost specified does not impede a player's ability to take the item in the result item,
+     * even if the player does not have the specified amount of levels. The cost must be a non-negative number.
+     *
+     * @param cost the cost
+     * @since 0.10.8
+     * @throws IllegalArgumentException when the cost is less than zero
+     */
+    public void setCost(short cost) {
+        if (cost < 0){
+            throw new IllegalArgumentException("Cost must be non-negative");
+        }
+
+        this.anvilInventory.setCost(cost);
+    }
+
     @NotNull
     @Contract(pure = true)
     @Override
