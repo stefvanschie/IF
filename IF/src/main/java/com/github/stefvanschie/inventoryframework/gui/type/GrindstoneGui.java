@@ -136,10 +136,9 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
 
-        //also let Bukkit know that we opened an inventory
-        humanEntity.openInventory(getInventory());
+        Inventory inventory = grindstoneInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
 
-        grindstoneInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
+        addInventory(inventory, this);
     }
 
     @NotNull
@@ -202,7 +201,9 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
      *
      * @param event the event to handle
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
+    @Deprecated
     public void handleClickEvent(@NotNull InventoryClickEvent event) {
         int slot = event.getRawSlot();
         Player player = (Player) event.getWhoClicked();
