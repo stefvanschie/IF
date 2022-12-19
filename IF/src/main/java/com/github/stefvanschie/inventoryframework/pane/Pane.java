@@ -7,7 +7,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.exception.XMLReflectionException;
 import com.github.stefvanschie.inventoryframework.pane.util.Mask;
-import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import com.github.stefvanschie.inventoryframework.util.SkullUtil;
 import com.github.stefvanschie.inventoryframework.util.UUIDTagType;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
@@ -19,6 +19,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -33,8 +34,6 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The base class for all panes.
@@ -44,7 +43,14 @@ public abstract class Pane {
     /**
      * The starting position of this pane, which is 0 by default
      */
+    @Deprecated
     protected int x = 0, y = 0;
+
+    /**
+     * The position of this pane, which is (0,0) by default
+     */
+    @NotNull
+    protected Slot slot = Slot.fromXY(0, 0);
 
     /**
      * Length is horizontal, height is vertical
@@ -82,19 +88,18 @@ public abstract class Pane {
     /**
      * Constructs a new default pane
      *
-     * @param x the upper left x coordinate of the pane
-     * @param y the upper left y coordinate of the pane
+     * @param slot the slot of the pane
      * @param length the length of the pane
      * @param height the height of the pane
      * @param priority the priority of the pane
+     * @since 0.10.8
      */
-    protected Pane(int x, int y, int length, int height, @NotNull Priority priority) {
+    protected Pane(@NotNull Slot slot, int length, int height, @NotNull Priority priority) {
         if (length == 0 || height == 0) {
             throw new IllegalArgumentException("Length and height of pane must be greater than zero");
         }
 
-        this.x = x;
-        this.y = y;
+        setSlot(slot);
 
         this.length = length;
         this.height = height;
@@ -103,6 +108,19 @@ public abstract class Pane {
         this.visible = true;
 
         this.uuid = UUID.randomUUID();
+    }
+
+    /**
+     * Constructs a new default pane
+     *
+     * @param x the upper left x coordinate of the pane
+     * @param y the upper left y coordinate of the pane
+     * @param length the length of the pane
+     * @param height the height of the pane
+     * @param priority the priority of the pane
+     */
+    protected Pane(int x, int y, int length, int height, @NotNull Priority priority) {
+        this(Slot.fromXY(x, y), length, height, priority);
     }
 
     /**
@@ -123,6 +141,17 @@ public abstract class Pane {
         this.visible = true;
 
         this.uuid = UUID.randomUUID();
+    }
+
+    /**
+     * Constructs a new default pane
+     *
+     * @param slot the slot of the pane
+     * @param length the length of the pane
+     * @param height the height of the pane
+     */
+    protected Pane(Slot slot, int length, int height) {
+        this(slot, length, height, Priority.NORMAL);
     }
 
     /**
@@ -169,12 +198,28 @@ public abstract class Pane {
     }
 
     /**
+     * Sets the slot of this pane.
+     *
+     * @param slot the slot
+     * @since 0.10.8
+     */
+    public void setSlot(@NotNull Slot slot) {
+        this.slot = slot;
+
+        //the length should be the length of the parent container, but we don't have that, so just use one
+        this.x = slot.getX(1);
+        this.y = slot.getY(1);
+    }
+
+    /**
      * Set the x coordinate of this pane
      *
      * @param x the new x coordinate
      */
     public void setX(int x) {
         this.x = x;
+
+        this.slot = Slot.fromXY(x, getY());
     }
 
     /**
@@ -184,6 +229,8 @@ public abstract class Pane {
      */
     public void setY(int y) {
         this.y = y;
+
+        this.slot = Slot.fromXY(getX(), y);
     }
 
     /**
@@ -219,11 +266,26 @@ public abstract class Pane {
     }
 
     /**
+     * Gets the slot of the position of this pane
+     *
+     * @return the slot
+     * @since 0.10.8
+     */
+    @NotNull
+    @Contract(pure = true)
+    public Slot getSlot() {
+        return this.slot;
+    }
+
+    /**
      * Gets the x coordinate of this pane
      *
      * @return the x coordinate
+     * @deprecated when the slot was specified as an indexed position, this may return the wrong value;
+     *             {@link #getSlot()} should be used instead
      */
     @Contract(pure = true)
+    @Deprecated
     public int getX() {
         return x;
     }
@@ -232,8 +294,11 @@ public abstract class Pane {
      * Gets the y coordinate of this pane
      *
      * @return the y coordinate
+     * @deprecated when the slot was specified as an indexed position, this may return the wrong value;
+     *             {@link #getSlot()} should be used instead
      */
     @Contract(pure = true)
+    @Deprecated
     public int getY() {
         return y;
     }
@@ -300,11 +365,14 @@ public abstract class Pane {
      *
      * @param instance the instance
      * @param element the element
+     * @param plugin the plugin that will be the owner of the created item
      * @return the gui item
+     * @see #loadItem(Object, Element)
+     * @since 0.10.8
      */
     @NotNull
     @Contract(pure = true)
-    public static GuiItem loadItem(@NotNull Object instance, @NotNull Element element) {
+    public static GuiItem loadItem(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         String id = element.getAttribute("id");
         Material material = Material.matchMaterial(id.toUpperCase(Locale.getDefault()));
 
@@ -483,7 +551,7 @@ public abstract class Pane {
             }
         }
 
-        GuiItem item = new GuiItem(itemStack, action);
+        GuiItem item = new GuiItem(itemStack, action, plugin);
 
         if (element.hasAttribute("field"))
             XMLUtil.loadFieldAttribute(instance, element, item);
@@ -497,14 +565,21 @@ public abstract class Pane {
         return item;
     }
 
-    public static void load(@NotNull Pane pane, @NotNull Object instance, @NotNull Element element) {
-        if (element.hasAttribute("x")) {
-            pane.setX(Integer.parseInt(element.getAttribute("x")));
-        }
+    /**
+     * Loads an item from an instance and an element
+     *
+     * @param instance the instance
+     * @param element the element
+     * @return the gui item
+     */
+    @NotNull
+    @Contract(pure = true)
+    public static GuiItem loadItem(@NotNull Object instance, @NotNull Element element) {
+        return loadItem(instance, element, JavaPlugin.getProvidingPlugin(Pane.class));
+    }
 
-        if (element.hasAttribute("y")) {
-            pane.setY(Integer.parseInt(element.getAttribute("y")));
-        }
+    public static void load(@NotNull Pane pane, @NotNull Object instance, @NotNull Element element) {
+        pane.setSlot(Slot.deserialize(element));
 
         if (element.hasAttribute("priority"))
             pane.setPriority(Priority.valueOf(element.getAttribute("priority").toUpperCase()));
@@ -552,19 +627,21 @@ public abstract class Pane {
     @Nullable
     @Contract(pure = true)
     protected static <T extends GuiItem> T findMatchingItem(@NotNull Collection<T> items, @NotNull ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return null;
+        for (T guiItem : items) {
+            ItemMeta meta = item.getItemMeta();
+
+            if (meta == null) {
+                return null;
+            }
+
+            UUID uuid = meta.getPersistentDataContainer().get(guiItem.getKey(), UUIDTagType.INSTANCE);
+
+            if (guiItem.getUUID().equals(uuid)) {
+                return guiItem;
+            }
         }
 
-        UUID uuid = meta.getPersistentDataContainer().get(GuiItem.KEY_UUID, UUIDTagType.INSTANCE);
-        if (uuid == null) {
-            return null;
-        }
-
-        return items.stream()
-                .filter(guiItem -> guiItem.getUUID().equals(uuid))
-                .findAny().orElse(null);
+        return null;
     }
 
     /**
@@ -619,7 +696,6 @@ public abstract class Pane {
     /**
      * Calls the consumer (if it's not null) that was specified using {@link #setOnClick(Consumer)},
      * so the consumer that should be called whenever this pane is clicked in.
-     * Catches and logs all exceptions the consumer might throw.
      *
      * @param event the event to handle
      * @since 0.6.0
@@ -628,34 +704,37 @@ public abstract class Pane {
         if (onClick == null) {
             return;
         }
-    
+
+
         try {
             onClick.accept(event);
         } catch (Throwable t) {
-            Logger logger = JavaPlugin.getProvidingPlugin(getClass()).getLogger();
-            logger.log(Level.SEVERE, "Exception while handling click event in inventory '"
+            throw new RuntimeException(
+                    "Exception while handling click event in inventory '"
                     + event.getView().getTitle() + "', slot=" + event.getSlot() + ", for "
-                    + getClass().getSimpleName() + ", x=" + x + ", y=" + y + ", length=" + length + ", height=" + height, t);
+                    + getClass().getSimpleName() + ", x=" + getX() + ", y=" + getY()
+                    + ", length=" + length + ", height=" + height,
+                    t
+            );
         }
     }
 
     /**
-     * Creates a pane which displays as a border around the outside of the pane consisting of the provided item. The x,
-     * y, length and height parameters are used for the respective properties of the pane. If either the length or
+     * Creates a pane which displays as a border around the outside of the pane consisting of the provided item. The
+     * slot, length and height parameters are used for the respective properties of the pane. If either the length or
      * height is negative an {@link IllegalArgumentException} will be thrown.
      *
-     * @param x the x coordinate of the pane
-     * @param y the y coordinate of the pane
+     * @param slot the slot of the pane
      * @param length the length of the pane
      * @param height the height of the pane
      * @param item the item of which the border is made
      * @return the created pane which displays a border
-     * @since 0.10.7
+     * @since 0.10.8
      * @throws IllegalArgumentException if length or height is negative
      */
     @NotNull
     @Contract(pure = true)
-    public static Pane createBorder(int x, int y, int length, int height, @NotNull GuiItem item) {
+    public static Pane createBorder(Slot slot, int length, int height, @NotNull GuiItem item) {
         if (length < 0) {
             throw new IllegalArgumentException("Length should be non-negative");
         }
@@ -684,12 +763,32 @@ public abstract class Pane {
             mask[yIndex] = builder.append('1').toString();
         }
 
-        OutlinePane pane = new OutlinePane(x, y, length, height);
+        OutlinePane pane = new OutlinePane(slot, length, height);
         pane.applyMask(new Mask(mask));
         pane.addItem(item);
         pane.setRepeat(true);
 
         return pane;
+    }
+
+    /**
+     * Creates a pane which displays as a border around the outside of the pane consisting of the provided item. The x,
+     * y, length and height parameters are used for the respective properties of the pane. If either the length or
+     * height is negative an {@link IllegalArgumentException} will be thrown.
+     *
+     * @param x the x coordinate of the pane
+     * @param y the y coordinate of the pane
+     * @param length the length of the pane
+     * @param height the height of the pane
+     * @param item the item of which the border is made
+     * @return the created pane which displays a border
+     * @since 0.10.7
+     * @throws IllegalArgumentException if length or height is negative
+     */
+    @NotNull
+    @Contract(pure = true)
+    public static Pane createBorder(int x, int y, int length, int height, @NotNull GuiItem item) {
+        return createBorder(Slot.fromXY(x, y), length, height, item);
     }
 
     /**

@@ -5,7 +5,10 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -32,8 +35,33 @@ public class CycleButton extends Pane {
      */
     private int position = 0;
 
+    /**
+     * Creates a new cycle button
+     *
+     * @param slot the slot of the button
+     * @param length the length of the button
+     * @param height the height of the button
+     * @param priority the priority of the button
+     * @since 0.10.8
+     */
+    public CycleButton(@NotNull Slot slot, int length, int height, @NotNull Priority priority) {
+        super(slot, length, height, priority);
+    }
+
     public CycleButton(int x, int y, int length, int height, @NotNull Priority priority) {
         super(x, y, length, height, priority);
+    }
+
+    /**
+     * Creates a new cycle button
+     *
+     * @param slot the slot of the button
+     * @param length the length of the button
+     * @param height the height of the button
+     * @since 0.10.8
+     */
+    public CycleButton(@NotNull Slot slot, int length, int height) {
+        super(slot, length, height);
     }
 
     public CycleButton(int x, int y, int length, int height) {
@@ -51,10 +79,17 @@ public class CycleButton extends Pane {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
-        int adjustedSlot = slot - (getX() + paneOffsetX) - inventoryComponent.getLength() * (getY() + paneOffsetY);
+        Slot paneSlot = getSlot();
 
-        int x = adjustedSlot % inventoryComponent.getLength();
-        int y = adjustedSlot / inventoryComponent.getLength();
+        int xPosition = paneSlot.getX(maxLength);
+        int yPosition = paneSlot.getY(maxLength);
+
+        int totalLength = inventoryComponent.getLength();
+
+        int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
+
+        int x = adjustedSlot % totalLength;
+        int y = adjustedSlot / totalLength;
 
         //this isn't our item
         if (x < 0 || x >= length || y < 0 || y >= height) {
@@ -84,8 +119,10 @@ public class CycleButton extends Pane {
     @Override
     public void display(@NotNull InventoryComponent inventoryComponent, int paneOffsetX, int paneOffsetY, int maxLength,
                         int maxHeight) {
-        int newX = paneOffsetX + x;
-        int newY = paneOffsetY + y;
+        Slot slot = getSlot();
+
+        int newX = paneOffsetX + slot.getX(maxLength);
+        int newY = paneOffsetY + slot.getY(maxLength);
 
         int newMaxLength = Math.min(maxLength, length);
         int newMaxHeight = Math.min(maxHeight, height);
@@ -97,7 +134,7 @@ public class CycleButton extends Pane {
     @Contract(pure = true)
     @Override
     public CycleButton copy() {
-        CycleButton cycleButton = new CycleButton(x, y, length, height, getPriority());
+        CycleButton cycleButton = new CycleButton(getSlot(), length, height, getPriority());
 
         for (Pane pane : panes) {
             cycleButton.addPane(pane);
@@ -165,11 +202,12 @@ public class CycleButton extends Pane {
      *
      * @param instance the instance class
      * @param element the element
+     * @param plugin the plugin that will be the owner of the underlying items
      * @return the cycle button
-     * @since 0.5.0
+     * @since 0.10.8
      */
     @NotNull
-    public static CycleButton load(@NotNull Object instance, @NotNull Element element) {
+    public static CycleButton load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         int length;
         int height;
 
@@ -197,9 +235,25 @@ public class CycleButton extends Pane {
                 continue;
             }
 
-            cycleButton.addPane(Gui.loadPane(instance, pane));
+            cycleButton.addPane(Gui.loadPane(instance, pane, plugin));
         }
 
         return cycleButton;
+    }
+
+    /**
+     * Loads a cycle button from a given element
+     *
+     * @param instance the instance class
+     * @param element the element
+     * @return the cycle button
+     * @since 0.5.0
+     * @deprecated this method is no longer used internally and has been superseded by
+     *             {@link #load(Object, Element, Plugin)}
+     */
+    @NotNull
+    @Deprecated
+    public static CycleButton load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(CycleButton.class));
     }
 }

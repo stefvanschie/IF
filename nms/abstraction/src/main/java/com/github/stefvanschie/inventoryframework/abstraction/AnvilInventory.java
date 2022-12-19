@@ -3,6 +3,7 @@ package com.github.stefvanschie.inventoryframework.abstraction;
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
@@ -29,6 +30,11 @@ public abstract class AnvilInventory {
     protected String text = "";
 
     /**
+     * The enchantment cost displayed
+     */
+    protected short cost;
+
+    /**
      * Creates a new anvil inventory for the specified inventory holder
      *
      * @param inventoryHolder the inventory holder
@@ -36,6 +42,23 @@ public abstract class AnvilInventory {
      */
     public AnvilInventory(@NotNull InventoryHolder inventoryHolder) {
         this.inventoryHolder = inventoryHolder;
+    }
+
+    /**
+     * Sets the enchantment level cost for this anvil gui. Taking the item from the result slot will not actually remove
+     * these levels. Having a cost specified does not impede a player's ability to take the item in the result item,
+     * even if the player does not have the specified amount of levels. The cost must be a non-negative number.
+     *
+     * @param cost the cost
+     * @since 0.10.8
+     * @throws IllegalArgumentException when the cost is less than zero
+     */
+    public void setCost(short cost) {
+        if (cost < 0){
+            throw new IllegalArgumentException("Cost must be non-negative");
+        }
+
+        this.cost = cost;
     }
 
     /**
@@ -50,7 +73,7 @@ public abstract class AnvilInventory {
         openInventory(player, StringHolder.of(title), items);
     }
 
-    public abstract void openInventory(@NotNull Player player, @NotNull TextHolder title, @Nullable ItemStack[] items);
+    public abstract Inventory openInventory(@NotNull Player player, @NotNull TextHolder title, @Nullable ItemStack[] items);
 
     /**
      * Sends the top items to the inventory for the specified player.
@@ -58,7 +81,9 @@ public abstract class AnvilInventory {
      * @param player the player for which to open the anvil
      * @param items the items to send
      * @since 0.8.0
+     * @deprecated  no longer used internally
      */
+    @Deprecated
     public abstract void sendItems(@NotNull Player player, @Nullable ItemStack[] items);
 
     /**
@@ -67,7 +92,9 @@ public abstract class AnvilInventory {
      * @param player the player to send the item to
      * @param item the item to send
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
+    @Deprecated
     public abstract void sendResultItem(@NotNull Player player, @Nullable ItemStack item);
 
     /**
@@ -76,7 +103,9 @@ public abstract class AnvilInventory {
      * @param player the player to send the item to
      * @param item the item to send
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
+    @Deprecated
     public abstract void sendFirstItem(@NotNull Player player, @Nullable ItemStack item);
 
     /**
@@ -85,7 +114,9 @@ public abstract class AnvilInventory {
      * @param player the player to send the item to
      * @param item the item to send
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
+    @Deprecated
     public abstract void sendSecondItem(@NotNull Player player, @Nullable ItemStack item);
 
     /**
@@ -94,7 +125,9 @@ public abstract class AnvilInventory {
      * @param player the player to set the cursor
      * @param item the item to set the cursor to
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
+    @Deprecated
     public abstract void setCursor(@NotNull Player player, @NotNull ItemStack item);
 
     /**
@@ -102,7 +135,9 @@ public abstract class AnvilInventory {
      *
      * @param player the player to clear the cursor of
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
+    @Deprecated
     public abstract void clearCursor(@NotNull Player player);
 
     /**
@@ -110,7 +145,9 @@ public abstract class AnvilInventory {
      *
      * @param player the player to clear the result item of
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
+    @Deprecated
     public abstract void clearResultItem(@NotNull Player player);
 
     /**

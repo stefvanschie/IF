@@ -2,6 +2,8 @@ package com.github.stefvanschie.inventoryframework.gui.type.util;
 
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,6 +37,32 @@ public abstract class NamedGui extends Gui {
      * @since 0.10.0
      */
     public NamedGui(@NotNull TextHolder title) {
+        this(title, JavaPlugin.getProvidingPlugin(NamedGui.class));
+    }
+
+    /**
+     * Constructs a new gui with a title for the given {@code plugin}.
+     *
+     * @param title the title/name of this gui
+     * @param plugin the owning plugin of this gui
+     * @see #NamedGui(String)
+     * @since 0.10.8
+     */
+    public NamedGui(@NotNull String title, @NotNull Plugin plugin) {
+        this(StringHolder.of(title), plugin);
+    }
+
+    /**
+     * Constructs a new gui with a title for the given {@code plugin}.
+     *
+     * @param title the title/name of this gui
+     * @param plugin the owning plugin of this gui
+     * @see #NamedGui(TextHolder)
+     * @since 0.10.8
+     */
+    public NamedGui(@NotNull TextHolder title, @NotNull Plugin plugin) {
+        super(plugin);
+
         this.title = title;
     }
 

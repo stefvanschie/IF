@@ -5,17 +5,20 @@ import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.nms.v1_15.util.TextHolderUtil;
 import net.minecraft.server.v1_15_R1.*;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftInventoryGrindstone;
-import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_15_R1.event.CraftEventFactory;
 import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Internal grindstone inventory for 1.15 R1
@@ -29,8 +32,8 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
     }
 
     @Override
-    public void openInventory(@NotNull Player player, @NotNull TextHolder title,
-                              @Nullable org.bukkit.inventory.ItemStack[] items) {
+    public Inventory openInventory(@NotNull Player player, @NotNull TextHolder title,
+                                   @Nullable org.bukkit.inventory.ItemStack[] items) {
         int itemAmount = items.length;
 
         if (itemAmount != 3) {
@@ -40,17 +43,27 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
         }
 
         EntityPlayer entityPlayer = getEntityPlayer(player);
-        ContainerGrindstoneImpl containerGrindstone = new ContainerGrindstoneImpl(entityPlayer, items);
 
-        entityPlayer.activeContainer = containerGrindstone;
+        CraftEventFactory.handleInventoryCloseEvent(entityPlayer, InventoryCloseEvent.Reason.OPEN_NEW);
 
-        int id = containerGrindstone.windowId;
+        entityPlayer.activeContainer = entityPlayer.defaultContainer;
+
         IChatBaseComponent message = TextHolderUtil.toComponent(title);
-        PacketPlayOutOpenWindow packet = new PacketPlayOutOpenWindow(id, Containers.GRINDSTONE, message);
+        ContainerGrindstoneImpl containerGrindstone = new ContainerGrindstoneImpl(entityPlayer);
 
-        entityPlayer.playerConnection.sendPacket(packet);
+        Inventory inventory = containerGrindstone.getBukkitView().getTopInventory();
 
-        sendItems(player, items, null);
+        inventory.setItem(0, items[0]);
+        inventory.setItem(1, items[1]);
+        inventory.setItem(2, items[2]);
+
+        int windowId = containerGrindstone.getWindowId();
+
+        entityPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(windowId, Containers.GRINDSTONE, message));
+        entityPlayer.activeContainer = containerGrindstone;
+        entityPlayer.syncInventory();
+
+        return inventory;
     }
 
     @Override
@@ -79,8 +92,10 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
      * @param entityPlayer the player to get the window id for
      * @return the window id
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
     @Contract(pure = true)
+    @Deprecated
     private int getWindowId(@NotNull EntityPlayer entityPlayer) {
         return entityPlayer.activeContainer.windowId;
     }
@@ -91,9 +106,11 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
      * @param entityPlayer the player to get the player connection from
      * @return the player connection
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
     @NotNull
     @Contract(pure = true)
+    @Deprecated
     private PlayerConnection getPlayerConnection(@NotNull EntityPlayer entityPlayer) {
         return entityPlayer.playerConnection;
     }
@@ -116,76 +133,128 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
      *
      * @since 0.8.0
      */
-    private class ContainerGrindstoneImpl extends ContainerGrindstone {
+    private static class ContainerGrindstoneImpl extends ContainerGrindstone {
 
         /**
-         * The player for this grindstone container
+         * A unique item
          */
         @NotNull
-        private final Player player;
+        private final ItemStack uniqueItem;
 
         /**
-         * The internal bukkit entity for this container grindstone
-         */
-        @Nullable
-        private CraftInventoryView bukkitEntity;
-
-        /**
-         * Field for accessing the craft inventory field
+         * The field containing the listeners for this container
          */
         @NotNull
-        private final Field craftInventoryField;
+        private final Field listenersField;
 
         /**
-         * Field for accessing the result inventory field
+         * Creates a new grindstone container
+         *
+         * @param entityPlayer the player for whom this container should be opened
+         * @since 0.10.8
          */
-        @NotNull
-        private final Field resultInventoryField;
-
-        public ContainerGrindstoneImpl(@NotNull EntityPlayer entityPlayer,
-                                       @Nullable org.bukkit.inventory.ItemStack[] items) {
+        public ContainerGrindstoneImpl(@NotNull EntityPlayer entityPlayer) {
             super(entityPlayer.nextContainerCounter(), entityPlayer.inventory);
 
-            this.player = entityPlayer.getBukkitEntity();
-
             try {
-                this.craftInventoryField = ContainerGrindstone.class.getDeclaredField("craftInventory");
-                this.craftInventoryField.setAccessible(true);
-
-                this.resultInventoryField = ContainerGrindstone.class.getDeclaredField("resultInventory");
-                this.resultInventoryField.setAccessible(true);
+                this.listenersField = Container.class.getDeclaredField("listeners");
+                this.listenersField.setAccessible(true);
             } catch (NoSuchFieldException exception) {
-                throw new RuntimeException(exception);
+                throw new RuntimeException("Unable to access field 'listeners'", exception);
             }
 
-            getCraftInventory().setItem(0, CraftItemStack.asNMSCopy(items[0]));
-            getCraftInventory().setItem(1, CraftItemStack.asNMSCopy(items[1]));
+            Slot firstSlot = this.slots.get(0);
+            Slot secondSlot = this.slots.get(1);
+            Slot thirdSlot = this.slots.get(2);
 
-            getResultInventory().setItem(2, CraftItemStack.asNMSCopy(items[2]));
+            this.slots.set(0, new Slot(firstSlot.inventory, firstSlot.rawSlotIndex, firstSlot.e, firstSlot.f) {
+                @Override
+                public boolean isAllowed(ItemStack stack) {
+                    return true;
+                }
+            });
+
+            this.slots.set(1, new Slot(secondSlot.inventory, secondSlot.rawSlotIndex, secondSlot.e, secondSlot.f) {
+                @Override
+                public boolean isAllowed(ItemStack stack) {
+                    return true;
+                }
+            });
+
+            this.slots.set(2, new Slot(thirdSlot.inventory, thirdSlot.rawSlotIndex, thirdSlot.e, thirdSlot.f) {
+                @Override
+                public boolean isAllowed(ItemStack stack) {
+                    return true;
+                }
+
+                @Override
+                public ItemStack a(EntityHuman entityHuman, ItemStack itemStack) {
+                    return itemStack;
+                }
+            });
+
+            this.uniqueItem = new ItemStack(Items.COOKIE);
+
+            //to make the item unique, we add a random uuid as nbt to it
+            UUID uuid = UUID.randomUUID();
+            NBTTagCompound nbtTagCompound = new NBTTagCompound();
+
+            nbtTagCompound.set("uuid", new NBTTagLongArray(new long [] {
+                    uuid.getLeastSignificantBits(),
+                    uuid.getMostSignificantBits()
+            }));
+
+            this.uniqueItem.setTag(nbtTagCompound);
         }
 
-        @NotNull
-        @Override
-        public CraftInventoryView getBukkitView() {
-            if (bukkitEntity == null) {
-                CraftInventory inventory = new CraftInventoryGrindstone(getCraftInventory(), getResultInventory()) {
-                    @NotNull
-                    @Contract(pure = true)
-                    @Override
-                    public InventoryHolder getHolder() {
-                        return inventoryHolder;
-                    }
-                };
+        /**
+         * Forcefully updates the client state, sending all items, container properties and the held item.
+         *
+         * @since 0.10.8
+         */
+        public void forceUpdate() {
+            /*
+            The server will not send the items when they haven't changed, so we will overwrite every item with a unique
+            item first to ensure the server is going to send our items.
+             */
+            Collections.fill(this.items, this.uniqueItem);
 
-                bukkitEntity = new CraftInventoryView(player, inventory, this);
+            c();
+
+            List<? extends ICrafting> listeners;
+
+            try {
+                //noinspection unchecked
+                listeners = (List<? extends ICrafting>) listenersField.get(this);
+            } catch (IllegalAccessException exception) {
+                throw new RuntimeException("Unable to access field 'listeners'", exception);
             }
 
-            return bukkitEntity;
+            for (ICrafting listener : listeners) {
+                if (!(listener instanceof EntityPlayer)) {
+                    continue;
+                }
+
+                EntityPlayer player = (EntityPlayer) listener;
+
+                player.e = false;
+                player.broadcastCarriedItem();
+            }
+        }
+
+        @Override
+        public ItemStack a(int i, int j, InventoryClickType inventoryclicktype, EntityHuman entityhuman) {
+            ItemStack itemStack = super.a(i, j, inventoryclicktype, entityhuman);
+
+            //the client predicts the allowed movement of the item, so we broadcast the state again to override it
+            forceUpdate();
+
+            return itemStack;
         }
 
         @Contract(pure = true, value = "_ -> true")
         @Override
-        public boolean canUse(@Nullable EntityHuman entityhuman) {
+        public boolean canUse(@Nullable EntityHuman entityHuman) {
             return true;
         }
 
@@ -193,38 +262,10 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
         public void a(IInventory inventory) {}
 
         @Override
-        public void b(EntityHuman entityhuman) {}
+        public void b(EntityHuman entityHuman) {}
 
-        /**
-         * Gets the craft inventory
-         *
-         * @return the craft inventory
-         * @since 0.8.0
-         */
-        @NotNull
-        @Contract(pure = true)
-        private IInventory getCraftInventory() {
-            try {
-                return (IInventory) craftInventoryField.get(this);
-            } catch (IllegalAccessException exception) {
-                throw new RuntimeException(exception);
-            }
-        }
-
-        /**
-         * Gets the result inventory
-         *
-         * @return the result inventory
-         * @since 0.8.0
-         */
-        @NotNull
-        @Contract(pure = true)
-        private IInventory getResultInventory() {
-            try {
-                return (IInventory) resultInventoryField.get(this);
-            } catch (IllegalAccessException exception) {
-                throw new RuntimeException(exception);
-            }
+        public int getWindowId() {
+            return this.windowId;
         }
     }
 }

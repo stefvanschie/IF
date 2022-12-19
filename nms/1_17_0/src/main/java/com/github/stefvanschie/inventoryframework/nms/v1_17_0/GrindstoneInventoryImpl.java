@@ -14,19 +14,17 @@ import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftInventoryGrindstone;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftInventoryView;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_17_R1.event.CraftEventFactory;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.lang.reflect.Field;
 
 /**
  * Internal grindstone inventory for 1.17 R1
@@ -40,8 +38,8 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
     }
 
     @Override
-    public void openInventory(@NotNull Player player, @NotNull TextHolder title,
-                              @Nullable org.bukkit.inventory.ItemStack[] items) {
+    public Inventory openInventory(@NotNull Player player, @NotNull TextHolder title,
+                                   @Nullable org.bukkit.inventory.ItemStack[] items) {
         int itemAmount = items.length;
 
         if (itemAmount != 3) {
@@ -51,16 +49,27 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
         }
 
         ServerPlayer serverPlayer = getServerPlayer(player);
-        ContainerGrindstoneImpl containerGrindstone = new ContainerGrindstoneImpl(serverPlayer, items);
 
-        serverPlayer.containerMenu = containerGrindstone;
+        CraftEventFactory.handleInventoryCloseEvent(serverPlayer, InventoryCloseEvent.Reason.OPEN_NEW);
 
-        int id = containerGrindstone.containerId;
+        serverPlayer.containerMenu = serverPlayer.inventoryMenu;
+
         Component message = TextHolderUtil.toComponent(title);
+        ContainerGrindstoneImpl containerGrindstone = new ContainerGrindstoneImpl(serverPlayer);
 
-        serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.GRINDSTONE, message));
+        Inventory inventory = containerGrindstone.getBukkitView().getTopInventory();
 
-        sendItems(player, items, null);
+        inventory.setItem(0, items[0]);
+        inventory.setItem(1, items[1]);
+        inventory.setItem(2, items[2]);
+
+        int containerId = containerGrindstone.getContainerId();
+
+        serverPlayer.connection.send(new ClientboundOpenScreenPacket(containerId, MenuType.GRINDSTONE, message));
+        serverPlayer.containerMenu = containerGrindstone;
+        serverPlayer.initMenu(containerGrindstone);
+
+        return inventory;
     }
 
     @Override
@@ -86,8 +95,10 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
      * @param nmsPlayer the player to get the containerId id for
      * @return the containerId id
      * @since 0.9.9
+     * @deprecated no longer used internally
      */
     @Contract(pure = true)
+    @Deprecated
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
         return nmsPlayer.containerMenu.containerId;
     }
@@ -98,9 +109,11 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
      * @since 0.9.9
+     * @deprecated no longer used internally
      */
     @NotNull
     @Contract(pure = true)
+    @Deprecated
     private ServerPlayerConnection getPlayerConnection(@NotNull ServerPlayer serverPlayer) {
         return serverPlayer.connection;
     }
@@ -123,73 +136,44 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
      *
      * @since 0.9.9
      */
-    private class ContainerGrindstoneImpl extends GrindstoneMenu {
+    private static class ContainerGrindstoneImpl extends GrindstoneMenu {
 
         /**
-         * The player for this grindstone container
+         * Creates a new grindstone container
+         *
+         * @param serverPlayer the player for whom this container should be opened
+         * @since 0.10.8
          */
-        @NotNull
-        private final Player player;
-
-        /**
-         * The internal bukkit entity for this container grindstone
-         */
-        @Nullable
-        private CraftInventoryView bukkitEntity;
-
-        /**
-         * Field for accessing the craft inventory field
-         */
-        @NotNull
-        private final Field repairSlotsField;
-
-        /**
-         * Field for accessing the result inventory field
-         */
-        @NotNull
-        private final Field resultSlotsField;
-
-        public ContainerGrindstoneImpl(@NotNull ServerPlayer serverPlayer,
-                                       @Nullable org.bukkit.inventory.ItemStack[] items) {
+        public ContainerGrindstoneImpl(@NotNull ServerPlayer serverPlayer) {
             super(serverPlayer.nextContainerCounter(), serverPlayer.getInventory());
 
-            this.player = serverPlayer.getBukkitEntity();
+            Slot firstSlot = this.slots.get(0);
+            Slot secondSlot = this.slots.get(1);
+            Slot thirdSlot = this.slots.get(2);
 
-            try {
-                //noinspection JavaReflectionMemberAccess
-                this.repairSlotsField = GrindstoneMenu.class.getDeclaredField("t"); //repairSlots
-                this.repairSlotsField.setAccessible(true);
+            this.slots.set(0, new Slot(firstSlot.container, firstSlot.index, firstSlot.x, firstSlot.y) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return true;
+                }
+            });
 
-                //noinspection JavaReflectionMemberAccess
-                this.resultSlotsField = GrindstoneMenu.class.getDeclaredField("s"); //resultSlots
-                this.resultSlotsField.setAccessible(true);
-            } catch (NoSuchFieldException exception) {
-                throw new RuntimeException(exception);
-            }
+            this.slots.set(1, new Slot(secondSlot.container, secondSlot.index, secondSlot.x, secondSlot.y) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return true;
+                }
+            });
 
-            getCraftInventory().setItem(0, CraftItemStack.asNMSCopy(items[0]));
-            getCraftInventory().setItem(1, CraftItemStack.asNMSCopy(items[1]));
+            this.slots.set(2, new Slot(thirdSlot.container, thirdSlot.index, thirdSlot.x, thirdSlot.y) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return true;
+                }
 
-            getResultInventory().setItem(2, CraftItemStack.asNMSCopy(items[2]));
-        }
-
-        @NotNull
-        @Override
-        public CraftInventoryView getBukkitView() {
-            if (bukkitEntity == null) {
-                CraftInventory inventory = new CraftInventoryGrindstone(getCraftInventory(), getResultInventory()) {
-                    @NotNull
-                    @Contract(pure = true)
-                    @Override
-                    public InventoryHolder getHolder() {
-                        return inventoryHolder;
-                    }
-                };
-
-                bukkitEntity = new CraftInventoryView(player, inventory, this);
-            }
-
-            return bukkitEntity;
+                @Override
+                public void onTake(net.minecraft.world.entity.player.Player player, ItemStack stack) {}
+            });
         }
 
         @Contract(pure = true, value = "_ -> true")
@@ -204,36 +188,8 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
         @Override
         public void removed(net.minecraft.world.entity.player.Player nmsPlayer) {}
 
-        /**
-         * Gets the craft inventory
-         *
-         * @return the craft inventory
-         * @since 0.9.9
-         */
-        @NotNull
-        @Contract(pure = true)
-        private Container getCraftInventory() {
-            try {
-                return (Container) repairSlotsField.get(this);
-            } catch (IllegalAccessException exception) {
-                throw new RuntimeException(exception);
-            }
-        }
-
-        /**
-         * Gets the result inventory
-         *
-         * @return the result inventory
-         * @since 0.9.9
-         */
-        @NotNull
-        @Contract(pure = true)
-        private Container getResultInventory() {
-            try {
-                return (Container) resultSlotsField.get(this);
-            } catch (IllegalAccessException exception) {
-                throw new RuntimeException(exception);
-            }
+        public int getContainerId() {
+            return this.containerId;
         }
     }
 }

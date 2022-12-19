@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -25,10 +26,17 @@ import java.util.ArrayList;
 public class GuiItem {
 
     /**
+     * The logger to log errors with
+     */
+    @NotNull
+    private Logger logger;
+
+    /**
      * The {@link NamespacedKey} that specifies the location of the (internal) {@link UUID} in {@link PersistentDataContainer}s.
      * The {@link PersistentDataType} that should be used is {@link UUIDTagType}.
      */
-    public static final NamespacedKey KEY_UUID = new NamespacedKey(JavaPlugin.getProvidingPlugin(GuiItem.class), "IF-uuid");
+    @NotNull
+    private NamespacedKey keyUUID;
 
     /**
      * An action for the inventory
@@ -46,7 +54,7 @@ public class GuiItem {
      * The items shown
      */
     @NotNull
-    private final ItemStack item;
+    private ItemStack item;
 
     /**
      * Whether this item is visible or not
@@ -64,8 +72,13 @@ public class GuiItem {
      *
      * @param item the item stack
      * @param action the action called whenever an interaction with this item happens
+     * @param plugin the owning plugin of this item
+     * @see #GuiItem(ItemStack, Consumer)
+     * @since 0.10.8
      */
-    public GuiItem(@NotNull ItemStack item, @Nullable Consumer<InventoryClickEvent> action) {
+    public GuiItem(@NotNull ItemStack item, @Nullable Consumer<InventoryClickEvent> action, @NotNull Plugin plugin) {
+        this.logger = plugin.getLogger();
+        this.keyUUID = new NamespacedKey(plugin, "IF-uuid");
         this.action = action;
         this.visible = true;
         this.properties = new ArrayList<>();
@@ -79,9 +92,31 @@ public class GuiItem {
      * Creates a new gui item based on the item stack and action
      *
      * @param item the item stack
+     * @param plugin the owning plugin of this item
+     * @see #GuiItem(ItemStack)
+     * @since 0.10.8
+     */
+    public GuiItem(@NotNull ItemStack item, @NotNull Plugin plugin) {
+        this(item, event -> {}, plugin);
+    }
+
+    /**
+     * Creates a new gui item based on the item stack and action
+     *
+     * @param item the item stack
+     * @param action the action called whenever an interaction with this item happens
+     */
+    public GuiItem(@NotNull ItemStack item, @Nullable Consumer<InventoryClickEvent> action) {
+        this(item, action, JavaPlugin.getProvidingPlugin(GuiItem.class));
+    }
+
+    /**
+     * Creates a new gui item based on the item stack and action
+     *
+     * @param item the item stack
      */
     public GuiItem(@NotNull ItemStack item) {
-        this(item, null);
+        this(item, event -> {});
     }
 
     /**
@@ -97,6 +132,8 @@ public class GuiItem {
     public GuiItem copy() {
         GuiItem guiItem = new GuiItem(item.clone(), action);
 
+        guiItem.logger = this.logger;
+        guiItem.keyUUID = this.keyUUID;
         guiItem.visible = visible;
         guiItem.uuid = uuid;
         guiItem.properties = new ArrayList<>(properties);
@@ -106,7 +143,7 @@ public class GuiItem {
             throw new IllegalArgumentException("item must be able to have ItemMeta (it mustn't be AIR)");
         }
 
-        meta.getPersistentDataContainer().set(KEY_UUID, UUIDTagType.INSTANCE, guiItem.uuid);
+        meta.getPersistentDataContainer().set(keyUUID, UUIDTagType.INSTANCE, guiItem.uuid);
         guiItem.item.setItemMeta(meta);
 
         return guiItem;
@@ -128,8 +165,7 @@ public class GuiItem {
         try {
             action.accept(event);
         } catch (Throwable t) {
-            Logger logger = JavaPlugin.getProvidingPlugin(getClass()).getLogger();
-            logger.log(Level.SEVERE, "Exception while handling click event in inventory '"
+            this.logger.log(Level.SEVERE, "Exception while handling click event in inventory '"
                     + event.getView().getTitle() + "', slot=" + event.getSlot() + ", item=" + item.getType(), t);
         }
     }
@@ -144,9 +180,19 @@ public class GuiItem {
         ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
-            meta.getPersistentDataContainer().set(KEY_UUID, UUIDTagType.INSTANCE, uuid);
+            meta.getPersistentDataContainer().set(this.keyUUID, UUIDTagType.INSTANCE, uuid);
             item.setItemMeta(meta);
         }
+    }
+
+    /**
+     * Overwrites the current item with the provided item.
+     *
+     * @param item the item to set
+     * @since 0.10.8
+     */
+    public void setItem(@NotNull ItemStack item) {
+        this.item = item;
     }
 
     /**
@@ -190,6 +236,18 @@ public class GuiItem {
     @Contract(pure = true)
     public ItemStack getItem() {
         return item;
+    }
+
+    /**
+     * Gets the namespaced key used for this item.
+     *
+     * @return the namespaced key
+     * @since 0.10.8
+     */
+    @NotNull
+    @Contract(pure = true)
+    public NamespacedKey getKey() {
+        return keyUUID;
     }
 
     /**

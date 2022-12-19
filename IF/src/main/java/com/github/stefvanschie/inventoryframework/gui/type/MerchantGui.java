@@ -21,6 +21,8 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -117,7 +119,31 @@ public class MerchantGui extends NamedGui {
      * @since 0.10.0
      */
     public MerchantGui(@NotNull TextHolder title) {
-        super(title);
+        this(title, JavaPlugin.getProvidingPlugin(MerchantGui.class));
+    }
+
+    /**
+     * Constructs a new merchant gui for the given {@code plugin}.
+     *
+     * @param title the title/name of this gui.
+     * @param plugin the owning plugin of this gui
+     * @see #MerchantGui(String)
+     * @since 0.10.8
+     */
+    public MerchantGui(@NotNull String title, @NotNull Plugin plugin) {
+        this(StringHolder.of(title), plugin);
+    }
+
+    /**
+     * Constructs a new merchant gui for the given {@code plugin}.
+     *
+     * @param title the title/name of this gui.
+     * @param plugin the owning plugin of this gui
+     * @see #MerchantGui(TextHolder)
+     * @since 0.10.8
+     */
+    public MerchantGui(@NotNull TextHolder title, @NotNull Plugin plugin) {
+        super(title, plugin);
 
         this.merchant = getTitleHolder().asMerchantTitle();
     }
@@ -213,7 +239,7 @@ public class MerchantGui extends NamedGui {
     @NotNull
     @Override
     public Gui copy() {
-        MerchantGui gui = new MerchantGui(getTitleHolder());
+        MerchantGui gui = new MerchantGui(getTitleHolder(), super.plugin);
 
         gui.inputComponent = inputComponent.copy();
         gui.playerInventoryComponent = playerInventoryComponent.copy();
@@ -386,19 +412,21 @@ public class MerchantGui extends NamedGui {
      *
      * @param instance the instance on which to reference fields and methods
      * @param inputStream the input stream containing the XML data
+     * @param plugin the plugin that will be the owner of the created gui
      * @return the loaded merchant gui
-     * @since 0.10.0
+     * @see #load(Object, InputStream)
+     * @since 0.10.8
      */
     @Nullable
     @Contract(pure = true)
-    public static MerchantGui load(@NotNull Object instance, @NotNull InputStream inputStream) {
+    public static MerchantGui load(@NotNull Object instance, @NotNull InputStream inputStream, @NotNull Plugin plugin) {
         try {
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
             Element documentElement = document.getDocumentElement();
 
             documentElement.normalize();
 
-            return load(instance, documentElement);
+            return load(instance, documentElement, plugin);
         } catch (SAXException | ParserConfigurationException | IOException e) {
             e.printStackTrace();
             return null;
@@ -410,17 +438,19 @@ public class MerchantGui extends NamedGui {
      *
      * @param instance the instance on which to reference fields and methods
      * @param element the element to load the gui from
+     * @param plugin the plugin that will be the owner of the created gui
      * @return the loaded merchant gui
-     * @since 0.10.0
+     * @see #load(Object, Element)
+     * @since 0.10.8
      */
     @NotNull
     @Contract(pure = true)
-    public static MerchantGui load(@NotNull Object instance, @NotNull Element element) {
+    public static MerchantGui load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         if (!element.hasAttribute("title")) {
             throw new XMLLoadException("Provided XML element's gui tag doesn't have the mandatory title attribute set");
         }
 
-        MerchantGui merchantGui = new MerchantGui(element.getAttribute("title"));
+        MerchantGui merchantGui = new MerchantGui(element.getAttribute("title"), plugin);
         merchantGui.initializeOrThrow(instance, element);
 
         if (element.hasAttribute("populate")) {
@@ -529,5 +559,33 @@ public class MerchantGui extends NamedGui {
         }
 
         return merchantGui;
+    }
+
+    /**
+     * Loads a merchant gui from an XML file.
+     *
+     * @param instance the instance on which to reference fields and methods
+     * @param inputStream the input stream containing the XML data
+     * @return the loaded merchant gui
+     * @since 0.10.0
+     */
+    @Nullable
+    @Contract(pure = true)
+    public static MerchantGui load(@NotNull Object instance, @NotNull InputStream inputStream) {
+        return load(instance, inputStream, JavaPlugin.getProvidingPlugin(MerchantGui.class));
+    }
+
+    /**
+     * Loads a merchant gui from the specified element, applying code references to the provided instance.
+     *
+     * @param instance the instance on which to reference fields and methods
+     * @param element the element to load the gui from
+     * @return the loaded merchant gui
+     * @since 0.10.0
+     */
+    @NotNull
+    @Contract(pure = true)
+    public static MerchantGui load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(MerchantGui.class));
     }
 }

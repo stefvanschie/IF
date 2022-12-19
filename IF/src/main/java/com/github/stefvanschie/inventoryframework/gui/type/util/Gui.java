@@ -6,6 +6,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiListener;
 import com.github.stefvanschie.inventoryframework.gui.type.*;
 import com.github.stefvanschie.inventoryframework.pane.*;
 import com.github.stefvanschie.inventoryframework.pane.component.*;
+import com.github.stefvanschie.inventoryframework.util.TriFunction;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,6 +17,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -34,12 +36,17 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The base class of all GUIs
  */
 public abstract class Gui {
+
+    /**
+     * The plugin that owns this gui
+     */
+    @NotNull
+    protected final Plugin plugin;
 
     /**
      * The inventory of this gui
@@ -110,14 +117,15 @@ public abstract class Gui {
      * The pane mapping which will allow users to register their own panes to be used in XML files
      */
     @NotNull
-    private static final Map<String, BiFunction<Object, Element, Pane>> PANE_MAPPINGS = new HashMap<>();
+    private static final Map<String, TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>>
+        PANE_MAPPINGS = new HashMap<>();
 
     /**
      * The gui mappings which determine which gui type belongs to which identifier
      */
     @NotNull
-    private static final Map<String, BiFunction<? super Object, ? super Element, ? extends Gui>> GUI_MAPPINGS
-        = new HashMap<>();
+    private static final Map<String, TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>>
+        GUI_MAPPINGS = new HashMap<>();
 
     /**
      * A map containing the relations between inventories and their respective gui. This is needed because Bukkit and
@@ -133,24 +141,16 @@ public abstract class Gui {
     private static boolean hasRegisteredListeners;
 
     /**
-     * Constructs a new GUI
-     *
-     * @since 0.8.0
-     */
-    public Gui() {
-        this(JavaPlugin.getProvidingPlugin(Gui.class));
-    }
-
-    /**
      * Constructs a new gui with the provided plugin.
      *
      * @param plugin the plugin
-     * @see Gui#Gui() for a constructor that automatically detects the wanted plugin
-     * @since 0.10.0
+     * @since 0.10.8
      */
-    public Gui(@NotNull JavaPlugin plugin) {
+    public Gui(@NotNull Plugin plugin) {
+        this.plugin = plugin;
+
         if (!hasRegisteredListeners) {
-            Bukkit.getPluginManager().registerEvents(new GuiListener(), plugin);
+            Bukkit.getPluginManager().registerEvents(new GuiListener(plugin), plugin);
 
             hasRegisteredListeners = true;
         }
@@ -167,7 +167,8 @@ public abstract class Gui {
      * Makes a copy of this gui and returns it. This makes a deep copy of the gui. This entails that the underlying
      * panes will be copied as per their {@link Pane#copy} and miscellaneous data will be copied. The copy of this gui,
      * will however have no viewers even if this gui currently has viewers. With this, cache data for viewers will also
-     * be non-existent for the copied gui. The returned gui will never be reference equal to the current gui.
+     * be non-existent for the copied gui. The original owning plugin of the gui is preserved, but the plugin will not
+     * be deeply copied. The returned gui will never be reference equal to the current gui.
      *
      * @return a copy of the gui
      * @since 0.6.2
@@ -276,14 +277,16 @@ public abstract class Gui {
 
     /**
      * Loads a Gui from a given input stream.
-     * Returns null instead of throwing an exception in case of a failure.
      *
      * @param instance the class instance for all reflection lookups
      * @param inputStream the file
      * @return the gui or null if the loading failed
+     * @throws XMLLoadException if loading could not finish successfully, due to e.g., a malformed file
+     * @see #load(Object, InputStream)
+     * @since 0.10.8
      */
     @Nullable
-    public static Gui load(@NotNull Object instance, @NotNull InputStream inputStream) {
+    public static Gui load(@NotNull Object instance, @NotNull InputStream inputStream, @NotNull Plugin plugin) {
         try {
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
             Element documentElement = document.getDocumentElement();
@@ -294,11 +297,33 @@ public abstract class Gui {
                 throw new XMLLoadException("Type attribute must be specified when loading via Gui.load");
             }
 
-            return GUI_MAPPINGS.get(documentElement.getAttribute("type")).apply(instance, documentElement);
+            String type = documentElement.getAttribute("type");
+            TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui> mapping = GUI_MAPPINGS
+                    .get(type);
+
+            if (mapping == null) {
+                throw new XMLLoadException("Type attribute '" + type + "' is invalid");
+            }
+
+            return mapping.apply(instance, documentElement, plugin);
         } catch (SAXException | ParserConfigurationException | IOException e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Loads a Gui from a given input stream.
+     * Returns null instead of throwing an exception in case of a failure.
+     *
+     * @param instance the class instance for all reflection lookups
+     * @param inputStream the file
+     * @return the gui or null if the loading failed
+     * @throws XMLLoadException if loading could not finish successfully, due to e.g., a malformed file
+     */
+    @Nullable
+    public static Gui load(@NotNull Object instance, @NotNull InputStream inputStream) {
+        return load(instance, inputStream, JavaPlugin.getProvidingPlugin(Gui.class));
     }
 
     /**
@@ -548,13 +573,13 @@ public abstract class Gui {
         try {
             callback.accept(event);
         } catch (Throwable t) {
-            Logger logger = JavaPlugin.getProvidingPlugin(getClass()).getLogger();
             String message = "Exception while handling " + callbackName;
             if (event instanceof InventoryClickEvent) {
                 InventoryClickEvent clickEvent = (InventoryClickEvent) event;
                 message += ", slot=" + clickEvent.getSlot();
             }
-            logger.log(Level.SEVERE, message, t);
+
+            this.plugin.getLogger().log(Level.SEVERE, message, t);
         }
     }
 
@@ -587,15 +612,46 @@ public abstract class Gui {
      * Registers a name that can be used inside an XML file to add custom panes
      *
      * @param name the name of the pane to be used in the XML file
-     * @param biFunction how the pane loading should be processed
+     * @param triFunction how the pane loading should be processed
      * @throws IllegalArgumentException when a pane with this name is already registered
+     * @see #registerPane(String, BiFunction)
+     * @since 0.10.8
      */
-    public static void registerPane(@NotNull String name, @NotNull BiFunction<Object, Element, Pane> biFunction) {
+    public static void registerPane(@NotNull String name,
+                                    @NotNull TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane> triFunction) {
         if (PANE_MAPPINGS.containsKey(name)) {
             throw new IllegalArgumentException("pane name '" + name + "' is already registered");
         }
 
-        PANE_MAPPINGS.put(name, biFunction);
+        PANE_MAPPINGS.put(name, triFunction);
+    }
+
+    /**
+     * Registers a name that can be used inside an XML file to add custom panes
+     *
+     * @param name the name of the pane to be used in the XML file
+     * @param biFunction how the pane loading should be processed
+     * @throws IllegalArgumentException when a pane with this name is already registered
+     */
+    public static void registerPane(@NotNull String name, @NotNull BiFunction<Object, Element, Pane> biFunction) {
+        registerPane(name, (object, element, plugin) -> biFunction.apply(object, element));
+    }
+
+    /**
+     * Registers a type that can be used inside an XML file to specify the gui type
+     *
+     * @param name the name of the type of gui to be used in an XML file
+     * @param triFunction how the gui creation should be processed
+     * @throws IllegalArgumentException when a gui type with this name is already registered
+     * @since 0.10.8
+     */
+    public static void registerGui(@NotNull String name,
+                                   @NotNull TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui> triFunction) {
+        if (GUI_MAPPINGS.containsKey(name)) {
+            throw new IllegalArgumentException("Gui name '" + name + "' is already registered");
+        }
+
+        GUI_MAPPINGS.put(name, triFunction);
     }
 
     /**
@@ -604,13 +660,35 @@ public abstract class Gui {
      * @param name the name of the type of gui to be used in an XML file
      * @param biFunction how the gui creation should be processed
      * @throws IllegalArgumentException when a gui type with this name is already registered
+     * @deprecated this method is no longer used internally and has been superseded by
+     *             {@link #registerPane(String, TriFunction)}
      */
-    public static void registerGui(@NotNull String name, @NotNull BiFunction<? super Object, ? super Element, ? extends Gui> biFunction) {
-        if (GUI_MAPPINGS.containsKey(name)) {
-            throw new IllegalArgumentException("Gui name '" + name + "' is already registered");
+    @Deprecated
+    public static void registerGui(@NotNull String name,
+                                   @NotNull BiFunction<? super Object, ? super Element, ? extends Gui> biFunction) {
+        registerGui(name, (object, element, plugin) -> biFunction.apply(object, element));
+    }
+
+    /**
+     * Loads a pane by the given instance and node
+     *
+     * @param instance the instance
+     * @param node the node
+     * @param plugin the plugin to load the pane with
+     * @return the pane
+     * @throws XMLLoadException if the name of the node does not correspond to a valid pane.
+     * @since 0.10.8
+     */
+    @NotNull
+    public static Pane loadPane(@NotNull Object instance, @NotNull Node node, @NotNull Plugin plugin) {
+        String name = node.getNodeName();
+        TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane> mapping = PANE_MAPPINGS.get(name);
+
+        if (mapping == null) {
+            throw new XMLLoadException("Pane '" + name + "' is not registered or does not exist");
         }
 
-        GUI_MAPPINGS.put(name, biFunction);
+        return mapping.apply(instance, (Element) node, plugin);
     }
 
     /**
@@ -622,41 +700,71 @@ public abstract class Gui {
      */
     @NotNull
     public static Pane loadPane(@NotNull Object instance, @NotNull Node node) {
-        return PANE_MAPPINGS.get(node.getNodeName()).apply(instance, (Element) node);
+        return loadPane(instance, node, JavaPlugin.getProvidingPlugin(Gui.class));
     }
 
     static {
-        registerPane("masonrypane", MasonryPane::load);
-        registerPane("outlinepane", OutlinePane::load);
-        registerPane("paginatedpane", PaginatedPane::load);
-        registerPane("patternpane", PatternPane::load);
-        registerPane("staticpane", StaticPane::load);
+        registerPane("masonrypane",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) MasonryPane::load);
+        registerPane("outlinepane",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) OutlinePane::load);
+        registerPane("paginatedpane",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) PaginatedPane::load);
+        registerPane("patternpane",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) PatternPane::load);
+        registerPane("staticpane",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) StaticPane::load);
 
-        registerPane("cyclebutton", CycleButton::load);
-        registerPane("label", Label::load);
-        registerPane("percentagebar", PercentageBar::load);
-        registerPane("slider", Slider::load);
-        registerPane("togglebutton", ToggleButton::load);
+        registerPane("cyclebutton",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) CycleButton::load);
+        registerPane("label",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) Label::load);
+        registerPane("percentagebar",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) PercentageBar::load);
+        registerPane("slider",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) Slider::load);
+        registerPane("togglebutton",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) ToggleButton::load);
 
-        registerGui("anvil", AnvilGui::load);
-        registerGui("barrel", BarrelGui::load);
-        registerGui("beacon", BeaconGui::load);
-        registerGui("blast-furnace", BlastFurnaceGui::load);
-        registerGui("brewing-stand", BrewingStandGui::load);
-        registerGui("cartography-table", CartographyTableGui::load);
-        registerGui("chest", ChestGui::load);
-        registerGui("crafting-table", CraftingTableGui::load);
-        registerGui("dispenser", DispenserGui::load);
-        registerGui("dropper", DropperGui::load);
-        registerGui("enchanting-table", EnchantingTableGui::load);
-        registerGui("ender-chest", EnderChestGui::load);
-        registerGui("furnace", FurnaceGui::load);
-        registerGui("grindstone", GrindstoneGui::load);
-        registerGui("hopper", HopperGui::load);
-        registerGui("merchant", MerchantGui::load);
-        registerGui("shulker-box", ShulkerBoxGui::load);
-        registerGui("smithing-table", SmithingTableGui::load);
-        registerGui("smoker", SmokerGui::load);
-        registerGui("stonecutter", StonecutterGui::load);
+        registerGui("anvil",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) AnvilGui::load);
+        registerGui("barrel",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) BarrelGui::load);
+        registerGui("beacon",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) BeaconGui::load);
+        registerGui("blast-furnace",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) BlastFurnaceGui::load);
+        registerGui("brewing-stand",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) BrewingStandGui::load);
+        registerGui("cartography-table",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) CartographyTableGui::load);
+        registerGui("chest",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) ChestGui::load);
+        registerGui("crafting-table",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) CraftingTableGui::load);
+        registerGui("dispenser",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) DispenserGui::load);
+        registerGui("dropper",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) DropperGui::load);
+        registerGui("enchanting-table",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) EnchantingTableGui::load);
+        registerGui("ender-chest",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) EnderChestGui::load);
+        registerGui("furnace",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) FurnaceGui::load);
+        registerGui("grindstone",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) GrindstoneGui::load);
+        registerGui("hopper",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) HopperGui::load);
+        registerGui("merchant",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) MerchantGui::load);
+        registerGui("shulker-box",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) ShulkerBoxGui::load);
+        registerGui("smithing-table",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) SmithingTableGui::load);
+        registerGui("smoker",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) SmokerGui::load);
+        registerGui("stonecutter",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) StonecutterGui::load);
     }
 }

@@ -15,6 +15,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -97,6 +99,30 @@ public class AnvilGui extends NamedGui implements InventoryBased {
         super(title);
     }
 
+    /**
+     * Constructs a new anvil gui for the given {@code plugin}.
+     *
+     * @param title the title/name of this gui.
+     * @param plugin the owning plugin of this gui
+     * @see #AnvilGui(String)
+     * @since 0.10.8
+     */
+    public AnvilGui(@NotNull String title, @NotNull Plugin plugin) {
+        super(title, plugin);
+    }
+
+    /**
+     * Constructs a new anvil gui for the given {@code plugin}.
+     *
+     * @param title the title/name of this gui.
+     * @param plugin the owning plugin of this gui
+     * @see #AnvilGui(TextHolder)
+     * @since 0.10.8
+     */
+    public AnvilGui(@NotNull TextHolder title, @NotNull Plugin plugin) {
+        super(title, plugin);
+    }
+
     @Override
     public void show(@NotNull HumanEntity humanEntity) {
         if (!(humanEntity instanceof Player)) {
@@ -126,10 +152,9 @@ public class AnvilGui extends NamedGui implements InventoryBased {
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
 
-        //also let Bukkit know that we opened an inventory
-        humanEntity.openInventory(getInventory());
+        Inventory inventory = anvilInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
 
-        anvilInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
+        addInventory(inventory, this);
 
         this.viewers.add(humanEntity);
     }
@@ -138,7 +163,7 @@ public class AnvilGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public AnvilGui copy() {
-        AnvilGui gui = new AnvilGui(getTitleHolder());
+        AnvilGui gui = new AnvilGui(getTitleHolder(), super.plugin);
 
         gui.firstItemComponent = firstItemComponent.copy();
         gui.secondItemComponent = secondItemComponent.copy();
@@ -177,6 +202,23 @@ public class AnvilGui extends NamedGui implements InventoryBased {
         }
 
         return inventory;
+    }
+
+    /**
+     * Sets the enchantment level cost for this anvil gui. Taking the item from the result slot will not actually remove
+     * these levels. Having a cost specified does not impede a player's ability to take the item in the result item,
+     * even if the player does not have the specified amount of levels. The cost must be a non-negative number.
+     *
+     * @param cost the cost
+     * @since 0.10.8
+     * @throws IllegalArgumentException when the cost is less than zero
+     */
+    public void setCost(short cost) {
+        if (cost < 0){
+            throw new IllegalArgumentException("Cost must be non-negative");
+        }
+
+        this.anvilInventory.setCost(cost);
     }
 
     @NotNull
@@ -223,7 +265,9 @@ public class AnvilGui extends NamedGui implements InventoryBased {
      *
      * @param event the event to handle
      * @since 0.8.0
+     * @deprecated no longer used internally
      */
+    @Deprecated
     public void handleClickEvent(@NotNull InventoryClickEvent event) {
         int slot = event.getRawSlot();
         Player player = (Player) event.getWhoClicked();
@@ -332,19 +376,21 @@ public class AnvilGui extends NamedGui implements InventoryBased {
      *
      * @param instance the instance on which to reference fields and methods
      * @param inputStream the input stream containing the XML data
+     * @param plugin the plugin that will be the owner of the created gui
      * @return the loaded anvil gui
-     * @since 0.8.0
+     * @see #load(Object, InputStream)
+     * @since 0.10.8
      */
     @Nullable
     @Contract(pure = true)
-    public static AnvilGui load(@NotNull Object instance, @NotNull InputStream inputStream) {
+    public static AnvilGui load(@NotNull Object instance, @NotNull InputStream inputStream, @NotNull Plugin plugin) {
         try {
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
             Element documentElement = document.getDocumentElement();
 
             documentElement.normalize();
 
-            return load(instance, documentElement);
+            return load(instance, documentElement, plugin);
         } catch (SAXException | ParserConfigurationException | IOException e) {
             e.printStackTrace();
             return null;
@@ -356,16 +402,18 @@ public class AnvilGui extends NamedGui implements InventoryBased {
      *
      * @param instance the instance on which to reference fields and methods
      * @param element the element to load the gui from
+     * @param plugin the plugin that will own the created gui
      * @return the loaded anvil gui
-     * @since 0.8.0
+     * @see #load(Object, Element)
+     * @since 0.10.8
      */
     @NotNull
-    public static AnvilGui load(@NotNull Object instance, @NotNull Element element) {
+    public static AnvilGui load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         if (!element.hasAttribute("title")) {
             throw new XMLLoadException("Provided XML element's gui tag doesn't have the mandatory title attribute set");
         }
 
-        AnvilGui anvilGui = new AnvilGui(element.getAttribute("title"));
+        AnvilGui anvilGui = new AnvilGui(element.getAttribute("title"), plugin);
         anvilGui.initializeOrThrow(instance, element);
 
         if (element.hasAttribute("populate")) {
@@ -414,5 +462,32 @@ public class AnvilGui extends NamedGui implements InventoryBased {
         }
 
         return anvilGui;
+    }
+
+    /**
+     * Loads an anvil gui from an XML file.
+     *
+     * @param instance the instance on which to reference fields and methods
+     * @param inputStream the input stream containing the XML data
+     * @return the loaded anvil gui
+     * @since 0.8.0
+     */
+    @Nullable
+    @Contract(pure = true)
+    public static AnvilGui load(@NotNull Object instance, @NotNull InputStream inputStream) {
+        return load(instance, inputStream, JavaPlugin.getProvidingPlugin(AnvilGui.class));
+    }
+
+    /**
+     * Loads an anvil gui from the specified element, applying code references to the provided instance.
+     *
+     * @param instance the instance on which to reference fields and methods
+     * @param element the element to load the gui from
+     * @return the loaded anvil gui
+     * @since 0.8.0
+     */
+    @NotNull
+    public static AnvilGui load(@NotNull Object instance, @NotNull Element element) {
+        return load(instance, element, JavaPlugin.getProvidingPlugin(AnvilGui.class));
     }
 }
