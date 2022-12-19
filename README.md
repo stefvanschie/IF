@@ -14,7 +14,7 @@ To add this project as a dependency to your pom.xml, add the following to your p
 <dependency>
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF</artifactId>
-    <version>0.10.7</version>
+    <version>0.10.8</version>
 </dependency>
 ```
 The project is in the Central Repository, so specifying a repository is not needed.
@@ -50,7 +50,7 @@ Replace [YOUR PACKAGE] with the top-level package of your project.
 To add this project as a dependency for your Gradle project, make sure your `dependencies` section of your build.gradle looks like the following:
 ```Groovy
 dependencies {
-    implementation 'com.github.stefvanschie.inventoryframework:IF:0.10.7'
+    implementation 'com.github.stefvanschie.inventoryframework:IF:0.10.8'
     // ...
 }
 ```
@@ -134,6 +134,7 @@ mvn paper-nms:init -pl nms/1_18_2
 mvn paper-nms:init -pl nms/1_19_0
 mvn paper-nms:init -pl nms/1_19_1
 mvn paper-nms:init -pl nms/1_19_2
+mvn paper-nms:init -pl nms/1_19_3
 ```
 
 Your environment is now set up correctly. To create a build, run the following inside the root folder of the project.
