@@ -2,4 +2,10 @@ jdk:
   - openjdk8
 before_install:
   - chmod +x jitpack_tasks.sh
+  - sdk install java 8.0.302-open
+  - sdk install java 17.0.5-ms
+  # Paper's NMS plugin requires a newer Java version
+  - sdk use java 17.0.5-ms
   - ./jitpack_tasks.sh
+  # We need to switch it back so the libraries will be backwards compatible
+  - sdk use java 8.0.302-open
