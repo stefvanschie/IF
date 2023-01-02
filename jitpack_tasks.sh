@@ -1,3 +1,4 @@
+chmod +x mvnw
 curl https://papermc.io/api/v2/projects/paper/versions/1.14.4/builds/243/downloads/paper-1.14.4-243.jar -o paper-1.14.4.jar
 java -jar paper-1.14.4.jar
 mvnw install:install-file -Dfile=cache/patched_1.14.4.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.14.4-R0.1-SNAPSHOT" -Dpackaging="jar"

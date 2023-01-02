@@ -1,4 +1,5 @@
 jdk:
   - openjdk8
 before_install:
+  - chmod +x jitpack_tasks.sh
   - ./jitpack_tasks.sh
