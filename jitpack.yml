@@ -9,6 +9,6 @@ before_install:
   - ./jitpack_tasks.sh
   # We need to switch it back so the libraries will be backwards compatible
   - sdk use java 8.0.302-open
-  - # 1.17 requires Java 8
+  # 1.17 requires Java 8
   - ./mvnw paper-nms:init -pl nms/1_17_0
   - ./mvnw paper-nms:init -pl nms/1_17_1
