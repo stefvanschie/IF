@@ -522,8 +522,8 @@ public abstract class Pane {
                             Object attribute = properties.get(i);
 
                             if (!(parameterTypes[1 + i].isPrimitive() &&
-                                    Primitives.unwrap(attribute.getClass()).isAssignableFrom(parameterTypes[1 + i])) &&
-                                    !attribute.getClass().isAssignableFrom(parameterTypes[1 + i]))
+                                    parameterTypes[1 + i].isAssignableFrom(Primitives.unwrap(attribute.getClass()))) &&
+                                    !parameterTypes[1 + i].isAssignableFrom(attribute.getClass()))
                                 correct = false;
                         }
 
