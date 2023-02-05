@@ -74,6 +74,6 @@ jobs:
       run: cat <(echo -e "${{ secrets.GPG_KEY }}") | gpg --batch --import
     - name: Automatically deploy the project
       env:
-        gpg_secret: ${{ secrets.GPG_PASSPHRASE }}
+        gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
         deploy_password: ${{ secrets.DEPLOY_PASSWORD }}
       run: bash ./.github/deployment/deploy.sh '$gpg_passphrase' '$deploy_password'
