@@ -76,4 +76,4 @@ jobs:
       env:
         gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
         deploy_password: ${{ secrets.DEPLOY_PASSWORD }}
-      run: bash ./.github/deployment/deploy.sh '$gpg_passphrase' '$deploy_password'
+      run: bash ./.github/deployment/deploy.sh "$gpg_passphrase" "$deploy_password"
