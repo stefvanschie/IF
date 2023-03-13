@@ -3,7 +3,10 @@ package com.github.stefvanschie.inventoryframework.pane.util;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
+
+import java.util.Objects;
 
 /**
  * A slot represents a position in some type of container. Implementors of this class represent slots in different ways.
@@ -141,6 +144,26 @@ public interface Slot {
         public int getY(int length) {
             return this.y;
         }
+
+        @Override
+        public boolean equals(@Nullable Object object) {
+            if (this == object) {
+                return true;
+            }
+
+            if (object == null || getClass() != object.getClass()) {
+                return false;
+            }
+
+            XY xy = (XY) object;
+
+            return x == xy.x && y == xy.y;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(x, y);
+        }
     }
 
     /**
@@ -201,6 +224,26 @@ public interface Slot {
             }
 
             return this.index / length;
+        }
+
+        @Override
+        public boolean equals(@Nullable Object object) {
+            if (this == object) {
+                return true;
+            }
+
+            if (object == null || getClass() != object.getClass()) {
+                return false;
+            }
+
+            Indexed indexed = (Indexed) object;
+
+            return index == indexed.index;
+        }
+
+        @Override
+        public int hashCode() {
+            return index;
         }
     }
 }
