@@ -22,7 +22,6 @@ import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_17_R1.event.CraftEventFactory;
 import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.Contract;
@@ -53,7 +52,9 @@ public class AnvilInventoryImpl extends AnvilInventory {
 
         ServerPlayer serverPlayer = getServerPlayer(player);
 
-        CraftEventFactory.handleInventoryCloseEvent(serverPlayer, InventoryCloseEvent.Reason.OPEN_NEW);
+        //ignore deprecation: superseding method is only available on Paper
+        //noinspection deprecation
+        CraftEventFactory.handleInventoryCloseEvent(serverPlayer);
 
         serverPlayer.containerMenu = serverPlayer.inventoryMenu;
 

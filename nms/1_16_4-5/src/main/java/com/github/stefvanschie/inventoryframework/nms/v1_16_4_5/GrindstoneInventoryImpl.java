@@ -8,7 +8,6 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R3.event.CraftEventFactory;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.Contract;
@@ -44,7 +43,9 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
 
         EntityPlayer entityPlayer = getEntityPlayer(player);
 
-        CraftEventFactory.handleInventoryCloseEvent(entityPlayer, InventoryCloseEvent.Reason.OPEN_NEW);
+        //ignore deprecation: superseding method is only available on Paper
+        //noinspection deprecation
+        CraftEventFactory.handleInventoryCloseEvent(entityPlayer);
 
         entityPlayer.activeContainer = entityPlayer.defaultContainer;
 
