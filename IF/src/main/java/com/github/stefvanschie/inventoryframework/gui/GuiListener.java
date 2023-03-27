@@ -372,6 +372,8 @@ public class GuiListener implements Listener {
                     ((AnvilGui) gui).handleClose(humanEntity);
                 } else if (gui instanceof MerchantGui) {
                     ((MerchantGui) gui).handleClose(humanEntity);
+                } else if (gui instanceof ModernSmithingTableGui) {
+                    ((ModernSmithingTableGui) gui).handleClose(humanEntity);
                 }
             });
         }

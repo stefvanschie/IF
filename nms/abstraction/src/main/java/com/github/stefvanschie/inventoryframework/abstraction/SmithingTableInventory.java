@@ -3,6 +3,7 @@ package com.github.stefvanschie.inventoryframework.abstraction;
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +44,18 @@ public abstract class SmithingTableInventory {
         openInventory(player, StringHolder.of(title), items);
     }
 
-    public abstract void openInventory(@NotNull Player player, @NotNull TextHolder title, @Nullable ItemStack[] items);
+    /**
+     * Opens the inventory for the specified player
+     *
+     * @param player the player to open the inventory for
+     * @param title the title of the inventory
+     * @param items the top items
+     * @return the opened inventory
+     * @since 0.10.9
+     */
+    @Nullable
+    public abstract Inventory openInventory(@NotNull Player player, @NotNull TextHolder title,
+                                            @Nullable ItemStack[] items);
 
     /**
      * Sends the top items to the inventory for the specified player.

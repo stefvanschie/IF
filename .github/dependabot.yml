@@ -41,6 +41,38 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "maven"
+    directory: "/nms/1_18_0"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_18_1"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_18_2"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_19_0"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_19_1"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_19_2"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_19_3"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_19_4"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
     directory: "/nms/abstraction"
     schedule:
       interval: "daily"

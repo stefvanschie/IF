@@ -7,6 +7,7 @@ import net.minecraft.server.v1_16_R2.*;
 import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R2.inventory.*;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -23,9 +24,10 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
         super(inventoryHolder);
     }
 
+    @Nullable
     @Override
-    public void openInventory(@NotNull Player player, @NotNull TextHolder title,
-                              @Nullable org.bukkit.inventory.ItemStack[] items) {
+    public Inventory openInventory(@NotNull Player player, @NotNull TextHolder title,
+                                   @Nullable org.bukkit.inventory.ItemStack[] items) {
         int itemAmount = items.length;
 
         if (itemAmount != 3) {
@@ -46,6 +48,8 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
         entityPlayer.playerConnection.sendPacket(packet);
 
         sendItems(player, items, null);
+
+        return null;
     }
 
     @Override

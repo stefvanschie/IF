@@ -1,9 +1,9 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_18_1;
+package com.github.stefvanschie.inventoryframework.nms.v1_19_4;
 
 import com.github.stefvanschie.inventoryframework.abstraction.SmithingTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_18_1.util.CustomInventoryUtil;
-import com.github.stefvanschie.inventoryframework.nms.v1_18_1.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_19_4.util.CustomInventoryUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_19_4.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -14,14 +14,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.LegacySmithingMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.item.ItemStack;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventorySmithing;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventoryView;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventory;
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventorySmithing;
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -30,13 +30,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal smithing table inventory for 1.18.1
+ * Internal smithing table inventory for 1.19.4. This smithing table is for prior to Minecraft 1.20.
  *
- * @since 0.10.4
+ * @since 0.10.9
+ * @deprecated this type of smithing table will be removed in Minecraft 1.20
  */
-public class SmithingTableInventoryImpl extends SmithingTableInventory {
+@Deprecated
+public class LegacySmithingTableInventoryImpl extends SmithingTableInventory {
 
-    public SmithingTableInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
+    public LegacySmithingTableInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
         super(inventoryHolder);
     }
 
@@ -48,7 +50,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
 
         if (itemAmount != 3) {
             throw new IllegalArgumentException(
-                "The amount of items for a smithing table should be 3, but is '" + itemAmount + "'"
+                "The amount of items for a legacy smithing table should be 3, but is '" + itemAmount + "'"
             );
         }
 
@@ -60,7 +62,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
         int id = containerSmithingTable.containerId;
         Component message = TextHolderUtil.toComponent(title);
 
-        serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.SMITHING, message));
+        serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.LEGACY_SMITHING, message));
 
         sendItems(player, items, player.getItemOnCursor());
 
@@ -128,7 +130,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param player the player to set the cursor
      * @param item the item to set the cursor to
-     * @since 0.10.4
+     * @since 0.10.9
      */
     private void setCursor(@NotNull Player player, @NotNull ItemStack item) {
         ServerPlayer serverPlayer = getServerPlayer(player);
@@ -142,7 +144,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param player the player to send the result item to
      * @param item the result item
-     * @since 0.10.4
+     * @since 0.10.9
      */
     private void sendResultItem(@NotNull Player player, @NotNull ItemStack item) {
         ServerPlayer serverPlayer = getServerPlayer(player);
@@ -157,7 +159,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param nmsPlayer the player to get the container id for
      * @return the container id
-     * @since 0.10.4
+     * @since 0.10.9
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -169,7 +171,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
-     * @since 0.10.4
+     * @since 0.10.9
      */
     @NotNull
     @Contract(pure = true)
@@ -182,7 +184,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.4
+     * @since 0.10.9
      */
     @NotNull
     @Contract(pure = true)
@@ -193,9 +195,9 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
     /**
      * A custom container smithing table
      *
-     * @since 0.10.4
+     * @since 0.10.9
      */
-    private class ContainerSmithingTableImpl extends SmithingMenu {
+    private class ContainerSmithingTableImpl extends LegacySmithingMenu {
 
         /**
          * The player for this smithing table container
