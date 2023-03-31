@@ -3,6 +3,8 @@ package com.github.stefvanschie.inventoryframework.gui;
 import com.github.stefvanschie.inventoryframework.gui.type.*;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.util.InventoryViewUtil;
+import com.github.stefvanschie.inventoryframework.util.DispatchUtil;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
@@ -84,7 +86,7 @@ public class GuiListener implements Listener {
         gui.click(event);
 
         if (event.isCancelled()) {
-            Bukkit.getScheduler().runTask(this.plugin, () -> {
+            DispatchUtil.runTaskFor(event.getWhoClicked(), this.plugin, () -> {
                 PlayerInventory playerInventory = event.getWhoClicked().getInventory();
 
                 /* due to a client issue off-hand items appear as ghost items, this updates the off-hand correctly
@@ -356,26 +358,31 @@ public class GuiListener implements Listener {
         playerInventory.setItemInOffHand(playerInventory.getItemInOffHand());
 
         if (!gui.isUpdating()) {
-            gui.callOnClose(event);
+            DispatchUtil.runTaskFor(humanEntity, this.plugin, () -> {
+                gui.callOnClose(event);
+    
+                event.getInventory().clear(); //clear inventory to prevent items being put back
+    
+            });
 
-            event.getInventory().clear(); //clear inventory to prevent items being put back
+            DispatchUtil.runTaskFor(humanEntity, this.plugin, () -> {
+                gui.getHumanEntityCache().restoreAndForget(humanEntity);
 
-            gui.getHumanEntityCache().restoreAndForget(humanEntity);
-
-            if (gui.getViewerCount() == 1) {
-                activeGuiInstances.remove(gui);
-            }
-
-            if (gui instanceof AnvilGui) {
-                ((AnvilGui) gui).handleClose(humanEntity);
-            } else if (gui instanceof MerchantGui) {
-                ((MerchantGui) gui).handleClose(humanEntity);
-            } else if (gui instanceof ModernSmithingTableGui) {
-                ((ModernSmithingTableGui) gui).handleClose(humanEntity);
-            }
-
-            //Bukkit doesn't like it if you open an inventory while the previous one is being closed
-            Bukkit.getScheduler().runTask(this.plugin, () -> gui.navigateToParent(humanEntity));
+                if (gui.getViewerCount() == 1) {
+                    activeGuiInstances.remove(gui);
+                }
+    
+                if (gui instanceof AnvilGui) {
+                    ((AnvilGui) gui).handleClose(humanEntity);
+                } else if (gui instanceof MerchantGui) {
+                    ((MerchantGui) gui).handleClose(humanEntity);
+                } else if (gui instanceof ModernSmithingTableGui) {
+                    ((ModernSmithingTableGui) gui).handleClose(humanEntity);
+                }
+    
+                //Bukkit doesn't like it if you open an inventory while the previous one is being closed
+                DispatchUtil.runTaskFor(humanEntity, this.plugin, () -> { gui.navigateToParent(humanEntity); });
+            });
         }
     }
 
