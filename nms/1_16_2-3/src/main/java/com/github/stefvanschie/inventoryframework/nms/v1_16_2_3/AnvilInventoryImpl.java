@@ -308,7 +308,13 @@ public class AnvilInventoryImpl extends AnvilInventory {
 
         @Override
         public void a(@Nullable String name) {
-            AnvilInventoryImpl.super.text = name == null ? "" : name;
+            name = name == null ? "" : name;
+
+            /* Only update if the name is actually different. This may be called even if the name is not different,
+               particularly when putting an item in the first slot. */
+            if (!name.equals(AnvilInventoryImpl.super.observableText.get())) {
+                AnvilInventoryImpl.super.observableText.set(name);
+            }
 
             //the client predicts the output result, so we broadcast the state again to override it
             forceUpdate();
@@ -354,7 +360,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
              */
             Collections.fill(this.items, this.uniqueItem);
 
-            notifyListeners();
+            c();
 
             List<? extends ICrafting> listeners;
 

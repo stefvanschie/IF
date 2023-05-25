@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.logging.Level;
 
 /**
  * Represents a gui in the form of an anvil
@@ -41,6 +43,12 @@ import java.util.List;
  * @since 0.8.0
  */
 public class AnvilGui extends NamedGui implements InventoryBased {
+
+    /**
+     * Called whenever the name input is changed.
+     */
+    @NotNull
+    private Consumer<? super String> onNameInputChanged = (name) -> {};
 
     /**
      * Represents the inventory component for the first item
@@ -87,6 +95,8 @@ public class AnvilGui extends NamedGui implements InventoryBased {
      */
     public AnvilGui(@NotNull String title) {
         super(title);
+
+        this.anvilInventory.subscribeToNameInputChanges(this::callOnRename);
     }
 
     /**
@@ -97,6 +107,8 @@ public class AnvilGui extends NamedGui implements InventoryBased {
      */
     public AnvilGui(@NotNull TextHolder title) {
         super(title);
+
+        this.anvilInventory.subscribeToNameInputChanges(this::callOnRename);
     }
 
     /**
@@ -109,6 +121,8 @@ public class AnvilGui extends NamedGui implements InventoryBased {
      */
     public AnvilGui(@NotNull String title, @NotNull Plugin plugin) {
         super(title, plugin);
+
+        this.anvilInventory.subscribeToNameInputChanges(this::callOnRename);
     }
 
     /**
@@ -121,6 +135,8 @@ public class AnvilGui extends NamedGui implements InventoryBased {
      */
     public AnvilGui(@NotNull TextHolder title, @NotNull Plugin plugin) {
         super(title, plugin);
+
+        this.anvilInventory.subscribeToNameInputChanges(this::callOnRename);
     }
 
     @Override
@@ -305,6 +321,35 @@ public class AnvilGui extends NamedGui implements InventoryBased {
      */
     public void handleClose(@NotNull HumanEntity humanEntity) {
         this.viewers.remove(humanEntity);
+    }
+
+    /**
+     * Sets the consumer that should be called whenever the name input is changed. The argument is the new input. When
+     * this consumer is invoked, the value as returned by {@link #getRenameText()} will not have updated yet, hence
+     * allowing you to see the old value via that.
+     *
+     * @param onNameInputChanged the consumer to call when the rename input is changed
+     * @since 0.10.10
+     */
+    public void setOnNameInputChanged(@NotNull Consumer<? super String> onNameInputChanged) {
+        this.onNameInputChanged = onNameInputChanged;
+    }
+
+    /**
+     * Calls the consumer that was specified using {@link #setOnNameInputChanged(Consumer)}, so the consumer that should
+     * be called whenever the rename input is changed. Catches and logs all exceptions the consumer might throw.
+     *
+     * @param newInput the new rename input
+     * @since 0.10.10
+     */
+    private void callOnRename(@NotNull String newInput) {
+        try {
+            this.onNameInputChanged.accept(newInput);
+        } catch (Throwable throwable) {
+            String message = "Exception while handling onRename, newInput='" + newInput + "'";
+
+            this.plugin.getLogger().log(Level.SEVERE, message, throwable);
+        }
     }
 
     /**

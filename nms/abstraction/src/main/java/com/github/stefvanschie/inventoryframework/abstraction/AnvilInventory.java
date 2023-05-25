@@ -1,5 +1,6 @@
 package com.github.stefvanschie.inventoryframework.abstraction;
 
+import com.github.stefvanschie.inventoryframework.abstraction.util.ObservableValue;
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import org.bukkit.entity.Player;
@@ -9,6 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 /**
  * An anvil inventory
@@ -25,9 +28,18 @@ public abstract class AnvilInventory {
 
     /**
      * The rename text
+     *
+     * @deprecated Superseded by {@link #observableText}
      */
     @NotNull
+    @Deprecated
     protected String text = "";
+
+    /**
+     * The name input text.
+     */
+    @NotNull
+    protected final ObservableValue<@NotNull String> observableText = new ObservableValue<>("");
 
     /**
      * The enchantment cost displayed
@@ -159,6 +171,22 @@ public abstract class AnvilInventory {
     @NotNull
     @Contract(pure = true)
     public String getRenameText() {
+        String text = observableText.get();
+
+        if (text == null) {
+            throw new IllegalStateException("Rename text is null");
+        }
+
         return text;
+    }
+
+    /**
+     * Subscribes to changes of the name input.
+     *
+     * @param onNameInputChanged the consumer to call when the name input changes
+     * @since 0.10.10
+     */
+    public void subscribeToNameInputChanges(@NotNull Consumer<? super String> onNameInputChanged) {
+        this.observableText.subscribe(onNameInputChanged);
     }
 }
