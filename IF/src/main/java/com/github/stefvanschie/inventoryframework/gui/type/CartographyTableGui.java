@@ -155,7 +155,7 @@ public class CartographyTableGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public CartographyTableGui copy() {
-        CartographyTableGui gui = new CartographyTableGui(getTitleHolder());
+        CartographyTableGui gui = new CartographyTableGui(getTitleHolder(), super.plugin);
 
         gui.mapComponent = mapComponent.copy();
         gui.paperComponent = paperComponent.copy();

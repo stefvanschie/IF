@@ -29,14 +29,14 @@ public class GuiItem {
      * The logger to log errors with
      */
     @NotNull
-    private Logger logger;
+    private final Logger logger;
 
     /**
      * The {@link NamespacedKey} that specifies the location of the (internal) {@link UUID} in {@link PersistentDataContainer}s.
      * The {@link PersistentDataType} that should be used is {@link UUIDTagType}.
      */
     @NotNull
-    private NamespacedKey keyUUID;
+    private final NamespacedKey keyUUID;
 
     /**
      * An action for the inventory
@@ -77,15 +77,7 @@ public class GuiItem {
      * @since 0.10.8
      */
     public GuiItem(@NotNull ItemStack item, @Nullable Consumer<InventoryClickEvent> action, @NotNull Plugin plugin) {
-        this.logger = plugin.getLogger();
-        this.keyUUID = new NamespacedKey(plugin, "IF-uuid");
-        this.action = action;
-        this.visible = true;
-        this.properties = new ArrayList<>();
-        this.item = item;
-
-        //remove this call after the removal of InventoryComponent#setItem(ItemStack, int, int)
-        applyUUID();
+        this(item, action, plugin.getLogger(), new NamespacedKey(plugin, "IF-uuid"));
     }
 
     /**
@@ -120,6 +112,29 @@ public class GuiItem {
     }
 
     /**
+     * Creates a new gui item based on the given item, action, logger, and key. The logger will be used for logging
+     * exceptions and the key is used for identification of this item.
+     *
+     * @param item the item stack
+     * @param action the action called whenever an interaction with this item happens
+     * @param logger the logger used for logging exceptions
+     * @param key the key to identify this item with
+     * @since 0.10.10
+     */
+    private GuiItem(@NotNull ItemStack item, @Nullable Consumer<InventoryClickEvent> action, @NotNull Logger logger,
+                    @NotNull NamespacedKey key) {
+        this.logger = logger;
+        this.keyUUID = key;
+        this.action = action;
+        this.visible = true;
+        this.properties = new ArrayList<>();
+        this.item = item;
+
+        //remove this call after the removal of InventoryComponent#setItem(ItemStack, int, int)
+        applyUUID();
+    }
+
+    /**
      * Makes a copy of this gui item and returns it. This makes a deep copy of the gui item. This entails that the
      * underlying item will be copied as per their {@link ItemStack#clone()} and miscellaneous data will be copied in
      * such a way that they are identical. The returned gui item will never be reference equal to the current gui item.
@@ -130,10 +145,8 @@ public class GuiItem {
     @NotNull
     @Contract(pure = true)
     public GuiItem copy() {
-        GuiItem guiItem = new GuiItem(item.clone(), action);
+        GuiItem guiItem = new GuiItem(item.clone(), action, this.logger, this.keyUUID);
 
-        guiItem.logger = this.logger;
-        guiItem.keyUUID = this.keyUUID;
         guiItem.visible = visible;
         guiItem.uuid = uuid;
         guiItem.properties = new ArrayList<>(properties);
