@@ -5,6 +5,9 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+import java.util.EnumSet;
+
 /**
  * The different supported NMS versions
  *
@@ -115,7 +118,40 @@ public enum Version {
      *
      * @since 0.10.9
      */
-    V1_19_4;
+    V1_19_4,
+
+    /**
+     * Version 1.20
+     *
+     * @since 0.10.10
+     */
+    V1_20;
+
+    /**
+     * A collection of versions on which modern smithing tables are available.
+     */
+    private static final Collection<Version> MODERN_SMITHING_TABLE_VERSIONS = EnumSet.of(V1_19_4, V1_20);
+
+    /**
+     * Checks whether modern smithing tables exist on this version. Returns true if they do, otherwise false.
+     *
+     * @return true if modern smithing tables are available
+     * @since 0.10.10
+     */
+    boolean existsModernSmithingTable() {
+        return MODERN_SMITHING_TABLE_VERSIONS.contains(this);
+    }
+
+    /**
+     * Checks whether legacy smithing tables exist on this version. Returns true if they do, otherwise false.
+     *
+     * @return true if legacy smithing tables are available
+     * @since 0.10.10
+     */
+    @Contract(pure = true)
+    boolean existsLegacySmithingTable() {
+        return this != V1_20;
+    }
 
     /**
      * Gets the version currently being used. If the used version is not supported, an
@@ -168,6 +204,8 @@ public enum Version {
                 return V1_19_3;
             case "1.19.4":
                 return V1_19_4;
+            case "1.20":
+                return V1_20;
             default:
                 throw new UnsupportedVersionException("The server version provided is not supported");
         }

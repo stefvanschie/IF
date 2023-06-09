@@ -77,5 +77,6 @@ jobs:
         mvn paper-nms:init -pl nms/1_19_2
         mvn paper-nms:init -pl nms/1_19_3
         mvn paper-nms:init -pl nms/1_19_4
+        mvn paper-nms:init -pl nms/1_20
     - name: Build with Maven
       run: mvn -B package --file pom.xml

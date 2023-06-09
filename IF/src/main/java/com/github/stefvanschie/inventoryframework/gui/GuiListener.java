@@ -360,22 +360,21 @@ public class GuiListener implements Listener {
                 }
             });
 
-            //delay because merchants put items in slots back in the player inventory
-            Bukkit.getScheduler().runTask(this.plugin, () -> {
-                gui.getHumanEntityCache().restoreAndForget(humanEntity);
+            event.getInventory().clear(); //clear inventory to prevent items being put back
 
-                if (gui.getViewerCount() == 1) {
-                    activeGuiInstances.remove(gui);
-                }
+            gui.getHumanEntityCache().restoreAndForget(humanEntity);
 
-                if (gui instanceof AnvilGui) {
-                    ((AnvilGui) gui).handleClose(humanEntity);
-                } else if (gui instanceof MerchantGui) {
-                    ((MerchantGui) gui).handleClose(humanEntity);
-                } else if (gui instanceof ModernSmithingTableGui) {
-                    ((ModernSmithingTableGui) gui).handleClose(humanEntity);
-                }
-            });
+            if (gui.getViewerCount() == 1) {
+                activeGuiInstances.remove(gui);
+            }
+
+            if (gui instanceof AnvilGui) {
+                ((AnvilGui) gui).handleClose(humanEntity);
+            } else if (gui instanceof MerchantGui) {
+                ((MerchantGui) gui).handleClose(humanEntity);
+            } else if (gui instanceof ModernSmithingTableGui) {
+                ((ModernSmithingTableGui) gui).handleClose(humanEntity);
+            }
         }
     }
 
