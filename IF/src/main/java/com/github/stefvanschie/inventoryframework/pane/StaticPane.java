@@ -6,6 +6,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
+import com.github.stefvanschie.inventoryframework.util.XMLGuiComponent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -29,7 +30,7 @@ import java.util.function.Consumer;
  * the same pane. It's recommended to only use one of these systems per pane and to not mix them.
  * </p>
  */
-public class StaticPane extends Pane implements Flippable, Rotatable {
+public class StaticPane extends Pane implements Flippable, Rotatable, XMLGuiComponent {
 
 	/**
 	 * A map of locations inside this pane and their item. The locations are stored in a way where the x coordinate is
@@ -85,6 +86,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 
     public StaticPane(int length, int height) {
         this(0, 0, length, height);
+        this.name = name;
     }
 
     /**
@@ -162,6 +164,10 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
      */
     public void addItem(@NotNull GuiItem item, Slot slot) {
         this.items.put(slot, item);
+		String name = item.getName();
+		if(name != null) {
+			getXmlComponents().put(name, item);
+		}
     }
 
     /**
@@ -374,6 +380,17 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 		return flipVertically;
 	}
 
+    @Nullable
+    private String name;
+
+    @Override
+    public String getName() {
+        return name;
+    }
+	private void setName(@NotNull String name) {
+		this.name = name;
+	}
+
 	/**
 	 * Loads an outline pane from a given element
 	 *
@@ -390,6 +407,10 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 				Integer.parseInt(element.getAttribute("length")),
 				Integer.parseInt(element.getAttribute("height"))
             );
+
+			if(element.hasAttribute("name")) {
+				staticPane.setName(element.getAttribute("name"));
+			}
 
 			Pane.load(staticPane, instance, element);
 			Flippable.load(staticPane, element);

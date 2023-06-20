@@ -1,6 +1,7 @@
 package com.github.stefvanschie.inventoryframework.gui;
 
 import com.github.stefvanschie.inventoryframework.util.UUIDTagType;
+import com.github.stefvanschie.inventoryframework.util.XMLGuiComponent;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 /**
  * An item for in an inventory
  */
-public class GuiItem {
+public class GuiItem implements XMLGuiComponent {
 
     /**
      * The logger to log errors with
@@ -78,6 +79,11 @@ public class GuiItem {
      */
     public GuiItem(@NotNull ItemStack item, @Nullable Consumer<InventoryClickEvent> action, @NotNull Plugin plugin) {
         this(item, action, plugin.getLogger(), new NamespacedKey(plugin, "IF-uuid"));
+    }
+
+    public GuiItem(@NotNull ItemStack item, @Nullable Consumer<InventoryClickEvent> action, @Nullable String name, @NotNull Plugin plugin) {
+        this(item, action, plugin);
+        this.name = name;
     }
 
     /**
@@ -292,5 +298,12 @@ public class GuiItem {
      */
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    private String name;
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.github.stefvanschie.inventoryframework</groupId>
         <artifactId>IF-parent</artifactId>
-        <version>0.10.10</version>
+        <version>0.10.11</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 

@@ -7,6 +7,7 @@ import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.util.Mask;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
+import com.github.stefvanschie.inventoryframework.util.XMLGuiComponent;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -14,6 +15,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -23,7 +25,7 @@ import java.util.*;
 /**
  * A pane for items that should be outlined
  */
-public class OutlinePane extends Pane implements Flippable, Orientable, Rotatable {
+public class OutlinePane extends Pane implements Flippable, Orientable, Rotatable, XMLGuiComponent {
 
     /**
      * A set of items inside this pane
@@ -68,6 +70,8 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
      */
     @NotNull
     private Mask mask;
+
+
 
     /**
      * Creates a new outline pane
@@ -347,6 +351,10 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
      */
     public void addItem(@NotNull GuiItem item) {
         items.add(item);
+        String name = item.getName();
+        if(name != null) {
+            getXmlComponents().put(name, item);
+        }
     }
 
     /**
@@ -524,6 +532,18 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         return flipVertically;
     }
 
+    @Nullable
+    private String name;
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    private void setName(@NotNull String name) {
+        this.name = name;
+    }
+
     /**
      * Loads an outline pane from a given element
      *
@@ -541,6 +561,9 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
                 Integer.parseInt(element.getAttribute("height"))
             );
 
+            if(element.hasAttribute("name"))
+                outlinePane.setName(element.getAttribute("name"));
+
             if (element.hasAttribute("gap"))
                 outlinePane.setGap(Integer.parseInt(element.getAttribute("gap")));
 
@@ -550,6 +573,8 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
             if (element.hasAttribute("alignment")) {
                 outlinePane.align(Alignment.valueOf(element.getAttribute("alignment").toUpperCase()));
             }
+
+
 
             Pane.load(outlinePane, instance, element);
             Flippable.load(outlinePane, element);

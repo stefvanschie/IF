@@ -304,4 +304,8 @@ public class BarrelGui extends NamedGui implements MergedGui, InventoryBased {
     public static BarrelGui load(@NotNull Object instance, @NotNull Element element) {
         return load(instance, element, JavaPlugin.getProvidingPlugin(BarrelGui.class));
     }
+
+    public Pane getPanelByName(String name) {
+        return (Pane) this.inventoryComponent.getXMLGuiComponents().get(name);
+    }
 }

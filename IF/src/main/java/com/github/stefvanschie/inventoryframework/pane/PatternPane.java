@@ -7,12 +7,14 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
+import com.github.stefvanschie.inventoryframework.util.XMLGuiComponent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -24,7 +26,7 @@ import java.util.*;
  *
  * @since 0.9.8
  */
-public class PatternPane extends Pane implements Flippable, Rotatable {
+public class PatternPane extends Pane implements Flippable, Rotatable, XMLGuiComponent {
 
     /**
      * The pattern of this pane.
@@ -265,7 +267,12 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
 
         for (Map.Entry<Integer, GuiItem> binding : bindings.entrySet()) {
             if (pattern.contains(binding.getKey())) {
-                items.add(binding.getValue());
+                GuiItem item = binding.getValue();
+                items.add(item);
+                String name = item.getName();
+                if(name != null) {
+                    getXmlComponents().put(name, item);
+                }
             }
         }
 
@@ -376,6 +383,17 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
         return this.rotation;
     }
 
+    @Nullable
+    private String name;
+
+    @Override
+    public String getName() {
+        return name;
+    }
+    private void setName(@NotNull String name) {
+        this.name = name;
+    }
+
     /**
      * Loads a pattern pane from a given element
      *
@@ -444,11 +462,20 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
                 throw new XMLLoadException("Pattern pane doesn't have a pattern");
             }
 
+            String name;
+            if (element.hasAttribute("name")) {
+                name = element.getAttribute("name");
+            } else {
+                name = null;
+            }
+
             PatternPane patternPane = new PatternPane(
                 Integer.parseInt(element.getAttribute("length")),
                 Integer.parseInt(element.getAttribute("height")),
                 pattern
             );
+
+            patternPane.setName(name);
 
             Pane.load(patternPane, instance, element);
             Flippable.load(patternPane, element);
