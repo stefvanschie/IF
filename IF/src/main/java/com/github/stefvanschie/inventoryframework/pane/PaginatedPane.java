@@ -5,6 +5,7 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
+import com.github.stefvanschie.inventoryframework.util.XMLGuiComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * A pane for panes that should be spread out over multiple pages
  */
-public class PaginatedPane extends Pane {
+public class PaginatedPane extends Pane implements XMLGuiComponent {
 
     /**
      * A set of panes for the different pages
@@ -439,6 +440,17 @@ public class PaginatedPane extends Pane {
         panes.clear();
     }
 
+    @Nullable
+    private String name;
+
+    @Override
+    public String getName() {
+        return name;
+    }
+    private void setName(@NotNull String name) {
+        this.name = name;
+    }
+
     /**
      * Loads a paginated pane from a given element
      *
@@ -455,6 +467,10 @@ public class PaginatedPane extends Pane {
                 Integer.parseInt(element.getAttribute("length")),
                 Integer.parseInt(element.getAttribute("height"))
             );
+
+            if (element.hasAttribute("name")) {
+                paginatedPane.setName(element.getAttribute("name"));
+            }
 
             Pane.load(paginatedPane, instance, element);
 

@@ -368,4 +368,8 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
     public static ChestGui load(@NotNull Object instance, @NotNull Element element) {
         return load(instance, element, JavaPlugin.getProvidingPlugin(ChestGui.class));
     }
+
+    public Pane getPanelByName(String name) {
+        return (Pane) this.inventoryComponent.getXMLGuiComponents().get(name);
+    }
 }

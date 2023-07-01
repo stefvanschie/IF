@@ -5,11 +5,13 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
+import com.github.stefvanschie.inventoryframework.util.XMLGuiComponent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
  *
  * @since 0.3.0
  */
-public class MasonryPane extends Pane implements Orientable {
+public class MasonryPane extends Pane implements Orientable, XMLGuiComponent {
 
     /**
      * A list of panes that should be displayed
@@ -279,6 +281,18 @@ public class MasonryPane extends Pane implements Orientable {
         this.orientation = orientation;
     }
 
+    @Nullable
+    private String name;
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    private void setName(@NotNull String name) {
+        this.name = name;
+    }
+
     /**
      * Loads a masonry pane from a given element
      *
@@ -295,6 +309,10 @@ public class MasonryPane extends Pane implements Orientable {
                 Integer.parseInt(element.getAttribute("length")),
                 Integer.parseInt(element.getAttribute("height"))
             );
+
+            if(element.hasAttribute("name")) {
+                masonryPane.setName(element.getAttribute("name"));
+            }
 
             Pane.load(masonryPane, instance, element);
             Orientable.load(masonryPane, element);

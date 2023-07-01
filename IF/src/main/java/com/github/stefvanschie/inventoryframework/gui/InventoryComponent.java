@@ -3,6 +3,7 @@ package com.github.stefvanschie.inventoryframework.gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.util.XMLGuiComponent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -36,6 +37,12 @@ public class InventoryComponent {
     @Nullable
     private final ItemStack[][] items;
 
+    private final Map<String, XMLGuiComponent> xmlGuiComponents = new HashMap<>();
+
+    public Map<String, XMLGuiComponent> getXMLGuiComponents() {
+    	return xmlGuiComponents;
+    }
+
     /**
      * The length and height of this inventory component
      */
@@ -58,6 +65,13 @@ public class InventoryComponent {
         this.height = height;
 
         this.items = new ItemStack[length][height];
+    }
+
+    public void addPane(@NotNull Pane pane, @NotNull String name) {
+        if(pane instanceof XMLGuiComponent) {
+            xmlGuiComponents.put(name, (XMLGuiComponent) pane);
+        }
+        addPane(pane);
     }
 
     /**
@@ -304,12 +318,15 @@ public class InventoryComponent {
 
         for (int innerIndex = 0; innerIndex < childNodes.getLength(); innerIndex++) {
             Node innerItem = childNodes.item(innerIndex);
-
             if (innerItem.getNodeType() != Node.ELEMENT_NODE) {
                 continue;
             }
-
-            addPane(Gui.loadPane(instance, innerItem));
+            Element innerElement = (Element) innerItem;
+            if(innerElement.hasAttribute("name")){
+                addPane(Gui.loadPane(instance, innerItem), innerElement.getAttribute("name"));
+            } else {
+                addPane(Gui.loadPane(instance, innerItem));
+            }
         }
     }
 

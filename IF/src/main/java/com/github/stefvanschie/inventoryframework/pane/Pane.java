@@ -79,6 +79,8 @@ public abstract class Pane {
      */
     protected UUID uuid;
 
+    private Map<String, GuiItem> xmlComponents = new HashMap<>();
+
     /**
      * A map containing the mappings for properties for items
      */
@@ -551,7 +553,14 @@ public abstract class Pane {
             }
         }
 
-        GuiItem item = new GuiItem(itemStack, action, plugin);
+        final GuiItem item;
+
+        if(element.hasAttribute("name")) {
+            item = new GuiItem(itemStack, action, element.getAttribute("name"), plugin);
+
+        } else {
+            item = new GuiItem(itemStack, action, plugin);
+        }
 
         if (element.hasAttribute("field"))
             XMLUtil.loadFieldAttribute(instance, element, item);
@@ -921,6 +930,14 @@ public abstract class Pane {
         public boolean isGreaterThan(@NotNull Priority priority) {
             return !isLessThan(priority) && this != priority;
         }
+    }
+
+    protected Map<String, GuiItem> getXmlComponents() {
+        return xmlComponents;
+    }
+
+    public GuiItem getItemByName(String name) {
+        return xmlComponents.get(name);
     }
 
     static {

@@ -304,4 +304,8 @@ public class ShulkerBoxGui extends NamedGui implements MergedGui, InventoryBased
     public static ShulkerBoxGui load(@NotNull Object instance, @NotNull Element element) {
         return load(instance, element, JavaPlugin.getProvidingPlugin(ShulkerBoxGui.class));
     }
+
+    public Pane getPanelByName(String name) {
+        return (Pane) this.inventoryComponent.getXMLGuiComponents().get(name);
+    }
 }
