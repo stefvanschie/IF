@@ -60,13 +60,11 @@ public class ToggleButton extends Pane {
 
         this.enabled = enabled;
 
-        //TODO: don't know the positions of these panes, should be zero, though
-
-        this.enabledPane = new OutlinePane(this.x, this.y, length, height);
+        this.enabledPane = new OutlinePane(length, height);
         this.enabledPane.addItem(new GuiItem(new ItemStack(Material.GREEN_STAINED_GLASS_PANE)));
         this.enabledPane.setRepeat(true);
 
-        this.disabledPane = new OutlinePane(this.x, this.y, length, height);
+        this.disabledPane = new OutlinePane(length, height);
         this.disabledPane.addItem(new GuiItem(new ItemStack(Material.RED_STAINED_GLASS_PANE)));
         this.disabledPane.setRepeat(true);
     }
@@ -378,22 +376,6 @@ public class ToggleButton extends Pane {
 
         this.disabledPane.setHeight(height);
         this.enabledPane.setHeight(height);
-    }
-
-    @Override
-    public void setX(int x) {
-        super.setX(x);
-
-        this.disabledPane.setX(x);
-        this.enabledPane.setX(x);
-    }
-
-    @Override
-    public void setY(int y) {
-        super.setY(y);
-
-        this.disabledPane.setY(y);
-        this.enabledPane.setY(y);
     }
 
     /**
