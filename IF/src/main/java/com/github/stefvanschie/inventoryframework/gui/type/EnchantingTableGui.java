@@ -340,7 +340,7 @@ public class EnchantingTableGui extends NamedGui implements InventoryBased {
                     throw new XMLLoadException("Unknown component name");
             }
 
-            component.load(instance, componentElement);
+            component.load(instance, componentElement, plugin);
         }
 
         return enchantingTableGui;

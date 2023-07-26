@@ -487,7 +487,7 @@ public class MerchantGui extends NamedGui {
                         throw new XMLLoadException("Unknown component name");
                 }
 
-                component.load(instance, nestedElement);
+                component.load(instance, nestedElement, plugin);
             } else if (tagName.equalsIgnoreCase("trade")) {
                 NodeList tradeNodes = nestedElement.getChildNodes();
 

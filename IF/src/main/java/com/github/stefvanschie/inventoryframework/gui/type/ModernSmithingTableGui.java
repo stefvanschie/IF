@@ -369,7 +369,7 @@ public class ModernSmithingTableGui extends NamedGui implements InventoryBased {
                     throw new XMLLoadException("Unknown component name");
             }
 
-            component.load(instance, componentElement);
+            component.load(instance, componentElement, plugin);
         }
 
         return smithingTableGui;

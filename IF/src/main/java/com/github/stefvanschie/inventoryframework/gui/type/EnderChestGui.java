@@ -268,9 +268,9 @@ public class EnderChestGui extends NamedGui implements MergedGui, InventoryBased
             InventoryComponent inventoryComponent = enderChestGui.getInventoryComponent();
 
             if (componentElement.getTagName().equalsIgnoreCase("component")) {
-                inventoryComponent.load(instance, componentElement);
+                inventoryComponent.load(instance, componentElement, plugin);
             } else {
-                inventoryComponent.load(instance, element);
+                inventoryComponent.load(instance, element, plugin);
             }
 
             break;

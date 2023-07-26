@@ -300,7 +300,9 @@ public class InventoryComponent {
      * @param instance the instance to apply field and method references on
      * @param element the element to load
      * @since 0.8.0
+     * @deprecated superseded by {@link #load(Object, Element, Plugin)}
      */
+    @Deprecated
     public void load(@NotNull Object instance, @NotNull Element element) {
         load(instance, element, JavaPlugin.getProvidingPlugin(InventoryComponent.class));
     }
@@ -312,7 +314,7 @@ public class InventoryComponent {
      * @param instance the instance to apply field and method references on
      * @param element the element to load
      * @param plugin the plugin to load the panes with
-     * @since 0.10.11
+     * @since 0.10.12
      */
     public void load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
         NodeList childNodes = element.getChildNodes();
