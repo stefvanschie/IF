@@ -325,8 +325,8 @@ public class ToggleButton extends Pane {
 
         callOnClick(event);
 
-        int newX = paneOffsetX + x;
-        int newY = paneOffsetY + y;
+        int newX = paneOffsetX + xPosition;
+        int newY = paneOffsetY + yPosition;
 
         /*
         Since we've toggled before, the click for the panes should be swapped around. If we haven't toggled due to
