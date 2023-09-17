@@ -36,7 +36,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
      * the key and the y coordinate is the value.
 	 */
 	@NotNull
-	private final Map<Slot, GuiItem> items;
+	protected final Map<Slot, GuiItem> items;
 
 	/**
 	 * The clockwise rotation of this pane in degrees
