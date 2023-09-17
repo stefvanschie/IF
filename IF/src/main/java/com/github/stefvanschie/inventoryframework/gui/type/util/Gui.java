@@ -714,6 +714,8 @@ public abstract class Gui {
                 (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) PatternPane::load);
         registerPane("staticpane",
                 (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) StaticPane::load);
+        registerPane("staticnullablepane",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) StaticNullablePane::load);
 
         registerPane("cyclebutton",
                 (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) CycleButton::load);
