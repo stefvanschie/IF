@@ -4,9 +4,12 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
+import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 /**
  * A pane for static items and stuff. All items will have to be specified a slot, or will be added in the next position.
@@ -91,5 +94,55 @@ public class StaticNullablePane extends StaticPane {
         clickedItem.callAction(event);
 
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * If there are multiple items in the same position when displaying the items, either one of those items may be
+     * shown. In particular, there is no guarantee that a specific item will be shown.
+     *
+     * @param inventoryComponent {@inheritDoc}
+     * @param paneOffsetX {@inheritDoc}
+     * @param paneOffsetY {@inheritDoc}
+     * @param maxLength {@inheritDoc}
+     * @param maxHeight {@inheritDoc}
+     */
+    @Override
+    public void display(@NotNull InventoryComponent inventoryComponent, int paneOffsetX, int paneOffsetY, int maxLength,
+                        int maxHeight) {
+        int length = Math.min(this.length, maxLength);
+        int height = Math.min(this.height, maxHeight);
+
+        items.entrySet().stream().filter(entry -> entry.getValue().isVisible()).forEach(entry -> {
+            Slot location = entry.getKey();
+
+            int x = location.getX(getLength());
+            int y = location.getY(getLength());
+
+            if (isFlippedHorizontally())
+                x = length - x - 1;
+
+            if (isFlippedVertically())
+                y = height - y - 1;
+
+            Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y, length, height,
+                    getRotation());
+
+            x = coordinates.getKey();
+            y = coordinates.getValue();
+
+            if (x < 0 || x >= length || y < 0 || y >= height) {
+                return;
+            }
+
+            GuiItem item = entry.getValue();
+
+            Slot slot = getSlot();
+            int finalRow = slot.getY(maxLength) + y + paneOffsetY;
+            int finalColumn = slot.getX(maxLength) + x + paneOffsetX;
+
+            inventoryComponent.setItemUnsafe(item, finalColumn, finalRow);
+        });
     }
 }

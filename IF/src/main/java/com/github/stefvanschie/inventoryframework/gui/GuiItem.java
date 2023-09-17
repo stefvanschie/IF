@@ -162,6 +162,23 @@ public class GuiItem {
         return guiItem;
     }
 
+    @NotNull
+    @Contract(pure = true)
+    public GuiItem unsafeCopy() {
+        GuiItem guiItem = new GuiItem(item.clone(), action, this.logger, this.keyUUID);
+
+        guiItem.visible = visible;
+        guiItem.uuid = uuid;
+        guiItem.properties = new ArrayList<>(properties);
+        ItemMeta meta = guiItem.item.getItemMeta();
+
+        if (meta != null) {
+            meta.getPersistentDataContainer().set(keyUUID, UUIDTagType.INSTANCE, guiItem.uuid);
+            guiItem.item.setItemMeta(meta);
+        }
+        return guiItem;
+    }
+
     /**
      * Calls the handler of the {@link InventoryClickEvent}
      * if such a handler was specified in the constructor.
@@ -249,6 +266,17 @@ public class GuiItem {
     @Contract(pure = true)
     public ItemStack getItem() {
         return item;
+    }
+
+    /**
+     * Returns the action
+     * @return the action fired when this item is clicked
+     * @since 0.10.12
+     */
+    @Nullable
+    @Contract(pure = true)
+    public Consumer<InventoryClickEvent> getAction() {
+        return action;
     }
 
     /**
