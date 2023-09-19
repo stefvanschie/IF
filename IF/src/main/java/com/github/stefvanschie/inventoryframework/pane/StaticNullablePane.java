@@ -6,7 +6,6 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -85,8 +84,7 @@ public class StaticNullablePane extends StaticPane {
 
         callOnClick(event);
 
-        GuiItem clickedItem = this.items.get(Slot.fromIndex(adjustedSlot));
-
+        GuiItem clickedItem = this.items.get(Slot.fromXY(x, y));
         if (clickedItem == null) {
             return false;
         }
@@ -144,5 +142,57 @@ public class StaticNullablePane extends StaticPane {
 
             inventoryComponent.setItemUnsafe(item, finalColumn, finalRow);
         });
+    }
+
+    /**
+     * Adds a rectangular area of the same GuiItem to the pane.
+     * @param guiItem the item to add
+     * @param startingX the starting x coordinate (north-west corner)
+     * @param startingY the starting y coordinate (north-west corner)
+     * @param xLength the length of the area
+     * @param yLength the height of the area
+     * @since 0.10.12
+     */
+    public void addItem(@NotNull GuiItem guiItem, int startingX, int startingY, int xLength, int yLength) {
+        for(int i = startingX; i < startingX + xLength; i++) {
+            for(int j = startingY; j < startingY + yLength; j++) {
+                addItem(guiItem, i, j);
+            }
+        }
+    }
+
+    /**
+     * Adds a rectangular area of the same GuiItem to the pane.
+     * @param guiItem the item to add
+     * @param slot the starting slot (north-west corner)
+     * @param xLength the length of the area
+     * @param yLength the height of the area
+     * @since 0.10.12
+     */
+    public void addItem(@NotNull GuiItem guiItem, Slot slot,  int xLength, int yLength) {
+        addItem(guiItem, slot.getX(getLength()), slot.getY(getLength()), xLength, yLength);
+    }
+
+    /**
+     * Adds a SQUARED area of the same GuiItem to the pane.
+     * @param guiItem the item to add
+     * @param startingX the starting x coordinate (north-west corner)
+     * @param startingY the starting y coordinate (north-west corner)
+     * @param length the length and height of the squared area
+     * @since 0.10.12
+     */
+    public void addItem(@NotNull GuiItem guiItem, int startingX, int startingY, int length) {
+        addItem(guiItem, startingX, startingY, length, length);
+    }
+
+    /**
+     * Adds a SQUARED area of the same GuiItem to the pane.
+     * @param guiItem the item to add
+     * @param slot the starting slot (north-west corner)
+     * @param length the length and height of the squared area
+     * @since 0.10.12
+     */
+    public void addItem(@NotNull GuiItem guiItem, Slot slot, int length) {
+        this.addItem(guiItem, slot, length, length);
     }
 }

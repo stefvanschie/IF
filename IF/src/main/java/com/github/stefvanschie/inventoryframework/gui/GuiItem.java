@@ -1,6 +1,7 @@
 package com.github.stefvanschie.inventoryframework.gui;
 
 import com.github.stefvanschie.inventoryframework.util.UUIDTagType;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -153,7 +154,8 @@ public class GuiItem {
         ItemMeta meta = guiItem.item.getItemMeta();
 
         if (meta == null) {
-            throw new IllegalArgumentException("item must be able to have ItemMeta (it mustn't be AIR)");
+            throw new IllegalArgumentException("item must be able to have ItemMeta (it mustn't be AIR). If you want to " +
+                    "click an AIR item, use a StaticNullablePane instead!");
         }
 
         meta.getPersistentDataContainer().set(keyUUID, UUIDTagType.INSTANCE, guiItem.uuid);
@@ -320,5 +322,9 @@ public class GuiItem {
      */
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public static GuiItem air(@NotNull Consumer<InventoryClickEvent> action) {
+        return new GuiItem(new ItemStack(Material.AIR), action);
     }
 }
