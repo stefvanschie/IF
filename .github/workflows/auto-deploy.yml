@@ -56,8 +56,9 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 17
-    - uses: actions/checkout@v2
-      name: Checkout code
+    - name: Checkout code
+      uses: actions/checkout@v2
+
     - name: Run paper-nms init
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       run: |

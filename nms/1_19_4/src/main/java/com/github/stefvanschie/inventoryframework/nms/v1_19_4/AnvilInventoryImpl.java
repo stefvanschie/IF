@@ -60,6 +60,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
 
         Component message = TextHolderUtil.toComponent(title);
         ContainerAnvilImpl containerAnvil = new ContainerAnvilImpl(serverPlayer, message);
+        //subscribeToNameInputChanges(containerAnvil::setItemName);
 
         Inventory inventory = containerAnvil.getBukkitView().getTopInventory();
 
