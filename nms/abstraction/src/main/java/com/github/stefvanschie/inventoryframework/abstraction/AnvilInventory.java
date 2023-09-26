@@ -181,6 +181,15 @@ public abstract class AnvilInventory {
     }
 
     /**
+     * Sets the text shown in the rename slot of the anvil
+     * @param text
+     * @since 0.10.12
+     */
+    public void setRenameText(@NotNull String text) {
+        observableText.set(text);
+    }
+
+    /**
      * Subscribes to changes of the name input.
      *
      * @param onNameInputChanged the consumer to call when the name input changes
