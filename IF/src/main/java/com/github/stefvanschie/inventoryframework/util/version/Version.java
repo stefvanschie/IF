@@ -121,16 +121,36 @@ public enum Version {
     V1_19_4,
 
     /**
-     * Version 1.20
+     * Version 1.20.0 - 1.20.1
      *
      * @since 0.10.10
      */
-    V1_20;
+    V1_20_0_1,
+
+    /**
+     * Version 1.20.2
+     *
+     * @since 0.10.12
+     */
+    V1_20_2;
 
     /**
      * A collection of versions on which modern smithing tables are available.
      */
-    private static final Collection<Version> MODERN_SMITHING_TABLE_VERSIONS = EnumSet.of(V1_19_4, V1_20);
+    private static final Collection<Version> MODERN_SMITHING_TABLE_VERSIONS = EnumSet.of(V1_19_4, V1_20_0_1, V1_20_2);
+
+    /**
+     * A collection of versions on which legacy smithing tables ae available.
+     */
+    @NotNull
+    private static final Collection<@NotNull Version> LEGACY_SMITHING_TABLE_VERSIONS = EnumSet.of(
+            V1_14,
+            V1_15,
+            V1_16_1, V1_16_2_3, V1_16_4_5,
+            V1_17_0, V1_17_1,
+            V1_18_0, V1_18_1, V1_18_2,
+            V1_19_0, V1_19_1, V1_19_2, V1_19_3, V1_19_4
+    );
 
     /**
      * Checks whether modern smithing tables exist on this version. Returns true if they do, otherwise false.
@@ -150,7 +170,7 @@ public enum Version {
      */
     @Contract(pure = true)
     boolean existsLegacySmithingTable() {
-        return this != V1_20;
+        return LEGACY_SMITHING_TABLE_VERSIONS.contains(this);
     }
 
     /**
@@ -206,7 +226,9 @@ public enum Version {
                 return V1_19_4;
             case "1.20":
             case "1.20.1":
-                return V1_20;
+                return V1_20_0_1;
+            case "1.20.2":
+                return V1_20_2;
             default:
                 throw new UnsupportedVersionException("The server version provided is not supported");
         }

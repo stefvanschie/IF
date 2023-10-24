@@ -1,9 +1,9 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_20;
+package com.github.stefvanschie.inventoryframework.nms.v1_20_2;
 
 import com.github.stefvanschie.inventoryframework.abstraction.SmithingTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_20.util.CustomInventoryUtil;
-import com.github.stefvanschie.inventoryframework.nms.v1_20.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_20_2.util.CustomInventoryUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_20_2.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -18,9 +18,9 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.item.ItemStack;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R2.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -29,9 +29,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal smithing table inventory for 1.20. This is only available for Minecraft 1.20 and higher.
+ * Internal smithing table inventory for 1.20.2. This is only available for Minecraft 1.20 and higher.
  *
- * @since 0.10.10
+ * @since 0.10.12
  */
 public class SmithingTableInventoryImpl extends SmithingTableInventory {
 
@@ -139,7 +139,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param player the player to set the cursor
      * @param item the item to set the cursor to
-     * @since 0.10.10
+     * @since 0.10.12
      * @deprecated no longer used internally
      */
     @Deprecated
@@ -155,7 +155,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param player the player to send the result item to
      * @param item the result item
-     * @since 0.10.10
+     * @since 0.10.12
      * @deprecated no longer used internally
      */
     @Deprecated
@@ -172,7 +172,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param nmsPlayer the player to get the container id for
      * @return the container id
-     * @since 0.10.10
+     * @since 0.10.12
      * @deprecated no longer used internally
      */
     @Contract(pure = true)
@@ -186,7 +186,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
-     * @since 0.10.10
+     * @since 0.10.12
      * @deprecated no longer used internally
      */
     @NotNull
@@ -201,7 +201,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.10
+     * @since 0.10.12
      */
     @NotNull
     @Contract(pure = true)
@@ -212,7 +212,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
     /**
      * A custom container smithing table
      *
-     * @since 0.10.10
+     * @since 0.10.12
      */
     private static class ContainerSmithingTableImpl extends SmithingMenu {
 
@@ -221,7 +221,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
          *
          * @param serverPlayer the player for whom this anvil container is
          * @param title the title of the inventory
-         * @since 0.10.10
+         * @since 0.10.12
          */
         public ContainerSmithingTableImpl(@NotNull ServerPlayer serverPlayer, @NotNull Component title) {
             super(serverPlayer.nextContainerCounter(), serverPlayer.getInventory(),

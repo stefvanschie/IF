@@ -1,4 +1,4 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_20;
+package com.github.stefvanschie.inventoryframework.nms.v1_20_2;
 
 import com.github.stefvanschie.inventoryframework.abstraction.BeaconInventory;
 import net.minecraft.core.NonNullList;
@@ -12,11 +12,11 @@ import net.minecraft.world.Container;
 import net.minecraft.world.inventory.BeaconMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryBeacon;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryView;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftInventory;
+import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftInventoryBeacon;
+import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.Contract;
@@ -26,9 +26,9 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 /**
- * Internal beacon inventory for 1.20
+ * Internal beacon inventory for 1.20.2
  *
- * @since 0.10.10
+ * @since 0.10.12
  */
 public class BeaconInventoryImpl extends BeaconInventory {
 
@@ -80,7 +80,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
      *
      * @param nmsPlayer the player to get the container id for
      * @return the container id
-     * @since 0.10.10
+     * @since 0.10.12
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -92,7 +92,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
      *
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
-     * @since 0.10.10
+     * @since 0.10.12
      */
     @NotNull
     @Contract(pure = true)
@@ -105,7 +105,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.10
+     * @since 0.10.12
      */
     @NotNull
     @Contract(pure = true)
@@ -116,7 +116,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
     /**
      * A custom container beacon
      *
-     * @since 0.10.10
+     * @since 0.10.12
      */
     private class ContainerBeaconImpl extends BeaconMenu {
 
@@ -146,7 +146,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
 
             try {
                 //noinspection JavaReflectionMemberAccess
-                this.beaconField = BeaconMenu.class.getDeclaredField("r"); //beacon
+                this.beaconField = BeaconMenu.class.getDeclaredField("s"); //beacon
                 this.beaconField.setAccessible(true);
             } catch (NoSuchFieldException exception) {
                 throw new RuntimeException(exception);
