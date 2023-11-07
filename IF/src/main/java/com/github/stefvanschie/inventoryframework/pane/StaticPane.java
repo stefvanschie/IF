@@ -328,11 +328,41 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 		this.fillWith(itemStack, null);
 	}
 
+    /**
+     * Gets a gui item from the specific spot in the pane by x and y coordinates
+     *
+     * @param x    the x coordinate of the position of the item
+     * @param y    the y coordinate of the position of the item
+     * @since TODO: __VERSION__
+     */
+    public GuiItem getItem(int x, int y) {
+        return getItem(Slot.fromXY(x, y));
+    }
+
+    /**
+     * Gets the specified item from the pane by the slot
+     *
+     * @param slot the slot of the item to remove
+     * @since TODO: __VERSION__
+     */
+    public GuiItem getItem(Slot slot) {
+        return items.get(slot);
+    }
+
 	@NotNull
 	@Override
 	public Collection<GuiItem> getItems() {
 		return items.values();
 	}
+
+    /**
+     * Get the GUI items with their slots
+     * @return Map<Slot, GuiItem>
+     * @since TODO: __VERSION__
+     */
+    public @NotNull Map<Slot, GuiItem> getSlottedItems() {
+        return items;
+    }
 
     @Override
     public void clear() {
