@@ -37,7 +37,7 @@
 
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF-parent</artifactId>
-    <version>0.10.12</version>
+    <version>0.10.13-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>IF</name>
