@@ -51,7 +51,7 @@ public final class SkullUtil {
      * @param id the skull id
      */
     public static void setSkull(@NotNull ItemMeta meta, @NotNull String id) {
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+        GameProfile profile = new GameProfile(UUID.randomUUID(), "RandomName"); // Name is not null to avoid errors.
         byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}",
             "http://textures.minecraft.net/texture/" + id).getBytes());
         profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
