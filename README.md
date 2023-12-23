@@ -138,6 +138,7 @@ mvn paper-nms:init -pl nms/1_19_3
 mvn paper-nms:init -pl nms/1_19_4
 mvn paper-nms:init -pl nms/1_20_0-1
 mvn paper-nms:init -pl nms/1_20_2
+mvn paper-nms:init -pl nms/1_20_3
 ```
 
 Your environment is now set up correctly. To create a build, run the following inside the root folder of the project.
