@@ -73,6 +73,7 @@ jobs:
         mvn paper-nms:init -pl nms/1_19_4
         mvn paper-nms:init -pl nms/1_20_0-1
         mvn paper-nms:init -pl nms/1_20_2
+        mvn paper-nms:init -pl nms/1_20_3-4
     - name: Setup GPG keys
       run: cat <(echo -e "${{ secrets.GPG_KEY }}") | gpg --batch --import
     - name: Automatically deploy the project

@@ -7,6 +7,7 @@
     <modules>
         <module>IF</module>
         <module>nms/abstraction</module>
+        <module>nms/1_20_3-4</module>
         <module>nms/1_20_2</module>
         <module>nms/1_20_0-1</module>
         <module>nms/1_19_4</module>
@@ -37,7 +38,7 @@
 
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF-parent</artifactId>
-    <version>0.10.12</version>
+    <version>0.10.13</version>
     <packaging>pom</packaging>
 
     <name>IF</name>
@@ -67,7 +68,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>24.0.1</version>
+            <version>24.1.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -112,17 +113,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.2.1</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-junit-platform </artifactId>
-                        <version>3.1.2</version>
+                        <version>3.2.1</version>
                     </dependency>
                     <dependency>
                         <groupId>org.junit.jupiter</groupId>
                         <artifactId>junit-jupiter-engine</artifactId>
-                        <version>5.10.0</version>
+                        <version>5.10.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
