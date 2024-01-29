@@ -7,7 +7,7 @@
     <modules>
         <module>IF</module>
         <module>nms/abstraction</module>
-        <module>nms/1_20_3</module>
+        <module>nms/1_20_3-4</module>
         <module>nms/1_20_2</module>
         <module>nms/1_20_0-1</module>
         <module>nms/1_19_4</module>
@@ -38,7 +38,7 @@
 
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF-parent</artifactId>
-    <version>0.10.13-SNAPSHOT</version>
+    <version>0.10.13</version>
     <packaging>pom</packaging>
 
     <name>IF</name>
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>24.0.1</version>
+            <version>24.1.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -123,7 +123,7 @@
                     <dependency>
                         <groupId>org.junit.jupiter</groupId>
                         <artifactId>junit-jupiter-engine</artifactId>
-                        <version>5.10.0</version>
+                        <version>5.10.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -154,7 +154,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.3</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
