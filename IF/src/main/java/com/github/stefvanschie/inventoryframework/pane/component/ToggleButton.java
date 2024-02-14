@@ -61,11 +61,11 @@ public class ToggleButton extends Pane {
         this.enabled = enabled;
 
         this.enabledPane = new OutlinePane(length, height);
-        this.enabledPane.addItem(new GuiItem(new ItemStack(Material.GREEN_STAINED_GLASS_PANE)));
+        this.enabledPane.addItem(new GuiItem(new ItemStack(Material.GREEN_STAINED_GLASS_PANE), plugin));
         this.enabledPane.setRepeat(true);
 
         this.disabledPane = new OutlinePane(length, height);
-        this.disabledPane.addItem(new GuiItem(new ItemStack(Material.RED_STAINED_GLASS_PANE)));
+        this.disabledPane.addItem(new GuiItem(new ItemStack(Material.RED_STAINED_GLASS_PANE), plugin));
         this.disabledPane.setRepeat(true);
     }
 
