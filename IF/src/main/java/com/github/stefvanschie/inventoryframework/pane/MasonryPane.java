@@ -125,8 +125,8 @@ public class MasonryPane extends Pane implements Orientable {
 
                             pane.display(
                                 inventoryComponent,
-                                paneOffsetX + x,
-                                paneOffsetY + y,
+                                paneOffsetX + getSlot().getX(length),
+                                paneOffsetY + getSlot().getY(length),
                                 Math.min(this.length, maxLength),
                                 Math.min(this.height, maxHeight)
                             );
@@ -163,8 +163,8 @@ public class MasonryPane extends Pane implements Orientable {
 
                             pane.display(
                                 inventoryComponent,
-                                paneOffsetX + x,
-                                paneOffsetY + y,
+                                paneOffsetX + getSlot().getX(length),
+                                paneOffsetY + getSlot().getY(length),
                                 Math.min(this.length, maxLength),
                                 Math.min(this.height, maxHeight)
                             );
