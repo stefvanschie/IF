@@ -5,6 +5,7 @@ import com.mojang.authlib.properties.Property;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -37,19 +38,44 @@ public final class SkullUtil {
     @NotNull
     public static ItemStack getSkull(@NotNull String id) {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-        ItemMeta itemMeta = Objects.requireNonNull(item.getItemMeta());
+        SkullMeta itemMeta = (SkullMeta) Objects.requireNonNull(item.getItemMeta());
         setSkull(itemMeta, id);
         item.setItemMeta(itemMeta);
         return item;
     }
 
     /**
-     * Sets the skull of an existing {@link ItemMeta} from the specified id.
+     * Sets the skull of an existing {@link SkullMeta} from the specified id.
      * The id is the value from the textures.minecraft.net website after the last '/' character.
      *
      * @param meta the meta to change
      * @param id the skull id
      */
+    public static void setSkull(@NotNull SkullMeta meta, @NotNull String id) {
+        GameProfile profile = new GameProfile(UUID.randomUUID(), "");
+        byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}",
+                "http://textures.minecraft.net/texture/" + id).getBytes());
+        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
+
+        try {
+            Field profileField = meta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(meta, profile);
+        } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Sets the skull of an existing {@link ItemMeta} from the specified id.
+     * The id is the value from the textures.minecraft.net website after the last '/' character.
+     *
+     * @deprecated This method is deprecated. Use {@link #setSkull(SkullMeta, String)} instead.
+     *
+     * @param meta the meta to change
+     * @param id the skull id
+     */
+    @Deprecated
     public static void setSkull(@NotNull ItemMeta meta, @NotNull String id) {
         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
         byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}",
