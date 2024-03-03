@@ -1,4 +1,4 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_20_0_1.util;
+package com.github.stefvanschie.inventoryframework.nms.v1_20_1.util;
 
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
@@ -12,7 +12,7 @@ import java.util.Objects;
 /**
  * A utility class for adding {@link TextHolder} support.
  *
- * @since 0.10.10
+ * @since 0.10.14
  */
 public final class TextHolderUtil {
     
@@ -25,7 +25,7 @@ public final class TextHolderUtil {
      *
      * @param holder the value to convert
      * @return the value as a vanilla component
-     * @since 0.10.10
+     * @since 0.10.14
      */
     @NotNull
     @Contract(pure = true)
@@ -42,7 +42,7 @@ public final class TextHolderUtil {
      *
      * @param holder the value to convert
      * @return the value as a vanilla component
-     * @since 0.10.10
+     * @since 0.10.14
      */
     @NotNull
     @Contract(pure = true)
@@ -55,7 +55,7 @@ public final class TextHolderUtil {
      *
      * @param holder the value to convert
      * @return the value as a vanilla component
-     * @since 0.10.10
+     * @since 0.10.14
      */
     @NotNull
     @Contract(pure = true)

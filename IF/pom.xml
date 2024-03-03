@@ -133,7 +133,13 @@
         </dependency>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
-            <artifactId>1_20_0-1</artifactId>
+            <artifactId>1_20_0</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_20_1</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

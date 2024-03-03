@@ -1,6 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_20_0_1;
+package com.github.stefvanschie.inventoryframework.nms.v1_20_1;
 
-import com.github.stefvanschie.inventoryframework.abstraction.BeaconInventory;
+import com.github.stefvanschie.inventoryframework.abstraction.StonecutterInventory;
+import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
+import com.github.stefvanschie.inventoryframework.nms.v1_20_1.util.TextHolderUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
@@ -9,12 +11,12 @@ import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.Container;
-import net.minecraft.world.inventory.BeaconMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.StonecutterMenu;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryBeacon;
+import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryStonecutter;
 import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryView;
 import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -26,36 +28,47 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 /**
- * Internal beacon inventory for 1.20
+ * Internal stonecutter inventory for 1.20.1
  *
- * @since 0.10.10
+ * @since 0.10.14
  */
-public class BeaconInventoryImpl extends BeaconInventory {
+public class StonecutterInventoryImpl extends StonecutterInventory {
 
-    public BeaconInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
+    public StonecutterInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
         super(inventoryHolder);
     }
 
     @Override
-    public void openInventory(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack item) {
+    public void openInventory(@NotNull Player player, @NotNull TextHolder title,
+                              @Nullable org.bukkit.inventory.ItemStack[] items) {
+        int itemAmount = items.length;
+
+        if (itemAmount != 2) {
+            throw new IllegalArgumentException(
+                "The amount of items for a stonecutter should be 2, but is '" + itemAmount + "'"
+            );
+        }
+
         ServerPlayer serverPlayer = getServerPlayer(player);
-        ContainerBeaconImpl containerBeacon = new ContainerBeaconImpl(serverPlayer, item);
+        Component message = TextHolderUtil.toComponent(title);
+        ContainerStonecutterImpl containerEnchantmentTable = new ContainerStonecutterImpl(serverPlayer, items, message);
 
-        serverPlayer.containerMenu = containerBeacon;
+        serverPlayer.containerMenu = containerEnchantmentTable;
 
-        int id = containerBeacon.containerId;
-        Component beacon = Component.literal("Beacon");
+        int id = containerEnchantmentTable.containerId;
+        ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(id, MenuType.STONECUTTER, message);
 
-        serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.BEACON, beacon));
+        serverPlayer.connection.send(packet);
 
-        sendItem(player, item);
+        sendItems(player, items);
     }
 
     @Override
-    public void sendItem(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack item) {
-        NonNullList<ItemStack> items = NonNullList.of(
-            ItemStack.EMPTY, //the first item doesn't count for some reason, so send a dummy item
-            CraftItemStack.asNMSCopy(item)
+    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items) {
+        NonNullList<ItemStack> nmsItems = NonNullList.of(
+            ItemStack.EMPTY,
+            CraftItemStack.asNMSCopy(items[0]),
+            CraftItemStack.asNMSCopy(items[1])
         );
 
         ServerPlayer serverPlayer = getServerPlayer(player);
@@ -64,7 +77,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
         ItemStack cursor = CraftItemStack.asNMSCopy(player.getItemOnCursor());
         ServerPlayerConnection playerConnection = getPlayerConnection(serverPlayer);
 
-        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, items, cursor));
+        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, nmsItems, cursor));
     }
 
     @Override
@@ -80,7 +93,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
      *
      * @param nmsPlayer the player to get the container id for
      * @return the container id
-     * @since 0.10.10
+     * @since 0.10.14
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -92,7 +105,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
      *
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
-     * @since 0.10.10
+     * @since 0.10.14
      */
     @NotNull
     @Contract(pure = true)
@@ -105,7 +118,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.10
+     * @since 0.10.14
      */
     @NotNull
     @Contract(pure = true)
@@ -114,71 +127,64 @@ public class BeaconInventoryImpl extends BeaconInventory {
     }
 
     /**
-     * A custom container beacon
+     * A custom container enchanting table
      *
-     * @since 0.10.10
+     * @since 0.10.14
      */
-    private class ContainerBeaconImpl extends BeaconMenu {
+    private class ContainerStonecutterImpl extends StonecutterMenu {
 
         /**
-         * The player for this beacon container
+         * The player for this enchanting table container
          */
         @NotNull
         private final Player player;
 
         /**
-         * The internal bukkit entity for this container beacon
+         * The internal bukkit entity for this container enchanting table
          */
         @Nullable
         private CraftInventoryView bukkitEntity;
 
         /**
-         * Field for accessing the beacon field
+         * Field for accessing the result inventory field
          */
         @NotNull
-        private final Field beaconField;
+        private final Field resultContainerField;
 
-        public ContainerBeaconImpl(@NotNull ServerPlayer serverPlayer, @Nullable org.bukkit.inventory.ItemStack item) {
-            super(serverPlayer.nextContainerCounter(), serverPlayer.getInventory());
+        public ContainerStonecutterImpl(@NotNull ServerPlayer entityPlayer,
+                                        @Nullable org.bukkit.inventory.ItemStack[] items, @NotNull Component title) {
+            super(entityPlayer.nextContainerCounter(), entityPlayer.getInventory());
 
-            this.player = serverPlayer.getBukkitEntity();
-            setTitle(Component.empty());
+            this.player = entityPlayer.getBukkitEntity();
+
+            setTitle(title);
 
             try {
                 //noinspection JavaReflectionMemberAccess
-                this.beaconField = BeaconMenu.class.getDeclaredField("r"); //beacon
-                this.beaconField.setAccessible(true);
+                this.resultContainerField = StonecutterMenu.class.getDeclaredField("A"); //resultContainer
+                this.resultContainerField.setAccessible(true);
             } catch (NoSuchFieldException exception) {
                 throw new RuntimeException(exception);
             }
 
-            try {
-                ItemStack itemStack = CraftItemStack.asNMSCopy(item);
-
-                ((Container) beaconField.get(this)).setItem(0, itemStack);
-            } catch (IllegalAccessException exception) {
-                throw new RuntimeException(exception);
-            }
+            container.setItem(0, CraftItemStack.asNMSCopy(items[0]));
+            getResultInventory().setItem(0, CraftItemStack.asNMSCopy(items[1]));
         }
 
         @NotNull
         @Override
         public CraftInventoryView getBukkitView() {
             if (bukkitEntity == null) {
-                try {
-                    CraftInventory inventory = new CraftInventoryBeacon((Container) beaconField.get(this)) {
-                        @NotNull
-                        @Contract(pure = true)
-                        @Override
-                        public InventoryHolder getHolder() {
-                            return inventoryHolder;
-                        }
-                    };
+                CraftInventory inventory = new CraftInventoryStonecutter(this.container, getResultInventory()) {
+                    @NotNull
+                    @Contract(pure = true)
+                    @Override
+                    public InventoryHolder getHolder() {
+                        return inventoryHolder;
+                    }
+                };
 
-                    bukkitEntity = new CraftInventoryView(player, inventory, this);
-                } catch (IllegalAccessException exception) {
-                    throw new RuntimeException(exception);
-                }
+                bukkitEntity = new CraftInventoryView(player, inventory, this);
             }
 
             return bukkitEntity;
@@ -196,5 +202,20 @@ public class BeaconInventoryImpl extends BeaconInventory {
         @Override
         public void removed(net.minecraft.world.entity.player.Player nmsPlayer) {}
 
+        /**
+         * Gets the result inventory
+         *
+         * @return the result inventory
+         * @since 0.10.14
+         */
+        @NotNull
+        @Contract(pure = true)
+        public Container getResultInventory() {
+            try {
+                return (Container) resultContainerField.get(this);
+            } catch (IllegalAccessException exception) {
+                throw new RuntimeException(exception);
+            }
+        }
     }
 }
