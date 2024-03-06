@@ -51,15 +51,18 @@ public final class SkullUtil {
      * @param id the skull id
      */
     public static void setSkull(@NotNull ItemMeta meta, @NotNull String id) {
-        GameProfile profile = new GameProfile(UUID.randomUUID(), "RandomName"); // Name is not null to avoid errors.
+        GameProfile profile = new GameProfile(UUID.randomUUID(), "");
         byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}",
             "http://textures.minecraft.net/texture/" + id).getBytes());
         profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
+        String itemDisplayName = meta.getDisplayName();
 
         try {
             Field profileField = meta.getClass().getDeclaredField("profile");
             profileField.setAccessible(true);
             profileField.set(meta, profile);
+
+            meta.setDisplayName(itemDisplayName);
         } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
