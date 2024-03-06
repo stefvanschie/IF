@@ -73,7 +73,11 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "maven"
-    directory: "/nms/1_20_0-1"
+    directory: "/nms/1_20_0"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/nms/1_20_1"
     schedule:
       interval: "daily"
   - package-ecosystem: "maven"
@@ -81,7 +85,7 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "maven"
-    directory: "/nms/1_20_3"
+    directory: "/nms/1_20_3-4"
     schedule:
       interval: "daily"
   - package-ecosystem: "maven"
