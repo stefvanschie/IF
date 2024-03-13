@@ -63,8 +63,15 @@ public final class SkullUtil {
             profileField.set(meta, profile);
 
             meta.setDisplayName(itemDisplayName);
-        } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+
+            // Sets serializedProfile field on meta
+            // If it does throw NoSuchMethodException this stops, and meta is correct.
+            // Else it has profile and will set the field.
+            Method setProfile = meta.getClass().getDeclaredMethod("setProfile", GameProfile.class);
+            setProfile.setAccessible(true);
+            setProfile.invoke(meta, profile);
+        } catch (NoSuchFieldException | SecurityException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
-        }
+        } catch (NoSuchMethodException ignored) {}
     }
 }
