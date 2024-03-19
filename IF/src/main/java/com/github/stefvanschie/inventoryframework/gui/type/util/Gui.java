@@ -719,6 +719,7 @@ public abstract class Gui {
                 (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) CycleButton::load);
         registerPane("label",
                 (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) Label::load);
+        registerPane("pagingbuttons", PagingButtons::load);
         registerPane("percentagebar",
                 (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) PercentageBar::load);
         registerPane("slider",

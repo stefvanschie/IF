@@ -610,6 +610,28 @@ public abstract class Pane {
     }
 
     /**
+     * Checks whether a {@link GuiItem} is the same item as the given {@link ItemStack}. The item will be compared using
+     * internal data. When the item does not have this data, this method will return false. If the item does have such
+     * data, but its value does not match, false is also returned. This method will not mutate any of the provided
+     * arguments.
+     *
+     * @param guiItem the gui item to check
+     * @param item the item which the gui item should be checked against
+     * @return true if the {@link GuiItem} matches the {@link ItemStack}, false otherwise
+     * @since 0.10.14
+     */
+    @Contract(pure = true)
+    protected static boolean matchesItem(@NotNull GuiItem guiItem, @NotNull ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta == null) {
+            return false;
+        }
+
+        return guiItem.getUUID().equals(meta.getPersistentDataContainer().get(guiItem.getKey(), UUIDTagType.INSTANCE));
+    }
+
+    /**
      * Finds a type of {@link GuiItem} from the provided collection of items based on the provided {@link ItemStack}.
      * The items will be compared using internal data. When the item does not have this data, this method will return
      * null. If the item does have such data, but its value cannot be found in the provided list, null is also returned.
@@ -628,15 +650,7 @@ public abstract class Pane {
     @Contract(pure = true)
     protected static <T extends GuiItem> T findMatchingItem(@NotNull Collection<T> items, @NotNull ItemStack item) {
         for (T guiItem : items) {
-            ItemMeta meta = item.getItemMeta();
-
-            if (meta == null) {
-                return null;
-            }
-
-            UUID uuid = meta.getPersistentDataContainer().get(guiItem.getKey(), UUIDTagType.INSTANCE);
-
-            if (guiItem.getUUID().equals(uuid)) {
+            if (matchesItem(guiItem, item)) {
                 return guiItem;
             }
         }
