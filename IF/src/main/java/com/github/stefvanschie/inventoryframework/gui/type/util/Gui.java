@@ -114,6 +114,13 @@ public abstract class Gui {
     boolean updating = false;
 
     /**
+     * The parent gui. This gui will be navigated to once a player closes this gui. If this is null, the player will not
+     * be redirected to another gui once they close this gui.
+     */
+    @Nullable
+    private Gui parent;
+
+    /**
      * The pane mapping which will allow users to register their own panes to be used in XML files
      */
     @NotNull
@@ -581,6 +588,33 @@ public abstract class Gui {
 
             this.plugin.getLogger().log(Level.SEVERE, message, t);
         }
+    }
+
+    /**
+     * The parent gui will be shown to the specified {@link HumanEntity}. If no parent gui is set, then this method will
+     * silently do nothing.
+     *
+     * @param humanEntity the human entity to redirect
+     * @since 0.10.14
+     */
+    public void navigateToParent(@NotNull HumanEntity humanEntity) {
+        if (this.parent == null) {
+            return;
+        }
+
+        this.parent.show(humanEntity);
+    }
+
+    /**
+     * Sets the parent gui to the provided gui. This is the gui that a player will be navigated to once they close this
+     * gui. The navigation will occur after the close event handler, set by {@link #setOnClose(Consumer)}, is called. If
+     * there was already a previous parent set, the provided gui will override the previous one.
+     *
+     * @param gui the new parent gui
+     * @since 0.10.14
+     */
+    public void setParent(@NotNull Gui gui) {
+        this.parent = gui;
     }
 
     /**

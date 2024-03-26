@@ -369,6 +369,9 @@ public class GuiListener implements Listener {
             } else if (gui instanceof ModernSmithingTableGui) {
                 ((ModernSmithingTableGui) gui).handleClose(humanEntity);
             }
+
+            //Bukkit doesn't like it if you open an inventory while the previous one is being closed
+            Bukkit.getScheduler().runTask(this.plugin, () -> gui.navigateToParent(humanEntity));
         }
     }
 
