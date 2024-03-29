@@ -161,7 +161,7 @@ public class PaginatedPane extends Pane {
      * @return true if the current page is less than the total number of pages minus one, indicating that a subsequent page exists.
      */
     public boolean hasNextPage() {
-        return page < getPages() - 1;
+        return !isLastPage();
     }
 
     /**
@@ -170,7 +170,7 @@ public class PaginatedPane extends Pane {
      * @return true if the current page number is not zero, indicating that a preceding page exists.
      */
     public boolean hasPreviousPage() {
-        return page > 0;
+        return !isFirstPage();
     }
 
     /**
@@ -193,7 +193,25 @@ public class PaginatedPane extends Pane {
         }
     }
 
-	/**
+    /**
+     * Checks if the current page is the first page.
+     *
+     * @return true if the current page is the first page.
+     */
+    public boolean isFirstPage() {
+        return page == 0;
+    }
+
+    /**
+     * Checks if the current page is the last page.
+     *
+     * @return true if the current page is the last page.
+     */
+    public boolean isLastPage() {
+        return page >= getPages() - 1;
+    }
+
+    /**
 	 * Populates the PaginatedPane based on the provided list by adding new pages until all items can fit.
 	 * This can be helpful when dealing with lists of unknown size.
 	 *
