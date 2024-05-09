@@ -75,6 +75,35 @@ jobs:
         mvn paper-nms:init -pl nms/1_20_1
         mvn paper-nms:init -pl nms/1_20_2
         mvn paper-nms:init -pl nms/1_20_3-4
+    - name: Run BuildTools 1.20.5
+      if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p build
+        cd build/
+        wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
+
+        git clone https://hub.spigotmc.org/stash/scm/spigot/bukkit.git Bukkit
+        cd Bukkit
+        git checkout 304e83eb384c338546aa96eea51388e0e8407e26
+        cd ..
+
+        git clone https://hub.spigotmc.org/stash/scm/spigot/craftbukkit.git CraftBukkit
+        cd CraftBukkit
+        git checkout 91b1fc3f1cf89e2591367dca1fa7362fe376f289
+        cd ..
+
+        git clone https://hub.spigotmc.org/stash/scm/spigot/spigot.git Spigot
+        cd Spigot
+        git checkout b698b49caf14f97a717afd67e13fd7ac59f51089
+        cd ..
+
+        git clone https://hub.spigotmc.org/stash/scm/spigot/builddata.git BuildData
+        cd BuildData
+        git checkout a7f7c2118b877fde4cf0f32f1f730ffcdee8e9ee
+        cd ..
+
+        java -jar BuildTools.jar --remapped --disable-java-check --dont-update
+        cd ../
     - name: Setup GPG keys
       run: cat <(echo -e "${{ secrets.GPG_KEY }}") | gpg --batch --import
     - name: Automatically deploy the project
