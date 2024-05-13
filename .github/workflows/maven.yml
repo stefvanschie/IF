@@ -81,7 +81,7 @@ jobs:
         mvn paper-nms:init -pl nms/1_20_1
         mvn paper-nms:init -pl nms/1_20_2
         mvn paper-nms:init -pl nms/1_20_3-4
-    - name: Run BuildTools 1.20.5
+    - name: 'Run BuildTools 1.20.5 & 1.20.6'
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       run: |
         mkdir -p build
@@ -109,6 +109,7 @@ jobs:
         cd ..
         
         java -jar BuildTools.jar --remapped --disable-java-check --dont-update
+        java -jar BuildTools.jar --rev 1.20.6 --remapped --disable-java-check
         cd ../
     - name: Build with Maven
       run: mvn -B package --file pom.xml
