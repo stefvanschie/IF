@@ -17,11 +17,11 @@ if ! mvn clean install -B; then
   exit 1
 fi
 
-if ! mvn deploy -N -pl :IF-parent -P deploy -s ./.github/deployment/settings.xml -B -Dgpg.passphrase="$1" -Ddeploy.password="$2"; then
+if ! mvn deploy -N -pl :IF-parent -P deploy -s ./.github/deployment/settings.xml -B -Dgpg.passphrase="$1" -Ddeploy.username="$2" -Ddeploy.password="$3"; then
   echo "Unable to deploy IF-parent"
   exit 1
 fi
 
-if ! mvn deploy -pl :IF -P deploy -s ./.github/deployment/settings.xml -B -Dgpg.passphrase="$1" -Ddeploy.password="$2"; then
+if ! mvn deploy -pl :IF -P deploy -s ./.github/deployment/settings.xml -B -Dgpg.passphrase="$1" -Ddeploy.username="$2" -Ddeploy.password="$3"; then
   echo "Unable to deploy IF"
 fi

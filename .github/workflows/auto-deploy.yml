@@ -110,5 +110,6 @@ jobs:
     - name: Automatically deploy the project
       env:
         gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        deploy_username: ${{ secrets.DEPLOY_USERNAME }}
         deploy_password: ${{ secrets.DEPLOY_PASSWORD }}
-      run: bash ./.github/deployment/deploy.sh "$gpg_passphrase" "$deploy_password"
+      run: bash ./.github/deployment/deploy.sh "$gpg_passphrase" "$deploy_username" "$deploy_password"
