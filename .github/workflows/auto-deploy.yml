@@ -104,6 +104,7 @@ jobs:
 
         java -jar BuildTools.jar --remapped --disable-java-check --dont-update
         java -jar BuildTools.jar --rev 1.20.6 --remapped --disable-java-check
+        java -jar BuildTools.jar --rev 1.21 --remapped --disable-java-check
         cd ../
     - name: Setup GPG keys
       run: cat <(echo -e "${{ secrets.GPG_KEY }}") | gpg --batch --import
