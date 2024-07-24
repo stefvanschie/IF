@@ -1,10 +1,8 @@
 package com.forcemc.inventories.util.version;
 
 import com.forcemc.inventories.abstraction.*;
-import com.forcemc.inventories.nms.v1_16_2_3.*;
 import com.forcemc.inventories.abstraction.*;
 import com.forcemc.inventories.exception.UnsupportedVersionException;
-import com.forcemc.inventories.nms.v1_19_4.LegacySmithingTableInventoryImpl;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -277,370 +275,36 @@ public class VersionMatcher {
 
     static {
         ANVIL_INVENTORIES = new EnumMap<>(Version.class);
-        ANVIL_INVENTORIES.put(Version.V1_14,
-            com.forcemc.inventories.nms.v1_14.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_15,
-            com.forcemc.inventories.nms.v1_15.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_16_1,
-            com.forcemc.inventories.nms.v1_16_1.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_16_2_3,
-            AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_16_4_5,
-            com.forcemc.inventories.nms.v1_16_4_5.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_17_0,
-            com.forcemc.inventories.nms.v1_17_0.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_17_1,
-            com.forcemc.inventories.nms.v1_17_1.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_18_0,
-            com.forcemc.inventories.nms.v1_18_0.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_18_1,
-            com.forcemc.inventories.nms.v1_18_1.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_18_2,
-            com.forcemc.inventories.nms.v1_18_2.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_19_0,
-            com.forcemc.inventories.nms.v1_19_0.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_19_1,
-            com.forcemc.inventories.nms.v1_19_1.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_19_2,
-            com.forcemc.inventories.nms.v1_19_2.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_19_3,
-            com.forcemc.inventories.nms.v1_19_3.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_19_4,
-            com.forcemc.inventories.nms.v1_19_4.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_20_0,
-            com.forcemc.inventories.nms.v1_20_0.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_20_1,
-            com.forcemc.inventories.nms.v1_20_1.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_20_2,
-            com.forcemc.inventories.nms.v1_20_2.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_20_3_4,
-            com.forcemc.inventories.nms.v1_20_3.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_20_5,
-            com.forcemc.inventories.nms.v1_20_5.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_20_6,
-            com.forcemc.inventories.nms.v1_20_6.AnvilInventoryImpl.class);
         ANVIL_INVENTORIES.put(Version.V1_21,
             com.forcemc.inventories.nms.v1_21.AnvilInventoryImpl.class);
 
         BEACON_INVENTORIES = new EnumMap<>(Version.class);
-        BEACON_INVENTORIES.put(Version.V1_14,
-            com.forcemc.inventories.nms.v1_14.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_15,
-            com.forcemc.inventories.nms.v1_15.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_16_1,
-            com.forcemc.inventories.nms.v1_16_1.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_16_2_3,
-            BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_16_4_5,
-            com.forcemc.inventories.nms.v1_16_4_5.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_17_0,
-            com.forcemc.inventories.nms.v1_17_0.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_17_1,
-            com.forcemc.inventories.nms.v1_17_1.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_18_0,
-            com.forcemc.inventories.nms.v1_18_0.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_18_1,
-            com.forcemc.inventories.nms.v1_18_1.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_18_2,
-            com.forcemc.inventories.nms.v1_18_2.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_19_0,
-            com.forcemc.inventories.nms.v1_19_0.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_19_1,
-            com.forcemc.inventories.nms.v1_19_1.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_19_2,
-            com.forcemc.inventories.nms.v1_19_2.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_19_3,
-            com.forcemc.inventories.nms.v1_19_3.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_19_4,
-            com.forcemc.inventories.nms.v1_19_4.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_20_0,
-            com.forcemc.inventories.nms.v1_20_0.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_20_1,
-            com.forcemc.inventories.nms.v1_20_1.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_20_2,
-            com.forcemc.inventories.nms.v1_20_2.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_20_3_4,
-            com.forcemc.inventories.nms.v1_20_3.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_20_5,
-            com.forcemc.inventories.nms.v1_20_5.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_20_6,
-            com.forcemc.inventories.nms.v1_20_6.BeaconInventoryImpl.class);
         BEACON_INVENTORIES.put(Version.V1_21,
             com.forcemc.inventories.nms.v1_21.BeaconInventoryImpl.class);
 
         CARTOGRAPHY_TABLE_INVENTORIES = new EnumMap<>(Version.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_14,
-            com.forcemc.inventories.nms.v1_14.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_15,
-            com.forcemc.inventories.nms.v1_15.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_16_1,
-            com.forcemc.inventories.nms.v1_16_1.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_16_2_3,
-            CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_16_4_5,
-            com.forcemc.inventories.nms.v1_16_4_5.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_17_0,
-            com.forcemc.inventories.nms.v1_17_0.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_17_1,
-            com.forcemc.inventories.nms.v1_17_1.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_18_0,
-            com.forcemc.inventories.nms.v1_18_0.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_18_1,
-            com.forcemc.inventories.nms.v1_18_1.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_18_2,
-            com.forcemc.inventories.nms.v1_18_2.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_19_0,
-            com.forcemc.inventories.nms.v1_19_0.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_19_1,
-            com.forcemc.inventories.nms.v1_19_1.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_19_2,
-            com.forcemc.inventories.nms.v1_19_2.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_19_3,
-            com.forcemc.inventories.nms.v1_19_3.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_19_4,
-            com.forcemc.inventories.nms.v1_19_4.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_20_0,
-            com.forcemc.inventories.nms.v1_20_0.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_20_1,
-            com.forcemc.inventories.nms.v1_20_1.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_20_2,
-            com.forcemc.inventories.nms.v1_20_2.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_20_3_4,
-            com.forcemc.inventories.nms.v1_20_3.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_20_5,
-            com.forcemc.inventories.nms.v1_20_5.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_20_6,
-            com.forcemc.inventories.nms.v1_20_6.CartographyTableInventoryImpl.class);
         CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_21,
             com.forcemc.inventories.nms.v1_21.CartographyTableInventoryImpl.class);
 
         ENCHANTING_TABLE_INVENTORIES = new EnumMap<>(Version.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_14,
-            com.forcemc.inventories.nms.v1_14.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_15,
-            com.forcemc.inventories.nms.v1_15.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_16_1,
-            com.forcemc.inventories.nms.v1_16_1.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_16_2_3,
-            EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_16_4_5,
-            com.forcemc.inventories.nms.v1_16_4_5.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_17_0,
-            com.forcemc.inventories.nms.v1_17_0.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_17_1,
-            com.forcemc.inventories.nms.v1_17_1.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_18_0,
-            com.forcemc.inventories.nms.v1_18_0.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_18_1,
-            com.forcemc.inventories.nms.v1_18_1.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_18_2,
-            com.forcemc.inventories.nms.v1_18_2.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_19_0,
-            com.forcemc.inventories.nms.v1_19_0.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_19_1,
-            com.forcemc.inventories.nms.v1_19_1.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_19_2,
-            com.forcemc.inventories.nms.v1_19_2.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_19_3,
-            com.forcemc.inventories.nms.v1_19_3.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_19_4,
-            com.forcemc.inventories.nms.v1_19_4.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_20_0,
-            com.forcemc.inventories.nms.v1_20_0.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_20_1,
-            com.forcemc.inventories.nms.v1_20_1.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_20_2,
-            com.forcemc.inventories.nms.v1_20_2.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_20_3_4,
-            com.forcemc.inventories.nms.v1_20_3.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_20_5,
-            com.forcemc.inventories.nms.v1_20_5.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_20_6,
-            com.forcemc.inventories.nms.v1_20_6.EnchantingTableInventoryImpl.class);
         ENCHANTING_TABLE_INVENTORIES.put(Version.V1_21,
             com.forcemc.inventories.nms.v1_21.EnchantingTableInventoryImpl.class);
 
         GRINDSTONE_INVENTORIES = new EnumMap<>(Version.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_14,
-            com.forcemc.inventories.nms.v1_14.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_15,
-            com.forcemc.inventories.nms.v1_15.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_16_1,
-            com.forcemc.inventories.nms.v1_16_1.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_16_2_3,
-            GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_16_4_5,
-            com.forcemc.inventories.nms.v1_16_4_5.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_17_0,
-            com.forcemc.inventories.nms.v1_17_0.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_17_1,
-            com.forcemc.inventories.nms.v1_17_1.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_18_0,
-            com.forcemc.inventories.nms.v1_18_0.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_18_1,
-            com.forcemc.inventories.nms.v1_18_1.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_18_2,
-            com.forcemc.inventories.nms.v1_18_2.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_19_0,
-            com.forcemc.inventories.nms.v1_19_0.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_19_1,
-            com.forcemc.inventories.nms.v1_19_1.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_19_2,
-            com.forcemc.inventories.nms.v1_19_2.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_19_3,
-            com.forcemc.inventories.nms.v1_19_3.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_19_4,
-            com.forcemc.inventories.nms.v1_19_4.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_20_0,
-            com.forcemc.inventories.nms.v1_20_0.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_20_1,
-            com.forcemc.inventories.nms.v1_20_1.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_20_2,
-            com.forcemc.inventories.nms.v1_20_2.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_20_3_4,
-            com.forcemc.inventories.nms.v1_20_3.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_20_5,
-            com.forcemc.inventories.nms.v1_20_5.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_20_6,
-            com.forcemc.inventories.nms.v1_20_6.GrindstoneInventoryImpl.class);
         GRINDSTONE_INVENTORIES.put(Version.V1_21,
             com.forcemc.inventories.nms.v1_21.GrindstoneInventoryImpl.class);
 
         MERCHANT_INVENTORIES = new EnumMap<>(Version.class);
-        MERCHANT_INVENTORIES.put(Version.V1_14,
-            com.forcemc.inventories.nms.v1_14.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_15,
-            com.forcemc.inventories.nms.v1_15.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_16_1,
-            com.forcemc.inventories.nms.v1_16_1.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_16_2_3,
-            MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_16_4_5,
-            com.forcemc.inventories.nms.v1_16_4_5.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_17_0,
-            com.forcemc.inventories.nms.v1_17_0.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_17_1,
-            com.forcemc.inventories.nms.v1_17_1.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_18_0,
-            com.forcemc.inventories.nms.v1_18_0.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_18_1,
-            com.forcemc.inventories.nms.v1_18_1.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_18_2,
-            com.forcemc.inventories.nms.v1_18_2.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_19_0,
-            com.forcemc.inventories.nms.v1_19_0.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_19_1,
-            com.forcemc.inventories.nms.v1_19_1.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_19_2,
-            com.forcemc.inventories.nms.v1_19_2.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_19_3,
-            com.forcemc.inventories.nms.v1_19_3.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_19_4,
-            com.forcemc.inventories.nms.v1_19_4.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_20_0,
-            com.forcemc.inventories.nms.v1_20_0.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_20_1,
-            com.forcemc.inventories.nms.v1_20_1.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_20_2,
-            com.forcemc.inventories.nms.v1_20_2.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_20_3_4,
-            com.forcemc.inventories.nms.v1_20_3.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_20_5,
-            com.forcemc.inventories.nms.v1_20_5.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_20_6,
-            com.forcemc.inventories.nms.v1_20_6.MerchantInventoryImpl.class);
         MERCHANT_INVENTORIES.put(Version.V1_21,
             com.forcemc.inventories.nms.v1_21.MerchantInventoryImpl.class);
 
         SMITHING_TABLE_INVENTORIES = new EnumMap<>(Version.class);
-        SMITHING_TABLE_INVENTORIES.put(Version.V1_19_4,
-            com.forcemc.inventories.nms.v1_19_4.SmithingTableInventoryImpl.class);
-        SMITHING_TABLE_INVENTORIES.put(Version.V1_20_0,
-            com.forcemc.inventories.nms.v1_20_0.SmithingTableInventoryImpl.class);
-        SMITHING_TABLE_INVENTORIES.put(Version.V1_20_1,
-            com.forcemc.inventories.nms.v1_20_1.SmithingTableInventoryImpl.class);
-        SMITHING_TABLE_INVENTORIES.put(Version.V1_20_2,
-            com.forcemc.inventories.nms.v1_20_2.SmithingTableInventoryImpl.class);
-        SMITHING_TABLE_INVENTORIES.put(Version.V1_20_3_4,
-            com.forcemc.inventories.nms.v1_20_3.SmithingTableInventoryImpl.class);
-        SMITHING_TABLE_INVENTORIES.put(Version.V1_20_5,
-            com.forcemc.inventories.nms.v1_20_5.SmithingTableInventoryImpl.class);
-        SMITHING_TABLE_INVENTORIES.put(Version.V1_20_6,
-            com.forcemc.inventories.nms.v1_20_6.SmithingTableInventoryImpl.class);
         SMITHING_TABLE_INVENTORIES.put(Version.V1_21,
             com.forcemc.inventories.nms.v1_21.SmithingTableInventoryImpl.class);
 
         LEGACY_SMITHING_TABLE_INVENTORIES = new EnumMap<>(Version.class);
-        LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_16_1,
-            com.forcemc.inventories.nms.v1_16_1.SmithingTableInventoryImpl.class);
-        LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_16_2_3,
-            SmithingTableInventoryImpl.class);
-        LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_16_4_5,
-            com.forcemc.inventories.nms.v1_16_4_5.SmithingTableInventoryImpl.class);
-        LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_17_0,
-            com.forcemc.inventories.nms.v1_17_0.SmithingTableInventoryImpl.class);
-        LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_17_1,
-            com.forcemc.inventories.nms.v1_17_1.SmithingTableInventoryImpl.class);
-        LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_18_0,
-            com.forcemc.inventories.nms.v1_18_0.SmithingTableInventoryImpl.class);
-        LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_18_1,
-            com.forcemc.inventories.nms.v1_18_1.SmithingTableInventoryImpl.class);
-        LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_18_2,
-            com.forcemc.inventories.nms.v1_18_2.SmithingTableInventoryImpl.class);
-        LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_19_0,
-            com.forcemc.inventories.nms.v1_19_0.SmithingTableInventoryImpl.class);
-        LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_19_1,
-            com.forcemc.inventories.nms.v1_19_1.SmithingTableInventoryImpl.class);
-        LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_19_2,
-            com.forcemc.inventories.nms.v1_19_2.SmithingTableInventoryImpl.class);
-        LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_19_3,
-            com.forcemc.inventories.nms.v1_19_3.SmithingTableInventoryImpl.class);
-        LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_19_4,
-            LegacySmithingTableInventoryImpl.class);
 
         STONECUTTER_INVENTORIES = new EnumMap<>(Version.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_14,
-            com.forcemc.inventories.nms.v1_14.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_15,
-            com.forcemc.inventories.nms.v1_15.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_16_1,
-            com.forcemc.inventories.nms.v1_16_1.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_16_2_3,
-            StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_16_4_5,
-            com.forcemc.inventories.nms.v1_16_4_5.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_17_0,
-            com.forcemc.inventories.nms.v1_17_0.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_17_1,
-            com.forcemc.inventories.nms.v1_17_1.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_18_0,
-            com.forcemc.inventories.nms.v1_18_0.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_18_1,
-            com.forcemc.inventories.nms.v1_18_1.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_18_2,
-            com.forcemc.inventories.nms.v1_18_2.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_19_0,
-            com.forcemc.inventories.nms.v1_19_0.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_19_1,
-            com.forcemc.inventories.nms.v1_19_1.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_19_2,
-            com.forcemc.inventories.nms.v1_19_2.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_19_3,
-            com.forcemc.inventories.nms.v1_19_3.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_19_4,
-            com.forcemc.inventories.nms.v1_19_4.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_20_0,
-            com.forcemc.inventories.nms.v1_20_0.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_20_1,
-            com.forcemc.inventories.nms.v1_20_1.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_20_2,
-            com.forcemc.inventories.nms.v1_20_2.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_20_3_4,
-            com.forcemc.inventories.nms.v1_20_3.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_20_5,
-            com.forcemc.inventories.nms.v1_20_5.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_20_6,
-            com.forcemc.inventories.nms.v1_20_6.StonecutterInventoryImpl.class);
         STONECUTTER_INVENTORIES.put(Version.V1_21,
             com.forcemc.inventories.nms.v1_21.StonecutterInventoryImpl.class);
     }
