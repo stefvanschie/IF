@@ -1,5 +1,6 @@
 package com.github.stefvanschie.inventoryframework.gui;
 
+import com.github.stefvanschie.inventoryframework.util.InventoryViewUtil;
 import com.github.stefvanschie.inventoryframework.util.UUIDTagType;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -179,7 +180,8 @@ public class GuiItem {
             action.accept(event);
         } catch (Throwable t) {
             this.logger.log(Level.SEVERE, "Exception while handling click event in inventory '"
-                    + event.getView().getTitle() + "', slot=" + event.getSlot() + ", item=" + item.getType(), t);
+                    + InventoryViewUtil.getInstance().getTitle(event.getView()) + "', slot=" + event.getSlot() +
+                    ", item=" + item.getType(), t);
         }
     }
 

@@ -6,11 +6,11 @@
     <parent>
         <groupId>com.github.stefvanschie.inventoryframework</groupId>
         <artifactId>IF-parent</artifactId>
-        <version>0.10.15</version>
+        <version>0.10.16-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>abstract-class</artifactId>
+    <artifactId>iv-interface</artifactId>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
@@ -25,9 +25,14 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>iv-abstraction</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.20.6-R0.1-SNAPSHOT</version>
+            <version>1.21-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <!-- Provided, but not accessible -->

@@ -2,6 +2,7 @@ package com.github.stefvanschie.inventoryframework.util.version;
 
 import com.github.stefvanschie.inventoryframework.exception.UnsupportedVersionException;
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -190,6 +191,17 @@ public enum Version {
             V1_18_0, V1_18_1, V1_18_2,
             V1_19_0, V1_19_1, V1_19_2, V1_19_3, V1_19_4
     );
+
+    /**
+     * Checks whether the {@link InventoryView} class is an interface on this version.
+     *
+     * @return true if the class is an interface, false otherwise
+     * @since 0.10.16
+     */
+    @Contract(pure = true)
+    public boolean isInventoryViewInterface() {
+        return this == Version.V1_21;
+    }
 
     /**
      * Checks whether modern smithing tables exist on this version. Returns true if they do, otherwise false.

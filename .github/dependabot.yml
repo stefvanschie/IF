@@ -104,3 +104,15 @@ updates:
     directory: "/nms/abstraction"
     schedule:
       interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/inventory-view/iv-abstract-class"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/inventory-view/iv-abstraction"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/inventory-view/iv-interface"
+    schedule:
+      interval: "daily"
