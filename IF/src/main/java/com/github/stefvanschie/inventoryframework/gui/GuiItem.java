@@ -153,12 +153,10 @@ public class GuiItem {
         guiItem.properties = new ArrayList<>(properties);
         ItemMeta meta = guiItem.item.getItemMeta();
 
-        if (meta == null) {
-            throw new IllegalArgumentException("item must be able to have ItemMeta (it mustn't be AIR)");
+        if (meta != null) {
+            meta.getPersistentDataContainer().set(keyUUID, UUIDTagType.INSTANCE, guiItem.uuid);
+            guiItem.item.setItemMeta(meta);
         }
-
-        meta.getPersistentDataContainer().set(keyUUID, UUIDTagType.INSTANCE, guiItem.uuid);
-        guiItem.item.setItemMeta(meta);
 
         return guiItem;
     }
