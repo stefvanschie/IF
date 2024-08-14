@@ -16,14 +16,6 @@
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
-    <!-- Kyori text, provided by paper-nms, is at version 4.15.0-SNAPSHOT, so we need the snapshot repository to download it. -->
-    <repositories>
-        <repository>
-            <id>sonatype-oss-snapshots1</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
@@ -38,6 +30,57 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <!-- Kyori text, provided by paper-nms, is at version 4.15.0-SNAPSHOT, but this no longer exists, so we bump it to 4.15.0. -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>net.kyori</groupId>
+                <artifactId>adventure-api</artifactId>
+                <version>4.15.0</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kyori</groupId>
+                <artifactId>adventure-key</artifactId>
+                <version>4.15.0</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kyori</groupId>
+                <artifactId>adventure-text-logger-slf4j</artifactId>
+                <version>4.15.0</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kyori</groupId>
+                <artifactId>adventure-text-minimessage</artifactId>
+                <version>4.15.0</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kyori</groupId>
+                <artifactId>adventure-text-serializer-ansi</artifactId>
+                <version>4.15.0</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kyori</groupId>
+                <artifactId>adventure-text-serializer-gson</artifactId>
+                <version>4.15.0</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kyori</groupId>
+                <artifactId>adventure-text-serializer-json</artifactId>
+                <version>4.15.0</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kyori</groupId>
+                <artifactId>adventure-text-serializer-legacy</artifactId>
+                <version>4.15.0</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kyori</groupId>
+                <artifactId>adventure-text-serializer-plain</artifactId>
+                <version>4.15.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
