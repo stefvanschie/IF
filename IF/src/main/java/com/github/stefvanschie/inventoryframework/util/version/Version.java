@@ -289,6 +289,7 @@ public enum Version {
             case "1.20.6":
                 return V1_20_6;
             case "1.21":
+            case "1.21.1":
                 return V1_21;
             default:
                 throw new UnsupportedVersionException("The server version provided is not supported");
