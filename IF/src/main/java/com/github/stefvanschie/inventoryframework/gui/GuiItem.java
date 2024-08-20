@@ -90,7 +90,7 @@ public class GuiItem {
      * @since 0.10.8
      */
     public GuiItem(@NotNull ItemStack item, @NotNull Plugin plugin) {
-        this(item, event -> {}, plugin);
+        this(item, null, plugin);
     }
 
     /**
@@ -109,7 +109,7 @@ public class GuiItem {
      * @param item the item stack
      */
     public GuiItem(@NotNull ItemStack item) {
-        this(item, event -> {});
+        this(item, (Consumer<InventoryClickEvent>) null);
     }
 
     /**
@@ -153,7 +153,7 @@ public class GuiItem {
         guiItem.properties = new ArrayList<>(properties);
         ItemMeta meta = guiItem.item.getItemMeta();
 
-        if (meta != null) {
+        if (meta != null && action != null) {
             meta.getPersistentDataContainer().set(keyUUID, UUIDTagType.INSTANCE, guiItem.uuid);
             guiItem.item.setItemMeta(meta);
         }
@@ -185,14 +185,14 @@ public class GuiItem {
 
     /**
      * Sets the internal UUID of this gui item onto the underlying item. Previously set UUID will be overwritten by the
-     * current UUID. If the underlying item does not have an item meta, this method will silently do nothing.
+     * current UUID. If the underlying item does not have an item meta or a defined action, this method will silently do nothing.
      *
      * @since 0.9.3
      */
     public void applyUUID() {
         ItemMeta meta = item.getItemMeta();
 
-        if (meta != null) {
+        if (meta != null && action != null) {
             meta.getPersistentDataContainer().set(this.keyUUID, UUIDTagType.INSTANCE, uuid);
             item.setItemMeta(meta);
         }
