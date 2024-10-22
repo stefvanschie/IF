@@ -7,7 +7,8 @@
     <modules>
         <module>IF</module>
         <module>nms/abstraction</module>
-        <module>nms/1_21</module>
+        <module>nms/1_21_1</module>
+        <module>nms/1_21_0</module>
         <module>nms/1_20_6</module>
         <module>nms/1_20_5</module>
         <module>nms/1_20_3-4</module>
@@ -45,7 +46,7 @@
 
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF-parent</artifactId>
-    <version>0.10.17</version>
+    <version>0.10.18-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>IF</name>

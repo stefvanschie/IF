@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_1;
 
 import com.github.stefvanschie.inventoryframework.abstraction.StonecutterInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_21.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_1.util.TextHolderUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
@@ -15,7 +15,6 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.StonecutterMenu;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.craftbukkit.v1_21_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftInventory;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftInventoryStonecutter;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.view.CraftStonecutterView;
@@ -28,9 +27,9 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 /**
- * Internal stonecutter inventory for 1.21
+ * Internal stonecutter inventory for 1.21.1
  *
- * @since 0.10.15
+ * @since 0.10.18
  */
 public class StonecutterInventoryImpl extends StonecutterInventory {
 
@@ -93,7 +92,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
      *
      * @param nmsPlayer the player to get the container id for
      * @return the container id
-     * @since 0.10.15
+     * @since 0.10.18
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -105,7 +104,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
      *
      * @param serverPlayer the player to get the player connection from
      * @return the player connection
-     * @since 0.10.15
+     * @since 0.10.18
      */
     @NotNull
     @Contract(pure = true)
@@ -118,7 +117,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.15
+     * @since 0.10.18
      */
     @NotNull
     @Contract(pure = true)
@@ -129,7 +128,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
     /**
      * A custom container enchanting table
      *
-     * @since 0.10.15
+     * @since 0.10.18
      */
     private class ContainerStonecutterImpl extends StonecutterMenu {
 
@@ -175,7 +174,9 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
         @Override
         public CraftStonecutterView getBukkitView() {
             if (bukkitEntity == null) {
-                CraftInventory inventory = new CraftInventoryStonecutter(this.container, getResultInventory()) {
+                org.bukkit.inventory.StonecutterInventory inventory = new CraftInventoryStonecutter(
+                    this.container, getResultInventory()
+                ) {
                     @NotNull
                     @Contract(pure = true)
                     @Override
@@ -206,7 +207,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
          * Gets the result inventory
          *
          * @return the result inventory
-         * @since 0.10.15
+         * @since 0.10.18
          */
         @NotNull
         @Contract(pure = true)

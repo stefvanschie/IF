@@ -1,4 +1,4 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_0;
 
 import com.github.stefvanschie.inventoryframework.abstraction.MerchantInventory;
 import net.minecraft.core.component.DataComponentPredicate;
@@ -19,9 +19,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Internal merchant inventory for 1.21
+ * Internal merchant inventory for 1.21.0
  *
- * @since 0.10.15
+ * @since 0.10.18
  */
 public class MerchantInventoryImpl extends MerchantInventory {
 
@@ -81,7 +81,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
      *
      * @param itemStack the item stack to convert
      * @return the item cost
-     * @since 0.10.15
+     * @since 0.10.18
      */
     @NotNull
     @Contract(value = "_ -> new", pure = true)
@@ -96,7 +96,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.15
+     * @since 0.10.18
      */
     @NotNull
     @Contract(pure = true)
@@ -109,7 +109,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
      *
      * @param nmsPlayer the player to get the containerId id for
      * @return the containerId id
-     * @since 0.10.15
+     * @since 0.10.18
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
