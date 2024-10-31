@@ -321,8 +321,8 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_0.AnvilInventoryImpl.class);
         ANVIL_INVENTORIES.put(Version.V1_21_1,
             com.github.stefvanschie.inventoryframework.nms.v1_21_1.AnvilInventoryImpl.class);
-        ANVIL_INVENTORIES.put(Version.V1_21_2,
-            com.github.stefvanschie.inventoryframework.nms.v1_21_2.AnvilInventoryImpl.class);
+        ANVIL_INVENTORIES.put(Version.V1_21_2_3,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.AnvilInventoryImpl.class);
 
         BEACON_INVENTORIES = new EnumMap<>(Version.class);
         BEACON_INVENTORIES.put(Version.V1_14,
@@ -371,8 +371,8 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_0.BeaconInventoryImpl.class);
         BEACON_INVENTORIES.put(Version.V1_21_1,
             com.github.stefvanschie.inventoryframework.nms.v1_21_1.BeaconInventoryImpl.class);
-        BEACON_INVENTORIES.put(Version.V1_21_2,
-            com.github.stefvanschie.inventoryframework.nms.v1_21_2.BeaconInventoryImpl.class);
+        BEACON_INVENTORIES.put(Version.V1_21_2_3,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.BeaconInventoryImpl.class);
 
         CARTOGRAPHY_TABLE_INVENTORIES = new EnumMap<>(Version.class);
         CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_14,
@@ -421,8 +421,8 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_0.CartographyTableInventoryImpl.class);
         CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_21_1,
             com.github.stefvanschie.inventoryframework.nms.v1_21_1.CartographyTableInventoryImpl.class);
-        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_21_2,
-            com.github.stefvanschie.inventoryframework.nms.v1_21_2.CartographyTableInventoryImpl.class);
+        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_21_2_3,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.CartographyTableInventoryImpl.class);
 
         ENCHANTING_TABLE_INVENTORIES = new EnumMap<>(Version.class);
         ENCHANTING_TABLE_INVENTORIES.put(Version.V1_14,
@@ -471,8 +471,8 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_0.EnchantingTableInventoryImpl.class);
         ENCHANTING_TABLE_INVENTORIES.put(Version.V1_21_1,
             com.github.stefvanschie.inventoryframework.nms.v1_21_1.EnchantingTableInventoryImpl.class);
-        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_21_2,
-            com.github.stefvanschie.inventoryframework.nms.v1_21_2.EnchantingTableInventoryImpl.class);
+        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_21_2_3,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.EnchantingTableInventoryImpl.class);
 
         GRINDSTONE_INVENTORIES = new EnumMap<>(Version.class);
         GRINDSTONE_INVENTORIES.put(Version.V1_14,
@@ -521,8 +521,8 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_0.GrindstoneInventoryImpl.class);
         GRINDSTONE_INVENTORIES.put(Version.V1_21_1,
             com.github.stefvanschie.inventoryframework.nms.v1_21_1.GrindstoneInventoryImpl.class);
-        GRINDSTONE_INVENTORIES.put(Version.V1_21_2,
-            com.github.stefvanschie.inventoryframework.nms.v1_21_2.GrindstoneInventoryImpl.class);
+        GRINDSTONE_INVENTORIES.put(Version.V1_21_2_3,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.GrindstoneInventoryImpl.class);
 
         MERCHANT_INVENTORIES = new EnumMap<>(Version.class);
         MERCHANT_INVENTORIES.put(Version.V1_14,
@@ -571,8 +571,8 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_0.MerchantInventoryImpl.class);
         MERCHANT_INVENTORIES.put(Version.V1_21_1,
             com.github.stefvanschie.inventoryframework.nms.v1_21_1.MerchantInventoryImpl.class);
-        MERCHANT_INVENTORIES.put(Version.V1_21_2,
-            com.github.stefvanschie.inventoryframework.nms.v1_21_2.MerchantInventoryImpl.class);
+        MERCHANT_INVENTORIES.put(Version.V1_21_2_3,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.MerchantInventoryImpl.class);
 
         SMITHING_TABLE_INVENTORIES = new EnumMap<>(Version.class);
         SMITHING_TABLE_INVENTORIES.put(Version.V1_19_4,
@@ -593,8 +593,8 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_0.SmithingTableInventoryImpl.class);
         SMITHING_TABLE_INVENTORIES.put(Version.V1_21_1,
             com.github.stefvanschie.inventoryframework.nms.v1_21_1.SmithingTableInventoryImpl.class);
-        SMITHING_TABLE_INVENTORIES.put(Version.V1_21_2,
-            com.github.stefvanschie.inventoryframework.nms.v1_21_2.SmithingTableInventoryImpl.class);
+        SMITHING_TABLE_INVENTORIES.put(Version.V1_21_2_3,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.SmithingTableInventoryImpl.class);
 
         LEGACY_SMITHING_TABLE_INVENTORIES = new EnumMap<>(Version.class);
         LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_16_1,
@@ -671,7 +671,7 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_0.StonecutterInventoryImpl.class);
         STONECUTTER_INVENTORIES.put(Version.V1_21_1,
             com.github.stefvanschie.inventoryframework.nms.v1_21_1.StonecutterInventoryImpl.class);
-        STONECUTTER_INVENTORIES.put(Version.V1_21_2,
-            com.github.stefvanschie.inventoryframework.nms.v1_21_2.StonecutterInventoryImpl.class);
+        STONECUTTER_INVENTORIES.put(Version.V1_21_2_3,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.StonecutterInventoryImpl.class);
     }
 }

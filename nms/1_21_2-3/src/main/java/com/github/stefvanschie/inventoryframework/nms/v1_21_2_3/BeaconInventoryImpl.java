@@ -1,8 +1,6 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21_2;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_2_3;
 
-import com.github.stefvanschie.inventoryframework.abstraction.EnchantingTableInventory;
-import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_21_2.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.abstraction.BeaconInventory;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
@@ -11,15 +9,14 @@ import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.Container;
-import net.minecraft.world.inventory.EnchantmentMenu;
+import net.minecraft.world.inventory.BeaconMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.craftbukkit.v1_21_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_21_R2.inventory.CraftInventoryEnchanting;
+import org.bukkit.craftbukkit.v1_21_R2.inventory.CraftInventoryBeacon;
 import org.bukkit.craftbukkit.v1_21_R2.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_21_R2.inventory.view.CraftEnchantmentView;
+import org.bukkit.craftbukkit.v1_21_R2.inventory.view.CraftBeaconView;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.EnchantingInventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -28,48 +25,36 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 /**
- * Internal enchanting table inventory for 1.21.2
+ * Internal beacon inventory for 1.21.2
  *
  * @since 0.10.18
  */
-public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
+public class BeaconInventoryImpl extends BeaconInventory {
 
-    public EnchantingTableInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
+    public BeaconInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
         super(inventoryHolder);
     }
 
     @Override
-    public void openInventory(@NotNull Player player, @NotNull TextHolder title,
-                              @Nullable org.bukkit.inventory.ItemStack[] items) {
-        int itemAmount = items.length;
-
-        if (itemAmount != 2) {
-            throw new IllegalArgumentException(
-                "The amount of items for an enchanting table should be 2, but is '" + itemAmount + "'"
-            );
-        }
-
+    public void openInventory(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack item) {
         ServerPlayer serverPlayer = getServerPlayer(player);
-        Component message = TextHolderUtil.toComponent(title);
-        ContainerEnchantingTableImpl containerEnchantmentTable = new ContainerEnchantingTableImpl(
-                serverPlayer, items, message
-        );
+        ContainerBeaconImpl containerBeacon = new ContainerBeaconImpl(serverPlayer, item);
 
-        serverPlayer.containerMenu = containerEnchantmentTable;
+        serverPlayer.containerMenu = containerBeacon;
 
-        int id = containerEnchantmentTable.containerId;
+        int id = containerBeacon.containerId;
+        Component beacon = Component.literal("Beacon");
 
-        serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.ENCHANTMENT, message));
+        serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.BEACON, beacon));
 
-        sendItems(player, items);
+        sendItem(player, item);
     }
 
     @Override
-    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items) {
-        NonNullList<ItemStack> nmsItems = NonNullList.of(
-            ItemStack.EMPTY,
-            CraftItemStack.asNMSCopy(items[0]),
-            CraftItemStack.asNMSCopy(items[1])
+    public void sendItem(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack item) {
+        NonNullList<ItemStack> items = NonNullList.of(
+            ItemStack.EMPTY, //the first item doesn't count for some reason, so send a dummy item
+            CraftItemStack.asNMSCopy(item)
         );
 
         ServerPlayer serverPlayer = getServerPlayer(player);
@@ -78,7 +63,7 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
         ItemStack cursor = CraftItemStack.asNMSCopy(player.getItemOnCursor());
         ServerPlayerConnection playerConnection = getPlayerConnection(serverPlayer);
 
-        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, nmsItems, cursor));
+        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, items, cursor));
     }
 
     @Override
@@ -90,10 +75,10 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
     }
 
     /**
-     * Gets the containerId id for the inventory view the player currently has open
+     * Gets the container id for the inventory view the player currently has open
      *
-     * @param nmsPlayer the player to get the containerId id for
-     * @return the containerId id
+     * @param nmsPlayer the player to get the container id for
+     * @return the container id
      * @since 0.10.18
      */
     @Contract(pure = true)
@@ -128,65 +113,61 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
     }
 
     /**
-     * A custom container enchanting table
+     * A custom container beacon
      *
      * @since 0.10.18
      */
-    private class ContainerEnchantingTableImpl extends EnchantmentMenu {
+    private class ContainerBeaconImpl extends BeaconMenu {
 
         /**
-         * The player for this enchanting table container
+         * The player for this beacon container
          */
         @NotNull
         private final Player player;
 
         /**
-         * The internal bukkit entity for this container enchanting table
+         * The internal bukkit entity for this container beacon
          */
         @Nullable
-        private CraftEnchantmentView bukkitEntity;
+        private CraftBeaconView bukkitEntity;
 
         /**
-         * Field for accessing the enchant slots field
+         * Field for accessing the beacon field
          */
         @NotNull
-        private final Field enchantSlotsField;
+        private final Field beaconField;
 
-        public ContainerEnchantingTableImpl(@NotNull ServerPlayer serverPlayer,
-                                            @Nullable org.bukkit.inventory.ItemStack[] items,
-                                            @NotNull Component title) {
+        public ContainerBeaconImpl(@NotNull ServerPlayer serverPlayer, @Nullable org.bukkit.inventory.ItemStack item) {
             super(serverPlayer.nextContainerCounter(), serverPlayer.getInventory());
 
             this.player = serverPlayer.getBukkitEntity();
-
-            setTitle(title);
+            setTitle(Component.empty());
 
             try {
                 //noinspection JavaReflectionMemberAccess
-                this.enchantSlotsField = EnchantmentMenu.class.getDeclaredField("q"); //enchantSlots
-                this.enchantSlotsField.setAccessible(true);
+                this.beaconField = BeaconMenu.class.getDeclaredField("u"); //beacon
+                this.beaconField.setAccessible(true);
             } catch (NoSuchFieldException exception) {
                 throw new RuntimeException(exception);
             }
 
             try {
-                Container input = (Container) enchantSlotsField.get(this);
+                ItemStack itemStack = CraftItemStack.asNMSCopy(item);
 
-                input.setItem(0, CraftItemStack.asNMSCopy(items[0]));
-                input.setItem(1, CraftItemStack.asNMSCopy(items[1]));
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                ((Container) beaconField.get(this)).setItem(0, itemStack);
+            } catch (IllegalAccessException exception) {
+                throw new RuntimeException(exception);
             }
         }
 
         @NotNull
         @Override
-        public CraftEnchantmentView getBukkitView() {
+        public CraftBeaconView getBukkitView() {
             if (bukkitEntity == null) {
                 try {
-                    Container container = (Container) enchantSlotsField.get(this);
+                    Container container = (Container) beaconField.get(this);
 
-                    EnchantingInventory inventory = new CraftInventoryEnchanting(container) {
+                    org.bukkit.inventory.BeaconInventory inventory = new CraftInventoryBeacon(container) {
                         @NotNull
                         @Contract(pure = true)
                         @Override
@@ -195,9 +176,9 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
                         }
                     };
 
-                    this.bukkitEntity = new CraftEnchantmentView(player, inventory, this);
+                    this.bukkitEntity = new CraftBeaconView(player, inventory, this);
                 } catch (IllegalAccessException exception) {
-                    exception.printStackTrace();
+                    throw new RuntimeException(exception);
                 }
             }
 

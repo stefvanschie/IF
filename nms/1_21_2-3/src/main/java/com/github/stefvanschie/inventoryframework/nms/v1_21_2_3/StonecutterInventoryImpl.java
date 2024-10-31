@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21_2;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_2_3;
 
 import com.github.stefvanschie.inventoryframework.abstraction.StonecutterInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_21_2.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.util.TextHolderUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;

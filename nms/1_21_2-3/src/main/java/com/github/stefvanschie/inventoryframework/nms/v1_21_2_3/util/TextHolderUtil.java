@@ -1,4 +1,4 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21_2.util;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.util;
 
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;

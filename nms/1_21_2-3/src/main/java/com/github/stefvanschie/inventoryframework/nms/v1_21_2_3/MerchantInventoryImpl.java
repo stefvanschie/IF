@@ -1,4 +1,4 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21_2;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_2_3;
 
 import com.github.stefvanschie.inventoryframework.abstraction.MerchantInventory;
 import net.minecraft.core.component.DataComponentPredicate;
