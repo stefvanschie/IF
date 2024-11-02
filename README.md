@@ -187,24 +187,6 @@ cd ..
 
 java -jar BuildTools.jar --remapped --disable-java-check --dont-update
 java -jar BuildTools.jar --rev 1.21.1 --remapped --disable-java-check
-
-cd Bukkit
-git checkout 8ec77750aa334e886ed2a0cee3320c62985b28e3
-cd ..
-
-cd CraftBukkit
-git checkout d50f50585eab860db7889b3e736a62faf430f7a4
-cd ..
-
-cd Spigot
-git checkout a084d85da8604d468f81091f56dc81166d912931
-cd ..
-
-cd BuildData
-git checkout 0ea6fcc9bc8ad9e7c729f5031123bcc69ce2b033
-cd ..
-
-java -jar BuildTools.jar --remapped --disable-java-check --dont-update
 java -jar BuildTools.jar --rev 1.21.3 --remapped --disable-java-check
 ```
 
