@@ -7,7 +7,9 @@
     <modules>
         <module>IF</module>
         <module>nms/abstraction</module>
-        <module>nms/1_21</module>
+        <module>nms/1_21_2-3</module>
+        <module>nms/1_21_1</module>
+        <module>nms/1_21_0</module>
         <module>nms/1_20_6</module>
         <module>nms/1_20_5</module>
         <module>nms/1_20_3-4</module>
@@ -45,7 +47,7 @@
 
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF-parent</artifactId>
-    <version>0.10.17</version>
+    <version>0.10.18</version>
     <packaging>pom</packaging>
 
     <name>IF</name>
@@ -120,12 +122,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.5.2</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-junit-platform </artifactId>
-                        <version>3.5.0</version>
+                        <version>3.5.2</version>
                     </dependency>
                     <dependency>
                         <groupId>org.junit.jupiter</groupId>
@@ -161,7 +163,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.10.0</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
