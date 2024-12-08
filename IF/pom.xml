@@ -187,6 +187,12 @@
         </dependency>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_21_4</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>iv-abstraction</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>

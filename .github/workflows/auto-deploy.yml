@@ -125,6 +125,7 @@ jobs:
         java -jar BuildTools.jar --remapped --disable-java-check --dont-update
         java -jar BuildTools.jar --rev 1.21.1 --remapped --disable-java-check
         java -jar BuildTools.jar --rev 1.21.3 --remapped --disable-java-check
+        java -jar BuildTools.jar --rev 1.21.4 --remapped --disable-java-check
         
         cd ../
     - name: Setup GPG keys
