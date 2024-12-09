@@ -364,6 +364,11 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         items.clear();
     }
 
+    @Override
+    public Optional<GuiItem> getGuiItem(int slot) {
+        return Optional.ofNullable(items.get(slot));
+    }
+
     /**
      * Applies a custom mask to this pane. This will throw an {@link IllegalArgumentException} when the mask's dimension
      * differs from this pane's dimension.
