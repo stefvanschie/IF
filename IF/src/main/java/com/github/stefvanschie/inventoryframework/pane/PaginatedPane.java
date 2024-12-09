@@ -439,6 +439,11 @@ public class PaginatedPane extends Pane {
         panes.clear();
     }
 
+    @Override
+    public Optional<GuiItem> getGuiItem(int slot) {
+        throw new IllegalStateException("Cannot use getGuiItem in PaginatedPane, please get the Pane first.");
+    }
+
     /**
      * Loads a paginated pane from a given element
      *

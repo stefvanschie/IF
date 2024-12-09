@@ -268,6 +268,11 @@ public class MasonryPane extends Pane implements Orientable {
         panes.clear();
     }
 
+    @Override
+    public Optional<GuiItem> getGuiItem(int slot) {
+        throw new IllegalStateException("Cannot use getGuiItem in MasonryPane, please get the Pane first.");
+    }
+
     @NotNull
     @Override
     public Orientation getOrientation() {
