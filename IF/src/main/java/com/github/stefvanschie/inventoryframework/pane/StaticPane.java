@@ -339,7 +339,12 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
         items.clear();
     }
 
-	@NotNull
+    @Override
+    public Optional<GuiItem> getGuiItem(int slot) {
+        return Optional.ofNullable(items.get(Slot.fromIndex(slot)));
+    }
+
+    @NotNull
 	@Contract(pure = true)
 	@Override
 	public Collection<Pane> getPanes() {
@@ -431,4 +436,6 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
     public static StaticPane load(@NotNull Object instance, @NotNull Element element) {
         return load(instance, element, JavaPlugin.getProvidingPlugin(StaticPane.class));
     }
+
+
 }
