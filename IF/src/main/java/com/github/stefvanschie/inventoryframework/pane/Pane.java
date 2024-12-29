@@ -699,6 +699,14 @@ public abstract class Pane {
     public abstract void clear();
 
     /**
+     * Get the GuiItem in a specific Slot
+     * The result is not guaranteed, in fact, is an optional
+     *
+     * @return if presents, the GuiItem present in the Slot param
+     * */
+    public abstract Optional<GuiItem> getGuiItem(int slot);
+
+    /**
      * Set the consumer that should be called whenever this pane is clicked in.
      *
      * @param onClick the consumer that gets called

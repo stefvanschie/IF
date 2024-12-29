@@ -334,6 +334,11 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
     }
 
     @Override
+    public Optional<GuiItem> getGuiItem(int slot) {
+        return Optional.ofNullable((GuiItem) getItems().toArray()[slot]);
+    }
+
+    @Override
     public void flipHorizontally(boolean flipHorizontally) {
         this.flippedHorizontally = flipHorizontally;
     }
