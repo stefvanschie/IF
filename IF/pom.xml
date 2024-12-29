@@ -43,12 +43,6 @@
         </dependency>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
-            <artifactId>1_14</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>1_15</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>

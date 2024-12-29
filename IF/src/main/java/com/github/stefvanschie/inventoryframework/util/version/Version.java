@@ -17,13 +17,6 @@ import java.util.EnumSet;
 public enum Version {
 
     /**
-     * Version 1.14
-     *
-     * @since 0.10.0
-     */
-    V1_14,
-
-    /**
      * Version 1.15
      *
      * @since 0.10.0
@@ -205,7 +198,6 @@ public enum Version {
      */
     @NotNull
     private static final Collection<@NotNull Version> LEGACY_SMITHING_TABLE_VERSIONS = EnumSet.of(
-            V1_14,
             V1_15,
             V1_16_1, V1_16_2_3, V1_16_4_5,
             V1_17_0, V1_17_1,
@@ -266,12 +258,6 @@ public enum Version {
         String version = Bukkit.getBukkitVersion().split("-")[0];
 
         switch (version) {
-            case "1.14":
-            case "1.14.1":
-            case "1.14.2":
-            case "1.14.3":
-            case "1.14.4":
-                return V1_14;
             case "1.15":
             case "1.15.1":
             case "1.15.2":

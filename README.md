@@ -86,14 +86,7 @@ If you want to build this project from source, run the following:
 This will clone this repository to your device. This project relies on NMS, for which the dependencies are not available online. Because of this, you'll need to follow additional steps to obtain all these dependencies locally.
 
 ### Installing Paper manually
-For versions 1.14-1.16, we have to manually install Paper. Run the following scripts for each version to install the dependencies locally. Running these commands generate additional files in the folder where you execute them. To ensure that you don't accidentallly overwrite other files, execute this in an empty folder. The files that get created can be deleted afterwards (either after installing a single version or after installing all of them), since they're no longer necessary.
-
-#### 1.14.4
-```
-wget https://papermc.io/api/v2/projects/paper/versions/1.14.4/builds/243/downloads/paper-1.14.4-243.jar -O paperclip/paper-1.14.4.jar
-java -jar paper-1.14.4.jar
-mvn install:install-file -Dfile=cache/patched_1.14.4.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.14.4-R0.1-SNAPSHOT" -Dpackaging="jar"
-```
+For versions 1.15-1.16, we have to manually install Paper. Run the following scripts for each version to install the dependencies locally. Running these commands generate additional files in the folder where you execute them. To ensure that you don't accidentallly overwrite other files, execute this in an empty folder. The files that get created can be deleted afterwards (either after installing a single version or after installing all of them), since they're no longer necessary.
 
 #### 1.15.2
 ```
