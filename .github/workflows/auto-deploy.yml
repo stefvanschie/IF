@@ -12,7 +12,7 @@ jobs:
     steps:
     - name: Cache Paper(clip) jars
       id: cache-paperclip-jars
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           .paper-nms
