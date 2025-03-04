@@ -456,13 +456,9 @@ public class InventoryComponent {
             throw new IllegalArgumentException("Coordinates must be in-bounds: x = " + x + ", y = " + y +
                     "; should be below " + getLength() + " and " + getHeight());
         }
-        GuiItem copy;
-        if (guiItem.getItem().getType().isAir()) {
-            copy = guiItem.unsafeCopy();
-        } else {
-            copy = guiItem.copy();
-            copy.applyUUID();
-        }
+        GuiItem copy = guiItem.copy();
+        //if (guiItem.getItem().getType().isAir())
+        copy.applyUUID();
 
         this.items[x][y] = copy.getItem();
     }
