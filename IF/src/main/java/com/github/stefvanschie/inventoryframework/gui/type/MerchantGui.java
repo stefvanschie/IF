@@ -9,6 +9,7 @@ import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.util.InventoryViewUtil;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.github.stefvanschie.inventoryframework.util.version.Version;
 import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
@@ -196,7 +197,7 @@ public class MerchantGui extends NamedGui {
             throw new IllegalStateException("Merchant could not be opened");
         }
 
-        Inventory inventory = view.getTopInventory();
+        Inventory inventory = InventoryViewUtil.getInstance().getTopInventory(view);
 
         addInventory(inventory, this);
 

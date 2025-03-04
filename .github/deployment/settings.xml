@@ -2,7 +2,7 @@
     <servers>
         <server>
             <id>ossrh</id>
-            <username>stefvanschie</username>
+            <username>${deploy.username}</username>
             <password>${deploy.password}</password>
         </server>
     </servers>

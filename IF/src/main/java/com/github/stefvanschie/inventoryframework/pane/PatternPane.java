@@ -229,9 +229,9 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
 
         patternPane.uuid = uuid;
 
-        patternPane.setRotation(getRotation());
-        patternPane.flipHorizontally(isFlippedHorizontally());
-        patternPane.flipVertically(isFlippedVertically());
+        patternPane.rotation = rotation;
+        patternPane.flippedHorizontally = flippedHorizontally;
+        patternPane.flippedVertically = flippedVertically;
 
         return patternPane;
     }

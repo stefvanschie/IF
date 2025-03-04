@@ -7,6 +7,16 @@
     <modules>
         <module>IF</module>
         <module>nms/abstraction</module>
+        <module>nms/1_21_4</module>
+        <module>nms/1_21_2-3</module>
+        <module>nms/1_21_1</module>
+        <module>nms/1_21_0</module>
+        <module>nms/1_20_6</module>
+        <module>nms/1_20_5</module>
+        <module>nms/1_20_3-4</module>
+        <module>nms/1_20_2</module>
+        <module>nms/1_20_1</module>
+        <module>nms/1_20_0</module>
         <module>nms/1_19_4</module>
         <module>nms/1_19_3</module>
         <module>nms/1_19_2</module>
@@ -23,7 +33,9 @@
         <module>nms/1_15</module>
         <module>nms/1_14</module>
         <module>adventure-support</module>
-        <module>nms/1_20</module>
+        <module>inventory-view/iv-abstract-class</module>
+        <module>inventory-view/iv-abstraction</module>
+        <module>inventory-view/iv-interface</module>
     </modules>
 
     <properties>
@@ -31,12 +43,12 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.deploy.skip>true</maven.deploy.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <adventure.version>4.14.0</adventure.version>
+        <adventure.version>4.18.0</adventure.version>
     </properties>
 
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF-parent</artifactId>
-    <version>0.10.12-SNAPSHOT</version>
+    <version>0.10.19</version>
     <packaging>pom</packaging>
 
     <name>IF</name>
@@ -66,7 +78,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>24.0.1</version>
+            <version>26.0.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -90,7 +102,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.2.7</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -111,24 +123,24 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.5.2</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-junit-platform </artifactId>
-                        <version>3.1.2</version>
+                        <version>3.5.2</version>
                     </dependency>
                     <dependency>
                         <groupId>org.junit.jupiter</groupId>
                         <artifactId>junit-jupiter-engine</artifactId>
-                        <version>5.10.0</version>
+                        <version>5.11.4</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.13</version>
+                <version>1.7.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -139,7 +151,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -152,7 +164,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.11.2</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>

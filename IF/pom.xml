@@ -5,7 +5,7 @@
     <parent>
         <artifactId>IF-parent</artifactId>
         <groupId>com.github.stefvanschie.inventoryframework</groupId>
-        <version>0.10.12-SNAPSHOT</version>
+        <version>0.10.19</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -133,14 +133,86 @@
         </dependency>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
-            <artifactId>1_20</artifactId>
+            <artifactId>1_20_0</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_20_1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_20_2</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_20_3-4</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_20_5</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_20_6</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_21_0</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_21_1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_21_2-3</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>1_21_4</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>iv-abstraction</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>iv-abstract-class</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>iv-interface</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.19.4-R0.1-SNAPSHOT</version>
+            <version>1.20.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <!-- Provided, but not accessible -->
@@ -165,8 +237,8 @@
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.10.0</version>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.11.4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -190,7 +262,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.2.7</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -213,24 +285,19 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.5.2</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-junit-platform </artifactId>
-                        <version>3.1.2</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.junit.jupiter</groupId>
-                        <artifactId>junit-jupiter-engine</artifactId>
-                        <version>5.10.0</version>
+                        <version>3.5.2</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -243,7 +310,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.13</version>
+                <version>1.7.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -254,7 +321,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -267,7 +334,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.11.2</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>

@@ -1,6 +1,6 @@
 # IF <a href="https://discord.gg/RXmy4HdR4x"><img align="right" src="https://img.shields.io/discord/780514939293925407" alt="Discord guild"></a>
 
-*This framework works for Minecraft versions 1.14-1.20*
+*This framework works for Minecraft versions 1.14-1.21*
 
 An inventory framework for managing GUIs
 
@@ -14,7 +14,7 @@ To add this project as a dependency to your pom.xml, add the following to your p
 <dependency>
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF</artifactId>
-    <version>0.10.11</version>
+    <version>0.10.19</version>
 </dependency>
 ```
 The project is in the Central Repository, so specifying a repository is not needed.
@@ -24,7 +24,7 @@ Now in order to shade the project into your project, add the following to your p
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-shade-plugin</artifactId>
-    <version>3.2.4</version>
+    <version>3.5.2</version>
     <configuration>
         <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
         <relocations>
@@ -50,7 +50,7 @@ Replace [YOUR PACKAGE] with the top-level package of your project.
 To add this project as a dependency for your Gradle project, make sure your `dependencies` section of your build.gradle looks like the following:
 ```Groovy
 dependencies {
-    implementation 'com.github.stefvanschie.inventoryframework:IF:0.10.11'
+    implementation 'com.github.stefvanschie.inventoryframework:IF:0.10.19'
     // ...
 }
 ```
@@ -90,41 +90,41 @@ For versions 1.14-1.16, we have to manually install Paper. Run the following scr
 
 #### 1.14.4
 ```
-wget https://papermc.io/api/v2/projects/paper/versions/1.14.4/builds/243/downloads/paper-1.14.4-243.jar -O paperclip/paper-1.14.4.jar
+wget https://api.papermc.io/v2/projects/paper/versions/1.14.4/builds/243/downloads/paper-1.14.4-243.jar -O paperclip/paper-1.14.4.jar
 java -jar paper-1.14.4.jar
 mvn install:install-file -Dfile=cache/patched_1.14.4.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.14.4-R0.1-SNAPSHOT" -Dpackaging="jar"
 ```
 
 #### 1.15.2
 ```
-wget https://papermc.io/api/v2/projects/paper/versions/1.15.2/builds/391/downloads/paper-1.15.2-391.jar -O paperclip/paper-1.15.2.jar
+wget https://api.papermc.io/v2/projects/paper/versions/1.15.2/builds/391/downloads/paper-1.15.2-391.jar -O paperclip/paper-1.15.2.jar
 java -jar paper-1.15.2.jar
 mvn install:install-file -Dfile=cache/patched_1.15.2.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.15.2-R0.1-SNAPSHOT" -Dpackaging="jar"
 ```
 
 #### 1.16.1
 ```
-wget https://papermc.io/api/v2/projects/paper/versions/1.16.1/builds/138/downloads/paper-1.16.1-138.jar -O paperclip/paper-1.16.1.jar
+wget https://api.papermc.io/v2/projects/paper/versions/1.16.1/builds/138/downloads/paper-1.16.1-138.jar -O paperclip/paper-1.16.1.jar
 java -jar paper-1.16.1.jar
 mvn install:install-file -Dfile=cache/patched_1.16.1.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.1-R0.1-SNAPSHOT" -Dpackaging="jar"
 ```
 
 #### 1.16.3
 ```
-wget https://papermc.io/api/v2/projects/paper/versions/1.16.3/builds/253/downloads/paper-1.16.3-253.jar -O paperclip/paper-1.16.3.jar
+wget https://api.papermc.io/v2/projects/paper/versions/1.16.3/builds/253/downloads/paper-1.16.3-253.jar -O paperclip/paper-1.16.3.jar
 java -jar paper-1.16.3.jar
 mvn install:install-file -Dfile=cache/patched_1.16.3.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.3-R0.1-SNAPSHOT" -Dpackaging="jar"
 ```
 
 #### 1.16.4
 ```
-wget https://papermc.io/api/v2/projects/paper/versions/1.16.4/builds/416/downloads/paper-1.16.4-416.jar -O paperclip/paper-1.16.4.jar
+wget https://api.papermc.io/v2/projects/paper/versions/1.16.4/builds/416/downloads/paper-1.16.4-416.jar -O paperclip/paper-1.16.4.jar
 java -jar paper-1.16.4.jar
 mvn install:install-file -Dfile=cache/patched_1.16.4.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.4-R0.1-SNAPSHOT" -Dpackaging="jar"
 ```
 
 ### Installing Paper via the maven plugin
-For versions 1.17-1.18, we use Paper via the [paper-nms-maven-plugin](https://github.com/Alvinn8/paper-nms-maven-plugin). To install these versions locally, we must run a few maven commands. These commands should be ran in the root directory of the project.
+For versions 1.17-1.20.4, we use Paper via the [paper-nms-maven-plugin](https://github.com/Alvinn8/paper-nms-maven-plugin). To install these versions locally, we must run a few maven commands. These commands should be ran in the root directory of the project.
 ```
 mvn paper-nms:init -pl nms/1_17_0
 mvn paper-nms:init -pl nms/1_17_1
@@ -136,7 +136,59 @@ mvn paper-nms:init -pl nms/1_19_1
 mvn paper-nms:init -pl nms/1_19_2
 mvn paper-nms:init -pl nms/1_19_3
 mvn paper-nms:init -pl nms/1_19_4
-mvn paper-nms:init -pl nms/1_20
+mvn paper-nms:init -pl nms/1_20_0-1
+mvn paper-nms:init -pl nms/1_20_2
+mvn paper-nms:init -pl nms/1_20_3-4
+```
+
+### Installing Spigot via BuildTools
+For versions 1.20.5-1.21.3, we use BuildTools. To install these versions, we run the following commands.
+```
+wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
+        
+git clone https://hub.spigotmc.org/stash/scm/spigot/bukkit.git Bukkit
+cd Bukkit
+git checkout 304e83eb384c338546aa96eea51388e0e8407e26
+cd ..
+
+git clone https://hub.spigotmc.org/stash/scm/spigot/craftbukkit.git CraftBukkit
+cd CraftBukkit
+git checkout 91b1fc3f1cf89e2591367dca1fa7362fe376f289
+cd ..
+
+git clone https://hub.spigotmc.org/stash/scm/spigot/spigot.git Spigot
+cd Spigot
+git checkout b698b49caf14f97a717afd67e13fd7ac59f51089
+cd ..
+
+git clone https://hub.spigotmc.org/stash/scm/spigot/builddata.git BuildData
+cd BuildData
+git checkout a7f7c2118b877fde4cf0f32f1f730ffcdee8e9ee
+cd ..
+
+java -jar BuildTools.jar --remapped --disable-java-check --dont-update
+java -jar BuildTools.jar --rev 1.20.6 --remapped --disable-java-check
+
+cd Bukkit
+git checkout 2ec53f498e32b3af989cb24672fc54dfab087154
+cd ..
+
+cd CraftBukkit
+git checkout 8ee6fd1b8db9896590aa321d0199453de1fc35db
+cd ..
+
+cd Spigot
+git checkout fb8fb722a327a2f9f097f2ded700ac5de8157408
+cd ..
+
+cd BuildData
+git checkout ae1e7b1e31cd3a3892bb05a6ccdcecc48c73c455
+cd ..
+
+java -jar BuildTools.jar --remapped --disable-java-check --dont-update
+java -jar BuildTools.jar --rev 1.21.1 --remapped --disable-java-check
+java -jar BuildTools.jar --rev 1.21.3 --remapped --disable-java-check
+java -jar BuildTools.jar --rev 1.21.4 --remapped --disable-java-check
 ```
 
 Your environment is now set up correctly. To create a build, run the following inside the root folder of the project.
@@ -183,3 +235,7 @@ We apologize for the boilerplate (the `ComponentHolder.of(...)` call), but that 
 Full Adventure support is only achieved when your server natively supports Adventure (it is running Paper) and your plugin depends on Paper (instead of Spigot).
 In other words, you won't benefit from Adventure as much if you use Spigot instead of Paper.
 This is because when Adventure is relocated we have to convert everything back to legacy `String`s before passing them to the Bukkit API.
+
+---
+
+NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.

@@ -2,8 +2,10 @@ package com.github.stefvanschie.inventoryframework.gui;
 
 import com.github.stefvanschie.inventoryframework.gui.type.*;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
+import com.github.stefvanschie.inventoryframework.util.InventoryViewUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -65,7 +67,7 @@ public class GuiListener implements Listener {
         }
 
         InventoryView view = event.getView();
-        Inventory inventory = view.getInventory(event.getRawSlot());
+        Inventory inventory = InventoryViewUtil.getInstance().getInventory(view, event.getRawSlot());
 
         if (inventory == null) {
             gui.callOnOutsideClick(event);
@@ -73,7 +75,7 @@ public class GuiListener implements Listener {
         }
 
         gui.callOnGlobalClick(event);
-        if (inventory.equals(view.getTopInventory())) {
+        if (inventory.equals(InventoryViewUtil.getInstance().getTopInventory(view))) {
             gui.callOnTopClick(event);
         } else {
             gui.callOnBottomClick(event);
@@ -221,17 +223,19 @@ public class GuiListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntityPickupItem(@NotNull EntityPickupItemEvent event) {
-        if (!(event.getEntity() instanceof HumanEntity)) {
+        LivingEntity entity = event.getEntity();
+
+        if (!(entity instanceof HumanEntity)) {
             return;
         }
 
-        Gui gui = getGui(((HumanEntity) event.getEntity()).getOpenInventory().getTopInventory());
+        Gui gui = getGui(InventoryViewUtil.getInstance().getTopInventory(((HumanEntity) entity).getOpenInventory()));
 
         if (gui == null || !gui.isPlayerInventoryUsed()) {
             return;
         }
 
-        int leftOver = gui.getHumanEntityCache().add((HumanEntity) event.getEntity(), event.getItem().getItemStack());
+        int leftOver = gui.getHumanEntityCache().add((HumanEntity) entity, event.getItem().getItemStack());
 
         if (leftOver == 0) {
             event.getItem().remove();
@@ -267,11 +271,11 @@ public class GuiListener implements Listener {
             boolean top = false, bottom = false;
 
             for (int inventorySlot : inventorySlots) {
-                Inventory inventory = view.getInventory(inventorySlot);
+                Inventory inventory = InventoryViewUtil.getInstance().getInventory(view, inventorySlot);
 
-                if (view.getTopInventory().equals(inventory)) {
+                if (InventoryViewUtil.getInstance().getTopInventory(view).equals(inventory)) {
                     top = true;
-                } else if (view.getBottomInventory().equals(inventory)) {
+                } else if (InventoryViewUtil.getInstance().getBottomInventory(view).equals(inventory)) {
                     bottom = true;
                 }
 
@@ -291,24 +295,24 @@ public class GuiListener implements Listener {
             }
         } else {
             int index = inventorySlots.toArray(new Integer[0])[0];
-            InventoryType.SlotType slotType = view.getSlotType(index);
+            InventoryType.SlotType slotType = InventoryViewUtil.getInstance().getSlotType(view, index);
 
             boolean even = event.getType() == DragType.EVEN;
 
             ClickType clickType = even ? ClickType.LEFT : ClickType.RIGHT;
             InventoryAction inventoryAction = even ? InventoryAction.PLACE_SOME : InventoryAction.PLACE_ONE;
 
-            ItemStack previousViewCursor = view.getCursor();
+            ItemStack previousViewCursor = InventoryViewUtil.getInstance().getCursor(view);
             // Overwrite getCursor in inventory click event to mimic real event fired by Bukkit.
-            view.setCursor(event.getOldCursor());
+            InventoryViewUtil.getInstance().setCursor(view, event.getOldCursor());
             //this is a fake click event, firing this may cause other plugins to function incorrectly, so keep it local
             InventoryClickEvent inventoryClickEvent = new InventoryClickEvent(view, slotType, index, clickType,
                 inventoryAction);
 
             onInventoryClick(inventoryClickEvent);
             // Restore previous cursor only if someone has not changed it manually in onInventoryClick.
-            if (Objects.equals(view.getCursor(), event.getOldCursor())) {
-                view.setCursor(previousViewCursor);
+            if (Objects.equals(InventoryViewUtil.getInstance().getCursor(view), event.getOldCursor())) {
+                InventoryViewUtil.getInstance().setCursor(view, previousViewCursor);
             }
 
             event.setCancelled(inventoryClickEvent.isCancelled());
@@ -369,6 +373,9 @@ public class GuiListener implements Listener {
             } else if (gui instanceof ModernSmithingTableGui) {
                 ((ModernSmithingTableGui) gui).handleClose(humanEntity);
             }
+
+            //Bukkit doesn't like it if you open an inventory while the previous one is being closed
+            Bukkit.getScheduler().runTask(this.plugin, () -> gui.navigateToParent(humanEntity));
         }
     }
 

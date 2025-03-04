@@ -5,7 +5,7 @@
     <parent>
         <artifactId>IF-parent</artifactId>
         <groupId>com.github.stefvanschie.inventoryframework</groupId>
-        <version>0.10.12-SNAPSHOT</version>
+        <version>0.10.19</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     
@@ -18,7 +18,7 @@
     <repositories>
         <repository>
             <id>papermc</id>
-            <url>https://papermc.io/repo/repository/maven-public/</url>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
     </repositories>
     

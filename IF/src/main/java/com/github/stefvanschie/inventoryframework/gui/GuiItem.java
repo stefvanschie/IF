@@ -1,7 +1,7 @@
 package com.github.stefvanschie.inventoryframework.gui;
 
+import com.github.stefvanschie.inventoryframework.util.InventoryViewUtil;
 import com.github.stefvanschie.inventoryframework.util.UUIDTagType;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -153,31 +153,11 @@ public class GuiItem {
         guiItem.properties = new ArrayList<>(properties);
         ItemMeta meta = guiItem.item.getItemMeta();
 
-        if (meta == null) {
-            throw new IllegalArgumentException("item must be able to have ItemMeta (it mustn't be AIR). If you want to " +
-                    "click an AIR item, use a StaticNullablePane instead!");
-        }
-
-        meta.getPersistentDataContainer().set(keyUUID, UUIDTagType.INSTANCE, guiItem.uuid);
-        guiItem.item.setItemMeta(meta);
-
-        return guiItem;
-    }
-
-    @NotNull
-    @Contract(pure = true)
-    public GuiItem unsafeCopy() {
-        GuiItem guiItem = new GuiItem(item.clone(), action, this.logger, this.keyUUID);
-
-        guiItem.visible = visible;
-        guiItem.uuid = uuid;
-        guiItem.properties = new ArrayList<>(properties);
-        ItemMeta meta = guiItem.item.getItemMeta();
-
         if (meta != null) {
             meta.getPersistentDataContainer().set(keyUUID, UUIDTagType.INSTANCE, guiItem.uuid);
             guiItem.item.setItemMeta(meta);
         }
+
         return guiItem;
     }
 
@@ -198,7 +178,8 @@ public class GuiItem {
             action.accept(event);
         } catch (Throwable t) {
             this.logger.log(Level.SEVERE, "Exception while handling click event in inventory '"
-                    + event.getView().getTitle() + "', slot=" + event.getSlot() + ", item=" + item.getType(), t);
+                    + InventoryViewUtil.getInstance().getTitle(event.getView()) + "', slot=" + event.getSlot() +
+                    ", item=" + item.getType(), t);
         }
     }
 
@@ -271,17 +252,6 @@ public class GuiItem {
     }
 
     /**
-     * Returns the action
-     * @return the action fired when this item is clicked
-     * @since 0.10.12
-     */
-    @Nullable
-    @Contract(pure = true)
-    public Consumer<InventoryClickEvent> getAction() {
-        return action;
-    }
-
-    /**
      * Gets the namespaced key used for this item.
      *
      * @return the namespaced key
@@ -322,9 +292,5 @@ public class GuiItem {
      */
     public void setVisible(boolean visible) {
         this.visible = visible;
-    }
-
-    public static GuiItem air(@NotNull Consumer<InventoryClickEvent> action) {
-        return new GuiItem(new ItemStack(Material.AIR), action);
     }
 }
