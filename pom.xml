@@ -27,11 +27,6 @@
         <module>nms/1_18_0</module>
         <module>nms/1_17_1</module>
         <module>nms/1_17_0</module>
-        <module>nms/1_16_4-5</module>
-        <module>nms/1_16_2-3</module>
-        <module>nms/1_16_1</module>
-        <module>nms/1_15</module>
-        <module>nms/1_14</module>
         <module>adventure-support</module>
         <module>inventory-view/iv-abstract-class</module>
         <module>inventory-view/iv-abstraction</module>
@@ -39,8 +34,8 @@
     </modules>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <maven.deploy.skip>true</maven.deploy.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <adventure.version>4.18.0</adventure.version>
