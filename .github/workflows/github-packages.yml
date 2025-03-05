@@ -103,6 +103,6 @@ jobs:
           java -jar BuildTools.jar --rev 1.21.4 --remapped --disable-java-check
           
           cd ../
-      - name: Install package
+      - name: Deploy to GitHub Packages
         run: |
-          mvn install
+          mvn deploy -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/$GITHUB_REPOSITORY
