@@ -105,4 +105,4 @@ jobs:
           cd ../
       - name: Deploy to GitHub Packages
         run: |
-          mvn deploy -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/$GITHUB_REPOSITORY
+          mvn deploy -P github-deploy -DgithubDeploy=true -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/$GITHUB_REPOSITORY

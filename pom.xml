@@ -111,6 +111,21 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>github-deploy</id>
+            <activation>
+                <property>
+                    <name>githubDeploy</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <url>https://maven.pkg.github.com/${env.GITHUB_REPOSITORY}</url>
+                </repository>
+            </distributionManagement>
+        </profile>
     </profiles>
 
     <build>
