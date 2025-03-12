@@ -12,7 +12,6 @@ import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -78,8 +77,7 @@ public class AnvilGui extends NamedGui implements InventoryBased {
      * An internal anvil inventory
      */
     @NotNull
-    private final AnvilInventory anvilInventory = VersionMatcher.newAnvilInventory(Version.getVersion(),
-        this);
+    private final AnvilInventory anvilInventory = VersionMatcher.newAnvilInventory(Version.getVersion());
 
     /**
      * The viewers of this gui
@@ -168,11 +166,7 @@ public class AnvilGui extends NamedGui implements InventoryBased {
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
 
-        Inventory inventory = anvilInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
-
-        addInventory(inventory, this);
-
-        this.viewers.add(humanEntity);
+        humanEntity.openInventory(getInventory());
     }
 
     @NotNull
@@ -241,7 +235,11 @@ public class AnvilGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public Inventory createInventory() {
-        return getTitleHolder().asInventoryTitle(this, InventoryType.ANVIL);
+        Inventory inventory = this.anvilInventory.createInventory(getTitleHolder());
+
+        addInventory(inventory, this);
+
+        return inventory;
     }
 
     /**
@@ -266,61 +264,14 @@ public class AnvilGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public int getViewerCount() {
-        return this.viewers.size();
+        return getInventory().getViewers().size();
     }
 
     @NotNull
     @Contract(pure = true)
     @Override
     public List<HumanEntity> getViewers() {
-        return new ArrayList<>(this.viewers);
-    }
-
-    /**
-     * Handles an incoming inventory click event
-     *
-     * @param event the event to handle
-     * @since 0.8.0
-     * @deprecated no longer used internally
-     */
-    @Deprecated
-    public void handleClickEvent(@NotNull InventoryClickEvent event) {
-        int slot = event.getRawSlot();
-        Player player = (Player) event.getWhoClicked();
-
-        if (slot >= 3 && slot <= 38) {
-            anvilInventory.sendItems(player, getTopItems());
-        } else if (slot == 0 || slot == 1) {
-            if (event.isCancelled()) {
-                if (slot == 0) {
-                    anvilInventory.sendFirstItem(player, getFirstItemComponent().getItem(0, 0));
-                } else {
-                    anvilInventory.sendSecondItem(player, getSecondItemComponent().getItem(0, 0));
-                }
-
-                anvilInventory.clearCursor(player);
-            }
-
-            anvilInventory.sendResultItem(player, getResultComponent().getItem(0, 0));
-        } else if (slot == 2 && !event.isCancelled()) {
-            anvilInventory.clearResultItem(player);
-
-            ItemStack resultItem = getResultComponent().getItem(0, 0);
-
-            if (resultItem != null) {
-                anvilInventory.setCursor(player, resultItem);
-            }
-        }
-    }
-
-    /**
-     * Handles a human entity closing this gui.
-     *
-     * @param humanEntity the human entity closing the gui
-     * @since 0.10.1
-     */
-    public void handleClose(@NotNull HumanEntity humanEntity) {
-        this.viewers.remove(humanEntity);
+        return new ArrayList<>(getInventory().getViewers());
     }
 
     /**

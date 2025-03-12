@@ -95,24 +95,6 @@ public class GuiListener implements Listener {
     }
 
     /**
-     * Resets the items into the correct positions for anvil guis
-     *
-     * @param event the event fired
-     * @since 0.8.0
-     * @deprecated no longer used internally
-     */
-    @Deprecated
-    public void resetItemsAnvil(@NotNull InventoryClickEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
-
-        if (!(holder instanceof AnvilGui) || !(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        ((AnvilGui) holder).handleClickEvent(event);
-    }
-
-    /**
      * Resets the items into the correct positions for beacon guis
      *
      * @param event the event fired
@@ -358,17 +340,13 @@ public class GuiListener implements Listener {
         if (!gui.isUpdating()) {
             gui.callOnClose(event);
 
-            event.getInventory().clear(); //clear inventory to prevent items being put back
-
             gui.getHumanEntityCache().restoreAndForget(humanEntity);
 
             if (gui.getViewerCount() == 1) {
                 activeGuiInstances.remove(gui);
             }
 
-            if (gui instanceof AnvilGui) {
-                ((AnvilGui) gui).handleClose(humanEntity);
-            } else if (gui instanceof MerchantGui) {
+            if (gui instanceof MerchantGui) {
                 ((MerchantGui) gui).handleClose(humanEntity);
             } else if (gui instanceof ModernSmithingTableGui) {
                 ((ModernSmithingTableGui) gui).handleClose(humanEntity);

@@ -66,15 +66,14 @@ public class VersionMatcher {
      * Gets a new anvil inventory for the specified version of the specified inventory holder.
      *
      * @param version the version to get the inventory of
-     * @param inventoryHolder the inventory holder
      * @return the anvil inventory
-     * @since 0.8.0
+     * @since 0.11.0
      */
     @NotNull
     @Contract(pure = true)
-    public static AnvilInventory newAnvilInventory(@NotNull Version version, @NotNull InventoryHolder inventoryHolder) {
+    public static AnvilInventory newAnvilInventory(@NotNull Version version) {
         try {
-            return ANVIL_INVENTORIES.get(version).getConstructor(InventoryHolder.class).newInstance(inventoryHolder);
+            return ANVIL_INVENTORIES.get(version).getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
             NoSuchMethodException exception) {
             throw new IllegalStateException(exception);
