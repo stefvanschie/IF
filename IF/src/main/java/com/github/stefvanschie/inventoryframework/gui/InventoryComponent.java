@@ -3,6 +3,7 @@ package com.github.stefvanschie.inventoryframework.gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -111,9 +112,9 @@ public class InventoryComponent {
      * component's size + the offset specified.
      *
      * @param inventory the inventory to place the items in
-     * @param offset the offset from which to start counting the slots
-     * @since 0.8.0
+     * @param offset    the offset from which to start counting the slots
      * @see #display(PlayerInventory, int)
+     * @since 0.8.0
      */
     public void display(@NotNull Inventory inventory, int offset) {
         display();
@@ -131,9 +132,9 @@ public class InventoryComponent {
      * the normal ordering of a {@link PlayerInventory}'s slots its documentation.
      *
      * @param inventory the inventory to place the items in
-     * @param offset the offset from which to start counting the slots
-     * @since 0.8.0
+     * @param offset    the offset from which to start counting the slots
      * @see #display(Inventory, int)
+     * @since 0.8.0
      */
     public void display(@NotNull PlayerInventory inventory, int offset) {
         display();
@@ -149,9 +150,9 @@ public class InventoryComponent {
      * contrast to {@link #display(PlayerInventory, int)} this does not render the panes of this component.
      *
      * @param inventory the inventory to place the items in
-     * @param offset the offset from which to start counting the slots
-     * @since 0.8.0
+     * @param offset    the offset from which to start counting the slots
      * @see #placeItems(Inventory, int)
+     * @since 0.8.0
      */
     public void placeItems(@NotNull PlayerInventory inventory, int offset) {
         for (int x = 0; x < getLength(); x++) {
@@ -175,9 +176,9 @@ public class InventoryComponent {
      * {@link #display(Inventory, int)} this does not render the panes of this component.
      *
      * @param inventory the inventory to place the items in
-     * @param offset the offset from which to start counting the slots
-     * @since 0.8.0
+     * @param offset    the offset from which to start counting the slots
      * @see #placeItems(PlayerInventory, int)
+     * @since 0.8.0
      */
     public void placeItems(@NotNull Inventory inventory, int offset) {
         for (int x = 0; x < getLength(); x++) {
@@ -192,9 +193,9 @@ public class InventoryComponent {
      * {@link Pane#click(Gui, InventoryComponent, InventoryClickEvent, int, int, int, int, int)} on each pane until the
      * right item has been found.
      *
-     * @param gui the gui this inventory component belongs to
+     * @param gui   the gui this inventory component belongs to
      * @param event the event to delegate
-     * @param slot the slot that was clicked
+     * @param slot  the slot that was clicked
      * @since 0.8.0
      */
     public void click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int slot) {
@@ -203,7 +204,7 @@ public class InventoryComponent {
         //loop panes in reverse, because the highest priority pane (last in list) is most likely to have the right item
         for (int i = panes.size() - 1; i >= 0; i--) {
             if (panes.get(i).click(
-                gui, this, event, slot, 0, 0, getLength(), getHeight()
+                    gui, this, event, slot, 0, 0, getLength(), getHeight()
             )) {
                 break;
             }
@@ -253,7 +254,7 @@ public class InventoryComponent {
      * not included in this inventory component, and {@link IllegalArgumentException} will be thrown.
      *
      * @param from the starting index of the range
-     * @param end the ending index of the range
+     * @param end  the ending index of the range
      * @return the new, shrunk inventory component
      * @since 0.8.0
      */
@@ -263,7 +264,7 @@ public class InventoryComponent {
         if (from < 0 || end >= getHeight()) {
             throw new IllegalArgumentException("Specified range includes non-existent rows");
         }
-        
+
         int newHeight = getHeight() - (end - from + 1);
 
         InventoryComponent newInventoryComponent = new InventoryComponent(getLength(), newHeight);
@@ -298,7 +299,7 @@ public class InventoryComponent {
      * mutate this component.
      *
      * @param instance the instance to apply field and method references on
-     * @param element the element to load
+     * @param element  the element to load
      * @since 0.8.0
      * @deprecated superseded by {@link #load(Object, Element, Plugin)}
      */
@@ -312,8 +313,8 @@ public class InventoryComponent {
      * mutate this component.
      *
      * @param instance the instance to apply field and method references on
-     * @param element the element to load
-     * @param plugin the plugin to load the panes with
+     * @param element  the element to load
+     * @param plugin   the plugin to load the panes with
      * @since 0.10.12
      */
     public void load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
@@ -354,8 +355,8 @@ public class InventoryComponent {
      * displayed according to their priority, with the lowest priority rendering first and the highest priority (note:
      * highest priority, not {@link Pane.Priority#HIGHEST} priority) rendering last.
      *
-     * @since 0.8.0
      * @see #display(Inventory, int)
+     * @since 0.8.0
      */
     public void display() {
         clearItems();
@@ -376,8 +377,8 @@ public class InventoryComponent {
      * @param x the x coordinate
      * @param y the y coordinate
      * @return true if an item exists at the given coordinates, false otherwise
-     * @since 0.8.0
      * @throws IllegalArgumentException when the coordinates are out of bounds
+     * @since 0.8.0
      */
     @Contract(pure = true)
     public boolean hasItem(int x, int y) {
@@ -391,15 +392,15 @@ public class InventoryComponent {
      * @param x the x coordinate
      * @param y the y coordinate
      * @return the item or null
-     * @since 0.8.0
      * @throws IllegalArgumentException when the coordinates are out of bounds
+     * @since 0.8.0
      */
     @Nullable
     @Contract(pure = true)
     public ItemStack getItem(int x, int y) {
         if (!isInBounds(x, y)) {
             throw new IllegalArgumentException("Coordinates must be in-bounds: x = " + x + ", y = " + y +
-                "; should be below " + getLength() + " and " + getHeight());
+                    "; should be below " + getLength() + " and " + getHeight());
         }
 
         return this.items[x][y];
@@ -425,17 +426,38 @@ public class InventoryComponent {
      * component, an {@link IllegalArgumentException} will be thrown.
      *
      * @param guiItem the item to place in this inventory component
-     * @param x the x coordinate of the item
-     * @param y the y coordinate of the item
+     * @param x       the x coordinate of the item
+     * @param y       the y coordinate of the item
      * @since 0.9.3
      */
     public void setItem(@NotNull GuiItem guiItem, int x, int y) {
         if (!isInBounds(x, y)) {
             throw new IllegalArgumentException("Coordinates must be in-bounds: x = " + x + ", y = " + y +
-                "; should be below " + getLength() + " and " + getHeight());
+                    "; should be below " + getLength() + " and " + getHeight());
         }
 
         GuiItem copy = guiItem.copy();
+        copy.applyUUID();
+
+        this.items[x][y] = copy.getItem();
+    }
+
+    /**
+     * Unsafe version of #setItem(GuiItem, int, int) method.
+     * Warning: this method does not abort if the item's material is AIR! Use it only
+     * if you know what you're doing
+     *
+     * @param guiItem
+     * @param x
+     * @param y
+     */
+    public void setItemUnsafe(@NotNull GuiItem guiItem, int x, int y) {
+        if (!isInBounds(x, y)) {
+            throw new IllegalArgumentException("Coordinates must be in-bounds: x = " + x + ", y = " + y +
+                    "; should be below " + getLength() + " and " + getHeight());
+        }
+        GuiItem copy = guiItem.copy();
+        //if (guiItem.getItem().getType().isAir())
         copy.applyUUID();
 
         this.items[x][y] = copy.getItem();
@@ -447,8 +469,8 @@ public class InventoryComponent {
      * component, an {@link IllegalArgumentException} will be thrown.
      *
      * @param item the item to place in this inventory component
-     * @param x the x coordinate of the item
-     * @param y the y coordinate of the item
+     * @param x    the x coordinate of the item
+     * @param y    the y coordinate of the item
      * @since 0.8.0
      * @deprecated usage of {@link #setItem(GuiItem, int, int)} is preferred so gui item's item meta can be freely
      * edited without losing important internal data
@@ -457,7 +479,7 @@ public class InventoryComponent {
     public void setItem(@NotNull ItemStack item, int x, int y) {
         if (!isInBounds(x, y)) {
             throw new IllegalArgumentException("Coordinates must be in-bounds: x = " + x + ", y = " + y +
-                "; should be below " + getLength() + " and " + getHeight());
+                    "; should be below " + getLength() + " and " + getHeight());
         }
 
         this.items[x][y] = item;
@@ -546,7 +568,7 @@ public class InventoryComponent {
      *
      * @param lowerBound the lower bound of the range
      * @param upperBound the upper bound of the range
-     * @param value the value to check
+     * @param value      the value to check
      * @return true if the value is within the bounds, false otherwise
      * @since 0.8.0
      */
