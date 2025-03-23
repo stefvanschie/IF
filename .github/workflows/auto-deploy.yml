@@ -34,6 +34,7 @@ jobs:
         wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
 
         java -jar BuildTools.jar --rev 1.14.4 --remapped --disable-java-check
+        java -jar BuildTools.jar --rev 1.15.2 --remapped --disable-java-check
 
         cd ../
     - name: Download Paperclip jars
