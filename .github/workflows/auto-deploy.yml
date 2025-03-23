@@ -22,6 +22,20 @@ jobs:
           ~/.m2/repository/ca/bkaw/paper-nms
           ~/.m2/repository/org/spigotmc/spigot
         key: ${{ runner.os }}-${{ secrets.CACHE_VERSION }}-paperclip
+    - name: Set up JDK 8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 8
+    - name: 'Run BuildTools 1.14.4'
+      if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p build
+        cd build/
+        wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
+
+        java -jar BuildTools.jar --rev 1.14.4 --remapped --disable-java-check
+
+        cd ../
     - name: Download Paperclip jars
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       run: |
