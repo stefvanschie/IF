@@ -42,6 +42,7 @@ jobs:
         java -jar BuildTools.jar --rev 1.14.4 --remapped --disable-java-check
         java -jar BuildTools.jar --rev 1.15.2 --remapped --disable-java-check
         java -jar BuildTools.jar --rev 1.16.1 --remapped --disable-java-check
+        java -jar BuildTools.jar --rev 1.16.3 --remapped --disable-java-check
 
         cd ../
     - name: Download Paperclip jars
