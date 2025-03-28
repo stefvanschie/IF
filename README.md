@@ -88,32 +88,25 @@ This will clone this repository to your device. This project relies on NMS, for 
 ### Installing Paper manually
 For versions 1.15-1.16, we have to manually install Paper. Run the following scripts for each version to install the dependencies locally. Running these commands generate additional files in the folder where you execute them. To ensure that you don't accidentallly overwrite other files, execute this in an empty folder. The files that get created can be deleted afterwards (either after installing a single version or after installing all of them), since they're no longer necessary.
 
-#### 1.15.2
-```
-wget https://papermc.io/api/v2/projects/paper/versions/1.15.2/builds/391/downloads/paper-1.15.2-391.jar -O paperclip/paper-1.15.2.jar
-java -jar paper-1.15.2.jar
-mvn install:install-file -Dfile=cache/patched_1.15.2.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.15.2-R0.1-SNAPSHOT" -Dpackaging="jar"
-```
-
 #### 1.16.1
 ```
 wget https://papermc.io/api/v2/projects/paper/versions/1.16.1/builds/138/downloads/paper-1.16.1-138.jar -O paperclip/paper-1.16.1.jar
 java -jar paper-1.16.1.jar
-mvn install:install-file -Dfile=cache/patched_1.16.1.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.1-R0.1-SNAPSHOT" -Dpackaging="jar"
+mvn install:install-file -Dfile=cache/patched_1.16.1.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.1-R0.1-SNAPSHOT" -Dpackaging="jar"  -DgeneratePom="true"
 ```
 
 #### 1.16.3
 ```
 wget https://papermc.io/api/v2/projects/paper/versions/1.16.3/builds/253/downloads/paper-1.16.3-253.jar -O paperclip/paper-1.16.3.jar
 java -jar paper-1.16.3.jar
-mvn install:install-file -Dfile=cache/patched_1.16.3.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.3-R0.1-SNAPSHOT" -Dpackaging="jar"
+mvn install:install-file -Dfile=cache/patched_1.16.3.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.3-R0.1-SNAPSHOT" -Dpackaging="jar"  -DgeneratePom="true"
 ```
 
 #### 1.16.4
 ```
 wget https://papermc.io/api/v2/projects/paper/versions/1.16.4/builds/416/downloads/paper-1.16.4-416.jar -O paperclip/paper-1.16.4.jar
 java -jar paper-1.16.4.jar
-mvn install:install-file -Dfile=cache/patched_1.16.4.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.4-R0.1-SNAPSHOT" -Dpackaging="jar"
+mvn install:install-file -Dfile=cache/patched_1.16.4.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.4-R0.1-SNAPSHOT" -Dpackaging="jar"  -DgeneratePom="true"
 ```
 
 ### Installing Paper via the maven plugin
@@ -182,6 +175,7 @@ java -jar BuildTools.jar --remapped --disable-java-check --dont-update
 java -jar BuildTools.jar --rev 1.21.1 --remapped --disable-java-check
 java -jar BuildTools.jar --rev 1.21.3 --remapped --disable-java-check
 java -jar BuildTools.jar --rev 1.21.4 --remapped --disable-java-check
+java -jar BuildTools.jar --rev 1.21.5 --remapped --disable-java-check
 ```
 
 Your environment is now set up correctly. To create a build, run the following inside the root folder of the project.
