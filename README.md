@@ -90,21 +90,21 @@ For versions 1.15-1.16, we have to manually install Paper. Run the following scr
 
 #### 1.16.1
 ```
-wget https://papermc.io/api/v2/projects/paper/versions/1.16.1/builds/138/downloads/paper-1.16.1-138.jar -O paperclip/paper-1.16.1.jar
+wget https://api.papermc.io/v2/projects/paper/versions/1.16.1/builds/138/downloads/paper-1.16.1-138.jar -O paperclip/paper-1.16.1.jar
 java -jar paper-1.16.1.jar
 mvn install:install-file -Dfile=cache/patched_1.16.1.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.1-R0.1-SNAPSHOT" -Dpackaging="jar"  -DgeneratePom="true"
 ```
 
 #### 1.16.3
 ```
-wget https://papermc.io/api/v2/projects/paper/versions/1.16.3/builds/253/downloads/paper-1.16.3-253.jar -O paperclip/paper-1.16.3.jar
+wget https://api.papermc.io/v2/projects/paper/versions/1.16.3/builds/253/downloads/paper-1.16.3-253.jar -O paperclip/paper-1.16.3.jar
 java -jar paper-1.16.3.jar
 mvn install:install-file -Dfile=cache/patched_1.16.3.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.3-R0.1-SNAPSHOT" -Dpackaging="jar"  -DgeneratePom="true"
 ```
 
 #### 1.16.4
 ```
-wget https://papermc.io/api/v2/projects/paper/versions/1.16.4/builds/416/downloads/paper-1.16.4-416.jar -O paperclip/paper-1.16.4.jar
+wget https://api.papermc.io/v2/projects/paper/versions/1.16.4/builds/416/downloads/paper-1.16.4-416.jar -O paperclip/paper-1.16.4.jar
 java -jar paper-1.16.4.jar
 mvn install:install-file -Dfile=cache/patched_1.16.4.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.4-R0.1-SNAPSHOT" -Dpackaging="jar"  -DgeneratePom="true"
 ```
