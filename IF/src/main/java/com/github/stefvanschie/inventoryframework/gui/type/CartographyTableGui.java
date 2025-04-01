@@ -7,6 +7,7 @@ import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
+import com.github.stefvanschie.inventoryframework.util.DispatchUtil;
 import com.github.stefvanschie.inventoryframework.util.version.Version;
 import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
 import org.bukkit.Bukkit;
@@ -236,7 +237,7 @@ public class CartographyTableGui extends NamedGui implements InventoryBased {
             cartographyTableInventory.sendItems(player, getTopItems());
         } else if (slot >= 0 && slot <= 2) {
             //the client rejects the output item if send immediately
-            Bukkit.getScheduler().runTask(super.plugin, () ->
+            DispatchUtil.runTaskFor(player, this.plugin,  () ->
                     cartographyTableInventory.sendItems(player, getTopItems()));
 
             if (event.isCancelled()) {
