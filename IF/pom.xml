@@ -3,14 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>IF-parent</artifactId>
-        <groupId>com.github.stefvanschie.inventoryframework</groupId>
-        <version>0.10.19</version>
+        <artifactId>if-parent</artifactId>
+        <groupId>com.github.albemiglio</groupId>
+        <version>0.10.19-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>IF</artifactId>
+    <artifactId>if</artifactId>
     <packaging>jar</packaging>
 
     <properties>
@@ -36,161 +36,148 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>abstraction</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_17_0</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_17_1</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_18_0</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_18_1</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_18_2</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_19_0</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_19_1</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_19_2</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_19_3</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_19_4</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_20_0</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_20_1</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_20_2</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_20_3-4</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_20_5</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_20_6</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_21_0</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_21_1</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_21_2-3</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>1_21_4</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>iv-abstraction</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>iv-abstract-class</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <groupId>com.github.albemiglio</groupId>
             <artifactId>iv-interface</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.20.3-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-            <exclusions>
-                <!-- Provided, but not accessible -->
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-lang3</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.mojang</groupId>
@@ -211,18 +198,13 @@
             <version>5.11.4</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.21.4-R0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
     <profiles>
         <profile>
@@ -245,6 +227,16 @@
                     </plugin>
                 </plugins>
             </build>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
         </profile>
     </profiles>
 

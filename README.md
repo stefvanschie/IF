@@ -12,9 +12,9 @@ Next to those panes, GUIs can also be created from XML files by simple loading t
 To add this project as a dependency to your pom.xml, add the following to your pom.xml:
 ```XML
 <dependency>
-    <groupId>com.github.stefvanschie.inventoryframework</groupId>
-    <artifactId>IF</artifactId>
-    <version>0.10.19</version>
+    <groupId>com.github.albemiglio</groupId>
+    <artifactId>if</artifactId>
+    <version>0.10.19-SNAPSHOT</version>
 </dependency>
 ```
 The project is in the Central Repository, so specifying a repository is not needed.
@@ -29,7 +29,7 @@ Now in order to shade the project into your project, add the following to your p
         <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
         <relocations>
             <relocation>
-                <pattern>com.github.stefvanschie.inventoryframework</pattern>
+                <pattern>com.github.albemiglio</pattern>
                 <shadedPattern>[YOUR PACKAGE].inventoryframework</shadedPattern>
             </relocation>
         </relocations>

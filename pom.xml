@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <modules>
-        <module>IF</module>
+        <module>if</module>
         <module>nms/abstraction</module>
         <module>nms/1_21_4</module>
         <module>nms/1_21_2-3</module>
@@ -41,14 +41,14 @@
         <adventure.version>4.18.0</adventure.version>
     </properties>
 
-    <groupId>com.github.stefvanschie.inventoryframework</groupId>
-    <artifactId>IF-parent</artifactId>
-    <version>0.10.19</version>
+    <groupId>com.github.albemiglio</groupId>
+    <artifactId>if-parent</artifactId>
+    <version>0.10.19-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>IF</name>
+    <name>if</name>
     <description>An inventory framework for managing GUIs</description>
-    <url>https://github.com/stefvanschie/IF</url>
+    <url>https://github.com/albemiglio/IF</url>
 
     <licenses>
         <license>
@@ -59,7 +59,7 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/stefvanschie/IF.git</url>
+        <url>https://github.com/albemiglio/IF.git</url>
     </scm>
 
     <developers>
