@@ -10,31 +10,24 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>abstraction</artifactId>
+    <artifactId>1_14</artifactId>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
-            <groupId>com.github.stefvanschie.inventoryframework</groupId>
-            <artifactId>adventure-support</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
+            <groupId>io.papermc</groupId>
+            <artifactId>paper</artifactId>
+            <version>1.14.4-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.16.4-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>abstraction</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
