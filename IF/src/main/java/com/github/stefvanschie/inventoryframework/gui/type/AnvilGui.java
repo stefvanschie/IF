@@ -257,6 +257,18 @@ public class AnvilGui extends NamedGui implements InventoryBased {
         return anvilInventory.getRenameText();
     }
 
+    /**
+     * Sets the rename text currently specified in the anvil.
+     *
+     * @param text the new rename text
+     * @since 0.10.12
+     * @see AnvilInventory#setRenameText(String)
+     */
+    @Contract(pure = true)
+    public void setRenameText(String text) {
+        anvilInventory.setRenameText(text);
+    }
+
     @Contract(pure = true)
     @Override
     public boolean isPlayerInventoryUsed() {

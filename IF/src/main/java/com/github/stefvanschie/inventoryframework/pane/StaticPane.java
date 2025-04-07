@@ -29,14 +29,14 @@ import java.util.function.Consumer;
  * the same pane. It's recommended to only use one of these systems per pane and to not mix them.
  * </p>
  */
-public class StaticPane extends Pane implements Flippable, Rotatable {
+public class  StaticPane extends Pane implements Flippable, Rotatable {
 
 	/**
 	 * A map of locations inside this pane and their item. The locations are stored in a way where the x coordinate is
      * the key and the y coordinate is the value.
 	 */
 	@NotNull
-	private final Map<Slot, GuiItem> items;
+	protected final Map<Slot, GuiItem> items;
 
 	/**
 	 * The clockwise rotation of this pane in degrees

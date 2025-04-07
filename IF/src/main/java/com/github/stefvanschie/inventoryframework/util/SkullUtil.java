@@ -1,16 +1,18 @@
 package com.github.stefvanschie.inventoryframework.util;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import com.github.stefvanschie.inventoryframework.util.version.Version;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Base64;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -20,6 +22,9 @@ import java.util.UUID;
  * @since 0.5.0
  */
 public final class SkullUtil {
+
+    private static Field cachedProfileField;
+    private static Method cachedSetProfileMethod;
 
     /**
      * A private constructor to ensure this class isn't instantiated
@@ -53,27 +58,47 @@ public final class SkullUtil {
      * @param id the skull id
      */
     public static void setSkull(@NotNull ItemMeta meta, @NotNull String id) {
-        GameProfile profile = new GameProfile(UUID.randomUUID(), "");
-        byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}",
-            "http://textures.minecraft.net/texture/" + id).getBytes());
-        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
-        String itemDisplayName = meta.getDisplayName();
+        Version ver = Version.getVersion();
+        if (!(meta instanceof org.bukkit.inventory.meta.SkullMeta skullMeta)) {
+            throw new IllegalArgumentException("ItemMeta is not an instance of SkullMeta");
+        }
+        if (ver.name().contains("1_20") || ver.name().contains("1_21")) {
+            final UUID uuid = UUID.randomUUID();
+            final PlayerProfile playerProfile = Bukkit.getServer().createPlayerProfile(uuid, uuid.toString().substring(0, 16));
+            PlayerTextures playerTextures = playerProfile.getTextures();
+            try {
+                playerTextures.setSkin(new URL("http://textures.minecraft.net/texture/" + id));
+            }
+            catch (MalformedURLException e) {
+                throw new IllegalArgumentException("Invalid URL for skin texture", e);
+            }
+            playerProfile.setTextures(playerTextures);
+            skullMeta.setOwnerProfile(playerProfile);
+        }
+        else {
+            com.mojang.authlib.GameProfile profile = new com.mojang.authlib.GameProfile(UUID.randomUUID(), "");
+            byte[] encodedData = java.util.Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}",
+                    "http://textures.minecraft.net/texture/" + id).getBytes());
+            profile.getProperties().put("textures", new com.mojang.authlib.properties.Property("textures", new String(encodedData)));
+            String itemDisplayName = skullMeta.getDisplayName();
 
-        try {
-            Field profileField = meta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(meta, profile);
+            try {
+                if (cachedProfileField == null) {
+                    cachedProfileField = skullMeta.getClass().getDeclaredField("profile");
+                    cachedProfileField.setAccessible(true);
+                }
+                cachedProfileField.set(skullMeta, profile);
 
-            meta.setDisplayName(itemDisplayName);
+                meta.setDisplayName(itemDisplayName);
 
-            // Sets serializedProfile field on meta
-            // If it does throw NoSuchMethodException this stops, and meta is correct.
-            // Else it has profile and will set the field.
-            Method setProfile = meta.getClass().getDeclaredMethod("setProfile", GameProfile.class);
-            setProfile.setAccessible(true);
-            setProfile.invoke(meta, profile);
-        } catch (NoSuchFieldException | SecurityException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchMethodException ignored) {}
+                if (cachedSetProfileMethod == null) {
+                    cachedSetProfileMethod = skullMeta.getClass().getDeclaredMethod("setProfile", com.mojang.authlib.GameProfile.class);
+                    cachedSetProfileMethod.setAccessible(true);
+                }
+                cachedSetProfileMethod.invoke(skullMeta, profile);
+            } catch (NoSuchFieldException | SecurityException | IllegalAccessException | java.lang.reflect.InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException ignored) {}
+        }
     }
 }

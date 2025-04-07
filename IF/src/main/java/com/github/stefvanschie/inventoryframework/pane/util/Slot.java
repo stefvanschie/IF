@@ -237,7 +237,6 @@ public interface Slot {
             }
 
             Indexed indexed = (Indexed) object;
-
             return index == indexed.index;
         }
 
