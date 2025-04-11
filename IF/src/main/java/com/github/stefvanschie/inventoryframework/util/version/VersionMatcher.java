@@ -84,16 +84,14 @@ public class VersionMatcher {
      * Gets a new beacon inventory for the specified version of the specified inventory holder.
      *
      * @param version the version to get the inventory of
-     * @param inventoryHolder the inventory holder
      * @return the beacon inventory
-     * @since 0.8.0
+     * @since 0.11.0
      */
     @NotNull
     @Contract(pure = true)
-    public static BeaconInventory newBeaconInventory(@NotNull Version version,
-                                                     @NotNull InventoryHolder inventoryHolder) {
+    public static BeaconInventory newBeaconInventory(@NotNull Version version) {
         try {
-            return BEACON_INVENTORIES.get(version).getConstructor(InventoryHolder.class).newInstance(inventoryHolder);
+            return BEACON_INVENTORIES.get(version).getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
             NoSuchMethodException exception) {
             throw new IllegalStateException(exception);
@@ -370,6 +368,8 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.BeaconInventoryImpl.class);
         BEACON_INVENTORIES.put(Version.V1_21_4,
             com.github.stefvanschie.inventoryframework.nms.v1_21_4.BeaconInventoryImpl.class);
+        BEACON_INVENTORIES.put(Version.V1_21_5,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_5.BeaconInventoryImpl.class);
 
         CARTOGRAPHY_TABLE_INVENTORIES = new EnumMap<>(Version.class);
         CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_16_1,

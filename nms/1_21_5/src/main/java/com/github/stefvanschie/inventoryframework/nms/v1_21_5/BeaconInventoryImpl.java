@@ -1,9 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_18_2;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_5;
 
 import com.github.stefvanschie.inventoryframework.abstraction.BeaconInventory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -13,8 +12,8 @@ import net.minecraft.world.inventory.BeaconMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
-import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryBeacon;
-import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftInventoryBeacon;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.view.CraftBeaconView;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Contract;
@@ -22,9 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal beacon inventory for 1.18.2
+ * Internal beacon inventory for 1.21.5
  *
- * @since 0.10.5
+ * @since 0.11.0
  */
 public class BeaconInventoryImpl extends BeaconInventory {
 
@@ -47,7 +46,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
             @Contract(pure = true)
             @Override
             public Component getDisplayName() {
-                return new TextComponent("Beacon");
+                return Component.literal("Beacon");
             }
         };
 
@@ -88,9 +87,9 @@ public class BeaconInventoryImpl extends BeaconInventory {
     }
 
     /**
-     * A custom container beacon
+     * A custom container beacon.
      *
-     * @since 0.10.5
+     * @since 0.11.0
      */
     private static class ContainerBeaconImpl extends BeaconMenu {
 
@@ -111,7 +110,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
          * prior.
          */
         @Nullable
-        private CraftInventoryView bukkitEntity;
+        private CraftBeaconView bukkitEntity;
 
         /**
          * Creates a new custom beacon container for the specified player.
@@ -123,7 +122,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
          */
         public ContainerBeaconImpl(int containerId, @NotNull Player player, @NotNull SimpleContainer inputSlot) {
             super(containerId, player.getInventory(), new SimpleContainerData(3),
-                    ContainerLevelAccess.create(player.level, BlockPos.ZERO));
+                    ContainerLevelAccess.create(player.level(), BlockPos.ZERO));
 
             this.player = player;
             this.inputSlot = inputSlot;
@@ -140,14 +139,14 @@ public class BeaconInventoryImpl extends BeaconInventory {
 
         @NotNull
         @Override
-        public CraftInventoryView getBukkitView() {
+        public CraftBeaconView getBukkitView() {
             if (this.bukkitEntity != null) {
                 return this.bukkitEntity;
             }
 
             CraftInventoryBeacon inventory = new CraftInventoryBeacon(this.inputSlot);
 
-            this.bukkitEntity = new CraftInventoryView(this.player.getBukkitEntity(), inventory, this);
+            this.bukkitEntity = new CraftBeaconView(this.player.getBukkitEntity(), inventory, this);
 
             return this.bukkitEntity;
         }

@@ -95,23 +95,6 @@ public class GuiListener implements Listener {
     }
 
     /**
-     * Resets the items into the correct positions for beacon guis
-     *
-     * @param event the event fired
-     * @since 0.8.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void resetItemsBeacon(@NotNull InventoryClickEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
-
-        if (!(holder instanceof BeaconGui) || !(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        ((BeaconGui) holder).handleClickEvent(event);
-    }
-
-    /**
      * Resets the items into the correct positions for cartography table guis
      *
      * @param event the event fired

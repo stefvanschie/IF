@@ -30,8 +30,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -78,12 +76,6 @@ public class AnvilGui extends NamedGui implements InventoryBased {
      */
     @NotNull
     private final AnvilInventory anvilInventory = VersionMatcher.newAnvilInventory(Version.getVersion());
-
-    /**
-     * The viewers of this gui
-     */
-    @NotNull
-    private final Collection<HumanEntity> viewers = new HashSet<>();
 
     /**
      * Constructs a new anvil gui
