@@ -102,18 +102,14 @@ public class VersionMatcher {
      * Gets a new cartography table inventory for the specified version of the specified inventory holder.
      *
      * @param version the version to get the inventory of
-     * @param inventoryHolder the inventory holder
      * @return the cartography table inventory
-     * @since 0.8.0
+     * @since 0.11.0
      */
     @NotNull
     @Contract(pure = true)
-    public static CartographyTableInventory newCartographyTableInventory(@NotNull Version version,
-                                                                         @NotNull InventoryHolder inventoryHolder) {
+    public static CartographyTableInventory newCartographyTableInventory(@NotNull Version version) {
         try {
-            Class<? extends CartographyTableInventory> clazz = CARTOGRAPHY_TABLE_INVENTORIES.get(version);
-
-            return clazz.getConstructor(InventoryHolder.class).newInstance(inventoryHolder);
+            return CARTOGRAPHY_TABLE_INVENTORIES.get(version).getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
             NoSuchMethodException exception) {
             throw new IllegalStateException(exception);
@@ -418,6 +414,8 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.CartographyTableInventoryImpl.class);
         CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_21_4,
             com.github.stefvanschie.inventoryframework.nms.v1_21_4.CartographyTableInventoryImpl.class);
+        CARTOGRAPHY_TABLE_INVENTORIES.put(Version.V1_21_5,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_5.CartographyTableInventoryImpl.class);
 
         ENCHANTING_TABLE_INVENTORIES = new EnumMap<>(Version.class);
         ENCHANTING_TABLE_INVENTORIES.put(Version.V1_16_1,

@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_17_0;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_5;
 
 import com.github.stefvanschie.inventoryframework.abstraction.CartographyTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_17_0.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_5.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.CompoundContainer;
@@ -14,8 +14,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CartographyTableMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftInventoryCartography;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftInventoryCartography;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftInventoryView;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -24,9 +24,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal cartography table inventory for 1.17 R1
+ * Internal cartography table inventory for 1.21.5
  *
- * @since 0.9.9
+ * @since 0.11.0
  */
 public class CartographyTableInventoryImpl extends CartographyTableInventory {
 
@@ -91,9 +91,9 @@ public class CartographyTableInventoryImpl extends CartographyTableInventory {
     }
 
     /**
-     * A custom container cartography table
+     * A custom container cartography table.
      *
-     * @since 0.9.9
+     * @since 0.11.0
      */
     private static class ContainerCartographyTableImpl extends CartographyTableMenu {
 
@@ -120,7 +120,7 @@ public class CartographyTableInventoryImpl extends CartographyTableInventory {
          * prior.
          */
         @Nullable
-        private CraftInventoryView bukkitEntity;
+        private CraftInventoryView<?, ?> bukkitEntity;
 
         /**
          * Creates a new custom cartography table container for the specified player.
@@ -137,7 +137,7 @@ public class CartographyTableInventoryImpl extends CartographyTableInventory {
                 @NotNull SimpleContainer inputSlots,
                 @NotNull SimpleContainer resultSlot
         ) {
-            super(containerId, player.getInventory(), ContainerLevelAccess.create(player.level, BlockPos.ZERO));
+            super(containerId, player.getInventory(), ContainerLevelAccess.create(player.level(), BlockPos.ZERO));
 
             this.humanEntity = player.getBukkitEntity();
             this.inputSlots = inputSlots;
@@ -154,14 +154,14 @@ public class CartographyTableInventoryImpl extends CartographyTableInventory {
 
         @NotNull
         @Override
-        public CraftInventoryView getBukkitView() {
+        public CraftInventoryView<?, ?> getBukkitView() {
             if (this.bukkitEntity != null) {
                 return this.bukkitEntity;
             }
 
             CraftInventoryCartography inventory = new CraftInventoryCartography(this.inputSlots, this.resultSlot);
 
-            this.bukkitEntity = new CraftInventoryView(this.humanEntity, inventory, this);
+            this.bukkitEntity = new CraftInventoryView<>(this.humanEntity, inventory, this);
 
             return this.bukkitEntity;
         }
@@ -191,6 +191,5 @@ public class CartographyTableInventoryImpl extends CartographyTableInventory {
 
             super.slots.set(slotIndex, newSlot);
         }
-
     }
 }
