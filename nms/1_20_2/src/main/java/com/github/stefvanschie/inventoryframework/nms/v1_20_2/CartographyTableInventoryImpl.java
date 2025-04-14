@@ -81,7 +81,7 @@ public class CartographyTableInventoryImpl extends CartographyTableInventory {
     private abstract static class InventoryViewProvider extends SimpleContainer implements MenuProvider {
 
         /**
-         * Creates a new inventory view provider with three slots.
+         * Creates a new inventory view provider with two slots.
          *
          * @since 0.11.0
          */
