@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_20_2;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_5;
 
 import com.github.stefvanschie.inventoryframework.abstraction.EnchantingTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_20_2.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_5.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
@@ -13,8 +13,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.EnchantmentMenu;
 import net.minecraft.world.inventory.Slot;
-import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftInventoryEnchanting;
-import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftInventoryEnchanting;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.view.CraftEnchantmentView;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -22,11 +22,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Internal enchanting table inventory for 1.20.2
- *
- * @since 0.10.12
- */
 public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
 
     @NotNull
@@ -88,9 +83,9 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
     }
 
     /**
-     * A custom container enchanting table
+     * A custom container enchanting table.
      *
-     * @since 0.10.12
+     * @since 0.11.0
      */
     private static class ContainerEnchantingTableImpl extends EnchantmentMenu {
 
@@ -111,7 +106,7 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
          * prior.
          */
         @Nullable
-        private CraftInventoryView bukkitEntity;
+        private CraftEnchantmentView bukkitEntity;
 
         /**
          * Creates a new custom enchanting table container for the specified player.
@@ -139,14 +134,14 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
 
         @NotNull
         @Override
-        public CraftInventoryView getBukkitView() {
+        public CraftEnchantmentView getBukkitView() {
             if (this.bukkitEntity != null) {
                 return this.bukkitEntity;
             }
 
             CraftInventoryEnchanting inventory = new CraftInventoryEnchanting(this.inputSlots);
 
-            this.bukkitEntity = new CraftInventoryView(this.humanEntity, inventory, this);
+            this.bukkitEntity = new CraftEnchantmentView(this.humanEntity, inventory, this);
 
             return this.bukkitEntity;
         }

@@ -95,23 +95,6 @@ public class GuiListener implements Listener {
     }
 
     /**
-     * Resets the items into the correct positions for enchanting table guis
-     *
-     * @param event the event fired
-     * @since 0.8.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void resetItemsEnchantingTable(@NotNull InventoryClickEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
-
-        if (!(holder instanceof EnchantingTableGui) || !(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        ((EnchantingTableGui) holder).handleClickEvent(event);
-    }
-
-    /**
      * Resets the items into the correct positions for grindstone guis
      *
      * @param event the event fired

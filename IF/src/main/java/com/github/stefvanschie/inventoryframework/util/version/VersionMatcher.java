@@ -120,18 +120,16 @@ public class VersionMatcher {
      * Gets a new enchanting table inventory for the specified version of the specified inventory holder.
      *
      * @param version the version to get the inventory of
-     * @param inventoryHolder the inventory holder
      * @return the enchanting table inventory
      * @since 0.8.0
      */
     @NotNull
     @Contract(pure = true)
-    public static EnchantingTableInventory newEnchantingTableInventory(@NotNull Version version,
-                                                                         @NotNull InventoryHolder inventoryHolder) {
+    public static EnchantingTableInventory newEnchantingTableInventory(@NotNull Version version) {
         try {
             Class<? extends EnchantingTableInventory> clazz = ENCHANTING_TABLE_INVENTORIES.get(version);
 
-            return clazz.getConstructor(InventoryHolder.class).newInstance(inventoryHolder);
+            return clazz.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
             NoSuchMethodException exception) {
             throw new IllegalStateException(exception);
@@ -464,6 +462,8 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.EnchantingTableInventoryImpl.class);
         ENCHANTING_TABLE_INVENTORIES.put(Version.V1_21_4,
             com.github.stefvanschie.inventoryframework.nms.v1_21_4.EnchantingTableInventoryImpl.class);
+        ENCHANTING_TABLE_INVENTORIES.put(Version.V1_21_5,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_5.EnchantingTableInventoryImpl.class);
 
         GRINDSTONE_INVENTORIES = new EnumMap<>(Version.class);
         GRINDSTONE_INVENTORIES.put(Version.V1_16_1,
