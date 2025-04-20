@@ -140,18 +140,16 @@ public class VersionMatcher {
      * Gets a new grindstone inventory for the specified version of the specified inventory holder.
      *
      * @param version the version to get the inventory of
-     * @param inventoryHolder the inventory holder
      * @return the grindstone inventory
      * @since 0.8.0
      */
     @NotNull
     @Contract(pure = true)
-    public static GrindstoneInventory newGrindstoneInventory(@NotNull Version version,
-                                                             @NotNull InventoryHolder inventoryHolder) {
+    public static GrindstoneInventory newGrindstoneInventory(@NotNull Version version) {
         try {
             Class<? extends GrindstoneInventory> clazz = GRINDSTONE_INVENTORIES.get(version);
 
-            return clazz.getConstructor(InventoryHolder.class).newInstance(inventoryHolder);
+            return clazz.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
             NoSuchMethodException exception) {
             throw new IllegalStateException(exception);
@@ -512,6 +510,8 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.GrindstoneInventoryImpl.class);
         GRINDSTONE_INVENTORIES.put(Version.V1_21_4,
             com.github.stefvanschie.inventoryframework.nms.v1_21_4.GrindstoneInventoryImpl.class);
+        GRINDSTONE_INVENTORIES.put(Version.V1_21_5,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_5.GrindstoneInventoryImpl.class);
 
         MERCHANT_INVENTORIES = new EnumMap<>(Version.class);
         MERCHANT_INVENTORIES.put(Version.V1_16_1,

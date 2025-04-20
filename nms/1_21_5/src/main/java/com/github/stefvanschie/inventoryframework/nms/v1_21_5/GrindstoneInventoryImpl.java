@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_20_0;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_5;
 
 import com.github.stefvanschie.inventoryframework.abstraction.GrindstoneInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_20_0.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_5.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.CompoundContainer;
@@ -14,8 +14,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.inventory.Slot;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryGrindstone;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftInventoryGrindstone;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftInventoryView;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -24,9 +24,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal grindstone inventory for 1.20.0
+ * Internal grindstone inventory for 1.21.5
  *
- * @since 0.10.14
+ * @since 0.11.0
  */
 public class GrindstoneInventoryImpl extends GrindstoneInventory {
 
@@ -91,9 +91,9 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
     }
 
     /**
-     * A custom container grindstone
+     * A custom container grindstone.
      *
-     * @since 0.10.14
+     * @since 0.11.0
      */
     private static class ContainerGrindstoneImpl extends GrindstoneMenu {
 
@@ -120,7 +120,7 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
          * prior.
          */
         @Nullable
-        private CraftInventoryView bukkitEntity;
+        private CraftInventoryView<?, ?> bukkitEntity;
 
         /**
          * Creates a new custom grindstone container for the specified player.
@@ -154,14 +154,14 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
 
         @NotNull
         @Override
-        public CraftInventoryView getBukkitView() {
+        public CraftInventoryView<?, ?> getBukkitView() {
             if (this.bukkitEntity != null) {
                 return this.bukkitEntity;
             }
 
             CraftInventoryGrindstone inventory = new CraftInventoryGrindstone(this.itemsSlots, this.resultSlot);
 
-            this.bukkitEntity = new CraftInventoryView(this.humanEntity, inventory, this);
+            this.bukkitEntity = new CraftInventoryView<>(this.humanEntity, inventory, this);
 
             return this.bukkitEntity;
         }

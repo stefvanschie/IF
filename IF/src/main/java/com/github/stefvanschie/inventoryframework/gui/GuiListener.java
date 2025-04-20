@@ -95,24 +95,6 @@ public class GuiListener implements Listener {
     }
 
     /**
-     * Resets the items into the correct positions for grindstone guis
-     *
-     * @param event the event fired
-     * @since 0.8.0
-     * @deprecated no longer used internally
-     */
-    @Deprecated
-    public void resetItemsGrindstone(@NotNull InventoryClickEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
-
-        if (!(holder instanceof GrindstoneGui) || !(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        ((GrindstoneGui) holder).handleClickEvent(event);
-    }
-
-    /**
      * Resets the items into the correct positions for stonecutter guis
      *
      * @param event the event fired
