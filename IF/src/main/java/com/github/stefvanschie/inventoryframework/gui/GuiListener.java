@@ -277,9 +277,7 @@ public class GuiListener implements Listener {
                 activeGuiInstances.remove(gui);
             }
 
-            if (gui instanceof MerchantGui) {
-                ((MerchantGui) gui).handleClose(humanEntity);
-            } else if (gui instanceof ModernSmithingTableGui) {
+            if (gui instanceof ModernSmithingTableGui) {
                 ((ModernSmithingTableGui) gui).handleClose(humanEntity);
             }
 

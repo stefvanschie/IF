@@ -1,26 +1,28 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_18_1;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_5;
 
 import com.github.stefvanschie.inventoryframework.abstraction.MerchantInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_18_1.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_5.util.TextHolderUtil;
+import net.minecraft.core.component.DataComponentExactPredicate;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.npc.ClientSideMerchant;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MerchantContainer;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventoryMerchant;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventoryView;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_21_R4.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftInventoryMerchant;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.view.CraftMerchantView;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -31,11 +33,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Internal merchant inventory for 1.18.1
+ * Internal merchant inventory for 1.21.5
  *
- * @since 0.10.4
+ * @since 0.11.0
  */
 public class MerchantInventoryImpl extends MerchantInventory {
 
@@ -52,7 +55,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
             public AbstractContainerMenu createMenu(
                     int containerId,
                     @Nullable net.minecraft.world.entity.player.Inventory inventory,
-                    @NotNull net.minecraft.world.entity.player.Player player
+                    @NotNull Player player
             ) {
                 return new ContainerMerchantImpl(containerId, player, this, merchant);
             }
@@ -81,7 +84,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
     }
 
     @Override
-    public void sendMerchantOffers(@NotNull Player player,
+    public void sendMerchantOffers(@NotNull org.bukkit.entity.Player player,
                                    @NotNull List<? extends Map.Entry<? extends MerchantRecipe, ? extends Integer>> trades,
                                    int level, int experience) {
         MerchantOffers offers = new MerchantOffers();
@@ -109,13 +112,16 @@ public class MerchantInventoryImpl extends MerchantInventory {
                 nmsItemB = CraftItemStack.asNMSCopy(itemB);
             }
 
+            ItemCost itemCostA = convertItemStackToItemCost(nmsItemA);
+            ItemCost itemCostB = convertItemStackToItemCost(nmsItemB);
+
             int uses = recipe.getUses();
             int maxUses = recipe.getMaxUses();
             int exp = recipe.getVillagerExperience();
             float multiplier = recipe.getPriceMultiplier();
 
             MerchantOffer merchantOffer = new MerchantOffer(
-                    nmsItemA, nmsItemB, nmsItemResult, uses, maxUses, exp, multiplier
+                    itemCostA, Optional.of(itemCostB), nmsItemResult, uses, maxUses, exp, multiplier
             );
             merchantOffer.setSpecialPriceDiff(entry.getValue());
 
@@ -129,15 +135,30 @@ public class MerchantInventoryImpl extends MerchantInventory {
     }
 
     /**
+     * Converts an NMS item stack to an item cost.
+     *
+     * @param itemStack the item stack to convert
+     * @return the item cost
+     * @since 0.11.0
+     */
+    @NotNull
+    @Contract(value = "_ -> new", pure = true)
+    private ItemCost convertItemStackToItemCost(@NotNull net.minecraft.world.item.ItemStack itemStack) {
+        DataComponentExactPredicate predicate = DataComponentExactPredicate.allOf(itemStack.getComponents());
+
+        return new ItemCost(itemStack.getItemHolder(), itemStack.getCount(), predicate, itemStack);
+    }
+
+    /**
      * Gets the server player associated to this player
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.10.4
+     * @since 0.11.0
      */
     @NotNull
     @Contract(pure = true)
-    private ServerPlayer getServerPlayer(@NotNull Player player) {
+    private ServerPlayer getServerPlayer(@NotNull org.bukkit.entity.Player player) {
         return ((CraftPlayer) player).getHandle();
     }
 
@@ -146,7 +167,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
      *
      * @param nmsPlayer the player to get the containerId id for
      * @return the containerId id
-     * @since 0.10.4
+     * @since 0.11.0
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -203,7 +224,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
          * prior.
          */
         @Nullable
-        private CraftInventoryView bukkitEntity;
+        private CraftMerchantView bukkitEntity;
 
         /**
          * Creates a new custom grindstone container for the specified player.
@@ -216,7 +237,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
          */
         public ContainerMerchantImpl(
                 int containerId,
-                @NotNull net.minecraft.world.entity.player.Player player,
+                @NotNull Player player,
                 @NotNull MerchantContainer container,
                 @NotNull Merchant merchant
         ) {
@@ -236,7 +257,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
             Slot newSlot = new Slot(container, slot.slot, slot.x, slot.y) {
                 @Contract(value = "_ -> false", pure = true)
                 @Override
-                public boolean mayPickup(@Nullable net.minecraft.world.entity.player.Player player) {
+                public boolean mayPickup(@Nullable Player player) {
                     return false;
                 }
 
@@ -253,14 +274,14 @@ public class MerchantInventoryImpl extends MerchantInventory {
 
         @NotNull
         @Override
-        public CraftInventoryView getBukkitView() {
+        public CraftMerchantView getBukkitView() {
             if (this.bukkitEntity != null) {
                 return this.bukkitEntity;
             }
 
             CraftInventoryMerchant inventory = new CraftInventoryMerchant(this.merchant, this.container);
 
-            this.bukkitEntity = new CraftInventoryView(this.humanEntity, inventory, this);
+            this.bukkitEntity = new CraftMerchantView(this.humanEntity, inventory, this, this.merchant);
 
             return this.bukkitEntity;
         }
@@ -269,10 +290,10 @@ public class MerchantInventoryImpl extends MerchantInventory {
         public void slotsChanged(@Nullable Container container) {}
 
         @Override
-        public void removed(@Nullable net.minecraft.world.entity.player.Player player) {}
+        public void removed(@Nullable Player player) {}
 
         @Override
-        protected void clearContainer(@Nullable net.minecraft.world.entity.player.Player player, @Nullable Container container) {}
+        protected void clearContainer(@Nullable Player player, @Nullable Container container) {}
 
         @Override
         public void setSelectionHint(int i) {}

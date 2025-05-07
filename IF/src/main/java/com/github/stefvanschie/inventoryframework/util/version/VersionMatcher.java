@@ -560,6 +560,8 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.MerchantInventoryImpl.class);
         MERCHANT_INVENTORIES.put(Version.V1_21_4,
             com.github.stefvanschie.inventoryframework.nms.v1_21_4.MerchantInventoryImpl.class);
+        MERCHANT_INVENTORIES.put(Version.V1_21_5,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_5.MerchantInventoryImpl.class);
 
         SMITHING_TABLE_INVENTORIES = new EnumMap<>(Version.class);
         SMITHING_TABLE_INVENTORIES.put(Version.V1_19_4,
