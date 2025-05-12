@@ -112,23 +112,6 @@ public class GuiListener implements Listener {
     }
 
     /**
-     * Resets the items into the correct positions for smithing table guis
-     *
-     * @param event the event fired
-     * @since 0.8.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void resetItemsSmithingTable(@NotNull InventoryClickEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
-
-        if (!(holder instanceof SmithingTableGui) || !(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        ((SmithingTableGui) holder).handleClickEvent(event);
-    }
-
-    /**
      * Handles users picking up items while their bottom inventory is in use.
      *
      * @param event the event fired when an entity picks up an item
@@ -275,10 +258,6 @@ public class GuiListener implements Listener {
 
             if (gui.getViewerCount() == 1) {
                 activeGuiInstances.remove(gui);
-            }
-
-            if (gui instanceof ModernSmithingTableGui) {
-                ((ModernSmithingTableGui) gui).handleClose(humanEntity);
             }
 
             //Bukkit doesn't like it if you open an inventory while the previous one is being closed

@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_18_1;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_5;
 
 import com.github.stefvanschie.inventoryframework.abstraction.SmithingTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_18_1.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_5.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.CompoundContainer;
@@ -16,9 +16,9 @@ import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.item.ItemStack;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventorySmithing;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftInventory;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftInventorySmithing;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftInventoryView;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -27,9 +27,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal smithing table inventory for 1.18.1
+ * Internal smithing table inventory for 1.21.5. This is only available for Minecraft 1.20 and higher.
  *
- * @since 0.10.4
+ * @since 0.11.0
  */
 public class SmithingTableInventoryImpl extends SmithingTableInventory {
 
@@ -89,14 +89,14 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
          * @since 0.11.0
          */
         public InventoryViewProvider() {
-            super(2);
+            super(3);
         }
     }
 
     /**
      * A custom container smithing table
      *
-     * @since 0.10.4
+     * @since 0.11.0
      */
     private static class ContainerSmithingTableImpl extends SmithingMenu {
 
@@ -123,7 +123,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
          * prior.
          */
         @Nullable
-        private CraftInventoryView bukkitEntity;
+        private CraftInventoryView<?, ?> bukkitEntity;
 
         /**
          * Creates a new custom smithing table container for the specified player
@@ -136,11 +136,11 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
          */
         public ContainerSmithingTableImpl(
                 int containerId,
-                @NotNull net.minecraft.world.entity.player.Player player,
+                @NotNull Player player,
                 @NotNull SimpleContainer itemsSlots,
                 @NotNull ResultContainer resultSlot
         ) {
-            super(containerId, player.getInventory(), ContainerLevelAccess.create(player.level, BlockPos.ZERO));
+            super(containerId, player.getInventory(), ContainerLevelAccess.create(player.level(), BlockPos.ZERO));
 
             this.humanEntity = player.getBukkitEntity();
             this.itemsSlots = itemsSlots;
@@ -153,11 +153,12 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
             updateSlot(0, container);
             updateSlot(1, container);
             updateSlot(2, container);
+            updateSlot(3, container);
         }
 
         @NotNull
         @Override
-        public CraftInventoryView getBukkitView() {
+        public CraftInventoryView<?, ?> getBukkitView() {
             if (this.bukkitEntity != null) {
                 return this.bukkitEntity;
             }
@@ -168,7 +169,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
                     this.resultSlot
             );
 
-            this.bukkitEntity = new CraftInventoryView(this.humanEntity, inventory, this);
+            this.bukkitEntity = new CraftInventoryView<>(this.humanEntity, inventory, this);
 
             return this.bukkitEntity;
         }

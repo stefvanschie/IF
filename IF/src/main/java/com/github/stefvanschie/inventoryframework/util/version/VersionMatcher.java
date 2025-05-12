@@ -180,15 +180,13 @@ public class VersionMatcher {
      * thrown.
      *
      * @param version the version to get the inventory of
-     * @param inventoryHolder the inventory holder
      * @return the smithing table inventory
      * @since 0.10.9
      * @throws UnsupportedVersionException when a smithing table is requested on a version without smithing tables
      */
     @NotNull
     @Contract(pure = true)
-    public static SmithingTableInventory newModernSmithingTableInventory(@NotNull Version version,
-                                                                         @NotNull InventoryHolder inventoryHolder) {
+    public static SmithingTableInventory newModernSmithingTableInventory(@NotNull Version version) {
         if (!version.existsModernSmithingTable() && !version.existsLegacySmithingTable()) {
             throw new UnsupportedVersionException("Smithing tables didn't exist in version " + version);
         }
@@ -198,9 +196,7 @@ public class VersionMatcher {
         }
 
         try {
-            Class<? extends SmithingTableInventory> clazz = SMITHING_TABLE_INVENTORIES.get(version);
-
-            return clazz.getConstructor(InventoryHolder.class).newInstance(inventoryHolder);
+            return SMITHING_TABLE_INVENTORIES.get(version).getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
             NoSuchMethodException exception) {
             throw new IllegalStateException(exception);
@@ -213,15 +209,13 @@ public class VersionMatcher {
      * {@link UnsupportedVersionException} is thrown.
      *
      * @param version the version to get the inventory of
-     * @param inventoryHolder the inventory holder
      * @return the smithing table inventory
      * @since 0.8.0
      * @throws UnsupportedVersionException when a smithing table is requested on a version without smithing tables
      */
     @NotNull
     @Contract(pure = true)
-    public static SmithingTableInventory newSmithingTableInventory(@NotNull Version version,
-                                                                   @NotNull InventoryHolder inventoryHolder) {
+    public static SmithingTableInventory newSmithingTableInventory(@NotNull Version version) {
         if (!version.existsModernSmithingTable() && !version.existsLegacySmithingTable()) {
             throw new UnsupportedVersionException("Smithing tables didn't exist in version " + version);
         }
@@ -231,9 +225,7 @@ public class VersionMatcher {
         }
 
         try {
-            Class<? extends SmithingTableInventory> clazz = LEGACY_SMITHING_TABLE_INVENTORIES.get(version);
-
-            return clazz.getConstructor(InventoryHolder.class).newInstance(inventoryHolder);
+            return LEGACY_SMITHING_TABLE_INVENTORIES.get(version).getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException exception) {
             throw new IllegalStateException(exception);
@@ -586,6 +578,8 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.SmithingTableInventoryImpl.class);
         SMITHING_TABLE_INVENTORIES.put(Version.V1_21_4,
             com.github.stefvanschie.inventoryframework.nms.v1_21_4.SmithingTableInventoryImpl.class);
+        SMITHING_TABLE_INVENTORIES.put(Version.V1_21_5,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_5.SmithingTableInventoryImpl.class);
 
         LEGACY_SMITHING_TABLE_INVENTORIES = new EnumMap<>(Version.class);
         LEGACY_SMITHING_TABLE_INVENTORIES.put(Version.V1_16_1,
