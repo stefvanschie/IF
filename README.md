@@ -222,3 +222,7 @@ We apologize for the boilerplate (the `ComponentHolder.of(...)` call), but that 
 Full Adventure support is only achieved when your server natively supports Adventure (it is running Paper) and your plugin depends on Paper (instead of Spigot).
 In other words, you won't benefit from Adventure as much if you use Spigot instead of Paper.
 This is because when Adventure is relocated we have to convert everything back to legacy `String`s before passing them to the Bukkit API.
+
+---
+
+NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
