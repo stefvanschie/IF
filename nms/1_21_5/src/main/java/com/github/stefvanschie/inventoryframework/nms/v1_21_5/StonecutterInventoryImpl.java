@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_18_1;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_5;
 
 import com.github.stefvanschie.inventoryframework.abstraction.StonecutterInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_18_1.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_5.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.CompoundContainer;
@@ -11,8 +11,8 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventoryStonecutter;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftInventoryStonecutter;
+import org.bukkit.craftbukkit.v1_21_R4.inventory.view.CraftStonecutterView;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -21,9 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal stonecutter inventory for 1.18.1
+ * Internal stonecutter inventory for 1.21.5
  *
- * @since 0.10.4
+ * @since 0.10.19
  */
 public class StonecutterInventoryImpl extends StonecutterInventory {
 
@@ -88,9 +88,9 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
     }
 
     /**
-     * A custom container enchanting table
+     * A custom container stonecutter
      *
-     * @since 0.10.4
+     * @since 0.11.0
      */
     private static class ContainerStonecutterImpl extends StonecutterMenu {
 
@@ -117,7 +117,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
          * prior.
          */
         @Nullable
-        private CraftInventoryView bukkitEntity;
+        private CraftStonecutterView bukkitEntity;
 
         /**
          * Creates a new custom stonecutter container for the specified player
@@ -130,11 +130,11 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
          */
         public ContainerStonecutterImpl(
                 int containerId,
-                @NotNull net.minecraft.world.entity.player.Player player,
+                @NotNull Player player,
                 @NotNull SimpleContainer inputSlot,
                 @NotNull SimpleContainer resultSlot
         ) {
-            super(containerId, player.getInventory(), ContainerLevelAccess.create(player.level, BlockPos.ZERO));
+            super(containerId, player.getInventory(), ContainerLevelAccess.create(player.level(), BlockPos.ZERO));
 
             this.humanEntity = player.getBukkitEntity();
             this.inputSlot = inputSlot;
@@ -150,14 +150,14 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
 
         @NotNull
         @Override
-        public CraftInventoryView getBukkitView() {
+        public CraftStonecutterView getBukkitView() {
             if (this.bukkitEntity != null) {
                 return this.bukkitEntity;
             }
 
             CraftInventoryStonecutter inventory = new CraftInventoryStonecutter(this.inputSlot, this.resultSlot);
 
-            this.bukkitEntity = new CraftInventoryView(this.humanEntity, inventory, this);
+            this.bukkitEntity = new CraftStonecutterView(this.humanEntity, inventory, this);
 
             return this.bukkitEntity;
         }
@@ -176,7 +176,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
 
         @Contract(value = "_, _ -> false", pure = true)
         @Override
-        public boolean clickMenuButton(@Nullable net.minecraft.world.entity.player.Player player, int index) {
+        public boolean clickMenuButton(@Nullable Player player, int index) {
             return false;
         }
 

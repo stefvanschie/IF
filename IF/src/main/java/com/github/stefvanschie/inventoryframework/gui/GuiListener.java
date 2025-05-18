@@ -6,7 +6,6 @@ import com.github.stefvanschie.inventoryframework.util.InventoryViewUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -92,23 +91,6 @@ public class GuiListener implements Listener {
                 playerInventory.setItemInOffHand(playerInventory.getItemInOffHand());
             });
         }
-    }
-
-    /**
-     * Resets the items into the correct positions for stonecutter guis
-     *
-     * @param event the event fired
-     * @since 0.8.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void resetItemsStonecutter(@NotNull InventoryClickEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
-
-        if (!(holder instanceof StonecutterGui) || !(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        ((StonecutterGui) holder).handleClickEvent(event);
     }
 
     /**

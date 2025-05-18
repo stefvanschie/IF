@@ -3,7 +3,6 @@ package com.github.stefvanschie.inventoryframework.util.version;
 import com.github.stefvanschie.inventoryframework.abstraction.*;
 import com.github.stefvanschie.inventoryframework.exception.UnsupportedVersionException;
 import com.github.stefvanschie.inventoryframework.nms.v1_19_4.LegacySmithingTableInventoryImpl;
-import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -233,21 +232,17 @@ public class VersionMatcher {
     }
 
     /**
-     * Gets a new stonecutter inventory for the specified version of the specified inventory holder.
+     * Gets a new stonecutter inventory for the specified version.
      *
      * @param version the version to get the inventory of
-     * @param inventoryHolder the inventory holder
      * @return the stonecutter inventory
-     * @since 0.8.0
+     * @since 0.11.0
      */
     @NotNull
     @Contract(pure = true)
-    public static StonecutterInventory newStonecutterInventory(@NotNull Version version,
-                                                               @NotNull InventoryHolder inventoryHolder) {
+    public static StonecutterInventory newStonecutterInventory(@NotNull Version version) {
         try {
-            Class<? extends StonecutterInventory> clazz = STONECUTTER_INVENTORIES.get(version);
-
-            return clazz.getConstructor(InventoryHolder.class).newInstance(inventoryHolder);
+            return STONECUTTER_INVENTORIES.get(version).getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
             NoSuchMethodException exception) {
             throw new IllegalStateException(exception);
@@ -656,5 +651,7 @@ public class VersionMatcher {
             com.github.stefvanschie.inventoryframework.nms.v1_21_2_3.StonecutterInventoryImpl.class);
         STONECUTTER_INVENTORIES.put(Version.V1_21_4,
             com.github.stefvanschie.inventoryframework.nms.v1_21_4.StonecutterInventoryImpl.class);
+        STONECUTTER_INVENTORIES.put(Version.V1_21_5,
+            com.github.stefvanschie.inventoryframework.nms.v1_21_5.StonecutterInventoryImpl.class);
     }
 }
