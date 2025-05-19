@@ -26,8 +26,6 @@ jobs:
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       run: |
         mkdir -p paperclip
-        wget https://api.papermc.io/v2/projects/paper/versions/1.14.4/builds/243/downloads/paper-1.14.4-243.jar -O paperclip/paper-1.14.4.jar
-        wget https://api.papermc.io/v2/projects/paper/versions/1.15.2/builds/391/downloads/paper-1.15.2-391.jar -O paperclip/paper-1.15.2.jar
         wget https://api.papermc.io/v2/projects/paper/versions/1.16.1/builds/138/downloads/paper-1.16.1-138.jar -O paperclip/paper-1.16.1.jar
         wget https://api.papermc.io/v2/projects/paper/versions/1.16.3/builds/253/downloads/paper-1.16.3-253.jar -O paperclip/paper-1.16.3.jar
         wget https://api.papermc.io/v2/projects/paper/versions/1.16.4/builds/416/downloads/paper-1.16.4-416.jar -O paperclip/paper-1.16.4.jar
@@ -35,21 +33,17 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Generate 1.14 - 1.16 Paper jars
+    - name: Generate 1.15 - 1.16 Paper jars
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       working-directory: paperclip
       run: |
-        java -jar paper-1.14.4.jar
-        java -jar paper-1.15.2.jar
         java -jar paper-1.16.1.jar
         java -jar paper-1.16.3.jar
         java -jar paper-1.16.4.jar
-    - name: Install 1.14 - 1.16 Paper jars
+    - name: Install 1.15 - 1.16 Paper jars
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       working-directory: paperclip
       run: |
-        mvn install:install-file -Dfile=cache/patched_1.14.4.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.14.4-R0.1-SNAPSHOT" -Dpackaging="jar" -DgeneratePom="true"
-        mvn install:install-file -Dfile=cache/patched_1.15.2.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.15.2-R0.1-SNAPSHOT" -Dpackaging="jar" -DgeneratePom="true"
         mvn install:install-file -Dfile=cache/patched_1.16.1.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.1-R0.1-SNAPSHOT" -Dpackaging="jar" -DgeneratePom="true"
         mvn install:install-file -Dfile=cache/patched_1.16.3.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.3-R0.1-SNAPSHOT" -Dpackaging="jar" -DgeneratePom="true"
         mvn install:install-file -Dfile=cache/patched_1.16.4.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.4-R0.1-SNAPSHOT" -Dpackaging="jar" -DgeneratePom="true"
@@ -126,6 +120,7 @@ jobs:
         java -jar BuildTools.jar --rev 1.21.1 --remapped --disable-java-check
         java -jar BuildTools.jar --rev 1.21.3 --remapped --disable-java-check
         java -jar BuildTools.jar --rev 1.21.4 --remapped --disable-java-check
+        java -jar BuildTools.jar --rev 1.21.5 --remapped --disable-java-check
         
         cd ../
     - name: Setup GPG keys

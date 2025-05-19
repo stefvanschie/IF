@@ -1,19 +1,20 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_14.util;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_5.util;
 
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import net.minecraft.server.v1_14_R1.ChatComponentText;
-import net.minecraft.server.v1_14_R1.IChatBaseComponent;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * A utility class for adding {@link TextHolder} support.
  *
- * @since 0.10.0
+ * @since 0.11.0
  */
 public final class TextHolderUtil {
     
@@ -26,11 +27,11 @@ public final class TextHolderUtil {
      *
      * @param holder the value to convert
      * @return the value as a vanilla component
-     * @since 0.10.0
+     * @since 0.11.0
      */
     @NotNull
     @Contract(pure = true)
-    public static IChatBaseComponent toComponent(@NotNull TextHolder holder) {
+    public static Component toComponent(@NotNull TextHolder holder) {
         if (holder instanceof StringHolder) {
             return toComponent((StringHolder) holder);
         } else {
@@ -43,12 +44,12 @@ public final class TextHolderUtil {
      *
      * @param holder the value to convert
      * @return the value as a vanilla component
-     * @since 0.10.0
+     * @since 0.11.0
      */
     @NotNull
     @Contract(pure = true)
-    private static IChatBaseComponent toComponent(@NotNull StringHolder holder) {
-        return new ChatComponentText(holder.asLegacyString());
+    private static Component toComponent(@NotNull StringHolder holder) {
+        return Component.literal(holder.asLegacyString());
     }
     
     /**
@@ -56,11 +57,11 @@ public final class TextHolderUtil {
      *
      * @param holder the value to convert
      * @return the value as a vanilla component
-     * @since 0.10.0
+     * @since 0.11.0
      */
     @NotNull
     @Contract(pure = true)
-    private static IChatBaseComponent toComponent(@NotNull ComponentHolder holder) {
-        return Objects.requireNonNull(IChatBaseComponent.ChatSerializer.a(holder.asJson()));
+    private static Component toComponent(@NotNull ComponentHolder holder) {
+        return Objects.requireNonNull(Component.Serializer.fromJson(holder.asJson(), HolderLookup.Provider.create(Stream.empty())));
     }
 }
