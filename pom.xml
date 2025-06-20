@@ -35,6 +35,7 @@
         <module>inventory-view/iv-abstract-class</module>
         <module>inventory-view/iv-abstraction</module>
         <module>inventory-view/iv-interface</module>
+        <module>nms/1_21_6</module>
     </modules>
 
     <properties>
