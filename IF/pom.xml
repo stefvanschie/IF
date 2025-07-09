@@ -5,13 +5,15 @@
     <parent>
         <artifactId>IF-parent</artifactId>
         <groupId>com.github.stefvanschie.inventoryframework</groupId>
-        <version>0.11.2-SNAPSHOT</version>
+        <version>0.11.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>IF</artifactId>
     <packaging>jar</packaging>
+
+    <name>IF</name>
 
     <properties>
         <maven.deploy.skip>false</maven.deploy.skip>
