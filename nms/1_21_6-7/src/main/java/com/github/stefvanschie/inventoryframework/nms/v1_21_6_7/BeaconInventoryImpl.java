@@ -1,4 +1,4 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21_6;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_6_7;
 
 import com.github.stefvanschie.inventoryframework.abstraction.BeaconInventory;
 import net.minecraft.core.BlockPos;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal beacon inventory for 1.21.6
+ * Internal beacon inventory for 1.21.6 and 1.21.7
  *
  * @since 0.11.1
  */

@@ -187,7 +187,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
-            <artifactId>1_21_6</artifactId>
+            <artifactId>1_21_6-7</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

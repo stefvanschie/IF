@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21_6;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_6_7;
 
 import com.github.stefvanschie.inventoryframework.abstraction.AnvilInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_21_6.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_6_7.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.CompoundContainer;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal anvil inventory for 1.21.6
+ * Internal anvil inventory for 1.21.6 and 1.21.7
  *
  * @since 0.11.1
  */

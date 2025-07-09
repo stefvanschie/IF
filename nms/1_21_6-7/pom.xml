@@ -10,7 +10,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>1_21_6</artifactId>
+    <artifactId>1_21_6-7</artifactId>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
