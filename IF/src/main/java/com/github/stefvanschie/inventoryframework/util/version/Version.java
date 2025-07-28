@@ -185,11 +185,11 @@ public enum Version {
     V1_21_5,
 
     /**
-     * Version 1.21.6 - 1.21.7
+     * Version 1.21.6 - 1.21.8
      *
      * @since 0.11.2
      */
-    V1_21_6_7;
+    V1_21_6_8;
 
     /**
      * A collection of versions on which modern smithing tables are available.
@@ -197,7 +197,7 @@ public enum Version {
     private static final Collection<Version> MODERN_SMITHING_TABLE_VERSIONS = EnumSet.of(
             V1_19_4,
             V1_20_0, V1_20_1, V1_20_2, V1_20_3_4, V1_20_5, V1_20_6,
-            V1_21_0, V1_21_1, V1_21_2_3, V1_21_4, V1_21_5, V1_21_6_7
+            V1_21_0, V1_21_1, V1_21_2_3, V1_21_4, V1_21_5, V1_21_6_8
     );
 
     /**
@@ -216,7 +216,7 @@ public enum Version {
      */
     @NotNull
     private static final Collection<@NotNull Version> INTERFACE_INVENTORY_VIEW = EnumSet.of(
-            V1_21_0, V1_21_1, V1_21_2_3, V1_21_4, V1_21_5, V1_21_6_7
+            V1_21_0, V1_21_1, V1_21_2_3, V1_21_4, V1_21_5, V1_21_6_8
     );
 
     /**
@@ -318,7 +318,8 @@ public enum Version {
                 return V1_21_5;
             case "1.21.6":
             case "1.21.7":
-                return V1_21_6_7;
+            case "1.21.8":
+                return V1_21_6_8;
             default:
                 throw new UnsupportedVersionException("The server version provided is not supported");
         }

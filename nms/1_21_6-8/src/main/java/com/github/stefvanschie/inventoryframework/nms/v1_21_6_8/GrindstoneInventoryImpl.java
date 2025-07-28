@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21_6_7;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_6_8;
 
-import com.github.stefvanschie.inventoryframework.abstraction.StonecutterInventory;
+import com.github.stefvanschie.inventoryframework.abstraction.GrindstoneInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_21_6_7.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_6_8.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.CompoundContainer;
@@ -10,9 +10,12 @@ import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
-import org.bukkit.craftbukkit.v1_21_R5.inventory.CraftInventoryStonecutter;
-import org.bukkit.craftbukkit.v1_21_R5.inventory.view.CraftStonecutterView;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.GrindstoneMenu;
+import net.minecraft.world.inventory.Slot;
+import org.bukkit.craftbukkit.v1_21_R5.inventory.CraftInventoryGrindstone;
+import org.bukkit.craftbukkit.v1_21_R5.inventory.CraftInventoryView;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -21,11 +24,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal stonecutter inventory for 1.21.6 and 1.21.7
+ * Internal grindstone inventory for 1.21.6 - 1.21.8
  *
  * @since 0.11.1
  */
-public class StonecutterInventoryImpl extends StonecutterInventory {
+public class GrindstoneInventoryImpl extends GrindstoneInventory {
 
     @NotNull
     @Contract(pure = true)
@@ -42,7 +45,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
                     @Nullable net.minecraft.world.entity.player.Inventory inventory,
                     @NotNull Player player
             ) {
-                return new ContainerStonecutterImpl(containerId, player, this, resultSlot);
+                return new ContainerGrindstoneImpl(containerId, player, this, resultSlot);
             }
 
             @NotNull
@@ -53,12 +56,12 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
             }
         };
 
-        return new CraftInventoryStonecutter(container, resultSlot) {
+        return new CraftInventoryGrindstone(container, resultSlot) {
             @NotNull
             @Contract(pure = true)
             @Override
             public InventoryType getType() {
-                return InventoryType.STONECUTTER;
+                return InventoryType.GRINDSTONE;
             }
 
             @Override
@@ -78,21 +81,21 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
     private abstract static class InventoryViewProvider extends SimpleContainer implements MenuProvider {
 
         /**
-         * Creates a new inventory view provider with three slots.
+         * Creates a new inventory view provider with two slots.
          *
          * @since 0.11.1
          */
         public InventoryViewProvider() {
-            super(1);
+            super(2);
         }
     }
 
     /**
-     * A custom container stonecutter
+     * A custom container grindstone.
      *
      * @since 0.11.1
      */
-    private static class ContainerStonecutterImpl extends StonecutterMenu {
+    private static class ContainerGrindstoneImpl extends GrindstoneMenu {
 
         /**
          * The human entity viewing this menu.
@@ -104,7 +107,7 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
          * The container for the items slots.
          */
         @NotNull
-        private final SimpleContainer inputSlot;
+        private final SimpleContainer itemsSlots;
 
         /**
          * The container for the result slot.
@@ -117,68 +120,60 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
          * prior.
          */
         @Nullable
-        private CraftStonecutterView bukkitEntity;
+        private CraftInventoryView<?, ?> bukkitEntity;
 
         /**
-         * Creates a new custom stonecutter container for the specified player
+         * Creates a new custom grindstone container for the specified player.
          *
          * @param containerId the container id
          * @param player the player
-         * @param inputSlot the input slot
+         * @param itemsSlots the items slots
          * @param resultSlot the result slot
          * @since 0.11.1
          */
-        public ContainerStonecutterImpl(
+        public ContainerGrindstoneImpl(
                 int containerId,
                 @NotNull Player player,
-                @NotNull SimpleContainer inputSlot,
+                @NotNull SimpleContainer itemsSlots,
                 @NotNull SimpleContainer resultSlot
         ) {
             super(containerId, player.getInventory(), ContainerLevelAccess.create(player.level(), BlockPos.ZERO));
 
             this.humanEntity = player.getBukkitEntity();
-            this.inputSlot = inputSlot;
+            this.itemsSlots = itemsSlots;
             this.resultSlot = resultSlot;
 
             super.checkReachable = false;
 
-            CompoundContainer container = new CompoundContainer(inputSlot, resultSlot);
+            CompoundContainer container = new CompoundContainer(itemsSlots, resultSlot);
 
             updateSlot(0, container);
             updateSlot(1, container);
+            updateSlot(2, container);
         }
 
         @NotNull
         @Override
-        public CraftStonecutterView getBukkitView() {
+        public CraftInventoryView<?, ?> getBukkitView() {
             if (this.bukkitEntity != null) {
                 return this.bukkitEntity;
             }
 
-            CraftInventoryStonecutter inventory = new CraftInventoryStonecutter(this.inputSlot, this.resultSlot);
+            CraftInventoryGrindstone inventory = new CraftInventoryGrindstone(this.itemsSlots, this.resultSlot);
 
-            this.bukkitEntity = new CraftStonecutterView(this.humanEntity, inventory, this);
+            this.bukkitEntity = new CraftInventoryView<>(this.humanEntity, inventory, this);
 
             return this.bukkitEntity;
         }
 
-        @Contract(pure = true, value = "_ -> true")
         @Override
-        public boolean stillValid(@Nullable net.minecraft.world.entity.player.Player nmsPlayer) {
-            return true;
-        }
+        public void slotsChanged(@Nullable Container container) {}
 
         @Override
-        public void slotsChanged(Container container) {}
+        public void removed(@Nullable Player player) {}
 
         @Override
-        public void removed(net.minecraft.world.entity.player.Player nmsPlayer) {}
-
-        @Contract(value = "_, _ -> false", pure = true)
-        @Override
-        public boolean clickMenuButton(@Nullable Player player, int index) {
-            return false;
-        }
+        protected void clearContainer(@Nullable Player player, @Nullable Container container) {}
 
         /**
          * Updates the current slot at the specified index to a new slot. The new slot will have the same slot, x, y,
