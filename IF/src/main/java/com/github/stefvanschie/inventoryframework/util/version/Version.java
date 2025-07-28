@@ -187,7 +187,7 @@ public enum Version {
     /**
      * Version 1.21.6 - 1.21.8
      *
-     * @since 0.11.2
+     * @since 0.11.3
      */
     V1_21_6_8;
 
