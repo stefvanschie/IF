@@ -109,7 +109,7 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "maven"
-    directory: "/nms/1_21_6-7"
+    directory: "/nms/1_21_6-8"
     schedule:
       interval: "daily"
   - package-ecosystem: "maven"
