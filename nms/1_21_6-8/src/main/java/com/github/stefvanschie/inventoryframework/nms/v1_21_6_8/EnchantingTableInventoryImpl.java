@@ -1,20 +1,20 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21_6_7;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_6_8;
 
-import com.github.stefvanschie.inventoryframework.abstraction.SmithingTableInventory;
+import com.github.stefvanschie.inventoryframework.abstraction.EnchantingTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_21_6_7.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_6_8.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
-import net.minecraft.world.item.ItemStack;
-import org.bukkit.craftbukkit.v1_21_R5.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_21_R5.inventory.CraftInventorySmithing;
-import org.bukkit.craftbukkit.v1_21_R5.inventory.CraftInventoryView;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.EnchantmentMenu;
+import net.minecraft.world.inventory.Slot;
+import org.bukkit.craftbukkit.v1_21_R5.inventory.CraftInventoryEnchanting;
+import org.bukkit.craftbukkit.v1_21_R5.inventory.view.CraftEnchantmentView;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -22,19 +22,12 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Internal smithing table inventory for 1.21.6 and 1.21.7. This is only available for Minecraft 1.20 and higher.
- *
- * @since 0.11.1
- */
-public class SmithingTableInventoryImpl extends SmithingTableInventory {
+public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
 
     @NotNull
     @Contract(pure = true)
     @Override
     public Inventory createInventory(@NotNull TextHolder title) {
-        ResultContainer resultSlot = new ResultContainer();
-
         Container container = new InventoryViewProvider() {
             @NotNull
             @Contract(pure = true)
@@ -44,7 +37,7 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
                     @Nullable net.minecraft.world.entity.player.Inventory inventory,
                     @NotNull Player player
             ) {
-                return new ContainerSmithingTableImpl(containerId, player, this, resultSlot);
+                return new ContainerEnchantingTableImpl(containerId, player, this);
             }
 
             @NotNull
@@ -55,12 +48,12 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
             }
         };
 
-        return new CraftInventorySmithing(null, container, resultSlot) {
+        return new CraftInventoryEnchanting(container) {
             @NotNull
             @Contract(pure = true)
             @Override
             public InventoryType getType() {
-                return InventoryType.SMITHING;
+                return InventoryType.ENCHANTING;
             }
 
             @Override
@@ -80,21 +73,21 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
     private abstract static class InventoryViewProvider extends SimpleContainer implements MenuProvider {
 
         /**
-         * Creates a new inventory view provider with three slots.
+         * Creates a new inventory view provider with two slots.
          *
          * @since 0.11.1
          */
         public InventoryViewProvider() {
-            super(3);
+            super(2);
         }
     }
 
     /**
-     * A custom container smithing table
+     * A custom container enchanting table.
      *
      * @since 0.11.1
      */
-    private static class ContainerSmithingTableImpl extends SmithingMenu {
+    private static class ContainerEnchantingTableImpl extends EnchantmentMenu {
 
         /**
          * The human entity viewing this menu.
@@ -103,95 +96,64 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
         private final HumanEntity humanEntity;
 
         /**
-         * The container for the items slots.
+         * The container for the input slots.
          */
         @NotNull
-        private final SimpleContainer itemsSlots;
-
-        /**
-         * The container for the result slot.
-         */
-        @NotNull
-        private final ResultContainer resultSlot;
+        private final SimpleContainer inputSlots;
 
         /**
          * The corresponding Bukkit view. Will be not null after the first call to {@link #getBukkitView()} and null
          * prior.
          */
         @Nullable
-        private CraftInventoryView<?, ?> bukkitEntity;
+        private CraftEnchantmentView bukkitEntity;
 
         /**
-         * Creates a new custom smithing table container for the specified player
+         * Creates a new custom enchanting table container for the specified player.
          *
          * @param containerId the container id
          * @param player the player
-         * @param itemsSlots the items slots
-         * @param resultSlot the result slot
+         * @param inputSlots the input slots
          * @since 0.11.1
          */
-        public ContainerSmithingTableImpl(
+        public ContainerEnchantingTableImpl(
                 int containerId,
                 @NotNull Player player,
-                @NotNull SimpleContainer itemsSlots,
-                @NotNull ResultContainer resultSlot
+                @NotNull SimpleContainer inputSlots
         ) {
             super(containerId, player.getInventory(), ContainerLevelAccess.create(player.level(), BlockPos.ZERO));
 
             this.humanEntity = player.getBukkitEntity();
-            this.itemsSlots = itemsSlots;
-            this.resultSlot = resultSlot;
+            this.inputSlots = inputSlots;
 
             super.checkReachable = false;
 
-            CompoundContainer container = new CompoundContainer(itemsSlots, resultSlot);
-
-            updateSlot(0, container);
-            updateSlot(1, container);
-            updateSlot(2, container);
-            updateSlot(3, container);
+            updateSlot(0, inputSlots);
+            updateSlot(1, inputSlots);
         }
 
         @NotNull
         @Override
-        public CraftInventoryView<?, ?> getBukkitView() {
+        public CraftEnchantmentView getBukkitView() {
             if (this.bukkitEntity != null) {
                 return this.bukkitEntity;
             }
 
-            CraftInventory inventory = new CraftInventorySmithing(
-                    this.access.getLocation(),
-                    this.itemsSlots,
-                    this.resultSlot
-            );
+            CraftInventoryEnchanting inventory = new CraftInventoryEnchanting(this.inputSlots);
 
-            this.bukkitEntity = new CraftInventoryView<>(this.humanEntity, inventory, this);
+            this.bukkitEntity = new CraftEnchantmentView(this.humanEntity, inventory, this);
 
             return this.bukkitEntity;
         }
 
-        @Contract(pure = true, value = "_ -> true")
         @Override
-        public boolean stillValid(@Nullable net.minecraft.world.entity.player.Player nmsPlayer) {
-            return true;
-        }
+        public void slotsChanged(@Nullable Container container) {}
 
         @Override
-        public void slotsChanged(Container container) {}
+        public void removed(@Nullable Player player) {}
 
         @Override
-        public void removed(net.minecraft.world.entity.player.Player nmsPlayer) {}
-
-        @Override
-        public void createResult() {}
-
-        @Override
-        protected void onTake(net.minecraft.world.entity.player.Player player, ItemStack stack) {}
-
-        @Override
-        protected boolean mayPickup(net.minecraft.world.entity.player.Player player, boolean present) {
-            return true;
-        }
+        protected void clearContainer(@Nullable Player player, @Nullable Container container) {}
 
         /**
          * Updates the current slot at the specified index to a new slot. The new slot will have the same slot, x, y,
