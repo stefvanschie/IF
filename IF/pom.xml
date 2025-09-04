@@ -5,7 +5,7 @@
     <parent>
         <artifactId>IF-parent</artifactId>
         <groupId>com.github.stefvanschie.inventoryframework</groupId>
-        <version>0.11.2</version>
+        <version>0.11.3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -189,7 +189,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
-            <artifactId>1_21_6-7</artifactId>
+            <artifactId>1_21_6-8</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
