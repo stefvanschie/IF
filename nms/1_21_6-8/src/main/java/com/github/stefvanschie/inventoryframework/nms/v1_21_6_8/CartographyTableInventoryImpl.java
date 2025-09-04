@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21_6_7;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_6_8;
 
 import com.github.stefvanschie.inventoryframework.abstraction.CartographyTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_21_6_7.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_6_8.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.CompoundContainer;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal cartography table inventory for 1.21.6 and 1.21.7
+ * Internal cartography table inventory for 1.21.6 - 1.21.8
  *
  * @since 0.11.1
  */

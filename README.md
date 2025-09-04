@@ -14,7 +14,7 @@ To add this project as a dependency to your pom.xml, add the following to your p
 <dependency>
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF</artifactId>
-    <version>0.11.2</version>
+    <version>0.11.3</version>
 </dependency>
 ```
 The project is in the Central Repository, so specifying a repository is not needed.
@@ -50,7 +50,7 @@ Replace [YOUR PACKAGE] with the top-level package of your project.
 To add this project as a dependency for your Gradle project, make sure your `dependencies` section of your build.gradle looks like the following:
 ```Groovy
 dependencies {
-    implementation 'com.github.stefvanschie.inventoryframework:IF:0.11.2'
+    implementation 'com.github.stefvanschie.inventoryframework:IF:0.11.3'
     // ...
 }
 ```
@@ -128,7 +128,7 @@ mvn paper-nms:init -pl nms/1_20_3-4
 ```
 
 ### Installing Spigot via BuildTools
-For versions 1.20.5-1.21.7, we use BuildTools. To install these versions, we run the following commands.
+For versions 1.20.5-1.21.8, we use BuildTools. To install these versions, we run the following commands.
 ```
 wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
         
@@ -176,7 +176,7 @@ java -jar BuildTools.jar --rev 1.21.1 --remapped --disable-java-check
 java -jar BuildTools.jar --rev 1.21.3 --remapped --disable-java-check
 java -jar BuildTools.jar --rev 1.21.4 --remapped --disable-java-check
 java -jar BuildTools.jar --rev 1.21.5 --remapped --disable-java-check
-java -jar BuildTools.jar --rev 1.21.7 --remapped --disable-java-check
+java -jar BuildTools.jar --rev 1.21.8 --remapped --disable-java-check
 ```
 
 Your environment is now set up correctly. To create a build, run the following inside the root folder of the project.
