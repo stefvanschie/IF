@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21_6_7;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_6_8;
 
 import com.github.stefvanschie.inventoryframework.abstraction.MerchantInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_21_6_7.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_6_8.util.TextHolderUtil;
 import net.minecraft.core.component.DataComponentExactPredicate;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Internal merchant inventory for 1.21.6 and 1.21.7
+ * Internal merchant inventory for 1.21.6 - 1.21.8
  *
  * @since 0.11.1
  */
