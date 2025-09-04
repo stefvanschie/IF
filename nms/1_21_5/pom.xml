@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.github.stefvanschie.inventoryframework</groupId>
         <artifactId>IF-parent</artifactId>
-        <version>0.11.2</version>
+        <version>0.11.3</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -37,7 +37,7 @@
             <plugin>
                 <groupId>net.md-5</groupId>
                 <artifactId>specialsource-maven-plugin</artifactId>
-                <version>2.0.3</version>
+                <version>2.0.4</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
