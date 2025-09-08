@@ -6,7 +6,6 @@ import com.github.stefvanschie.inventoryframework.util.InventoryViewUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -92,127 +91,6 @@ public class GuiListener implements Listener {
                 playerInventory.setItemInOffHand(playerInventory.getItemInOffHand());
             });
         }
-    }
-
-    /**
-     * Resets the items into the correct positions for anvil guis
-     *
-     * @param event the event fired
-     * @since 0.8.0
-     * @deprecated no longer used internally
-     */
-    @Deprecated
-    public void resetItemsAnvil(@NotNull InventoryClickEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
-
-        if (!(holder instanceof AnvilGui) || !(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        ((AnvilGui) holder).handleClickEvent(event);
-    }
-
-    /**
-     * Resets the items into the correct positions for beacon guis
-     *
-     * @param event the event fired
-     * @since 0.8.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void resetItemsBeacon(@NotNull InventoryClickEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
-
-        if (!(holder instanceof BeaconGui) || !(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        ((BeaconGui) holder).handleClickEvent(event);
-    }
-
-    /**
-     * Resets the items into the correct positions for cartography table guis
-     *
-     * @param event the event fired
-     * @since 0.8.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void resetItemsCartographyTable(@NotNull InventoryClickEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
-
-        if (!(holder instanceof CartographyTableGui) || !(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        ((CartographyTableGui) holder).handleClickEvent(event);
-    }
-
-    /**
-     * Resets the items into the correct positions for enchanting table guis
-     *
-     * @param event the event fired
-     * @since 0.8.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void resetItemsEnchantingTable(@NotNull InventoryClickEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
-
-        if (!(holder instanceof EnchantingTableGui) || !(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        ((EnchantingTableGui) holder).handleClickEvent(event);
-    }
-
-    /**
-     * Resets the items into the correct positions for grindstone guis
-     *
-     * @param event the event fired
-     * @since 0.8.0
-     * @deprecated no longer used internally
-     */
-    @Deprecated
-    public void resetItemsGrindstone(@NotNull InventoryClickEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
-
-        if (!(holder instanceof GrindstoneGui) || !(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        ((GrindstoneGui) holder).handleClickEvent(event);
-    }
-
-    /**
-     * Resets the items into the correct positions for stonecutter guis
-     *
-     * @param event the event fired
-     * @since 0.8.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void resetItemsStonecutter(@NotNull InventoryClickEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
-
-        if (!(holder instanceof StonecutterGui) || !(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        ((StonecutterGui) holder).handleClickEvent(event);
-    }
-
-    /**
-     * Resets the items into the correct positions for smithing table guis
-     *
-     * @param event the event fired
-     * @since 0.8.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void resetItemsSmithingTable(@NotNull InventoryClickEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
-
-        if (!(holder instanceof SmithingTableGui) || !(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        ((SmithingTableGui) holder).handleClickEvent(event);
     }
 
     /**
@@ -358,20 +236,10 @@ public class GuiListener implements Listener {
         if (!gui.isUpdating()) {
             gui.callOnClose(event);
 
-            event.getInventory().clear(); //clear inventory to prevent items being put back
-
             gui.getHumanEntityCache().restoreAndForget(humanEntity);
 
             if (gui.getViewerCount() == 1) {
                 activeGuiInstances.remove(gui);
-            }
-
-            if (gui instanceof AnvilGui) {
-                ((AnvilGui) gui).handleClose(humanEntity);
-            } else if (gui instanceof MerchantGui) {
-                ((MerchantGui) gui).handleClose(humanEntity);
-            } else if (gui instanceof ModernSmithingTableGui) {
-                ((ModernSmithingTableGui) gui).handleClose(humanEntity);
             }
 
             //Bukkit doesn't like it if you open an inventory while the previous one is being closed
