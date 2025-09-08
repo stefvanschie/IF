@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.github.stefvanschie.inventoryframework</groupId>
         <artifactId>IF-parent</artifactId>
-        <version>0.10.19</version>
+        <version>0.11.3</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -37,7 +37,7 @@
             <dependency>
                 <groupId>net.kyori</groupId>
                 <artifactId>adventure-api</artifactId>
-                <version>4.18.0</version>
+                <version>4.24.0</version>
             </dependency>
             <dependency>
                 <groupId>net.kyori</groupId>
@@ -47,22 +47,22 @@
             <dependency>
                 <groupId>net.kyori</groupId>
                 <artifactId>adventure-text-logger-slf4j</artifactId>
-                <version>4.19.0</version>
+                <version>4.24.0</version>
             </dependency>
             <dependency>
                 <groupId>net.kyori</groupId>
                 <artifactId>adventure-text-minimessage</artifactId>
-                <version>4.18.0</version>
+                <version>4.24.0</version>
             </dependency>
             <dependency>
                 <groupId>net.kyori</groupId>
                 <artifactId>adventure-text-serializer-ansi</artifactId>
-                <version>4.18.0</version>
+                <version>4.24.0</version>
             </dependency>
             <dependency>
                 <groupId>net.kyori</groupId>
                 <artifactId>adventure-text-serializer-gson</artifactId>
-                <version>4.18.0</version>
+                <version>4.24.0</version>
             </dependency>
             <dependency>
                 <groupId>net.kyori</groupId>
@@ -72,7 +72,7 @@
             <dependency>
                 <groupId>net.kyori</groupId>
                 <artifactId>adventure-text-serializer-legacy</artifactId>
-                <version>4.18.0</version>
+                <version>4.24.0</version>
             </dependency>
             <dependency>
                 <groupId>net.kyori</groupId>
