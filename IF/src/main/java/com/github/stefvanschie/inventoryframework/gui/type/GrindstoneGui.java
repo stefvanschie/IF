@@ -12,9 +12,7 @@ import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
@@ -62,8 +60,7 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
      * An internal grindstone inventory
      */
     @NotNull
-    private final GrindstoneInventory grindstoneInventory = VersionMatcher.newGrindstoneInventory(Version.getVersion(),
-        this);
+    private final GrindstoneInventory grindstoneInventory = VersionMatcher.newGrindstoneInventory(Version.getVersion());
 
     /**
      * Constructs a new GUI
@@ -136,9 +133,7 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
 
-        Inventory inventory = grindstoneInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
-
-        addInventory(inventory, this);
+        humanEntity.openInventory(getInventory());
     }
 
     @NotNull
@@ -193,30 +188,11 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public Inventory createInventory() {
-		return getTitleHolder().asInventoryTitle(this, InventoryType.GRINDSTONE);
-    }
+        Inventory inventory = this.grindstoneInventory.createInventory(getTitleHolder());
 
-    /**
-     * Handles an incoming inventory click event
-     *
-     * @param event the event to handle
-     * @since 0.8.0
-     * @deprecated no longer used internally
-     */
-    @Deprecated
-    public void handleClickEvent(@NotNull InventoryClickEvent event) {
-        int slot = event.getRawSlot();
-        Player player = (Player) event.getWhoClicked();
+        addInventory(inventory, this);
 
-        if (slot >= 3 && slot <= 38) {
-            grindstoneInventory.sendItems(player, getTopItems(), event.getCurrentItem());
-        } else if (slot >= 0 && slot <= 2) {
-            grindstoneInventory.sendItems(player, getTopItems(), event.getCurrentItem());
-
-            if (event.isCancelled()) {
-                grindstoneInventory.clearCursor(player);
-            }
-        }
+		return inventory;
     }
 
     @Contract(pure = true)
@@ -266,22 +242,6 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     public InventoryComponent getPlayerInventoryComponent() {
         return playerInventoryComponent;
-    }
-
-    /**
-     * Gets the top items
-     *
-     * @return the top items
-     * @since 0.8.0
-     */
-    @Nullable
-    @Contract(pure = true)
-    private ItemStack[] getTopItems() {
-        return new ItemStack[] {
-            getItemsComponent().getItem(0, 0),
-            getItemsComponent().getItem(0, 1),
-            getResultComponent().getItem(0, 0)
-        };
     }
 
     /**
