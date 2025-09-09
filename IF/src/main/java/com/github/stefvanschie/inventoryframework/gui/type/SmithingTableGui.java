@@ -12,9 +12,7 @@ import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
@@ -71,7 +69,7 @@ public class SmithingTableGui extends NamedGui implements InventoryBased {
      */
     @NotNull
     private final SmithingTableInventory smithingTableInventory = VersionMatcher.newSmithingTableInventory(
-        Version.getVersion(), this
+        Version.getVersion()
     );
 
     /**
@@ -148,8 +146,6 @@ public class SmithingTableGui extends NamedGui implements InventoryBased {
 
         //also let Bukkit know that we opened an inventory
         humanEntity.openInventory(getInventory());
-
-        smithingTableInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
     }
 
     @NotNull
@@ -207,42 +203,11 @@ public class SmithingTableGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public Inventory createInventory() {
-        return getTitleHolder().asInventoryTitle(this, InventoryType.SMITHING);
-    }
+        Inventory inventory = this.smithingTableInventory.createInventory(getTitleHolder());
 
-    /**
-     * Handles an incoming inventory click event
-     *
-     * @param event the event to handle
-     * @since 0.8.0
-     */
-    public void handleClickEvent(@NotNull InventoryClickEvent event) {
-        int slot = event.getRawSlot();
-        Player player = (Player) event.getWhoClicked();
+        addInventory(inventory, this);
 
-        if (slot >= 3 && slot <= 38) {
-            smithingTableInventory.sendItems(player, getTopItems(), event.getCurrentItem());
-        } else if (slot == 0 || slot == 1) {
-            if (event.isCancelled()) {
-                if (slot == 0) {
-                    smithingTableInventory.sendFirstItem(player, getFirstItemComponent().getItem(0, 0));
-                } else {
-                    smithingTableInventory.sendSecondItem(player, getSecondItemComponent().getItem(0, 0));
-                }
-
-                smithingTableInventory.clearCursor(player);
-            }
-
-            smithingTableInventory.sendResultItem(player, getResultComponent().getItem(0, 0));
-        } else if (slot == 2 && !event.isCancelled()) {
-            smithingTableInventory.clearResultItem(player);
-
-            ItemStack resultItem = getResultComponent().getItem(0, 0);
-
-            if (resultItem != null) {
-                smithingTableInventory.setCursor(player, resultItem);
-            }
-        }
+        return inventory;
     }
 
     @Contract(pure = true)
@@ -304,22 +269,6 @@ public class SmithingTableGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     public InventoryComponent getPlayerInventoryComponent() {
         return playerInventoryComponent;
-    }
-
-    /**
-     * Gets the top items
-     *
-     * @return the top items
-     * @since 0.8.0
-     */
-    @Nullable
-    @Contract(pure = true)
-    private ItemStack[] getTopItems() {
-        return new ItemStack[] {
-            getFirstItemComponent().getItem(0, 0),
-            getSecondItemComponent().getItem(0, 0),
-            getResultComponent().getItem(0, 0)
-        };
     }
 
     /**
