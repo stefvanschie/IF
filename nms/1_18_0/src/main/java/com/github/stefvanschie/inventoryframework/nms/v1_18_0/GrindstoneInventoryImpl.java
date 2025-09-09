@@ -2,26 +2,23 @@ package com.github.stefvanschie.inventoryframework.nms.v1_18_0;
 
 import com.github.stefvanschie.inventoryframework.abstraction.GrindstoneInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_18_0.util.CustomInventoryUtil;
 import com.github.stefvanschie.inventoryframework.nms.v1_18_0.util.TextHolderUtil;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerPlayerConnection;
+import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.GrindstoneMenu;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_18_R1.event.CraftEventFactory;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
+import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventoryGrindstone;
+import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventoryView;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,112 +30,64 @@ import org.jetbrains.annotations.Nullable;
  */
 public class GrindstoneInventoryImpl extends GrindstoneInventory {
 
-    public GrindstoneInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
-        super(inventoryHolder);
-    }
-
-    @Override
-    public Inventory openInventory(@NotNull Player player, @NotNull TextHolder title,
-                                   @Nullable org.bukkit.inventory.ItemStack[] items) {
-        int itemAmount = items.length;
-
-        if (itemAmount != 3) {
-            throw new IllegalArgumentException(
-                "The amount of items for a grindstone should be 3, but is '" + itemAmount + "'"
-            );
-        }
-
-        ServerPlayer serverPlayer = getServerPlayer(player);
-
-        //ignore deprecation: superseding method is only available on Paper
-        //noinspection deprecation
-        CraftEventFactory.handleInventoryCloseEvent(serverPlayer);
-
-        serverPlayer.containerMenu = serverPlayer.inventoryMenu;
-
-        Component message = TextHolderUtil.toComponent(title);
-        ContainerGrindstoneImpl containerGrindstone = new ContainerGrindstoneImpl(serverPlayer);
-
-        Inventory inventory = containerGrindstone.getBukkitView().getTopInventory();
-
-        inventory.setItem(0, items[0]);
-        inventory.setItem(1, items[1]);
-        inventory.setItem(2, items[2]);
-
-        int containerId = containerGrindstone.getContainerId();
-
-        serverPlayer.connection.send(new ClientboundOpenScreenPacket(containerId, MenuType.GRINDSTONE, message));
-        serverPlayer.containerMenu = containerGrindstone;
-        serverPlayer.initMenu(containerGrindstone);
-
-        return inventory;
-    }
-
-    @Override
-    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items,
-                          @Nullable org.bukkit.inventory.ItemStack cursor) {
-        if (cursor == null) {
-            throw new IllegalArgumentException("Cursor may not be null on version 1.17.1");
-        }
-
-        NonNullList<ItemStack> nmsItems = CustomInventoryUtil.convertToNMSItems(items);
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        int containerId = getContainerId(serverPlayer);
-        int state = serverPlayer.containerMenu.incrementStateId();
-        ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursor);
-        ServerPlayerConnection playerConnection = getPlayerConnection(serverPlayer);
-
-        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, nmsItems, nmsCursor));
-    }
-
-    @Override
-    public void clearCursor(@NotNull Player player) {
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        int state = serverPlayer.containerMenu.incrementStateId();
-
-        getPlayerConnection(serverPlayer).send(new ClientboundContainerSetSlotPacket(-1, state, -1, ItemStack.EMPTY));
-    }
-
-    /**
-     * Gets the containerId id for the inventory view the player currently has open
-     *
-     * @param nmsPlayer the player to get the containerId id for
-     * @return the containerId id
-     * @since 0.10.4
-     * @deprecated no longer used internally
-     */
-    @Contract(pure = true)
-    @Deprecated
-    private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
-        return nmsPlayer.containerMenu.containerId;
-    }
-
-    /**
-     * Gets the player connection for the specified player
-     *
-     * @param serverPlayer the player to get the player connection from
-     * @return the player connection
-     * @since 0.10.4
-     * @deprecated no longer used internally
-     */
     @NotNull
     @Contract(pure = true)
-    @Deprecated
-    private ServerPlayerConnection getPlayerConnection(@NotNull ServerPlayer serverPlayer) {
-        return serverPlayer.connection;
+    @Override
+    public Inventory createInventory(@NotNull TextHolder title) {
+        SimpleContainer resultSlot = new SimpleContainer(1);
+
+        Container container = new InventoryViewProvider() {
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public AbstractContainerMenu createMenu(
+                    int containerId,
+                    @Nullable net.minecraft.world.entity.player.Inventory inventory,
+                    @NotNull Player player
+            ) {
+                return new ContainerGrindstoneImpl(containerId, player, this, resultSlot);
+            }
+
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public Component getDisplayName() {
+                return TextHolderUtil.toComponent(title);
+            }
+        };
+
+        return new CraftInventoryGrindstone(container, resultSlot) {
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public InventoryType getType() {
+                return InventoryType.GRINDSTONE;
+            }
+
+            @Override
+            public Container getInventory() {
+                return container;
+            }
+        };
     }
 
     /**
-     * Gets the server player associated to this player
+     * This is a nice hack to get CraftBukkit to create custom inventories. By providing a container that is also a menu
+     * provider, CraftBukkit will allow us to create a custom menu, rather than picking one of the built-in options.
+     * That way, we can provide a menu with custom behaviour.
      *
-     * @param player the player to get the server player from
-     * @return the server player
-     * @since 0.10.4
+     * @since 0.11.0
      */
-    @NotNull
-    @Contract(pure = true)
-    private ServerPlayer getServerPlayer(@NotNull Player player) {
-        return ((CraftPlayer) player).getHandle();
+    private abstract static class InventoryViewProvider extends SimpleContainer implements MenuProvider {
+
+        /**
+         * Creates a new inventory view provider with two slots.
+         *
+         * @since 0.11.0
+         */
+        public InventoryViewProvider() {
+            super(2);
+        }
     }
 
     /**
@@ -149,57 +98,98 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
     private static class ContainerGrindstoneImpl extends GrindstoneMenu {
 
         /**
-         * Creates a new grindstone container
-         *
-         * @param serverPlayer the player for whom this container should be opened
-         * @since 0.10.8
+         * The human entity viewing this menu.
          */
-        public ContainerGrindstoneImpl(@NotNull ServerPlayer serverPlayer) {
-            super(serverPlayer.nextContainerCounter(), serverPlayer.getInventory());
+        @NotNull
+        private final HumanEntity humanEntity;
 
-            Slot firstSlot = this.slots.get(0);
-            Slot secondSlot = this.slots.get(1);
-            Slot thirdSlot = this.slots.get(2);
+        /**
+         * The container for the items slots.
+         */
+        @NotNull
+        private final SimpleContainer itemsSlots;
 
-            this.slots.set(0, new Slot(firstSlot.container, firstSlot.index, firstSlot.x, firstSlot.y) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return true;
-                }
-            });
+        /**
+         * The container for the result slot.
+         */
+        @NotNull
+        private final SimpleContainer resultSlot;
 
-            this.slots.set(1, new Slot(secondSlot.container, secondSlot.index, secondSlot.x, secondSlot.y) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return true;
-                }
-            });
+        /**
+         * The corresponding Bukkit view. Will be not null after the first call to {@link #getBukkitView()} and null
+         * prior.
+         */
+        @Nullable
+        private CraftInventoryView bukkitEntity;
 
-            this.slots.set(2, new Slot(thirdSlot.container, thirdSlot.index, thirdSlot.x, thirdSlot.y) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return true;
-                }
+        /**
+         * Creates a new custom grindstone container for the specified player.
+         *
+         * @param containerId the container id
+         * @param player the player
+         * @param itemsSlots the items slots
+         * @param resultSlot the result slot
+         * @since 0.11.0
+         */
+        public ContainerGrindstoneImpl(
+                int containerId,
+                @NotNull Player player,
+                @NotNull SimpleContainer itemsSlots,
+                @NotNull SimpleContainer resultSlot
+        ) {
+            super(containerId, player.getInventory(), ContainerLevelAccess.create(player.level, BlockPos.ZERO));
 
-                @Override
-                public void onTake(net.minecraft.world.entity.player.Player player, ItemStack stack) {}
-            });
+            this.humanEntity = player.getBukkitEntity();
+            this.itemsSlots = itemsSlots;
+            this.resultSlot = resultSlot;
+
+            super.checkReachable = false;
+
+            CompoundContainer container = new CompoundContainer(itemsSlots, resultSlot);
+
+            updateSlot(0, container);
+            updateSlot(1, container);
+            updateSlot(2, container);
         }
 
-        @Contract(pure = true, value = "_ -> true")
+        @NotNull
         @Override
-        public boolean stillValid(@Nullable net.minecraft.world.entity.player.Player nmsPlayer) {
-            return true;
+        public CraftInventoryView getBukkitView() {
+            if (this.bukkitEntity != null) {
+                return this.bukkitEntity;
+            }
+
+            CraftInventoryGrindstone inventory = new CraftInventoryGrindstone(this.itemsSlots, this.resultSlot);
+
+            this.bukkitEntity = new CraftInventoryView(this.humanEntity, inventory, this);
+
+            return this.bukkitEntity;
         }
 
         @Override
-        public void slotsChanged(Container container) {}
+        public void slotsChanged(@Nullable Container container) {}
 
         @Override
-        public void removed(net.minecraft.world.entity.player.Player nmsPlayer) {}
+        public void removed(@Nullable Player player) {}
 
-        public int getContainerId() {
-            return this.containerId;
+        @Override
+        protected void clearContainer(@Nullable Player player, @Nullable Container container) {}
+
+        /**
+         * Updates the current slot at the specified index to a new slot. The new slot will have the same slot, x, y,
+         * and index as the original. The container of the new slot will be set to the value specified.
+         *
+         * @param slotIndex the slot index to update
+         * @param container the container of the new slot
+         * @since 0.11.0
+         */
+        private void updateSlot(int slotIndex, @NotNull Container container) {
+            Slot slot = super.slots.get(slotIndex);
+
+            Slot newSlot = new Slot(container, slot.slot, slot.x, slot.y);
+            newSlot.index = slot.index;
+
+            super.slots.set(slotIndex, newSlot);
         }
     }
 }

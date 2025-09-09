@@ -17,20 +17,6 @@ import java.util.EnumSet;
 public enum Version {
 
     /**
-     * Version 1.14
-     *
-     * @since 0.10.0
-     */
-    V1_14,
-
-    /**
-     * Version 1.15
-     *
-     * @since 0.10.0
-     */
-    V1_15,
-
-    /**
      * Version 1.16.1
      *
      * @since 0.10.0
@@ -189,7 +175,21 @@ public enum Version {
      *
      * @since 0.10.19
      */
-    V1_21_4;
+    V1_21_4,
+
+    /**
+     * Version 1.21.5
+     *
+     * @since 0.11.0
+     */
+    V1_21_5,
+
+    /**
+     * Version 1.21.6 - 1.21.8
+     *
+     * @since 0.11.3
+     */
+    V1_21_6_8;
 
     /**
      * A collection of versions on which modern smithing tables are available.
@@ -197,7 +197,7 @@ public enum Version {
     private static final Collection<Version> MODERN_SMITHING_TABLE_VERSIONS = EnumSet.of(
             V1_19_4,
             V1_20_0, V1_20_1, V1_20_2, V1_20_3_4, V1_20_5, V1_20_6,
-            V1_21_0, V1_21_1, V1_21_2_3, V1_21_4
+            V1_21_0, V1_21_1, V1_21_2_3, V1_21_4, V1_21_5, V1_21_6_8
     );
 
     /**
@@ -205,8 +205,6 @@ public enum Version {
      */
     @NotNull
     private static final Collection<@NotNull Version> LEGACY_SMITHING_TABLE_VERSIONS = EnumSet.of(
-            V1_14,
-            V1_15,
             V1_16_1, V1_16_2_3, V1_16_4_5,
             V1_17_0, V1_17_1,
             V1_18_0, V1_18_1, V1_18_2,
@@ -218,7 +216,7 @@ public enum Version {
      */
     @NotNull
     private static final Collection<@NotNull Version> INTERFACE_INVENTORY_VIEW = EnumSet.of(
-            V1_21_0, V1_21_1, V1_21_2_3, V1_21_4
+            V1_21_0, V1_21_1, V1_21_2_3, V1_21_4, V1_21_5, V1_21_6_8
     );
 
     /**
@@ -266,16 +264,6 @@ public enum Version {
         String version = Bukkit.getBukkitVersion().split("-")[0];
 
         switch (version) {
-            case "1.14":
-            case "1.14.1":
-            case "1.14.2":
-            case "1.14.3":
-            case "1.14.4":
-                return V1_14;
-            case "1.15":
-            case "1.15.1":
-            case "1.15.2":
-                return V1_15;
             case "1.16.1":
                 return V1_16_1;
             case "1.16.2":
@@ -326,6 +314,12 @@ public enum Version {
                 return V1_21_2_3;
             case "1.21.4":
                 return V1_21_4;
+            case "1.21.5":
+                return V1_21_5;
+            case "1.21.6":
+            case "1.21.7":
+            case "1.21.8":
+                return V1_21_6_8;
             default:
                 throw new UnsupportedVersionException("The server version provided is not supported");
         }
