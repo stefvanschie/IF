@@ -12,9 +12,7 @@ import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
@@ -31,8 +29,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -66,14 +62,8 @@ public class ModernSmithingTableGui extends NamedGui implements InventoryBased {
      */
     @NotNull
     private final SmithingTableInventory smithingTableInventory = VersionMatcher.newModernSmithingTableInventory(
-            Version.getVersion(), this
+            Version.getVersion()
     );
-
-    /**
-     * The viewers of this gui
-     */
-    @NotNull
-    private final Collection<HumanEntity> viewers = new HashSet<>();
 
     /**
      * Constructs a new GUI.
@@ -146,12 +136,7 @@ public class ModernSmithingTableGui extends NamedGui implements InventoryBased {
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
 
-        Inventory inventory = smithingTableInventory.openInventory((Player) humanEntity, getTitleHolder(),
-                getTopItems());
-
-        addInventory(inventory, this);
-
-        this.viewers.add(humanEntity);
+        humanEntity.openInventory(getInventory());
     }
 
     @NotNull
@@ -206,30 +191,24 @@ public class ModernSmithingTableGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public Inventory createInventory() {
-        return getTitleHolder().asInventoryTitle(this, InventoryType.SMITHING_NEW);
-    }
+        Inventory inventory = this.smithingTableInventory.createInventory(getTitleHolder());
 
-    /**
-     * Handles a human entity closing this gui.
-     *
-     * @param humanEntity the human entity closing the gui
-     * @since 0.10.9
-     */
-    public void handleClose(@NotNull HumanEntity humanEntity) {
-        this.viewers.remove(humanEntity);
+        addInventory(inventory, this);
+
+        return inventory;
     }
 
     @Contract(pure = true)
     @Override
     public int getViewerCount() {
-        return this.viewers.size();
+        return getInventory().getViewers().size();
     }
 
     @NotNull
     @Contract(pure = true)
     @Override
     public List<HumanEntity> getViewers() {
-        return new ArrayList<>(this.viewers);
+        return new ArrayList<>(getInventory().getViewers());
     }
 
     /**
@@ -266,23 +245,6 @@ public class ModernSmithingTableGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     public InventoryComponent getPlayerInventoryComponent() {
         return playerInventoryComponent;
-    }
-
-    /**
-     * Gets the top items
-     *
-     * @return the top items
-     * @since 0.10.9
-     */
-    @Nullable
-    @Contract(pure = true)
-    private ItemStack[] getTopItems() {
-        return new ItemStack[] {
-            getInputComponent().getItem(0, 0),
-            getInputComponent().getItem(1, 0),
-            getInputComponent().getItem(2, 0),
-            getResultComponent().getItem(0, 0)
-        };
     }
 
     /**
