@@ -3,29 +3,24 @@ package com.github.stefvanschie.inventoryframework.nms.v1_20_1;
 import com.github.stefvanschie.inventoryframework.abstraction.EnchantingTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.nms.v1_20_1.util.TextHolderUtil;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.EnchantmentMenu;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.ItemStack;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventory;
+import net.minecraft.world.inventory.Slot;
 import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryEnchanting;
 import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryView;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.lang.reflect.Field;
 
 /**
  * Internal enchanting table inventory for 1.20.1
@@ -34,97 +29,62 @@ import java.lang.reflect.Field;
  */
 public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
 
-    public EnchantingTableInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
-        super(inventoryHolder);
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public Inventory createInventory(@NotNull TextHolder title) {
+        Container container = new InventoryViewProvider() {
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public AbstractContainerMenu createMenu(
+                    int containerId,
+                    @Nullable net.minecraft.world.entity.player.Inventory inventory,
+                    @NotNull Player player
+            ) {
+                return new ContainerEnchantingTableImpl(containerId, player, this);
+            }
+
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public Component getDisplayName() {
+                return TextHolderUtil.toComponent(title);
+            }
+        };
+
+        return new CraftInventoryEnchanting(container) {
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public InventoryType getType() {
+                return InventoryType.ENCHANTING;
+            }
+
+            @Override
+            public Container getInventory() {
+                return container;
+            }
+        };
     }
 
-    @Override
-    public void openInventory(@NotNull Player player, @NotNull TextHolder title,
-                              @Nullable org.bukkit.inventory.ItemStack[] items) {
-        int itemAmount = items.length;
+    /**
+     * This is a nice hack to get CraftBukkit to create custom inventories. By providing a container that is also a menu
+     * provider, CraftBukkit will allow us to create a custom menu, rather than picking one of the built-in options.
+     * That way, we can provide a menu with custom behaviour.
+     *
+     * @since 0.11.0
+     */
+    private abstract static class InventoryViewProvider extends SimpleContainer implements MenuProvider {
 
-        if (itemAmount != 2) {
-            throw new IllegalArgumentException(
-                "The amount of items for an enchanting table should be 2, but is '" + itemAmount + "'"
-            );
+        /**
+         * Creates a new inventory view provider with two slots.
+         *
+         * @since 0.11.0
+         */
+        public InventoryViewProvider() {
+            super(2);
         }
-
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        Component message = TextHolderUtil.toComponent(title);
-        ContainerEnchantingTableImpl containerEnchantmentTable = new ContainerEnchantingTableImpl(
-                serverPlayer, items, message
-        );
-
-        serverPlayer.containerMenu = containerEnchantmentTable;
-
-        int id = containerEnchantmentTable.containerId;
-
-        serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.ENCHANTMENT, message));
-
-        sendItems(player, items);
-    }
-
-    @Override
-    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items) {
-        NonNullList<ItemStack> nmsItems = NonNullList.of(
-            ItemStack.EMPTY,
-            CraftItemStack.asNMSCopy(items[0]),
-            CraftItemStack.asNMSCopy(items[1])
-        );
-
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        int containerId = getContainerId(serverPlayer);
-        int state = serverPlayer.containerMenu.incrementStateId();
-        ItemStack cursor = CraftItemStack.asNMSCopy(player.getItemOnCursor());
-        ServerPlayerConnection playerConnection = getPlayerConnection(serverPlayer);
-
-        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, nmsItems, cursor));
-    }
-
-    @Override
-    public void clearCursor(@NotNull Player player) {
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        int state = serverPlayer.containerMenu.incrementStateId();
-
-        getPlayerConnection(serverPlayer).send(new ClientboundContainerSetSlotPacket(-1, state, -1, ItemStack.EMPTY));
-    }
-
-    /**
-     * Gets the containerId id for the inventory view the player currently has open
-     *
-     * @param nmsPlayer the player to get the containerId id for
-     * @return the containerId id
-     * @since 0.10.14
-     */
-    @Contract(pure = true)
-    private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
-        return nmsPlayer.containerMenu.containerId;
-    }
-
-    /**
-     * Gets the player connection for the specified player
-     *
-     * @param serverPlayer the player to get the player connection from
-     * @return the player connection
-     * @since 0.10.14
-     */
-    @NotNull
-    @Contract(pure = true)
-    private ServerPlayerConnection getPlayerConnection(@NotNull ServerPlayer serverPlayer) {
-        return serverPlayer.connection;
-    }
-
-    /**
-     * Gets the server player associated to this player
-     *
-     * @param player the player to get the server player from
-     * @return the server player
-     * @since 0.10.14
-     */
-    @NotNull
-    @Contract(pure = true)
-    private ServerPlayer getServerPlayer(@NotNull Player player) {
-        return ((CraftPlayer) player).getHandle();
     }
 
     /**
@@ -132,87 +92,89 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
      *
      * @since 0.10.14
      */
-    private class ContainerEnchantingTableImpl extends EnchantmentMenu {
+    private static class ContainerEnchantingTableImpl extends EnchantmentMenu {
 
         /**
-         * The player for this enchanting table container
+         * The human entity viewing this menu.
          */
         @NotNull
-        private final Player player;
+        private final HumanEntity humanEntity;
 
         /**
-         * The internal bukkit entity for this container enchanting table
+         * The container for the input slots.
+         */
+        @NotNull
+        private final SimpleContainer inputSlots;
+
+        /**
+         * The corresponding Bukkit view. Will be not null after the first call to {@link #getBukkitView()} and null
+         * prior.
          */
         @Nullable
         private CraftInventoryView bukkitEntity;
 
         /**
-         * Field for accessing the enchant slots field
+         * Creates a new custom enchanting table container for the specified player.
+         *
+         * @param containerId the container id
+         * @param player the player
+         * @param inputSlots the input slots
+         * @since 0.11.0
          */
-        @NotNull
-        private final Field enchantSlotsField;
+        public ContainerEnchantingTableImpl(
+                int containerId,
+                @NotNull Player player,
+                @NotNull SimpleContainer inputSlots
+        ) {
+            super(containerId, player.getInventory(), ContainerLevelAccess.create(player.level(), BlockPos.ZERO));
 
-        public ContainerEnchantingTableImpl(@NotNull ServerPlayer serverPlayer,
-                                            @Nullable org.bukkit.inventory.ItemStack[] items,
-                                            @NotNull Component title) {
-            super(serverPlayer.nextContainerCounter(), serverPlayer.getInventory());
+            this.humanEntity = player.getBukkitEntity();
+            this.inputSlots = inputSlots;
 
-            this.player = serverPlayer.getBukkitEntity();
+            super.checkReachable = false;
 
-            setTitle(title);
-
-            try {
-                //noinspection JavaReflectionMemberAccess
-                this.enchantSlotsField = EnchantmentMenu.class.getDeclaredField("n"); //enchantSlots
-                this.enchantSlotsField.setAccessible(true);
-            } catch (NoSuchFieldException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            try {
-                Container input = (Container) enchantSlotsField.get(this);
-
-                input.setItem(0, CraftItemStack.asNMSCopy(items[0]));
-                input.setItem(1, CraftItemStack.asNMSCopy(items[1]));
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
+            updateSlot(0, inputSlots);
+            updateSlot(1, inputSlots);
         }
 
         @NotNull
         @Override
         public CraftInventoryView getBukkitView() {
-            if (bukkitEntity == null) {
-                try {
-                    CraftInventory inventory = new CraftInventoryEnchanting((Container) enchantSlotsField.get(this)) {
-                        @NotNull
-                        @Contract(pure = true)
-                        @Override
-                        public InventoryHolder getHolder() {
-                            return inventoryHolder;
-                        }
-                    };
-
-                    bukkitEntity = new CraftInventoryView(player, inventory, this);
-                } catch (IllegalAccessException exception) {
-                    exception.printStackTrace();
-                }
+            if (this.bukkitEntity != null) {
+                return this.bukkitEntity;
             }
 
-            return bukkitEntity;
+            CraftInventoryEnchanting inventory = new CraftInventoryEnchanting(this.inputSlots);
+
+            this.bukkitEntity = new CraftInventoryView(this.humanEntity, inventory, this);
+
+            return this.bukkitEntity;
         }
 
-        @Contract(pure = true, value = "_ -> true")
         @Override
-        public boolean stillValid(@Nullable net.minecraft.world.entity.player.Player nmsPlayer) {
-            return true;
+        public void slotsChanged(@Nullable Container container) {}
+
+        @Override
+        public void removed(@Nullable Player player) {}
+
+        @Override
+        protected void clearContainer(@Nullable Player player, @Nullable Container container) {}
+
+        /**
+         * Updates the current slot at the specified index to a new slot. The new slot will have the same slot, x, y,
+         * and index as the original. The container of the new slot will be set to the value specified.
+         *
+         * @param slotIndex the slot index to update
+         * @param container the container of the new slot
+         * @since 0.11.0
+         */
+        private void updateSlot(int slotIndex, @NotNull Container container) {
+            Slot slot = super.slots.get(slotIndex);
+
+            Slot newSlot = new Slot(container, slot.slot, slot.x, slot.y);
+            newSlot.index = slot.index;
+
+            super.slots.set(slotIndex, newSlot);
         }
-
-        @Override
-        public void slotsChanged(Container container) {}
-
-        @Override
-        public void removed(net.minecraft.world.entity.player.Player nmsPlayer) {}
-
     }
 }
