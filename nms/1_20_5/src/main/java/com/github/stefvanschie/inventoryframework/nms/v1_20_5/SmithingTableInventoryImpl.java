@@ -2,28 +2,26 @@ package com.github.stefvanschie.inventoryframework.nms.v1_20_5;
 
 import com.github.stefvanschie.inventoryframework.abstraction.SmithingTableInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_20_5.util.CustomInventoryUtil;
 import com.github.stefvanschie.inventoryframework.nms.v1_20_5.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerPlayerConnection;
+import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.item.ItemStack;
-import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_20_R4.event.CraftEventFactory;
-import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
+import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftInventory;
+import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftInventorySmithing;
+import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftInventoryView;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,178 +33,64 @@ import org.jetbrains.annotations.Nullable;
  */
 public class SmithingTableInventoryImpl extends SmithingTableInventory {
 
-    public SmithingTableInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
-        super(inventoryHolder);
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public Inventory createInventory(@NotNull TextHolder title) {
+        ResultContainer resultSlot = new ResultContainer();
+
+        Container container = new InventoryViewProvider() {
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public AbstractContainerMenu createMenu(
+                    int containerId,
+                    @Nullable net.minecraft.world.entity.player.Inventory inventory,
+                    @NotNull Player player
+            ) {
+                return new ContainerSmithingTableImpl(containerId, player, this, resultSlot);
+            }
+
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public Component getDisplayName() {
+                return TextHolderUtil.toComponent(title);
+            }
+        };
+
+        return new CraftInventorySmithing(null, container, resultSlot) {
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public InventoryType getType() {
+                return InventoryType.SMITHING;
+            }
+
+            @Override
+            public Container getInventory() {
+                return container;
+            }
+        };
     }
 
-    @NotNull
-    @Override
-    public Inventory openInventory(@NotNull Player player, @NotNull TextHolder title,
-                                   @Nullable org.bukkit.inventory.ItemStack[] items) {
-        int itemAmount = items.length;
+    /**
+     * This is a nice hack to get CraftBukkit to create custom inventories. By providing a container that is also a menu
+     * provider, CraftBukkit will allow us to create a custom menu, rather than picking one of the built-in options.
+     * That way, we can provide a menu with custom behaviour.
+     *
+     * @since 0.11.0
+     */
+    private abstract static class InventoryViewProvider extends SimpleContainer implements MenuProvider {
 
-        if (itemAmount != 4) {
-            throw new IllegalArgumentException(
-                "The amount of items for a smithing table should be 4, but is '" + itemAmount + "'"
-            );
+        /**
+         * Creates a new inventory view provider with three slots.
+         *
+         * @since 0.11.0
+         */
+        public InventoryViewProvider() {
+            super(3);
         }
-
-        ServerPlayer serverPlayer = getServerPlayer(player);
-
-        //ignore deprecation: superseding method is only available on Paper
-        //noinspection deprecation
-        CraftEventFactory.handleInventoryCloseEvent(serverPlayer);
-
-        serverPlayer.containerMenu = serverPlayer.inventoryMenu;
-
-        Component message = TextHolderUtil.toComponent(title);
-        ContainerSmithingTableImpl containerSmithingTable = new ContainerSmithingTableImpl(serverPlayer, message);
-
-        Inventory inventory = containerSmithingTable.getBukkitView().getTopInventory();
-
-        inventory.setItem(0, items[0]);
-        inventory.setItem(1, items[1]);
-        inventory.setItem(2, items[2]);
-        inventory.setItem(3, items[3]);
-
-        int containerId = containerSmithingTable.getContainerId();
-
-        serverPlayer.connection.send(new ClientboundOpenScreenPacket(containerId, MenuType.SMITHING, message));
-        serverPlayer.containerMenu = containerSmithingTable;
-        serverPlayer.initMenu(containerSmithingTable);
-
-        return inventory;
-    }
-
-    @Override
-    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items,
-                          @Nullable org.bukkit.inventory.ItemStack cursor) {
-        NonNullList<ItemStack> nmsItems = CustomInventoryUtil.convertToNMSItems(items);
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        int containerId = getContainerId(serverPlayer);
-        int state = serverPlayer.containerMenu.incrementStateId();
-        ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursor);
-        ServerPlayerConnection playerConnection = getPlayerConnection(serverPlayer);
-
-        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, nmsItems, nmsCursor));
-    }
-
-    @Override
-    public void sendFirstItem(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack item) {
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
-        int containerId = getContainerId(serverPlayer);
-        int state = serverPlayer.containerMenu.incrementStateId();
-
-        getPlayerConnection(serverPlayer).send(new ClientboundContainerSetSlotPacket(containerId, state, 0, nmsItem));
-    }
-
-    @Override
-    public void sendSecondItem(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack item) {
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
-        int containerId = getContainerId(serverPlayer);
-        int state = serverPlayer.containerMenu.incrementStateId();
-
-        getPlayerConnection(serverPlayer).send(new ClientboundContainerSetSlotPacket(containerId, state, 1, nmsItem));
-    }
-
-    @Override
-    public void sendResultItem(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack item) {
-        sendResultItem(player, CraftItemStack.asNMSCopy(item));
-    }
-
-    @Override
-    public void clearResultItem(@NotNull Player player) {
-        sendResultItem(player, ItemStack.EMPTY);
-    }
-
-    @Override
-    public void setCursor(@NotNull Player player, @NotNull org.bukkit.inventory.ItemStack item) {
-        setCursor(player, CraftItemStack.asNMSCopy(item));
-    }
-
-    @Override
-    public void clearCursor(@NotNull Player player) {
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        int state = serverPlayer.containerMenu.incrementStateId();
-
-        getPlayerConnection(serverPlayer).send(new ClientboundContainerSetSlotPacket(-1, state, -1, ItemStack.EMPTY));
-    }
-
-    /**
-     * Sets the cursor of the given player
-     *
-     * @param player the player to set the cursor
-     * @param item the item to set the cursor to
-     * @since 0.10.14
-     * @deprecated no longer used internally
-     */
-    @Deprecated
-    private void setCursor(@NotNull Player player, @NotNull ItemStack item) {
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        int state = serverPlayer.containerMenu.incrementStateId();
-
-        getPlayerConnection(serverPlayer).send(new ClientboundContainerSetSlotPacket(-1, state, -1, item));
-    }
-
-    /**
-     * Sends the result item to the specified player with the given item
-     *
-     * @param player the player to send the result item to
-     * @param item the result item
-     * @since 0.10.14
-     * @deprecated no longer used internally
-     */
-    @Deprecated
-    private void sendResultItem(@NotNull Player player, @NotNull ItemStack item) {
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        int containerId = getContainerId(serverPlayer);
-        int state = serverPlayer.containerMenu.incrementStateId();
-
-        getPlayerConnection(serverPlayer).send(new ClientboundContainerSetSlotPacket(containerId, state, 2, item));
-    }
-
-    /**
-     * Gets the container id for the inventory view the player currently has open
-     *
-     * @param nmsPlayer the player to get the container id for
-     * @return the container id
-     * @since 0.10.14
-     * @deprecated no longer used internally
-     */
-    @Contract(pure = true)
-    @Deprecated
-    private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
-        return nmsPlayer.containerMenu.containerId;
-    }
-
-    /**
-     * Gets the player connection for the specified player
-     *
-     * @param serverPlayer the player to get the player connection from
-     * @return the player connection
-     * @since 0.10.14
-     * @deprecated no longer used internally
-     */
-    @NotNull
-    @Contract(pure = true)
-    @Deprecated
-    private ServerPlayerConnection getPlayerConnection(@NotNull ServerPlayer serverPlayer) {
-        return serverPlayer.connection;
-    }
-
-    /**
-     * Gets the server player associated to this player
-     *
-     * @param player the player to get the server player from
-     * @return the server player
-     * @since 0.10.14
-     */
-    @NotNull
-    @Contract(pure = true)
-    private ServerPlayer getServerPlayer(@NotNull Player player) {
-        return ((CraftPlayer) player).getHandle();
     }
 
     /**
@@ -217,92 +101,77 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
     private static class ContainerSmithingTableImpl extends SmithingMenu {
 
         /**
+         * The human entity viewing this menu.
+         */
+        @NotNull
+        private final HumanEntity humanEntity;
+
+        /**
+         * The container for the items slots.
+         */
+        @NotNull
+        private final SimpleContainer itemsSlots;
+
+        /**
+         * The container for the result slot.
+         */
+        @NotNull
+        private final ResultContainer resultSlot;
+
+        /**
+         * The corresponding Bukkit view. Will be not null after the first call to {@link #getBukkitView()} and null
+         * prior.
+         */
+        @Nullable
+        private CraftInventoryView bukkitEntity;
+
+        /**
          * Creates a new custom smithing table container for the specified player
          *
-         * @param serverPlayer the player for whom this anvil container is
-         * @param title the title of the inventory
-         * @since 0.10.14
+         * @param containerId the container id
+         * @param player the player
+         * @param itemsSlots the items slots
+         * @param resultSlot the result slot
+         * @since 0.11.0
          */
-        public ContainerSmithingTableImpl(@NotNull ServerPlayer serverPlayer, @NotNull Component title) {
-            super(serverPlayer.nextContainerCounter(), serverPlayer.getInventory(),
-                ContainerLevelAccess.create(serverPlayer.getCommandSenderWorld(), new BlockPos(0, 0, 0)));
+        public ContainerSmithingTableImpl(
+                int containerId,
+                @NotNull net.minecraft.world.entity.player.Player player,
+                @NotNull SimpleContainer itemsSlots,
+                @NotNull ResultContainer resultSlot
+        ) {
+            super(containerId, player.getInventory(), ContainerLevelAccess.create(player.level(), BlockPos.ZERO));
 
-            setTitle(title);
+            this.humanEntity = player.getBukkitEntity();
+            this.itemsSlots = itemsSlots;
+            this.resultSlot = resultSlot;
 
-            this.checkReachable = false;
+            super.checkReachable = false;
 
-            Slot slotOne = this.slots.get(0);
-            Slot slotTwo = this.slots.get(1);
-            Slot slotThree = this.slots.get(2);
-            Slot slotFour = this.slots.get(3);
+            CompoundContainer container = new CompoundContainer(itemsSlots, resultSlot);
 
-            this.slots.set(0, new Slot(slotOne.container, slotOne.index, slotOne.x, slotOne.y) {
-                @Override
-                public boolean mayPlace(@NotNull ItemStack stack) {
-                    return true;
-                }
+            updateSlot(0, container);
+            updateSlot(1, container);
+            updateSlot(2, container);
+            updateSlot(3, container);
+        }
 
-                @Override
-                public boolean mayPickup(net.minecraft.world.entity.player.@NotNull Player playerEntity) {
-                    return true;
-                }
+        @NotNull
+        @Override
+        public CraftInventoryView getBukkitView() {
+            if (this.bukkitEntity != null) {
+                return this.bukkitEntity;
+            }
 
-                @Override
-                public void onTake(net.minecraft.world.entity.player.@NotNull Player player, @NotNull ItemStack stack) {
-                    slotOne.onTake(player, stack);
-                }
-            });
+            CraftInventory inventory = new CraftInventorySmithing(
+                    this.access.getLocation(),
+                    this.itemsSlots,
+                    this.resultSlot
+            );
 
-            this.slots.set(1, new Slot(slotTwo.container, slotTwo.index, slotTwo.x, slotTwo.y) {
-                @Override
-                public boolean mayPlace(@NotNull ItemStack stack) {
-                    return true;
-                }
+            this.bukkitEntity = new CraftInventoryView(this.humanEntity, inventory, this);
 
-                @Override
-                public boolean mayPickup(net.minecraft.world.entity.player.@NotNull Player playerEntity) {
-                    return true;
-                }
-
-                @Override
-                public void onTake(net.minecraft.world.entity.player.@NotNull Player player, @NotNull ItemStack stack) {
-                    slotTwo.onTake(player, stack);
-                }
-            });
-
-            this.slots.set(2, new Slot(slotThree.container, slotThree.index, slotThree.x, slotThree.y) {
-                @Override
-                public boolean mayPlace(@NotNull ItemStack stack) {
-                    return true;
-                }
-
-                @Override
-                public boolean mayPickup(net.minecraft.world.entity.player.@NotNull Player playerEntity) {
-                    return true;
-                }
-
-                @Override
-                public void onTake(net.minecraft.world.entity.player.@NotNull Player player, @NotNull ItemStack stack) {
-                    slotThree.onTake(player, stack);
-                }
-            });
-
-            this.slots.set(3, new Slot(slotFour.container, slotFour.index, slotFour.x, slotFour.y) {
-                @Override
-                public boolean mayPlace(@NotNull ItemStack stack) {
-                    return true;
-                }
-
-                @Override
-                public boolean mayPickup(net.minecraft.world.entity.player.@NotNull Player playerEntity) {
-                    return true;
-                }
-
-                @Override
-                public void onTake(net.minecraft.world.entity.player.@NotNull Player player, @NotNull ItemStack stack) {
-                    slotFour.onTake(player, stack);
-                }
-            });
+            return this.bukkitEntity;
         }
 
         @Contract(pure = true, value = "_ -> true")
@@ -328,8 +197,21 @@ public class SmithingTableInventoryImpl extends SmithingTableInventory {
             return true;
         }
 
-        public int getContainerId() {
-            return this.containerId;
+        /**
+         * Updates the current slot at the specified index to a new slot. The new slot will have the same slot, x, y,
+         * and index as the original. The container of the new slot will be set to the value specified.
+         *
+         * @param slotIndex the slot index to update
+         * @param container the container of the new slot
+         * @since 0.11.0
+         */
+        private void updateSlot(int slotIndex, @NotNull Container container) {
+            Slot slot = super.slots.get(slotIndex);
+
+            Slot newSlot = new Slot(container, slot.slot, slot.x, slot.y);
+            newSlot.index = slot.index;
+
+            super.slots.set(slotIndex, newSlot);
         }
     }
 }
