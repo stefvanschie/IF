@@ -7,6 +7,8 @@
     <modules>
         <module>IF</module>
         <module>nms/abstraction</module>
+        <module>nms/1_21_6-8</module>
+        <module>nms/1_21_5</module>
         <module>nms/1_21_4</module>
         <module>nms/1_21_2-3</module>
         <module>nms/1_21_1</module>
@@ -30,8 +32,6 @@
         <module>nms/1_16_4-5</module>
         <module>nms/1_16_2-3</module>
         <module>nms/1_16_1</module>
-        <module>nms/1_15</module>
-        <module>nms/1_14</module>
         <module>adventure-support</module>
         <module>inventory-view/iv-abstract-class</module>
         <module>inventory-view/iv-abstraction</module>
@@ -43,12 +43,12 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.deploy.skip>true</maven.deploy.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <adventure.version>4.18.0</adventure.version>
+        <adventure.version>4.24.0</adventure.version>
     </properties>
 
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF-parent</artifactId>
-    <version>0.10.19</version>
+    <version>0.11.3</version>
     <packaging>pom</packaging>
 
     <name>IF</name>
@@ -78,20 +78,16 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>26.0.2</version>
+            <version>26.0.2-1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
 
     <distributionManagement>
         <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>central</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
         </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
     </distributionManagement>
 
     <profiles>
@@ -102,7 +98,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.7</version>
+                        <version>3.2.8</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -123,29 +119,29 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.2</version>
+                <version>3.5.3</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-junit-platform </artifactId>
-                        <version>3.5.2</version>
+                        <version>3.5.3</version>
                     </dependency>
                     <dependency>
                         <groupId>org.junit.jupiter</groupId>
                         <artifactId>junit-jupiter-engine</artifactId>
-                        <version>5.12.1</version>
+                        <version>5.12.2</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.7.0</version>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.8.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                    <waitUntil>published</waitUntil>
                 </configuration>
             </plugin>
             <plugin>
