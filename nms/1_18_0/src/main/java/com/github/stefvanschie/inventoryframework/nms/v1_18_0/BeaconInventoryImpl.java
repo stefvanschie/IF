@@ -1,29 +1,25 @@
 package com.github.stefvanschie.inventoryframework.nms.v1_18_0;
 
 import com.github.stefvanschie.inventoryframework.abstraction.BeaconInventory;
-import net.minecraft.core.NonNullList;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerPlayerConnection;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.BeaconMenu;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.ItemStack;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventory;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.Slot;
 import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventoryBeacon;
 import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventoryView;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.lang.reflect.Field;
 
 /**
  * Internal beacon inventory for 1.18.0
@@ -32,85 +28,63 @@ import java.lang.reflect.Field;
  */
 public class BeaconInventoryImpl extends BeaconInventory {
 
-    public BeaconInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
-        super(inventoryHolder);
-    }
-
-    @Override
-    public void openInventory(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack item) {
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        ContainerBeaconImpl containerBeacon = new ContainerBeaconImpl(serverPlayer, item);
-
-        serverPlayer.containerMenu = containerBeacon;
-
-        int id = containerBeacon.containerId;
-        TranslatableComponent message = new TranslatableComponent("Beacon");
-
-        serverPlayer.connection.send(new ClientboundOpenScreenPacket(id, MenuType.BEACON, message));
-
-        sendItem(player, item);
-    }
-
-    @Override
-    public void sendItem(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack item) {
-        NonNullList<ItemStack> items = NonNullList.of(
-            ItemStack.EMPTY, //the first item doesn't count for some reason, so send a dummy item
-            CraftItemStack.asNMSCopy(item)
-        );
-
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        int containerId = getContainerId(serverPlayer);
-        int state = serverPlayer.containerMenu.incrementStateId();
-        ItemStack cursor = CraftItemStack.asNMSCopy(player.getItemOnCursor());
-        ServerPlayerConnection playerConnection = getPlayerConnection(serverPlayer);
-
-        playerConnection.send(new ClientboundContainerSetContentPacket(containerId, state, items, cursor));
-    }
-
-    @Override
-    public void clearCursor(@NotNull Player player) {
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        int state = serverPlayer.containerMenu.incrementStateId();
-
-        getPlayerConnection(serverPlayer).send(new ClientboundContainerSetSlotPacket(-1, state, -1, ItemStack.EMPTY));
-    }
-
-    /**
-     * Gets the container id for the inventory view the player currently has open
-     *
-     * @param nmsPlayer the player to get the container id for
-     * @return the container id
-     * @since 0.10.4
-     */
-    @Contract(pure = true)
-    private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
-        return nmsPlayer.containerMenu.containerId;
-    }
-
-    /**
-     * Gets the player connection for the specified player
-     *
-     * @param serverPlayer the player to get the player connection from
-     * @return the player connection
-     * @since 0.10.4
-     */
     @NotNull
-    @Contract(pure = true)
-    private ServerPlayerConnection getPlayerConnection(@NotNull ServerPlayer serverPlayer) {
-        return serverPlayer.connection;
+    @Override
+    public Inventory createInventory() {
+        Container container = new InventoryViewProvider() {
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public AbstractContainerMenu createMenu(
+                    int containerId,
+                    @Nullable net.minecraft.world.entity.player.Inventory inventory,
+                    @NotNull Player player
+            ) {
+                return new ContainerBeaconImpl(containerId, player, this);
+            }
+
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public Component getDisplayName() {
+                return new TextComponent("Beacon");
+            }
+        };
+
+        container.setMaxStackSize(1); //client limitation
+
+        return new CraftInventoryBeacon(container) {
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public InventoryType getType() {
+                return InventoryType.BEACON;
+            }
+
+            @Override
+            public Container getInventory() {
+                return container;
+            }
+        };
     }
 
     /**
-     * Gets the server player associated to this player
+     * This is a nice hack to get CraftBukkit to create custom inventories. By providing a container that is also a menu
+     * provider, CraftBukkit will allow us to create a custom menu, rather than picking one of the built-in options.
+     * That way, we can provide a menu with custom behaviour.
      *
-     * @param player the player to get the server player from
-     * @return the server player
-     * @since 0.10.4
+     * @since 0.11.0
      */
-    @NotNull
-    @Contract(pure = true)
-    private ServerPlayer getServerPlayer(@NotNull Player player) {
-        return ((CraftPlayer) player).getHandle();
+    private abstract static class InventoryViewProvider extends SimpleContainer implements MenuProvider {
+
+        /**
+         * Creates a new inventory view provider with one slot.
+         *
+         * @since 0.11.0
+         */
+        public InventoryViewProvider() {
+            super(1);
+        }
     }
 
     /**
@@ -118,82 +92,71 @@ public class BeaconInventoryImpl extends BeaconInventory {
      *
      * @since 0.10.4
      */
-    private class ContainerBeaconImpl extends BeaconMenu {
+    private static class ContainerBeaconImpl extends BeaconMenu {
 
         /**
-         * The player for this beacon container
+         * The player viewing this menu.
          */
         @NotNull
         private final Player player;
 
         /**
-         * The internal bukkit entity for this container beacon
+         * The container for the input slots.
+         */
+        @NotNull
+        private final SimpleContainer inputSlot;
+
+        /**
+         * The corresponding Bukkit view. Will be not null after the first call to {@link #getBukkitView()} and null
+         * prior.
          */
         @Nullable
         private CraftInventoryView bukkitEntity;
 
         /**
-         * Field for accessing the beacon field
+         * Creates a new custom beacon container for the specified player.
+         *
+         * @param containerId the container id
+         * @param player the player
+         * @param inputSlot the input slot
+         * @since 0.11.0
          */
-        @NotNull
-        private final Field beaconField;
+        public ContainerBeaconImpl(int containerId, @NotNull Player player, @NotNull SimpleContainer inputSlot) {
+            super(containerId, player.getInventory(), new SimpleContainerData(3),
+                    ContainerLevelAccess.create(player.level, BlockPos.ZERO));
 
-        public ContainerBeaconImpl(@NotNull ServerPlayer serverPlayer, @Nullable org.bukkit.inventory.ItemStack item) {
-            super(serverPlayer.nextContainerCounter(), serverPlayer.getInventory());
+            this.player = player;
+            this.inputSlot = inputSlot;
 
-            this.player = serverPlayer.getBukkitEntity();
+            super.checkReachable = false;
 
-            try {
-                //noinspection JavaReflectionMemberAccess
-                this.beaconField = BeaconMenu.class.getDeclaredField("r"); //beacon
-                this.beaconField.setAccessible(true);
-            } catch (NoSuchFieldException exception) {
-                throw new RuntimeException(exception);
-            }
+            Slot slot = super.slots.get(0);
 
-            try {
-                ItemStack itemStack = CraftItemStack.asNMSCopy(item);
+            Slot newSlot = new Slot(inputSlot, slot.slot, slot.x, slot.y);
+            newSlot.index = slot.index;
 
-                ((Container) beaconField.get(this)).setItem(0, itemStack);
-            } catch (IllegalAccessException exception) {
-                throw new RuntimeException(exception);
-            }
+            super.slots.set(0, newSlot);
         }
 
         @NotNull
         @Override
         public CraftInventoryView getBukkitView() {
-            if (bukkitEntity == null) {
-                try {
-                    CraftInventory inventory = new CraftInventoryBeacon((Container) beaconField.get(this)) {
-                        @NotNull
-                        @Contract(pure = true)
-                        @Override
-                        public InventoryHolder getHolder() {
-                            return inventoryHolder;
-                        }
-                    };
-
-                    bukkitEntity = new CraftInventoryView(player, inventory, this);
-                } catch (IllegalAccessException exception) {
-                    throw new RuntimeException(exception);
-                }
+            if (this.bukkitEntity != null) {
+                return this.bukkitEntity;
             }
 
-            return bukkitEntity;
+            CraftInventoryBeacon inventory = new CraftInventoryBeacon(this.inputSlot);
+
+            this.bukkitEntity = new CraftInventoryView(this.player.getBukkitEntity(), inventory, this);
+
+            return this.bukkitEntity;
         }
 
-        @Contract(pure = true, value = "_ -> true")
         @Override
-        public boolean stillValid(@Nullable net.minecraft.world.entity.player.Player nmsPlayer) {
-            return true;
-        }
+        public void removed(@Nullable Player player) {}
 
         @Override
-        public void slotsChanged(Container container) {}
-
-        @Override
-        public void removed(net.minecraft.world.entity.player.Player nmsPlayer) {}
+        protected void clearContainer(@Nullable Player player, @Nullable Container container) {}
 
     }
 }
