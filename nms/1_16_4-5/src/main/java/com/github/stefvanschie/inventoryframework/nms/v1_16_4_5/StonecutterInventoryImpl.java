@@ -4,18 +4,14 @@ import com.github.stefvanschie.inventoryframework.abstraction.StonecutterInvento
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.nms.v1_16_4_5.util.TextHolderUtil;
 import net.minecraft.server.v1_16_R3.*;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftInventory;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftInventoryStonecutter;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftInventoryView;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.lang.reflect.Field;
 
 /**
  * Internal stonecutter inventory for 1.16 R3
@@ -24,89 +20,64 @@ import java.lang.reflect.Field;
  */
 public class StonecutterInventoryImpl extends StonecutterInventory {
 
-    public StonecutterInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
-        super(inventoryHolder);
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public Inventory createInventory(@NotNull TextHolder title) {
+        InventorySubcontainer resultSlot = new InventorySubcontainer(1);
+
+        IInventory container = new InventoryViewProvider() {
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public Container createMenu(
+                    int containerId,
+                    @Nullable PlayerInventory inventory,
+                    @NotNull EntityHuman player
+            ) {
+                return new ContainerStonecutterImpl(containerId, player, this, resultSlot);
+            }
+
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public IChatBaseComponent getScoreboardDisplayName() {
+                return TextHolderUtil.toComponent(title);
+            }
+        };
+
+        return new CraftInventoryStonecutter(container, resultSlot) {
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public InventoryType getType() {
+                return InventoryType.STONECUTTER;
+            }
+
+            @Override
+            public IInventory getInventory() {
+                return container;
+            }
+        };
     }
 
-    @Override
-    public void openInventory(@NotNull Player player, @NotNull TextHolder title,
-                              @Nullable org.bukkit.inventory.ItemStack[] items) {
-        int itemAmount = items.length;
+    /**
+     * This is a nice hack to get CraftBukkit to create custom inventories. By providing a container that is also a menu
+     * provider, CraftBukkit will allow us to create a custom menu, rather than picking one of the built-in options.
+     * That way, we can provide a menu with custom behaviour.
+     *
+     * @since 0.11.0
+     */
+    private abstract static class InventoryViewProvider extends InventorySubcontainer implements ITileInventory {
 
-        if (itemAmount != 2) {
-            throw new IllegalArgumentException(
-                "The amount of items for a stonecutter should be 2, but is '" + itemAmount + "'"
-            );
+        /**
+         * Creates a new inventory view provider with three slots.
+         *
+         * @since 0.11.0
+         */
+        public InventoryViewProvider() {
+            super(1);
         }
-
-        EntityPlayer entityPlayer = getEntityPlayer(player);
-        ContainerStonecutterImpl containerEnchantmentTable = new ContainerStonecutterImpl(entityPlayer, items);
-
-        entityPlayer.activeContainer = containerEnchantmentTable;
-
-        int id = containerEnchantmentTable.windowId;
-        IChatBaseComponent message = TextHolderUtil.toComponent(title);
-        PacketPlayOutOpenWindow packet = new PacketPlayOutOpenWindow(id, Containers.STONECUTTER, message);
-
-        entityPlayer.playerConnection.sendPacket(packet);
-
-        sendItems(player, items);
-    }
-
-    @Override
-    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items) {
-        NonNullList<ItemStack> nmsItems = NonNullList.a(
-            ItemStack.b,
-            CraftItemStack.asNMSCopy(items[0]),
-            CraftItemStack.asNMSCopy(items[1])
-        );
-
-        EntityPlayer entityPlayer = getEntityPlayer(player);
-
-        getPlayerConnection(entityPlayer).sendPacket(new PacketPlayOutWindowItems(getWindowId(entityPlayer), nmsItems));
-    }
-
-    @Override
-    public void clearCursor(@NotNull Player player) {
-        getPlayerConnection(getEntityPlayer(player)).sendPacket(new PacketPlayOutSetSlot(-1, -1, ItemStack.b));
-    }
-
-    /**
-     * Gets the window id for the inventory view the player currently has open
-     *
-     * @param entityPlayer the player to get the window id for
-     * @return the window id
-     * @since 0.8.0
-     */
-    @Contract(pure = true)
-    private int getWindowId(@NotNull EntityPlayer entityPlayer) {
-        return entityPlayer.activeContainer.windowId;
-    }
-
-    /**
-     * Gets the player connection for the specified player
-     *
-     * @param entityPlayer the player to get the player connection from
-     * @return the player connection
-     * @since 0.8.0
-     */
-    @NotNull
-    @Contract(pure = true)
-    private PlayerConnection getPlayerConnection(@NotNull EntityPlayer entityPlayer) {
-        return entityPlayer.playerConnection;
-    }
-
-    /**
-     * Gets the entity player associated to this player
-     *
-     * @param player the player to get the entity player from
-     * @return the entity player
-     * @since 0.8.0
-     */
-    @NotNull
-    @Contract(pure = true)
-    private EntityPlayer getEntityPlayer(@NotNull Player player) {
-        return ((CraftPlayer) player).getHandle();
     }
 
     /**
@@ -114,88 +85,109 @@ public class StonecutterInventoryImpl extends StonecutterInventory {
      *
      * @since 0.8.0
      */
-    private class ContainerStonecutterImpl extends ContainerStonecutter {
+    private static class ContainerStonecutterImpl extends ContainerStonecutter {
 
         /**
-         * The player for this enchanting table container
+         * The human entity viewing this menu.
          */
         @NotNull
-        private final Player player;
+        private final HumanEntity humanEntity;
 
         /**
-         * The internal bukkit entity for this container enchanting table
+         * The container for the items slots.
+         */
+        @NotNull
+        private final InventorySubcontainer inputSlot;
+
+        /**
+         * The container for the result slot.
+         */
+        @NotNull
+        private final InventorySubcontainer resultSlot;
+
+        /**
+         * The corresponding Bukkit view. Will be not null after the first call to {@link #getBukkitView()} and null
+         * prior.
          */
         @Nullable
         private CraftInventoryView bukkitEntity;
 
         /**
-         * Field for accessing the result inventory field
+         * Creates a new custom stonecutter container for the specified player
+         *
+         * @param containerId the container id
+         * @param player the player
+         * @param inputSlot the input slot
+         * @param resultSlot the result slot
+         * @since 0.11.0
          */
-        @NotNull
-        private final Field resultInventoryField;
+        public ContainerStonecutterImpl(
+                int containerId,
+                @NotNull EntityHuman player,
+                @NotNull InventorySubcontainer inputSlot,
+                @NotNull InventorySubcontainer resultSlot
+        ) {
+            super(containerId, player.inventory, ContainerAccess.at(player.getWorld(), BlockPosition.ZERO));
 
-        public ContainerStonecutterImpl(@NotNull EntityPlayer entityPlayer,
-                                        @Nullable org.bukkit.inventory.ItemStack[] items) {
-            super(entityPlayer.nextContainerCounter(), entityPlayer.inventory);
+            this.humanEntity = player.getBukkitEntity();
+            this.inputSlot = inputSlot;
+            this.resultSlot = resultSlot;
 
-            this.player = entityPlayer.getBukkitEntity();
+            super.checkReachable = false;
 
-            try {
-                this.resultInventoryField = ContainerStonecutter.class.getDeclaredField("resultInventory");
-                this.resultInventoryField.setAccessible(true);
-            } catch (NoSuchFieldException exception) {
-                throw new RuntimeException(exception);
-            }
+            InventoryLargeChest container = new InventoryLargeChest(inputSlot, resultSlot);
 
-            inventory.setItem(0, CraftItemStack.asNMSCopy(items[0]));
-            getResultInventory().setItem(0, CraftItemStack.asNMSCopy(items[1]));
+            updateSlot(0, container);
+            updateSlot(1, container);
         }
 
         @NotNull
         @Override
         public CraftInventoryView getBukkitView() {
-            if (bukkitEntity == null) {
-                CraftInventory inventory = new CraftInventoryStonecutter(this.inventory, getResultInventory()) {
-                    @NotNull
-                    @Contract(pure = true)
-                    @Override
-                    public InventoryHolder getHolder() {
-                        return inventoryHolder;
-                    }
-                };
-
-                bukkitEntity = new CraftInventoryView(player, inventory, this);
+            if (this.bukkitEntity != null) {
+                return this.bukkitEntity;
             }
 
-            return bukkitEntity;
+            CraftInventoryStonecutter inventory = new CraftInventoryStonecutter(this.inputSlot, this.resultSlot);
+
+            this.bukkitEntity = new CraftInventoryView(this.humanEntity, inventory, this);
+
+            return this.bukkitEntity;
         }
 
         @Contract(pure = true, value = "_ -> true")
         @Override
-        public boolean canUse(@Nullable EntityHuman entityhuman) {
+        public boolean canUse(@Nullable EntityHuman nmsPlayer) {
             return true;
         }
 
         @Override
-        public void a(IInventory inventory) {}
+        public void a(IInventory container) {}
 
         @Override
-        public void b(EntityHuman entityhuman) {}
+        public void b(EntityHuman nmsPlayer) {}
+
+        @Contract(value = "_, _ -> false", pure = true)
+        @Override
+        public boolean a(@Nullable EntityHuman player, int index) {
+            return false;
+        }
 
         /**
-         * Gets the result inventory
+         * Updates the current slot at the specified index to a new slot. The new slot will have the same slot, x, y,
+         * and index as the original. The container of the new slot will be set to the value specified.
          *
-         * @return the result inventory
-         * @since 0.8.0
+         * @param slotIndex the slot index to update
+         * @param container the container of the new slot
+         * @since 0.11.0
          */
-        @NotNull
-        @Contract(pure = true)
-        public IInventory getResultInventory() {
-            try {
-                return (IInventory) resultInventoryField.get(this);
-            } catch (IllegalAccessException exception) {
-                throw new RuntimeException(exception);
-            }
+        private void updateSlot(int slotIndex, @NotNull IInventory container) {
+            Slot slot = super.slots.get(slotIndex);
+
+            Slot newSlot = new Slot(container, slot.index, slot.e, slot.f);
+            newSlot.rawSlotIndex = slot.rawSlotIndex;
+
+            super.slots.set(slotIndex, newSlot);
         }
     }
 }
