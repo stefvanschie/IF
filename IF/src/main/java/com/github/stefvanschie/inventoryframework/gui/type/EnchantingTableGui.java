@@ -12,9 +12,7 @@ import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
@@ -57,7 +55,7 @@ public class EnchantingTableGui extends NamedGui implements InventoryBased {
      */
     @NotNull
     private final EnchantingTableInventory enchantingTableInventory = VersionMatcher.newEnchantingTableInventory(
-        Version.getVersion(), this);
+            Version.getVersion());
 
     /**
      * Constructs a new GUI
@@ -129,10 +127,7 @@ public class EnchantingTableGui extends NamedGui implements InventoryBased {
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
 
-        //also let Bukkit know that we opened an inventory
         humanEntity.openInventory(getInventory());
-
-        enchantingTableInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
     }
 
     @NotNull
@@ -184,26 +179,11 @@ public class EnchantingTableGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public Inventory createInventory() {
-        return getTitleHolder().asInventoryTitle(this, InventoryType.ENCHANTING);
-    }
+        Inventory inventory = this.enchantingTableInventory.createInventory(getTitleHolder());
 
-    /**
-     * Handles an incoming inventory click event
-     *
-     * @param event the event to handle
-     * @since 0.8.0
-     */
-    public void handleClickEvent(@NotNull InventoryClickEvent event) {
-        int slot = event.getRawSlot();
-        Player player = (Player) event.getWhoClicked();
+        addInventory(inventory, this);
 
-        if (slot >= 2 && slot <= 37) {
-            enchantingTableInventory.sendItems(player, getTopItems());
-        } else if ((slot == 0 || slot == 1) && event.isCancelled()) {
-            enchantingTableInventory.sendItems(player, getTopItems());
-
-            enchantingTableInventory.clearCursor(player);
-        }
+        return inventory;
     }
 
     @Contract(pure = true)
@@ -241,21 +221,6 @@ public class EnchantingTableGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     public InventoryComponent getPlayerInventoryComponent() {
         return playerInventoryComponent;
-    }
-
-    /**
-     * Gets the top items
-     *
-     * @return the top items
-     * @since 0.8.0
-     */
-    @Nullable
-    @Contract(pure = true)
-    private ItemStack[] getTopItems() {
-        return new ItemStack[] {
-            getInputComponent().getItem(0, 0),
-            getInputComponent().getItem(1, 0)
-        };
     }
 
     /**

@@ -7,9 +7,9 @@ import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
+import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
-import com.github.stefvanschie.inventoryframework.util.InventoryViewUtil;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.github.stefvanschie.inventoryframework.util.version.Version;
 import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
@@ -18,9 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.TradeSelectEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -48,7 +46,7 @@ import java.util.function.Consumer;
  *
  * @since 0.10.0
  */
-public class MerchantGui extends NamedGui {
+public class MerchantGui extends NamedGui implements InventoryBased {
 
     /**
      * The consumer that will be called once a players selects a trade listed
@@ -67,18 +65,6 @@ public class MerchantGui extends NamedGui {
      */
     @NotNull
     private InventoryComponent playerInventoryComponent = new InventoryComponent(9, 4);
-
-    /**
-     * The merchant holding the trades and inventory
-     */
-    @NotNull
-    private Merchant merchant;
-
-    /**
-     * The human entities viewing this gui
-     */
-    @NotNull
-    private final List<HumanEntity> viewers = new ArrayList<>();
 
     /**
      * The trades of this merchant with their price differences. The differences are the difference between the new
@@ -145,8 +131,6 @@ public class MerchantGui extends NamedGui {
      */
     public MerchantGui(@NotNull TextHolder title, @NotNull Plugin plugin) {
         super(title, plugin);
-
-        this.merchant = getTitleHolder().asMerchantTitle();
     }
 
     /**
@@ -187,23 +171,13 @@ public class MerchantGui extends NamedGui {
         }
 
         if (isDirty()) {
-            this.merchant = getTitleHolder().asMerchantTitle();
+            this.inventory = createInventory();
             markChanges();
         }
 
-        InventoryView view = humanEntity.openMerchant(merchant, true);
+        getInventory().clear();
 
-        if (view == null) {
-            throw new IllegalStateException("Merchant could not be opened");
-        }
-
-        Inventory inventory = InventoryViewUtil.getInstance().getTopInventory(view);
-
-        addInventory(inventory, this);
-
-        inventory.clear();
-
-        getInputComponent().display(inventory, 0);
+        getInputComponent().display(getInventory(), 0);
         getPlayerInventoryComponent().display();
 
         if (getPlayerInventoryComponent().hasItem()) {
@@ -216,24 +190,10 @@ public class MerchantGui extends NamedGui {
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
 
-        this.viewers.add(humanEntity);
+        humanEntity.openInventory(getInventory());
 
-        Player player = (Player) humanEntity;
-
-        if (this.experience >= 0 || this.level > 0) {
-            this.merchantInventory.sendMerchantOffers(player, this.trades, this.level, this.experience);
-
-            return;
-        }
-
-        boolean discount = false;
-
-        for (Map.Entry<MerchantRecipe, Integer> trade : this.trades) {
-            if (trade.getValue() != 0) {
-                this.merchantInventory.sendMerchantOffers(player, this.trades, this.level, this.experience);
-
-                break;
-            }
+        if (this.experience >= 0 || this.level > 0 || !this.trades.isEmpty()) {
+            this.merchantInventory.sendMerchantOffers((Player) humanEntity, this.trades, this.level, this.experience);
         }
     }
 
@@ -290,6 +250,27 @@ public class MerchantGui extends NamedGui {
         }
     }
 
+    @NotNull
+    @Override
+    public Inventory getInventory() {
+        if (this.inventory == null) {
+            this.inventory = createInventory();
+        }
+
+        return inventory;
+    }
+
+    @NotNull
+    @Contract(pure = true)
+    @Override
+    public Inventory createInventory() {
+        Inventory inventory = this.merchantInventory.createInventory(getTitleHolder());
+
+        addInventory(inventory, this);
+
+        return inventory;
+    }
+
     /**
      * Adds a trade to this gui. The specified discount is the difference between the old price and the new price. For
      * example, if a price was decreased from five to two, the discount would be three.
@@ -300,12 +281,6 @@ public class MerchantGui extends NamedGui {
      */
     public void addTrade(@NotNull MerchantRecipe recipe, int discount) {
         this.trades.add(new AbstractMap.SimpleImmutableEntry<>(recipe, -discount));
-
-        List<MerchantRecipe> recipes = new ArrayList<>(this.merchant.getRecipes());
-
-        recipes.add(recipe);
-
-        this.merchant.setRecipes(recipes);
     }
 
     /**
@@ -356,16 +331,6 @@ public class MerchantGui extends NamedGui {
         addTrade(recipe, 0);
     }
 
-    /**
-     * Handles a human entity closing this gui.
-     *
-     * @param humanEntity the human entity who's closing this gui
-     * @since 0.10.0
-     */
-    public void handleClose(@NotNull HumanEntity humanEntity) {
-        this.viewers.remove(humanEntity);
-    }
-
     @Override
     public boolean isPlayerInventoryUsed() {
         return getPlayerInventoryComponent().hasItem();
@@ -374,14 +339,14 @@ public class MerchantGui extends NamedGui {
     @Contract(pure = true)
     @Override
     public int getViewerCount() {
-        return this.viewers.size();
+        return getInventory().getViewers().size();
     }
 
     @NotNull
     @Contract(pure = true)
     @Override
     public List<HumanEntity> getViewers() {
-        return new ArrayList<>(this.viewers);
+        return new ArrayList<>(getInventory().getViewers());
     }
 
     /**
