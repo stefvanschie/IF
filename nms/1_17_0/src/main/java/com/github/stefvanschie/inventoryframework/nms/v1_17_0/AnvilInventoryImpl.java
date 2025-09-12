@@ -2,35 +2,36 @@ package com.github.stefvanschie.inventoryframework.nms.v1_17_0;
 
 import com.github.stefvanschie.inventoryframework.abstraction.AnvilInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_17_0.util.CustomInventoryUtil;
 import com.github.stefvanschie.inventoryframework.nms.v1_17_0.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerPlayerConnection;
+import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.ContainerSynchronizer;
-import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.ContainerListener;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_17_R1.event.CraftEventFactory;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
+import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftInventoryAnvil;
+import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftInventoryView;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Internal anvil inventory for 1.17 R1
@@ -39,227 +40,180 @@ import java.lang.reflect.Field;
  */
 public class AnvilInventoryImpl extends AnvilInventory {
 
-    public AnvilInventoryImpl(@NotNull InventoryHolder inventoryHolder) {
-        super(inventoryHolder);
-    }
-
-    @Override
-    public Inventory openInventory(@NotNull Player player, @NotNull TextHolder title,
-                                   @Nullable org.bukkit.inventory.ItemStack[] items) {
-        int itemAmount = items.length;
-
-        if (itemAmount != 3) {
-            throw new IllegalArgumentException(
-                    "The amount of items for an anvil should be 3, but is '" + itemAmount + "'"
-            );
-        }
-
-        ServerPlayer serverPlayer = getServerPlayer(player);
-
-        //ignore deprecation: superseding method is only available on Paper
-        //noinspection deprecation
-        CraftEventFactory.handleInventoryCloseEvent(serverPlayer);
-
-        serverPlayer.containerMenu = serverPlayer.inventoryMenu;
-
-        Component message = TextHolderUtil.toComponent(title);
-        ContainerAnvilImpl containerAnvil = new ContainerAnvilImpl(serverPlayer, message);
-
-        Inventory inventory = containerAnvil.getBukkitView().getTopInventory();
-
-        inventory.setItem(0, items[0]);
-        inventory.setItem(1, items[1]);
-        inventory.setItem(2, items[2]);
-
-        int containerId = containerAnvil.getContainerId();
-
-        serverPlayer.connection.send(new ClientboundOpenScreenPacket(containerId, MenuType.ANVIL, message));
-        serverPlayer.containerMenu = containerAnvil;
-        serverPlayer.initMenu(containerAnvil);
-
-        return inventory;
-    }
-
-    @Override
-    public void sendItems(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack[] items) {
-        NonNullList<ItemStack> nmsItems = CustomInventoryUtil.convertToNMSItems(items);
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        int containerId = getContainerId(serverPlayer);
-
-        getPlayerConnection(serverPlayer).send(new ClientboundContainerSetContentPacket(containerId, nmsItems));
-    }
-
-    @Override
-    public void sendFirstItem(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack item) {
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        int containerId = getContainerId(serverPlayer);
-        ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
-
-        getPlayerConnection(serverPlayer).send(new ClientboundContainerSetSlotPacket(containerId, 0, nmsItem));
-    }
-
-    @Override
-    public void sendSecondItem(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack item) {
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        int containerId = getContainerId(serverPlayer);
-        ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
-
-        getPlayerConnection(serverPlayer).send(new ClientboundContainerSetSlotPacket(containerId, 1, nmsItem));
-    }
-
-    @Override
-    public void sendResultItem(@NotNull Player player, @Nullable org.bukkit.inventory.ItemStack item) {
-        sendResultItem(player, CraftItemStack.asNMSCopy(item));
-    }
-
-    @Override
-    public void clearResultItem(@NotNull Player player) {
-        sendResultItem(player, ItemStack.EMPTY);
-    }
-
-    @Override
-    public void setCursor(@NotNull Player player, @NotNull org.bukkit.inventory.ItemStack item) {
-        setCursor(player, CraftItemStack.asNMSCopy(item));
-    }
-
-    @Override
-    public void clearCursor(@NotNull Player player) {
-        ClientboundContainerSetSlotPacket packet = new ClientboundContainerSetSlotPacket(-1, -1, ItemStack.EMPTY);
-
-        getPlayerConnection(getServerPlayer(player)).send(packet);
-    }
-
-    /**
-     * Sets the cursor of the given player
-     *
-     * @param player the player to set the cursor
-     * @param item the item to set the cursor to
-     * @since 0.9.9
-     * @deprecated no longer used internally
-     */
-    @Deprecated
-    private void setCursor(@NotNull Player player, @NotNull ItemStack item) {
-        getPlayerConnection(getServerPlayer(player)).send(new ClientboundContainerSetSlotPacket(-1, -1, item));
-    }
-
-    /**
-     * Sends the result item to the specified player with the given item
-     *
-     * @param player the player to send the result item to
-     * @param item the result item
-     * @since 0.9.9
-     * @deprecated no longer used internally
-     */
-    @Deprecated
-    private void sendResultItem(@NotNull Player player, @NotNull ItemStack item) {
-        ServerPlayer serverPlayer = getServerPlayer(player);
-        int containerId = getContainerId(serverPlayer);
-
-        getPlayerConnection(serverPlayer).send(new ClientboundContainerSetSlotPacket(containerId, 2, item));
-    }
-
-    /**
-     * Gets the container id for the inventory view the player currently has open
-     *
-     * @param nmsPlayer the player to get the container id for
-     * @return the container id
-     * @since 0.9.9
-     * @deprecated no longer used internally
-     */
-    @Contract(pure = true)
-    @Deprecated
-    private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
-        return nmsPlayer.containerMenu.containerId;
-    }
-
-    /**
-     * Gets the player connection for the specified player
-     *
-     * @param serverPlayer the player to get the player connection from
-     * @return the player connection
-     * @since 0.9.9
-     * @deprecated no longer used internally
-     */
     @NotNull
     @Contract(pure = true)
-    @Deprecated
-    private ServerPlayerConnection getPlayerConnection(@NotNull ServerPlayer serverPlayer) {
-        return serverPlayer.connection;
+    @Override
+    public Inventory createInventory(@NotNull TextHolder title) {
+        SimpleContainer inputSlots = new SimpleContainer(2);
+        SimpleContainer resultSlot = new SimpleContainer(1);
+
+        return new CraftInventoryAnvil(null, inputSlots, resultSlot, null) {
+            @NotNull
+            @Contract(pure = true)
+            @Override
+            public InventoryType getType() {
+                return InventoryType.ANVIL;
+            }
+
+            @Override
+            public Container getInventory() {
+                return new InventoryViewProvider() {
+                    @NotNull
+                    @Contract(pure = true)
+                    @Override
+                    public AbstractContainerMenu createMenu(
+                            int containerId,
+                            @Nullable net.minecraft.world.entity.player.Inventory inventory,
+                            @NotNull Player player
+                    ) {
+                        return new ContainerAnvilImpl(containerId, player, inputSlots, resultSlot);
+                    }
+
+                    @NotNull
+                    @Contract(pure = true)
+                    @Override
+                    public Component getDisplayName() {
+                        return TextHolderUtil.toComponent(title);
+                    }
+                };
+            }
+        };
     }
 
     /**
-     * Gets the server player associated to this player
+     * This is a nice hack to get CraftBukkit to create custom inventories. By providing a container that is also a menu
+     * provider, CraftBukkit will allow us to create a custom menu, rather than picking one of the built-in options.
+     * That way, we can provide a menu with custom behaviour.
      *
-     * @param player the player to get the server player from
-     * @return the server player
-     * @since 0.9.9
+     * @since 0.11.0
      */
-    @NotNull
-    @Contract(pure = true)
-    private ServerPlayer getServerPlayer(@NotNull Player player) {
-        return ((CraftPlayer) player).getHandle();
-    }
+    private abstract static class InventoryViewProvider extends SimpleContainer implements MenuProvider {}
 
     /**
      * A custom container anvil for responding to item renaming
      *
      * @since 0.9.9
      */
-    @SuppressWarnings("JavaReflectionMemberAccess")
     private class ContainerAnvilImpl extends AnvilMenu {
 
         /**
-         * The index of the result slot
-         */
-        private static final int RESULT_SLOT_INDEX = 2;
-
-        /**
-         * A field that represents the synchronizer field
+         * The container for the input slots.
          */
         @NotNull
-        private final Field synchronizerField;
+        private final SimpleContainer inputSlots;
 
         /**
-         * Creates a new custom anvil container for the specified player
-         *
-         * @param serverPlayer the player for whom this anvil container is
-         * @param title the title of the inventory
-         * @since 0.10.8
+         * The container for the result slot.
          */
-        public ContainerAnvilImpl(@NotNull ServerPlayer serverPlayer, @NotNull Component title) {
-            super(serverPlayer.nextContainerCounter(), serverPlayer.getInventory(),
-                    ContainerLevelAccess.create(serverPlayer.getCommandSenderWorld(), new BlockPos(0, 0, 0)));
+        @NotNull
+        private final SimpleContainer resultSlot;
+
+        /**
+         * The corresponding Bukkit view. Will be not null after the first call to {@link #getBukkitView()} and null
+         * prior.
+         */
+        @Nullable
+        private CraftInventoryView bukkitEntity;
+
+        /**
+         * The method to update the tracked slot.
+         */
+        @NotNull
+        private final Method updateTrackedSlotMethod;
+
+        /**
+         * The field containing the properties.
+         */
+        @NotNull
+        private final Field propertiesField;
+
+        /**
+         * The field containing the listeners.
+         */
+        @NotNull
+        private final Field listenersField;
+
+        /**
+         * Creates a new custom anvil container for the specified player.
+         *
+         * @param containerId the container id
+         * @param player the player
+         * @param inputSlots the input slots
+         * @param resultSlot the result slot
+         * @since 0.11.0
+         */
+        public ContainerAnvilImpl(
+                int containerId,
+                @NotNull net.minecraft.world.entity.player.Player player,
+                @NotNull SimpleContainer inputSlots,
+                @NotNull SimpleContainer resultSlot
+        ) {
+            super(containerId, player.getInventory(), ContainerLevelAccess.create(player.level, BlockPos.ZERO));
+
+            this.inputSlots = inputSlots;
+            this.resultSlot = resultSlot;
 
             this.checkReachable = false;
             this.cost.set(AnvilInventoryImpl.super.cost);
 
-            setTitle(title);
+            CompoundContainer compoundContainer = new CompoundContainer(inputSlots, resultSlot);
 
-            Slot originalSlot = this.slots.get(RESULT_SLOT_INDEX);
-
-            Slot newSlot = new Slot(originalSlot.container, originalSlot.index, originalSlot.x, originalSlot.y) {
-                @Override
-                public boolean mayPlace(@NotNull ItemStack stack) {
-                    return true;
-                }
-
-                @Override
-                public boolean mayPickup(net.minecraft.world.entity.player.@NotNull Player playerEntity) {
-                    return true;
-                }
-
-                @Override
-                public void onTake(net.minecraft.world.entity.player.@NotNull Player player, @NotNull ItemStack stack) {
-                    originalSlot.onTake(player, stack);
-                }
-            };
-
-            this.slots.set(RESULT_SLOT_INDEX, newSlot);
+            updateSlot(0, compoundContainer);
+            updateSlot(1, compoundContainer);
+            updateSlot(2, compoundContainer);
 
             try {
-                this.synchronizerField = AbstractContainerMenu.class.getDeclaredField("v");
-            } catch (NoSuchFieldException exception) {
-                throw new RuntimeException("Unable to access field", exception);
+                //noinspection JavaReflectionMemberAccess
+                this.updateTrackedSlotMethod = AbstractContainerMenu.class.getDeclaredMethod(
+                        "a",
+                        int.class,
+                        ItemStack.class,
+                        Supplier.class
+                );
+                this.updateTrackedSlotMethod.setAccessible(true);
+
+                //noinspection JavaReflectionMemberAccess
+                this.propertiesField = AbstractContainerMenu.class.getDeclaredField("l");
+                this.propertiesField.setAccessible(true);
+
+                //noinspection JavaReflectionMemberAccess
+                this.listenersField = AbstractContainerMenu.class.getDeclaredField("u");
+                this.listenersField.setAccessible(true);
+            } catch (NoSuchMethodException | NoSuchFieldException exception) {
+                throw new IllegalStateException(exception);
+            }
+        }
+
+        @NotNull
+        @Override
+        public CraftInventoryView getBukkitView() {
+            if (this.bukkitEntity != null) {
+                return this.bukkitEntity;
+            }
+
+            CraftInventoryAnvil inventory = new CraftInventoryAnvil(
+                    this.access.getLocation(),
+                    this.inputSlots,
+                    this.resultSlot,
+                    this
+            );
+
+            this.bukkitEntity = new CraftInventoryView(this.player.getBukkitEntity(), inventory, this);
+
+            return this.bukkitEntity;
+        }
+
+        @Override
+        public void broadcastChanges() {
+            if (super.cost.checkAndClearUpdateFlag()) {
+                broadcastFullState();
+            } else {
+                for (int index = 0; index < super.slots.size(); index++) {
+                    if (!ItemStack.matches(super.remoteSlots.get(index), super.slots.get(index).getItem())) {
+                        broadcastFullState();
+                        return;
+                    }
+                }
             }
         }
 
@@ -274,34 +228,94 @@ public class AnvilInventoryImpl extends AnvilInventory {
             }
 
             //the client predicts the output result, so we broadcast the state again to override it
-            ContainerSynchronizer synchronizer;
+            broadcastFullState();
+        }
 
-            try {
-                this.synchronizerField.setAccessible(true);
+        @Override
+        public void slotsChanged(@NotNull Container container) {
+            broadcastChanges();
+        }
 
-                synchronizer = (ContainerSynchronizer) this.synchronizerField.get(this);
-            } catch (IllegalAccessException exception) {
-                throw new RuntimeException("Unable to access field", exception);
-            }
+        @Override
+        public void clicked(int index, int dragData, @NotNull ClickType clickType, @NotNull net.minecraft.world.entity.player.Player player) {
+            super.clicked(index, dragData, clickType, player);
 
-            synchronizer.sendSlotChange(this, RESULT_SLOT_INDEX, getSlot(RESULT_SLOT_INDEX).getItem());
+            //client predicts first slot, so send data to override
+            broadcastFullState();
         }
 
         @Override
         public void createResult() {}
 
         @Override
-        public void removed(net.minecraft.world.entity.player.@NotNull Player nmsPlayer) {}
+        public void removed(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {}
 
         @Override
-        protected void clearContainer(net.minecraft.world.entity.player.@NotNull Player player,
-                                      @NotNull Container inventory) {}
+        protected void clearContainer(@NotNull net.minecraft.world.entity.player.Player player, @NotNull Container inventory) {}
 
         @Override
-        protected void onTake(net.minecraft.world.entity.player.@NotNull Player player, @NotNull ItemStack stack) {}
+        protected void onTake(@NotNull net.minecraft.world.entity.player.Player player, @NotNull ItemStack stack) {}
 
-        public int getContainerId() {
-            return this.containerId;
+        /**
+         * Broadcasts the full menu state to the client.
+         *
+         * @since 0.11.0
+         */
+        private void broadcastFullState() {
+            for (int index = 0; index < this.slots.size(); index++) {
+                ItemStack itemstack = this.slots.get(index).getItem();
+
+                Objects.requireNonNull(itemstack);
+
+                Supplier<ItemStack> supplier = itemstack::copy;
+                try {
+                    this.updateTrackedSlotMethod.invoke(this, index, itemstack, supplier);
+                } catch (IllegalAccessException | InvocationTargetException exception) {
+                    throw new IllegalStateException(exception);
+                }
+            }
+
+            List<DataSlot> properties;
+            try {
+                //noinspection unchecked
+                properties = (List<DataSlot>) this.propertiesField.get(this);
+            } catch (IllegalAccessException exception) {
+                throw new IllegalStateException(exception);
+            }
+
+            for (int index = 0; index < properties.size(); index++) {
+                DataSlot property = properties.get(index);
+
+                if (property.checkAndClearUpdateFlag()) {
+                    try {
+                        //noinspection unchecked
+                        for (ContainerListener listener : (List<ContainerListener>) this.listenersField.get(this)) {
+                            listener.dataChanged(this, index, property.get());
+                        }
+                    } catch (IllegalAccessException exception) {
+                        throw new IllegalStateException(exception);
+                    }
+                }
+            }
+
+            this.sendAllDataToRemote();
+        }
+
+        /**
+         * Updates the current slot at the specified index to a new slot. The new slot will have the same slot, x, y,
+         * and index as the original. The container of the new slot will be set to the value specified.
+         *
+         * @param slotIndex the slot index to update
+         * @param container the container of the new slot
+         * @since 0.11.0
+         */
+        private void updateSlot(int slotIndex, @NotNull Container container) {
+            Slot slot = super.slots.get(slotIndex);
+
+            Slot newSlot = new Slot(container, slot.slot, slot.x, slot.y);
+            newSlot.index = slot.index;
+
+            super.slots.set(slotIndex, newSlot);
         }
     }
 }
