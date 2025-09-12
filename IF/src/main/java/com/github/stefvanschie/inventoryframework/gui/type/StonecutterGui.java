@@ -12,9 +12,7 @@ import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
@@ -63,7 +61,7 @@ public class StonecutterGui extends NamedGui implements InventoryBased {
      */
     @NotNull
     private final StonecutterInventory stonecutterInventory = VersionMatcher.newStonecutterInventory(
-        Version.getVersion(), this
+        Version.getVersion()
     );
 
     /**
@@ -139,8 +137,6 @@ public class StonecutterGui extends NamedGui implements InventoryBased {
 
         //also let Bukkit know that we opened an inventory
         humanEntity.openInventory(getInventory());
-
-        stonecutterInventory.openInventory((Player) humanEntity, getTitleHolder(), getTopItems());
     }
 
     @NotNull
@@ -195,28 +191,11 @@ public class StonecutterGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public Inventory createInventory() {
-        return getTitleHolder().asInventoryTitle(this, InventoryType.STONECUTTER);
-    }
+        Inventory inventory = this.stonecutterInventory.createInventory(getTitleHolder());
 
-    /**
-     * Handles an incoming inventory click event
-     *
-     * @param event the event to handle
-     * @since 0.8.0
-     */
-    public void handleClickEvent(@NotNull InventoryClickEvent event) {
-        int slot = event.getRawSlot();
-        Player player = (Player) event.getWhoClicked();
+        addInventory(inventory, this);
 
-        if (slot >= 2 && slot <= 37) {
-            stonecutterInventory.sendItems(player, getTopItems());
-        } else if (slot == 0 || slot == 1) {
-            stonecutterInventory.sendItems(player, getTopItems());
-
-            if (event.isCancelled()) {
-                stonecutterInventory.clearCursor(player);
-            }
-        }
+        return inventory;
     }
 
     @Contract(pure = true)
@@ -266,21 +245,6 @@ public class StonecutterGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     public InventoryComponent getPlayerInventoryComponent() {
         return playerInventoryComponent;
-    }
-
-    /**
-     * Get the top items
-     *
-     * @return the top items
-     * @since 0.8.0
-     */
-    @Nullable
-    @Contract(pure = true)
-    private ItemStack[] getTopItems() {
-        return new ItemStack[] {
-            getInputComponent().getItem(0, 0),
-            getResultComponent().getItem(0, 0)
-        };
     }
 
     /**
