@@ -328,11 +328,54 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 		this.fillWith(itemStack, null);
 	}
 
+    /**
+     * Gets the item located at the provided slot. If the provided slot is empty, this will return null. The slots are
+     * checked based on their position without regard for their underlying definition. For example, if an item was added
+     * with its slot specified as an x,y coordinate pair, but this method is invoked with a slot specified as an index,
+     * this item may still be returned if the x,y coordinate pair and slot are at the same position, given the current
+     * dimensions of the pane. If multiple items match the position indicated by the provided slot, any of those items
+     * may be the result of this invocation.
+     *
+     * @param slot the slot of the item
+     * @return the item at this position, or null if there is no such item
+     * @since 0.11.4
+     */
+    @Nullable
+    @Contract(pure = true)
+    public GuiItem getItem(@NotNull Slot slot) {
+        int x = slot.getX(getLength());
+        int y = slot.getY(getLength());
+
+        for (Map.Entry<Slot, GuiItem> entry : this.items.entrySet()) {
+            Slot key = entry.getKey();
+
+            if (key.getX(getLength()) == x && key.getY(getLength()) == y) {
+                return entry.getValue();
+            }
+        }
+
+        return null;
+    }
+
 	@NotNull
 	@Override
 	public Collection<GuiItem> getItems() {
 		return items.values();
 	}
+
+    /**
+     * Gets all items by their corresponding slots. The slots correspond to the type they were added with. For example,
+     * if the slot was specified as an x,y coordinate pair, the slot will also be specified as such a pair. The returned
+     * map is unmodifiable.
+     *
+     * @return a map of all items by their slot
+     * @since 0.11.4
+     */
+    @NotNull
+    @Contract(pure = true)
+    public Map<@NotNull Slot, @NotNull GuiItem> getSlottedItems() {
+        return Collections.unmodifiableMap(this.items);
+    }
 
     @Override
     public void clear() {
