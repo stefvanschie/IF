@@ -329,24 +329,32 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	}
 
     /**
-     * Gets a gui item from the specific spot in the pane by x and y coordinates
+     * Gets the item located at the provided slot. If the provided slot is empty, this will return null. The slots are
+     * checked based on their position without regard for their underlying definition. For example, if an item was added
+     * with its slot specified as an x,y coordinate pair, but this method is invoked with a slot specified as an index,
+     * this item may still be returned if the x,y coordinate pair and slot are at the same position, given the current
+     * dimensions of the pane. If multiple items match the position indicated by the provided slot, any of those items
+     * may be the result of this invocation.
      *
-     * @param x         the x coordinate of the position of the item
-     * @param y         the y coordinate of the position of the item
-     * @since TODO: __VERSION__
+     * @param slot the slot of the item
+     * @return the item at this position, or null if there is no such item
+     * @since 0.11.4
      */
-    public GuiItem getItem(int x, int y) {
-        return getItem(Slot.fromXY(x, y));
-    }
+    @Nullable
+    @Contract(pure = true)
+    public GuiItem getItem(@NotNull Slot slot) {
+        int x = slot.getX(getLength());
+        int y = slot.getY(getLength());
 
-    /**
-     * Gets the specified item from the pane by the slot
-     *
-     * @param slot      the slot of the item
-     * @since TODO: __VERSION__
-     */
-    public GuiItem getItem(Slot slot) {
-        return items.get(slot);
+        for (Map.Entry<Slot, GuiItem> entry : this.items.entrySet()) {
+            Slot key = entry.getKey();
+
+            if (key.getX(getLength()) == x && key.getY(getLength()) == y) {
+                return entry.getValue();
+            }
+        }
+
+        return null;
     }
 
 	@NotNull
@@ -356,12 +364,17 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	}
 
     /**
-     * Get the GUI items with their slots
-     * @return Map<Slot, GuiItem>
-     * @since TODO: __VERSION__
+     * Gets all items by their corresponding slots. The slots correspond to the type they were added with. For example,
+     * if the slot was specified as an x,y coordinate pair, the slot will also be specified as such a pair. The returned
+     * map is unmodifiable.
+     *
+     * @return a map of all items by their slot
+     * @since 0.11.4
      */
-    public @NotNull Map<Slot, GuiItem> getSlottedItems() {
-        return items;
+    @NotNull
+    @Contract(pure = true)
+    public Map<@NotNull Slot, @NotNull GuiItem> getSlottedItems() {
+        return Collections.unmodifiableMap(this.items);
     }
 
     @Override
