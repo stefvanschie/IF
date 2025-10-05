@@ -13,6 +13,7 @@ import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.github.stefvanschie.inventoryframework.util.version.Version;
 import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -165,10 +166,8 @@ public class MerchantGui extends NamedGui implements InventoryBased {
     }
 
     @Override
-    public void show(@NotNull HumanEntity humanEntity) {
-        if (!(humanEntity instanceof Player)) {
-            throw new IllegalArgumentException("Merchants can only be opened by players");
-        }
+    public void update() {
+        super.updating = true;
 
         if (isDirty()) {
             this.inventory = createInventory();
@@ -180,6 +179,51 @@ public class MerchantGui extends NamedGui implements InventoryBased {
         getInputComponent().display(getInventory(), 0);
         getPlayerInventoryComponent().display();
 
+        for (HumanEntity viewer : getViewers()) {
+            ItemStack cursor = viewer.getItemOnCursor();
+            viewer.setItemOnCursor(new ItemStack(Material.AIR));
+
+            populateBottomInventory(viewer);
+
+            if ((this.experience >= 0 || this.level > 0 || !this.trades.isEmpty()) && viewer instanceof Player) {
+                this.merchantInventory.sendMerchantOffers((Player) viewer, this.trades, this.level, this.experience);
+            }
+
+            viewer.setItemOnCursor(cursor);
+        }
+
+        if (!super.updating)
+            throw new AssertionError("Gui#isUpdating became false before Gui#update finished");
+
+        super.updating = false;
+    }
+
+    @Override
+    public void show(@NotNull HumanEntity humanEntity) {
+        if (!(humanEntity instanceof Player)) {
+            throw new IllegalArgumentException("Merchants can only be opened by players");
+        }
+
+        if (super.inventory == null) {
+            update();
+        }
+
+        populateBottomInventory(humanEntity);
+
+        humanEntity.openInventory(getInventory());
+
+        if (this.experience >= 0 || this.level > 0 || !this.trades.isEmpty()) {
+            this.merchantInventory.sendMerchantOffers((Player) humanEntity, this.trades, this.level, this.experience);
+        }
+    }
+
+    /**
+     * Populates the inventory of the {@link HumanEntity} if needed.
+     *
+     * @param humanEntity the human entity
+     * @since 0.11.4
+     */
+    private void populateBottomInventory(@NotNull HumanEntity humanEntity) {
         if (getPlayerInventoryComponent().hasItem()) {
             HumanEntityCache humanEntityCache = getHumanEntityCache();
 
@@ -188,12 +232,6 @@ public class MerchantGui extends NamedGui implements InventoryBased {
             }
 
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
-        }
-
-        humanEntity.openInventory(getInventory());
-
-        if (this.experience >= 0 || this.level > 0 || !this.trades.isEmpty()) {
-            this.merchantInventory.sendMerchantOffers((Player) humanEntity, this.trades, this.level, this.experience);
         }
     }
 

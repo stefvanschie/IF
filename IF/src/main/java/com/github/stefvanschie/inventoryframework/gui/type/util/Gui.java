@@ -111,7 +111,7 @@ public abstract class Gui {
      * Whether this gui is updating (as invoked by {@link #update()}), true if this is the case, false otherwise. This
      * is used to indicate that inventory close events due to updating should be ignored.
      */
-    boolean updating = false;
+    protected boolean updating = false;
 
     /**
      * The parent gui. This gui will be navigated to once a player closes this gui. If this is null, the player will not
@@ -223,6 +223,7 @@ public abstract class Gui {
     @Contract(pure = true)
     public abstract List<HumanEntity> getViewers();
 
+    //TODO: next breaking version, make this method abstract, all implementers override this
     /**
      * Update the gui for everyone
      */

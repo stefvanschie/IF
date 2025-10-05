@@ -6,10 +6,12 @@ import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
@@ -116,7 +118,7 @@ public class BrewingStandGui extends NamedGui implements InventoryBased {
     }
 
     @Override
-    public void show(@NotNull HumanEntity humanEntity) {
+    public void update() {
         if (isDirty()) {
             this.inventory = createInventory();
             markChanges();
@@ -131,6 +133,41 @@ public class BrewingStandGui extends NamedGui implements InventoryBased {
         getBlazePowderComponent().display(getInventory(), 4);
         getPlayerInventoryComponent().display();
 
+        super.updating = true;
+
+        for (HumanEntity viewer : getViewers()) {
+            ItemStack cursor = viewer.getItemOnCursor();
+            viewer.setItemOnCursor(new ItemStack(Material.AIR));
+
+            populateBottomInventory(viewer);
+
+            viewer.setItemOnCursor(cursor);
+        }
+
+        if (!super.updating)
+            throw new AssertionError("Gui#isUpdating became false before Gui#update finished");
+
+        super.updating = false;
+    }
+
+    @Override
+    public void show(@NotNull HumanEntity humanEntity) {
+        if (super.inventory == null) {
+            update();
+        }
+
+        populateBottomInventory(humanEntity);
+
+        humanEntity.openInventory(getInventory());
+    }
+
+    /**
+     * Populates the inventory of the {@link HumanEntity} if needed.
+     *
+     * @param humanEntity the human entity
+     * @since 0.11.4
+     */
+    private void populateBottomInventory(@NotNull HumanEntity humanEntity) {
         if (getPlayerInventoryComponent().hasItem()) {
             HumanEntityCache humanEntityCache = getHumanEntityCache();
 
@@ -140,8 +177,6 @@ public class BrewingStandGui extends NamedGui implements InventoryBased {
 
             getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
         }
-
-        humanEntity.openInventory(getInventory());
     }
 
     @NotNull

@@ -233,18 +233,16 @@ public class GuiListener implements Listener {
         //due to a client issue off-hand items appear as ghost items, this updates the off-hand correctly client-side
         playerInventory.setItemInOffHand(playerInventory.getItemInOffHand());
 
-        if (!gui.isUpdating()) {
-            gui.callOnClose(event);
+        gui.callOnClose(event);
 
-            gui.getHumanEntityCache().restoreAndForget(humanEntity);
+        gui.getHumanEntityCache().restoreAndForget(humanEntity);
 
-            if (gui.getViewerCount() == 1) {
-                activeGuiInstances.remove(gui);
-            }
-
-            //Bukkit doesn't like it if you open an inventory while the previous one is being closed
-            Bukkit.getScheduler().runTask(this.plugin, () -> gui.navigateToParent(humanEntity));
+        if (gui.getViewerCount() == 1) {
+            activeGuiInstances.remove(gui);
         }
+
+        //Bukkit doesn't like it if you open an inventory while the previous one is being closed
+        Bukkit.getScheduler().runTask(this.plugin, () -> gui.navigateToParent(humanEntity));
     }
 
     /**

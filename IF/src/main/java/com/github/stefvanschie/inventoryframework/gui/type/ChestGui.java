@@ -10,9 +10,11 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.MergedGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
@@ -107,7 +109,9 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
     }
 
     @Override
-    public void show(@NotNull HumanEntity humanEntity) {
+    public void update() {
+        super.updating = true;
+
         if (isDirty() || dirtyRows) {
             this.inventory = createInventory();
             this.dirtyRows = false;
@@ -120,11 +124,48 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
         int height = getInventoryComponent().getHeight();
 
         getInventoryComponent().display();
+        getInventoryComponent().excludeRows(height - 4, height - 1).placeItems(getInventory(), 0);
 
-        InventoryComponent topComponent = getInventoryComponent().excludeRows(height - 4, height - 1);
         InventoryComponent bottomComponent = getInventoryComponent().excludeRows(0, height - 5);
 
-        topComponent.placeItems(getInventory(), 0);
+        HumanEntityCache humanEntityCache = getHumanEntityCache();
+
+        for (HumanEntity viewer : getViewers()) {
+            ItemStack cursor = viewer.getItemOnCursor();
+            viewer.setItemOnCursor(new ItemStack(Material.AIR));
+
+            populateBottomInventory(viewer);
+
+            viewer.setItemOnCursor(cursor);
+        }
+
+        if (!super.updating) {
+            throw new AssertionError("Gui#isUpdating became false before Gui#update finished");
+        }
+
+        super.updating = false;
+    }
+
+    @Override
+    public void show(@NotNull HumanEntity humanEntity) {
+        if (super.inventory == null) {
+            update();
+        }
+
+        populateBottomInventory(humanEntity);
+
+        humanEntity.openInventory(getInventory());
+    }
+
+    /**
+     * Populates the inventory of the {@link HumanEntity} if needed.
+     *
+     * @param humanEntity the human entity
+     * @since 0.11.4
+     */
+    private void populateBottomInventory(@NotNull HumanEntity humanEntity) {
+        int height = getInventoryComponent().getHeight();
+        InventoryComponent bottomComponent = getInventoryComponent().excludeRows(0, height - 5);
 
         if (bottomComponent.hasItem()) {
             HumanEntityCache humanEntityCache = getHumanEntityCache();
@@ -135,8 +176,6 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
 
             bottomComponent.placeItems(humanEntity.getInventory(), 0);
         }
-
-        humanEntity.openInventory(getInventory());
     }
 
     @NotNull
