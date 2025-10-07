@@ -77,7 +77,7 @@
             <dependency>
                 <groupId>net.kyori</groupId>
                 <artifactId>adventure-text-serializer-plain</artifactId>
-                <version>4.24.0</version>
+                <version>4.25.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
