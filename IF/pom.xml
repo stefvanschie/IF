@@ -5,7 +5,7 @@
     <parent>
         <artifactId>IF-parent</artifactId>
         <groupId>com.github.stefvanschie.inventoryframework</groupId>
-        <version>0.11.4-SNAPSHOT</version>
+        <version>0.11.4</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -232,7 +232,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.20.3-R0.1-SNAPSHOT</version>
+            <version>1.20.3-R0.1-20231207.085553-9</version>
             <scope>provided</scope>
             <exclusions>
                 <!-- Provided, but not accessible -->
