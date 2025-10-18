@@ -49,7 +49,7 @@
 
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF-parent</artifactId>
-    <version>0.11.5-SNAPSHOT</version>
+    <version>0.11.5</version>
     <packaging>pom</packaging>
 
     <name>IF</name>
