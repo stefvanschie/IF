@@ -1,4 +1,4 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21_9;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_9_10;
 
 import com.github.stefvanschie.inventoryframework.abstraction.BeaconInventory;
 import net.minecraft.core.BlockPos;
@@ -21,9 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal beacon inventory for 1.21.9
+ * Internal beacon inventory for 1.21.9 - 1.21.10
  *
- * @since 0.11.4
+ * @since 0.11.5
  */
 public class BeaconInventoryImpl extends BeaconInventory {
 
@@ -72,14 +72,14 @@ public class BeaconInventoryImpl extends BeaconInventory {
      * provider, CraftBukkit will allow us to create a custom menu, rather than picking one of the built-in options.
      * That way, we can provide a menu with custom behaviour.
      *
-     * @since 0.11.4
+     * @since 0.11.5
      */
     private abstract static class InventoryViewProvider extends SimpleContainer implements MenuProvider {
 
         /**
          * Creates a new inventory view provider with one slot.
          *
-         * @since 0.11.4
+         * @since 0.11.5
          */
         public InventoryViewProvider() {
             super(1);
@@ -89,7 +89,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
     /**
      * A custom container beacon.
      *
-     * @since 0.11.4
+     * @since 0.11.5
      */
     private static class ContainerBeaconImpl extends BeaconMenu {
 
@@ -118,7 +118,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
          * @param containerId the container id
          * @param player the player
          * @param inputSlot the input slot
-         * @since 0.11.4
+         * @since 0.11.5
          */
         public ContainerBeaconImpl(int containerId, @NotNull Player player, @NotNull SimpleContainer inputSlot) {
             super(containerId, player.getInventory(), new SimpleContainerData(3),

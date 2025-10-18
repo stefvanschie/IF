@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21_9;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_9_10;
 
 import com.github.stefvanschie.inventoryframework.abstraction.MerchantInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_21_9.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_9_10.util.TextHolderUtil;
 import net.minecraft.core.component.DataComponentExactPredicate;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,9 +36,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Internal merchant inventory for 1.21.9
+ * Internal merchant inventory for 1.21.9 - 1.21.10
  *
- * @since 0.11.4
+ * @since 0.11.5
  */
 public class MerchantInventoryImpl extends MerchantInventory {
 
@@ -139,7 +139,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
      *
      * @param itemStack the item stack to convert
      * @return the item cost
-     * @since 0.11.4
+     * @since 0.11.5
      */
     @NotNull
     @Contract(value = "_ -> new", pure = true)
@@ -154,7 +154,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
      *
      * @param player the player to get the server player from
      * @return the server player
-     * @since 0.11.4
+     * @since 0.11.5
      */
     @NotNull
     @Contract(pure = true)
@@ -167,7 +167,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
      *
      * @param nmsPlayer the player to get the containerId id for
      * @return the containerId id
-     * @since 0.11.4
+     * @since 0.11.5
      */
     @Contract(pure = true)
     private int getContainerId(@NotNull net.minecraft.world.entity.player.Player nmsPlayer) {
@@ -179,7 +179,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
      * provider, CraftBukkit will allow us to create a custom menu, rather than picking one of the built-in options.
      * That way, we can provide a menu with custom behaviour.
      *
-     * @since 0.11.4
+     * @since 0.11.5
      */
     private abstract static class InventoryViewProvider extends MerchantContainer implements MenuProvider {
 
@@ -187,7 +187,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
          * Creates a new inventory view provider with two slots.
          *
          * @param merchant the merchant
-         * @since 0.11.4
+         * @since 0.11.5
          */
         public InventoryViewProvider(@NotNull Merchant merchant) {
             super(merchant);
@@ -197,7 +197,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
     /**
      * A custom container merchant
      *
-     * @since 0.11.4
+     * @since 0.11.5
      */
     private static class ContainerMerchantImpl extends MerchantMenu {
 
@@ -233,7 +233,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
          * @param player      the player
          * @param container   the items slots
          * @param merchant the merchant
-         * @since 0.11.4
+         * @since 0.11.5
          */
         public ContainerMerchantImpl(
                 int containerId,
@@ -307,7 +307,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
          *
          * @param slotIndex the slot index to update
          * @param container the container of the new slot
-         * @since 0.11.4
+         * @since 0.11.5
          */
         private void updateSlot(int slotIndex, @NotNull Container container) {
             Slot slot = super.slots.get(slotIndex);
