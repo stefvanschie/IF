@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21_9;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_9_10;
 
 import com.github.stefvanschie.inventoryframework.abstraction.GrindstoneInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_21_9.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_9_10.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.CompoundContainer;
@@ -24,9 +24,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal grindstone inventory for 1.21.9
+ * Internal grindstone inventory for 1.21.9 - 1.21.10
  *
- * @since 0.11.4
+ * @since 0.11.5
  */
 public class GrindstoneInventoryImpl extends GrindstoneInventory {
 
@@ -76,14 +76,14 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
      * provider, CraftBukkit will allow us to create a custom menu, rather than picking one of the built-in options.
      * That way, we can provide a menu with custom behaviour.
      *
-     * @since 0.11.4
+     * @since 0.11.5
      */
     private abstract static class InventoryViewProvider extends SimpleContainer implements MenuProvider {
 
         /**
          * Creates a new inventory view provider with two slots.
          *
-         * @since 0.11.4
+         * @since 0.11.5
          */
         public InventoryViewProvider() {
             super(2);
@@ -93,7 +93,7 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
     /**
      * A custom container grindstone.
      *
-     * @since 0.11.4
+     * @since 0.11.5
      */
     private static class ContainerGrindstoneImpl extends GrindstoneMenu {
 
@@ -129,7 +129,7 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
          * @param player the player
          * @param itemsSlots the items slots
          * @param resultSlot the result slot
-         * @since 0.11.4
+         * @since 0.11.5
          */
         public ContainerGrindstoneImpl(
                 int containerId,
@@ -181,7 +181,7 @@ public class GrindstoneInventoryImpl extends GrindstoneInventory {
          *
          * @param slotIndex the slot index to update
          * @param container the container of the new slot
-         * @since 0.11.4
+         * @since 0.11.5
          */
         private void updateSlot(int slotIndex, @NotNull Container container) {
             Slot slot = super.slots.get(slotIndex);

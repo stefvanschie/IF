@@ -1,8 +1,8 @@
-package com.github.stefvanschie.inventoryframework.nms.v1_21_9;
+package com.github.stefvanschie.inventoryframework.nms.v1_21_9_10;
 
 import com.github.stefvanschie.inventoryframework.abstraction.AnvilInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.nms.v1_21_9.util.TextHolderUtil;
+import com.github.stefvanschie.inventoryframework.nms.v1_21_9_10.util.TextHolderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.CompoundContainer;
@@ -21,9 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Internal anvil inventory for 1.21.9
+ * Internal anvil inventory for 1.21.9 - 1.21.10
  *
- * @since 0.11.4
+ * @since 0.11.5
  */
 public class AnvilInventoryImpl extends AnvilInventory {
 
@@ -72,14 +72,14 @@ public class AnvilInventoryImpl extends AnvilInventory {
      * provider, CraftBukkit will allow us to create a custom menu, rather than picking one of the built-in options.
      * That way, we can provide a menu with custom behaviour.
      *
-     * @since 0.11.4
+     * @since 0.11.5
      */
     private abstract static class InventoryViewProvider extends SimpleContainer implements MenuProvider {}
 
     /**
      * A custom container anvil for responding to item renaming
      *
-     * @since 0.11.4
+     * @since 0.11.5
      */
     private class ContainerAnvilImpl extends AnvilMenu {
 
@@ -109,7 +109,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
          * @param player the player
          * @param inputSlots the input slots
          * @param resultSlot the result slot
-         * @since 0.11.4
+         * @since 0.11.5
          */
         public ContainerAnvilImpl(
                 int containerId,
@@ -211,7 +211,7 @@ public class AnvilInventoryImpl extends AnvilInventory {
          *
          * @param slotIndex the slot index to update
          * @param container the container of the new slot
-         * @since 0.11.4
+         * @since 0.11.5
          */
         private void updateSlot(int slotIndex, @NotNull Container container) {
             Slot slot = super.slots.get(slotIndex);
