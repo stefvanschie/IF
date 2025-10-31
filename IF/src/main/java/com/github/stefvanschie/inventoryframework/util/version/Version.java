@@ -238,6 +238,17 @@ public enum Version {
     }
 
     /**
+     * Checks if this version is older than the provided version.
+     *
+     * @param version the version to check if it is newer
+     * @return true if this version is older, false otherwise
+     * @since 0.11.6
+     */
+    public boolean isOlderThan(@NotNull Version version) {
+        return ordinal() < version.ordinal();
+    }
+
+    /**
      * Checks whether modern smithing tables exist on this version. Returns true if they do, otherwise false.
      *
      * @return true if modern smithing tables are available
