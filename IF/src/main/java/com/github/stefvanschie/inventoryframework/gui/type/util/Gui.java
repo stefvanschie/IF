@@ -8,6 +8,7 @@ import com.github.stefvanschie.inventoryframework.pane.*;
 import com.github.stefvanschie.inventoryframework.pane.component.*;
 import com.github.stefvanschie.inventoryframework.util.TriFunction;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
+import com.github.stefvanschie.inventoryframework.util.version.Version;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -157,6 +158,11 @@ public abstract class Gui {
         this.plugin = plugin;
 
         if (!hasRegisteredListeners) {
+            /*This throws an exception if the version is unsupported. We want this thrown if our version is unsupported,
+              to prevent people opening guis that do not behave correctly. */
+            //noinspection ResultOfMethodCallIgnored
+            Version.getVersion();
+
             Bukkit.getPluginManager().registerEvents(new GuiListener(plugin), plugin);
 
             hasRegisteredListeners = true;
