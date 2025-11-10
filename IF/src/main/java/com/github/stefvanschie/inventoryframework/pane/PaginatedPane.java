@@ -458,12 +458,13 @@ public class PaginatedPane extends Pane {
 
             Pane.load(paginatedPane, instance, element);
 
-            if (element.hasAttribute("populate"))
-                return paginatedPane;
-
             if (element.hasAttribute("id")) {
                 element.setIdAttribute("id", true);
                 element.setUserData("pane", paginatedPane, null);
+            }
+
+            if (element.hasAttribute("populate")) {
+                return paginatedPane;
             }
 
             int pageCount = 0;
