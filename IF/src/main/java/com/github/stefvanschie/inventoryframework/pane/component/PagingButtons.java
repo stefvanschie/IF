@@ -50,6 +50,11 @@ public class PagingButtons extends Pane {
     private GuiItem forwardButton;
 
     /**
+     * Whether to keep the backward/forward button always visible
+     */
+    private boolean keepButtonsVisible;
+
+    /**
      * The plugin with which the items were created.
      */
     @NotNull
@@ -86,6 +91,7 @@ public class PagingButtons extends Pane {
         
         this.backwardButton = new GuiItem(new ItemStack(Material.ARROW), plugin);
         this.forwardButton = new GuiItem(new ItemStack(Material.ARROW), plugin);
+        this.keepButtonsVisible = false;
     }
 
     /**
@@ -235,21 +241,25 @@ public class PagingButtons extends Pane {
         }
 
         if (matchesItem(this.backwardButton, itemStack)) {
-            this.pages.setPage(this.pages.getPage() - 1);
+            try {
+                this.pages.setPage(this.pages.getPage() - 1);
 
-            this.backwardButton.callAction(event);
+                this.backwardButton.callAction(event);
 
-            gui.update();
+                gui.update();
+            } catch (ArrayIndexOutOfBoundsException ignored) {}
 
             return true;
         }
 
         if (matchesItem(this.forwardButton, itemStack)) {
-            this.pages.setPage(this.pages.getPage() + 1);
+            try {
+                this.pages.setPage(this.pages.getPage() + 1);
 
-            this.forwardButton.callAction(event);
+                this.forwardButton.callAction(event);
 
-            gui.update();
+                gui.update();
+            } catch (ArrayIndexOutOfBoundsException ignored) {}
 
             return true;
         }
@@ -270,11 +280,11 @@ public class PagingButtons extends Pane {
         int x = super.slot.getX(length) + paneOffsetX;
         int y = super.slot.getY(length) + paneOffsetY;
 
-        if (this.pages.getPage() > 0) {
+        if (this.keepButtonsVisible || this.pages.getPage() > 0) {
             inventoryComponent.setItem(this.backwardButton, x, y);
         }
 
-        if (this.pages.getPage() < this.pages.getPages() - 1) {
+        if (this.keepButtonsVisible || this.pages.getPage() < this.pages.getPages() - 1) {
             inventoryComponent.setItem(this.forwardButton, x + length - 1, y);
         }
     }
@@ -333,6 +343,16 @@ public class PagingButtons extends Pane {
      */
     public void setForwardButton(@NotNull GuiItem item) {
         this.forwardButton = item;
+    }
+
+    /**
+     * Allow to always keep the backward & forward buttons visible when on the first and last page
+     *
+     * @param visible Whether to keep the buttons visible
+     * @since 0.11.6
+     */
+    public void setButtonsAlwaysVisible(boolean visible) {
+        this.keepButtonsVisible = visible;
     }
 
     @NotNull
