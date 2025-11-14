@@ -113,8 +113,13 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
         super.updating = true;
 
         if (isDirty() || dirtyRows) {
+            Inventory oldInventory = this.inventory;
             this.inventory = createInventory();
             this.dirtyRows = false;
+
+            for (HumanEntity viewer : new ArrayList<>(oldInventory.getViewers())) {
+                viewer.openInventory(this.inventory);
+            }
 
             markChanges();
         }

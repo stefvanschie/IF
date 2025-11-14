@@ -2,6 +2,7 @@ package com.github.stefvanschie.inventoryframework.gui;
 
 import com.github.stefvanschie.inventoryframework.gui.type.*;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
+import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.util.InventoryViewUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
@@ -223,7 +224,7 @@ public class GuiListener implements Listener {
     public void onInventoryClose(@NotNull InventoryCloseEvent event) {
         Gui gui = getGui(event.getInventory());
 
-        if (gui == null) {
+        if (gui == null || isNamedGuiUpdatingDirtily(gui)) {
             return;
         }
 
@@ -255,7 +256,7 @@ public class GuiListener implements Listener {
     public void onInventoryOpen(@NotNull InventoryOpenEvent event) {
         Gui gui = getGui(event.getInventory());
 
-        if (gui == null) {
+        if (gui == null || isNamedGuiUpdatingDirtily(gui)) {
             return;
         }
 
@@ -317,4 +318,9 @@ public class GuiListener implements Listener {
 
         return null;
     }
+
+    private @NotNull Boolean isNamedGuiUpdatingDirtily(@NotNull Gui gui) {
+        return gui.isUpdating() && gui instanceof NamedGui && ((NamedGui) gui).isDirty();
+    }
+
 }
