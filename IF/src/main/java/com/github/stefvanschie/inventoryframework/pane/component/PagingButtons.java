@@ -346,7 +346,7 @@ public class PagingButtons extends Pane {
     }
 
     /**
-     * Allow to always keep the backward & forward buttons visible when on the first and last page
+     * Allow to always keep the backward and forward buttons visible when on the first and last page
      *
      * @param visible Whether to keep the buttons visible
      * @since 0.11.6
