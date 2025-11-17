@@ -112,7 +112,15 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
         super.updating = true;
 
         if (isDirty()) {
+            Inventory oldInventory = this.inventory;
             this.inventory = createInventory();
+
+            if (oldInventory != null) {
+                for (HumanEntity viewer : new ArrayList<>(oldInventory.getViewers())) {
+                    viewer.openInventory(this.inventory);
+                }
+            }
+
             markChanges();
         }
 

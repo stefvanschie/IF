@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a gui in the form of a smithing table. This is the ;egacy variant with two input slots, available prior to
+ * Represents a gui in the form of a smithing table. This is the legacy variant with two input slots, available prior to
  * Minecraft 1.20.
  *
  * @since 0.8.0
@@ -122,7 +122,15 @@ public class SmithingTableGui extends NamedGui implements InventoryBased {
         super.updating = true;
 
         if (isDirty()) {
+            Inventory oldInventory = this.inventory;
             this.inventory = createInventory();
+
+            if (oldInventory != null) {
+                for (HumanEntity viewer : new ArrayList<>(oldInventory.getViewers())) {
+                    viewer.openInventory(this.inventory);
+                }
+            }
+
             markChanges();
         }
 

@@ -319,8 +319,10 @@ public class GuiListener implements Listener {
         return null;
     }
 
-    private @NotNull Boolean isNamedGuiUpdatingDirtily(@NotNull Gui gui) {
-        return gui.isUpdating() && gui instanceof NamedGui && ((NamedGui) gui).isDirty();
+    private boolean isNamedGuiUpdatingDirtily(@NotNull Gui gui) {
+        boolean dirtyTitle = gui instanceof NamedGui && (((NamedGui) gui).isDirty());
+        boolean dirtyRows = gui instanceof ChestGui && ((ChestGui) gui).isDirtyRows();
+        return gui.isUpdating() && (dirtyTitle || dirtyRows);
     }
 
 }
