@@ -117,8 +117,10 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
             this.inventory = createInventory();
             this.dirtyRows = false;
 
-            for (HumanEntity viewer : new ArrayList<>(oldInventory.getViewers())) {
-                viewer.openInventory(this.inventory);
+            if (oldInventory != null) {
+                for (HumanEntity viewer : new ArrayList<>(oldInventory.getViewers())) {
+                    viewer.openInventory(this.inventory);
+                }
             }
 
             markChanges();
@@ -412,4 +414,9 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
     public static ChestGui load(@NotNull Object instance, @NotNull Element element) {
         return load(instance, element, JavaPlugin.getProvidingPlugin(ChestGui.class));
     }
+
+    public boolean isDirtyRows() {
+        return dirtyRows;
+    }
+
 }
