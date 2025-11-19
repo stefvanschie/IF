@@ -61,9 +61,14 @@ public interface Slot {
 
             try {
                 x = Integer.parseInt(element.getAttribute("x"));
+            } catch (NumberFormatException exception) {
+                throw new XMLLoadException("The x attribute does not have an integer as value", exception);
+            }
+
+            try {
                 y = Integer.parseInt(element.getAttribute("y"));
             } catch (NumberFormatException exception) {
-                throw new XMLLoadException("The x or y attribute does not have an integer as value");
+                throw new XMLLoadException("The y attribute does not have an integer as value", exception);
             }
 
             return Slot.fromXY(x, y);
@@ -75,7 +80,7 @@ public interface Slot {
             try {
                 index = Integer.parseInt(element.getAttribute("index"));
             } catch (NumberFormatException exception) {
-                throw new XMLLoadException("The index attribute does not have an integer as value");
+                throw new XMLLoadException("The index attribute does not have an integer as value", exception);
             }
 
             return Slot.fromIndex(index);

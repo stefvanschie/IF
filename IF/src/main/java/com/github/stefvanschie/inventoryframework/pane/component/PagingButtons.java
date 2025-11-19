@@ -382,12 +382,16 @@ public class PagingButtons extends Pane {
     @NotNull
     @Contract(pure = true)
     public static PagingButtons load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
+        if (!element.hasAttribute("length")) {
+            throw new XMLLoadException("Paging buttons XML tag does not have the mandatory length attribute");
+        }
+
         int length;
 
         try {
             length = Integer.parseInt(element.getAttribute("length"));
         } catch (NumberFormatException exception) {
-            throw new XMLLoadException(exception);
+            throw new XMLLoadException("Length attribute is not an integer", exception);
         }
 
         if (!element.hasAttribute("pages")) {

@@ -463,13 +463,27 @@ public class ToggleButton extends Pane {
     @NotNull
     @Contract(pure = true)
     public static ToggleButton load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
-        int length, height;
+        if (!element.hasAttribute("length")) {
+            throw new XMLLoadException("Toggle button XML tag does not have the mandatory length attribute");
+        }
+
+        if (!element.hasAttribute("height")) {
+            throw new XMLLoadException("Toggle button XML tag does not have the mandatory height attribute");
+        }
+
+        int length;
+        int height;
 
         try {
             length = Integer.parseInt(element.getAttribute("length"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException("Length attribute is not an integer", exception);
+        }
+
+        try {
             height = Integer.parseInt(element.getAttribute("height"));
         } catch (NumberFormatException exception) {
-            throw new XMLLoadException(exception);
+            throw new XMLLoadException("Height attribute is not an integer", exception);
         }
 
         boolean enabled = element.hasAttribute("enabled") && Boolean.parseBoolean(element.getAttribute("enabled"));

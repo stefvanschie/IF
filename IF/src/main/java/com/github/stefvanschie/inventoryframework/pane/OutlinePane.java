@@ -535,48 +535,73 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
      */
     @NotNull
     public static OutlinePane load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
-        try {
-            OutlinePane outlinePane = new OutlinePane(
-                Integer.parseInt(element.getAttribute("length")),
-                Integer.parseInt(element.getAttribute("height"))
-            );
-
-            if (element.hasAttribute("gap"))
-                outlinePane.setGap(Integer.parseInt(element.getAttribute("gap")));
-
-            if (element.hasAttribute("repeat"))
-                outlinePane.setRepeat(Boolean.parseBoolean(element.getAttribute("repeat")));
-
-            if (element.hasAttribute("alignment")) {
-                outlinePane.align(Alignment.valueOf(element.getAttribute("alignment").toUpperCase()));
-            }
-
-            Pane.load(outlinePane, instance, element);
-            Flippable.load(outlinePane, element);
-            Orientable.load(outlinePane, element);
-            Rotatable.load(outlinePane, element);
-
-            if (element.hasAttribute("populate"))
-                return outlinePane;
-
-            NodeList childNodes = element.getChildNodes();
-
-            for (int i = 0; i < childNodes.getLength(); i++) {
-                Node item = childNodes.item(i);
-
-                if (item.getNodeType() != Node.ELEMENT_NODE)
-                    continue;
-
-                if (item.getNodeName().equals("empty"))
-                    outlinePane.addItem(new GuiItem(new ItemStack(Material.AIR), plugin));
-                else
-                    outlinePane.addItem(Pane.loadItem(instance, (Element) item, plugin));
-            }
-
-            return outlinePane;
-        } catch (NumberFormatException exception) {
-            throw new XMLLoadException(exception);
+        if (!element.hasAttribute("length")) {
+            throw new XMLLoadException("Outline pane XML tag does not have the mandatory length attribute");
         }
+
+        if (!element.hasAttribute("height")) {
+            throw new XMLLoadException("Outline pane XML tag does not have the mandatory height attribute");
+        }
+
+        int length;
+        int height;
+
+        try {
+            length = Integer.parseInt(element.getAttribute("length"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException("Length attribute is not an integer", exception);
+        }
+
+        try {
+            height = Integer.parseInt(element.getAttribute("height"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException("Height attribute is not an integer", exception);
+        }
+
+        OutlinePane outlinePane = new OutlinePane(length, height);
+
+        if (element.hasAttribute("gap")) {
+            try {
+                outlinePane.setGap(Integer.parseInt(element.getAttribute("gap")));
+            } catch (NumberFormatException exception) {
+                throw new XMLLoadException("Gap attribute is not an integer", exception);
+            }
+        }
+
+        if (element.hasAttribute("repeat"))
+            outlinePane.setRepeat(Boolean.parseBoolean(element.getAttribute("repeat")));
+
+        if (element.hasAttribute("alignment")) {
+            try {
+                outlinePane.align(Alignment.valueOf(element.getAttribute("alignment").toUpperCase()));
+            } catch (IllegalArgumentException exception) {
+                throw new XMLLoadException("Alignment attribute is not a proper value", exception);
+            }
+        }
+
+        Pane.load(outlinePane, instance, element);
+        Flippable.load(outlinePane, element);
+        Orientable.load(outlinePane, element);
+        Rotatable.load(outlinePane, element);
+
+        if (element.hasAttribute("populate"))
+            return outlinePane;
+
+        NodeList childNodes = element.getChildNodes();
+
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node item = childNodes.item(i);
+
+            if (item.getNodeType() != Node.ELEMENT_NODE)
+                continue;
+
+            if (item.getNodeName().equals("empty"))
+                outlinePane.addItem(new GuiItem(new ItemStack(Material.AIR), plugin));
+            else
+                outlinePane.addItem(Pane.loadItem(instance, (Element) item, plugin));
+        }
+
+        return outlinePane;
     }
 
     /**

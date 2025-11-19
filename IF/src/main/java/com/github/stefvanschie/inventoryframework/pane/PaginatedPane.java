@@ -450,53 +450,69 @@ public class PaginatedPane extends Pane {
      */
     @NotNull
     public static PaginatedPane load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
+        if (!element.hasAttribute("length")) {
+            throw new XMLLoadException("Paginated pane XML tag does not have the mandatory length attribute");
+        }
+
+        if (!element.hasAttribute("height")) {
+            throw new XMLLoadException("Paginated pane XML tag does not have the mandatory height attribute");
+        }
+
+        int length;
+        int height;
+
         try {
-            PaginatedPane paginatedPane = new PaginatedPane(
-                Integer.parseInt(element.getAttribute("length")),
-                Integer.parseInt(element.getAttribute("height"))
-            );
+            length = Integer.parseInt(element.getAttribute("length"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException("Length attribute is not an integer", exception);
+        }
 
-            Pane.load(paginatedPane, instance, element);
+        try {
+            height = Integer.parseInt(element.getAttribute("height"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException("Height attribute is not an integer", exception);
+        }
 
-            if (element.hasAttribute("id")) {
-                element.setIdAttribute("id", true);
-                element.setUserData("pane", paginatedPane, null);
-            }
+        PaginatedPane paginatedPane = new PaginatedPane(length, height);
 
-            if (element.hasAttribute("populate")) {
-                return paginatedPane;
-            }
+        Pane.load(paginatedPane, instance, element);
 
-            int pageCount = 0;
+        if (element.hasAttribute("id")) {
+            element.setIdAttribute("id", true);
+            element.setUserData("pane", paginatedPane, null);
+        }
 
-            NodeList childNodes = element.getChildNodes();
-            for (int i = 0; i < childNodes.getLength(); i++) {
-                Node item = childNodes.item(i);
-                if (item.getNodeType() != Node.ELEMENT_NODE)
+        if (element.hasAttribute("populate")) {
+            return paginatedPane;
+        }
+
+        int pageCount = 0;
+
+        NodeList childNodes = element.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node item = childNodes.item(i);
+            if (item.getNodeType() != Node.ELEMENT_NODE)
+                continue;
+
+            if(!item.getNodeName().equals("page"))
+                throw new XMLLoadException("Panes have to be inside page tag");
+
+            NodeList innerNodes = item.getChildNodes();
+
+            for (int j = 0; j < innerNodes.getLength(); j++) {
+                Node pane = innerNodes.item(j);
+
+                if (pane.getNodeType() != Node.ELEMENT_NODE) {
                     continue;
-
-                if(!item.getNodeName().equals("page"))
-                    throw new XMLLoadException("Panes have to be inside page tag");
-
-                NodeList innerNodes = item.getChildNodes();
-
-                for (int j = 0; j < innerNodes.getLength(); j++) {
-                    Node pane = innerNodes.item(j);
-
-                    if (pane.getNodeType() != Node.ELEMENT_NODE) {
-                        continue;
-                    }
-
-					paginatedPane.addPane(pageCount, Gui.loadPane(instance, pane, plugin));
                 }
 
-                pageCount++;
+                paginatedPane.addPane(pageCount, Gui.loadPane(instance, pane, plugin));
             }
 
-            return paginatedPane;
-        } catch (NumberFormatException exception) {
-            throw new XMLLoadException(exception);
+            pageCount++;
         }
+
+        return paginatedPane;
     }
 
     /**

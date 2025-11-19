@@ -1,5 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
+import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -45,7 +46,11 @@ public interface Rotatable {
      */
     static void load(@NotNull Rotatable rotatable, @NotNull Element element) {
         if (element.hasAttribute("rotation")) {
-            rotatable.setRotation(Integer.parseInt(element.getAttribute("rotation")));
+            try {
+                rotatable.setRotation(Integer.parseInt(element.getAttribute("rotation")));
+            } catch (NumberFormatException exception) {
+                throw new XMLLoadException("Rotation attribute is not an integer", exception);
+            }
         }
     }
 }

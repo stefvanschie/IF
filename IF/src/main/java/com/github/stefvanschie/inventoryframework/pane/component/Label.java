@@ -316,14 +316,27 @@ public class Label extends OutlinePane {
     @NotNull
     @Contract(pure = true)
     public static Label load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
+        if (!element.hasAttribute("length")) {
+            throw new XMLLoadException("Label XML tag does not have the mandatory length attribute");
+        }
+
+        if (!element.hasAttribute("height")) {
+            throw new XMLLoadException("Label XML tag does not have the mandatory height attribute");
+        }
+
         int length;
         int height;
 
         try {
             length = Integer.parseInt(element.getAttribute("length"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException("Length attribute is not an integer", exception);
+        }
+
+        try {
             height = Integer.parseInt(element.getAttribute("height"));
         } catch (NumberFormatException exception) {
-            throw new XMLLoadException(exception);
+            throw new XMLLoadException("Height attribute is not an integer", exception);
         }
 
         Font font = null;

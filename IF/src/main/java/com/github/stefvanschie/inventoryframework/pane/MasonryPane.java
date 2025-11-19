@@ -290,35 +290,51 @@ public class MasonryPane extends Pane implements Orientable {
      */
     @NotNull
     public static MasonryPane load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
-        try {
-            MasonryPane masonryPane = new MasonryPane(
-                Integer.parseInt(element.getAttribute("length")),
-                Integer.parseInt(element.getAttribute("height"))
-            );
-
-            Pane.load(masonryPane, instance, element);
-            Orientable.load(masonryPane, element);
-
-            if (element.hasAttribute("populate")) {
-                return masonryPane;
-            }
-
-            NodeList childNodes = element.getChildNodes();
-
-            for (int j = 0; j < childNodes.getLength(); j++) {
-                Node pane = childNodes.item(j);
-
-                if (pane.getNodeType() != Node.ELEMENT_NODE) {
-                    continue;
-                }
-
-                masonryPane.addPane(Gui.loadPane(instance, pane, plugin));
-            }
-
-            return masonryPane;
-        } catch (NumberFormatException exception) {
-            throw new XMLLoadException(exception);
+        if (!element.hasAttribute("length")) {
+            throw new XMLLoadException("Masonry pane XML tag does not have the mandatory length attribute");
         }
+
+        if (!element.hasAttribute("height")) {
+            throw new XMLLoadException("Masonry pane XML tag does not have the mandatory height attribute");
+        }
+
+        int length;
+        int height;
+
+        try {
+            length = Integer.parseInt(element.getAttribute("length"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException("Length attribute is not an integer", exception);
+        }
+
+        try {
+            height = Integer.parseInt(element.getAttribute("height"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException("Height attribute is not an integer", exception);
+        }
+
+        MasonryPane masonryPane = new MasonryPane(length, height);
+
+        Pane.load(masonryPane, instance, element);
+        Orientable.load(masonryPane, element);
+
+        if (element.hasAttribute("populate")) {
+            return masonryPane;
+        }
+
+        NodeList childNodes = element.getChildNodes();
+
+        for (int j = 0; j < childNodes.getLength(); j++) {
+            Node pane = childNodes.item(j);
+
+            if (pane.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
+
+            masonryPane.addPane(Gui.loadPane(instance, pane, plugin));
+        }
+
+        return masonryPane;
     }
 
     /**

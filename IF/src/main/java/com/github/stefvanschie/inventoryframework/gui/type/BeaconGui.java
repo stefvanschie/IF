@@ -261,10 +261,6 @@ public class BeaconGui extends Gui implements InventoryBased {
      */
     @NotNull
     public static BeaconGui load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
-        if (!element.hasAttribute("title")) {
-            throw new XMLLoadException("Provided XML element's gui tag doesn't have the mandatory title attribute set");
-        }
-
         BeaconGui beaconGui = new BeaconGui(plugin);
         beaconGui.initializeOrThrow(instance, element);
 

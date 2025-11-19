@@ -428,36 +428,52 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	 */
 	@NotNull
 	public static StaticPane load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
-		try {
-			StaticPane staticPane = new StaticPane(
-				Integer.parseInt(element.getAttribute("length")),
-				Integer.parseInt(element.getAttribute("height"))
-            );
+        if (!element.hasAttribute("length")) {
+            throw new XMLLoadException("Cycle button XML tag does not have the mandatory length attribute");
+        }
 
-			Pane.load(staticPane, instance, element);
-			Flippable.load(staticPane, element);
-			Rotatable.load(staticPane, element);
+        if (!element.hasAttribute("height")) {
+            throw new XMLLoadException("Cycle button XML tag does not have the mandatory height attribute");
+        }
 
-			if (element.hasAttribute("populate"))
-				return staticPane;
+        int length;
+        int height;
 
-			NodeList childNodes = element.getChildNodes();
+        try {
+            length = Integer.parseInt(element.getAttribute("length"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException("Length attribute is not an integer", exception);
+        }
 
-			for (int i = 0; i < childNodes.getLength(); i++) {
-				Node item = childNodes.item(i);
+        try {
+            height = Integer.parseInt(element.getAttribute("height"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException("Height attribute is not an integer", exception);
+        }
 
-				if (item.getNodeType() != Node.ELEMENT_NODE)
-					continue;
+        StaticPane staticPane = new StaticPane(length, height);
 
-				Element child = (Element) item;
+        Pane.load(staticPane, instance, element);
+        Flippable.load(staticPane, element);
+        Rotatable.load(staticPane, element);
 
-				staticPane.addItem(Pane.loadItem(instance, child, plugin), Slot.deserialize(child));
-			}
+        if (element.hasAttribute("populate"))
+            return staticPane;
 
-			return staticPane;
-		} catch (NumberFormatException exception) {
-			throw new XMLLoadException(exception);
-		}
+        NodeList childNodes = element.getChildNodes();
+
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node item = childNodes.item(i);
+
+            if (item.getNodeType() != Node.ELEMENT_NODE)
+                continue;
+
+            Element child = (Element) item;
+
+            staticPane.addItem(Pane.loadItem(instance, child, plugin), Slot.deserialize(child));
+        }
+
+        return staticPane;
 	}
 
     /**

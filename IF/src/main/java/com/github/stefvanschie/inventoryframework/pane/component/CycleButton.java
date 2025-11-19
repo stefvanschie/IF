@@ -208,14 +208,27 @@ public class CycleButton extends Pane {
      */
     @NotNull
     public static CycleButton load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
+        if (!element.hasAttribute("length")) {
+            throw new XMLLoadException("Cycle button XML tag does not have the mandatory length attribute");
+        }
+
+        if (!element.hasAttribute("height")) {
+            throw new XMLLoadException("Cycle button XML tag does not have the mandatory height attribute");
+        }
+
         int length;
         int height;
 
         try {
             length = Integer.parseInt(element.getAttribute("length"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException("Length attribute is not an integer", exception);
+        }
+
+        try {
             height = Integer.parseInt(element.getAttribute("height"));
         } catch (NumberFormatException exception) {
-            throw new XMLLoadException(exception);
+            throw new XMLLoadException("Height attribute is not an integer", exception);
         }
 
         CycleButton cycleButton = new CycleButton(length, height);

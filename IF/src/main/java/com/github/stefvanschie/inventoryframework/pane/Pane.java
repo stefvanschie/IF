@@ -381,10 +381,26 @@ public abstract class Pane {
             throw new XMLLoadException("Can't find material for '" + id + "'");
         }
 
-        boolean hasAmount = element.hasAttribute("amount");
         boolean hasDamage = element.hasAttribute("damage");
-        int amount = hasAmount ? Integer.parseInt(element.getAttribute("amount")) : 1;
-        short damage = hasDamage ? Short.parseShort(element.getAttribute("damage")) : 0;
+        int amount = 1;
+
+        if (element.hasAttribute("amount")) {
+            try {
+                amount = Integer.parseInt(element.getAttribute("amount"));
+            } catch (NumberFormatException exception) {
+                throw new XMLLoadException("Amount attribute is not an integer", exception);
+            }
+        }
+
+        short damage = 0;
+
+        if (element.hasAttribute("damage")) {
+            try {
+                amount = Short.parseShort(element.getAttribute("damage"));
+            } catch (NumberFormatException exception) {
+                throw new XMLLoadException("Damage attribute is not a short", exception);
+            }
+        }
 
         //noinspection deprecation
         ItemStack itemStack = new ItemStack(material, amount, damage);
@@ -426,8 +442,13 @@ public abstract class Pane {
                                         ? innerElementChild.getAttribute("type")
                                         : "string";
 
-                                properties.add(PROPERTY_MAPPINGS.get(propertyType).apply(innerElementChild
-                                        .getTextContent()));
+                                Function<String, Object> mapping = PROPERTY_MAPPINGS.get(propertyType);
+
+                                if (mapping == null) {
+                                    throw new XMLLoadException("Specified property type is not registered");
+                                }
+
+                                properties.add(mapping.apply(innerElementChild.getTextContent()));
                                 break;
                             case "lore":
                                 if (!innerNode.getNodeName().equals("line"))
@@ -441,6 +462,10 @@ public abstract class Pane {
                                 if (!innerNode.getNodeName().equals("enchantment"))
                                     continue;
 
+                                if (!innerElementChild.hasAttribute("id")) {
+                                    throw new XMLLoadException("Enchantment tag does not have mandatory id attribute");
+                                }
+
                                 Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(
                                     innerElementChild.getAttribute("id").toUpperCase(Locale.getDefault())
                                 ));
@@ -449,7 +474,19 @@ public abstract class Pane {
                                     throw new XMLLoadException("Enchantment cannot be found");
                                 }
 
-                                int level = Integer.parseInt(innerElementChild.getAttribute("level"));
+                                if (!element.hasAttribute("level")) {
+                                    throw new XMLLoadException(
+                                            "Enchantment tag does not have mandatory level attribute"
+                                    );
+                                }
+
+                                int level;
+
+                                try {
+                                    level = Integer.parseInt(innerElementChild.getAttribute("level"));
+                                } catch (NumberFormatException exception) {
+                                    throw new XMLLoadException("Level attribute is not an integer", exception);
+                                }
 
                                 itemMeta.addEnchant(enchantment, level, true);
                                 itemStack.setItemMeta(itemMeta);
@@ -466,7 +503,11 @@ public abstract class Pane {
                 } else if (nodeName.equals("modeldata")) {
                     ItemMeta itemMeta = Objects.requireNonNull(itemStack.getItemMeta());
 
-                    itemMeta.setCustomModelData(Integer.parseInt(item.getTextContent()));
+                    try {
+                        itemMeta.setCustomModelData(Integer.parseInt(item.getTextContent()));
+                    } catch (NumberFormatException exception) {
+                        throw new XMLLoadException("Modeldata tag does not contain an integer", exception);
+                    }
 
                     itemStack.setItemMeta(itemMeta);
                 } else if (nodeName.equals("skull") && itemStack.getItemMeta() instanceof SkullMeta) {
@@ -477,9 +518,13 @@ public abstract class Pane {
                         skullMeta.setOwner(elementItem.getAttribute("owner"));
                     else if (elementItem.hasAttribute("id")) {
                         SkullUtil.setSkull(skullMeta, elementItem.getAttribute("id"));
+                    } else {
+                        throw new XMLLoadException("Skull tag has neither an owner, nor an id attribute");
                     }
 
                     itemStack.setItemMeta(skullMeta);
+                } else {
+                    throw new XMLLoadException("Unknown node " + nodeName);
                 }
             }
         }
@@ -488,6 +533,9 @@ public abstract class Pane {
 
         if (element.hasAttribute("onClick")) {
             String methodName = element.getAttribute("onClick");
+
+            boolean found = false;
+
             for (Method method : instance.getClass().getMethods()) {
                 if (!method.getName().equals(methodName))
                     continue;
@@ -495,7 +543,7 @@ public abstract class Pane {
                 int parameterCount = method.getParameterCount();
                 Class<?>[] parameterTypes = method.getParameterTypes();
 
-                if (parameterCount == 0)
+                if (parameterCount == 0) {
                     action = event -> {
                         try {
                             //because reflection with lambdas is stupid
@@ -505,8 +553,9 @@ public abstract class Pane {
                             throw new XMLReflectionException(exception);
                         }
                     };
-                else if (parameterTypes[0].isAssignableFrom(InventoryClickEvent.class)) {
-                    if (parameterCount == 1)
+                    found = true;
+                } else if (parameterTypes[0].isAssignableFrom(InventoryClickEvent.class)) {
+                    if (parameterCount == 1) {
                         action = event -> {
                             try {
                                 //because reflection with lambdas is stupid
@@ -516,7 +565,8 @@ public abstract class Pane {
                                 throw new XMLReflectionException(exception);
                             }
                         };
-                    else if (parameterCount == properties.size() + 1) {
+                        found = true;
+                    } else if (parameterCount == properties.size() + 1) {
                         boolean correct = true;
 
                         for (int i = 0; i < properties.size(); i++) {
@@ -544,11 +594,16 @@ public abstract class Pane {
                                     throw new XMLReflectionException(exception);
                                 }
                             };
+                            found = true;
                         }
                     }
                 }
 
                 break;
+            }
+
+            if (!found) {
+                throw new XMLLoadException("Specified method could not be found");
             }
         }
 
@@ -582,8 +637,13 @@ public abstract class Pane {
     public static void load(@NotNull Pane pane, @NotNull Object instance, @NotNull Element element) {
         pane.setSlot(Slot.deserialize(element));
 
-        if (element.hasAttribute("priority"))
-            pane.setPriority(Priority.valueOf(element.getAttribute("priority").toUpperCase()));
+        if (element.hasAttribute("priority")) {
+            try {
+                pane.setPriority(Priority.valueOf(element.getAttribute("priority").toUpperCase()));
+            } catch (IllegalArgumentException exception) {
+                throw new XMLLoadException("Priority attribute is not a proper value", exception);
+            }
+        }
 
         if (element.hasAttribute("visible"))
             pane.setVisible(Boolean.parseBoolean(element.getAttribute("visible")));
@@ -596,6 +656,8 @@ public abstract class Pane {
 
         if (element.hasAttribute("populate")) {
             String attribute = element.getAttribute("populate");
+            boolean found = false;
+
             for (Method method: instance.getClass().getMethods()) {
                 if (!method.getName().equals(attribute))
                     continue;
@@ -606,6 +668,12 @@ public abstract class Pane {
                 } catch (IllegalAccessException | InvocationTargetException exception) {
                     throw new XMLLoadException(exception);
                 }
+
+                found = true;
+            }
+
+            if (!found) {
+                throw new XMLLoadException("Specified method could not be found");
             }
         }
     }

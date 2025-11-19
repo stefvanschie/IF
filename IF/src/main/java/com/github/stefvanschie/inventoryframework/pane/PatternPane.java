@@ -387,83 +387,98 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
      */
     @NotNull
     public static PatternPane load(@NotNull Object instance, @NotNull Element element, @NotNull Plugin plugin) {
-        try {
-            NodeList childNodes = element.getChildNodes();
+        NodeList childNodes = element.getChildNodes();
 
-            Pattern pattern = null;
-            Map<Integer, GuiItem> bindings = new HashMap<>();
+        Pattern pattern = null;
+        Map<Integer, GuiItem> bindings = new HashMap<>();
 
-            for (int i = 0; i < childNodes.getLength(); i++) {
-                Node item = childNodes.item(i);
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node item = childNodes.item(i);
 
-                if (item.getNodeType() != Node.ELEMENT_NODE) {
-                    continue;
-                }
-
-                Element child = (Element) item;
-                String name = item.getNodeName();
-
-                if (name.equals("pattern")) {
-                    pattern = Pattern.load(child);
-                } else if (name.equals("binding")) {
-                    String character = child.getAttribute("char");
-
-                    if (character == null) {
-                        throw new XMLLoadException("Missing char attribute on binding");
-                    }
-
-                    if (character.codePointCount(0, character.length()) != 1) {
-                        throw new XMLLoadException("Char attribute doesn't have one character");
-                    }
-
-                    NodeList children = child.getChildNodes();
-                    GuiItem guiItem = null;
-
-                    for (int index = 0; index < children.getLength(); index++) {
-                        Node guiItemNode = children.item(index);
-
-                        if (guiItemNode.getNodeType() != Node.ELEMENT_NODE) {
-                            continue;
-                        }
-
-                        if (guiItem != null) {
-                            throw new XMLLoadException("Binding has multiple inner tags, one expected");
-                        }
-
-                        guiItem = Pane.loadItem(instance, (Element) guiItemNode, plugin);
-                    }
-
-                    //guaranteed to only be a single code point
-                    bindings.put(character.codePoints().toArray()[0], guiItem);
-                } else {
-                    throw new XMLLoadException("Unknown tag " + name + " in pattern pane");
-                }
+            if (item.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
             }
 
-            if (pattern == null) {
-                throw new XMLLoadException("Pattern pane doesn't have a pattern");
-            }
+            Element child = (Element) item;
+            String name = item.getNodeName();
 
-            PatternPane patternPane = new PatternPane(
-                Integer.parseInt(element.getAttribute("length")),
-                Integer.parseInt(element.getAttribute("height")),
-                pattern
-            );
-
-            Pane.load(patternPane, instance, element);
-            Flippable.load(patternPane, element);
-            Rotatable.load(patternPane, element);
-
-            if (!element.hasAttribute("populate")) {
-                for (Map.Entry<Integer, GuiItem> entry : bindings.entrySet()) {
-                    patternPane.bindItem(entry.getKey(), entry.getValue());
+            if (name.equals("pattern")) {
+                pattern = Pattern.load(child);
+            } else if (name.equals("binding")) {
+                if (!child.hasAttribute("char")) {
+                    throw new XMLLoadException("Tag binding is missing char attribute");
                 }
-            }
 
-            return patternPane;
-        } catch (NumberFormatException exception) {
-            throw new XMLLoadException(exception);
+                String character = child.getAttribute("char");
+
+                if (character.codePointCount(0, character.length()) != 1) {
+                    throw new XMLLoadException("Char attribute doesn't have one character");
+                }
+
+                NodeList children = child.getChildNodes();
+                GuiItem guiItem = null;
+
+                for (int index = 0; index < children.getLength(); index++) {
+                    Node guiItemNode = children.item(index);
+
+                    if (guiItemNode.getNodeType() != Node.ELEMENT_NODE) {
+                        continue;
+                    }
+
+                    if (guiItem != null) {
+                        throw new XMLLoadException("Binding has multiple inner tags, one expected");
+                    }
+
+                    guiItem = Pane.loadItem(instance, (Element) guiItemNode, plugin);
+                }
+
+                //guaranteed to only be a single code point
+                bindings.put(character.codePoints().toArray()[0], guiItem);
+            } else {
+                throw new XMLLoadException("Unknown tag " + name + " in pattern pane");
+            }
         }
+
+        if (pattern == null) {
+            throw new XMLLoadException("Pattern pane doesn't have a pattern");
+        }
+
+        if (!element.hasAttribute("length")) {
+            throw new XMLLoadException("Pattern pane XML tag does not have the mandatory length attribute");
+        }
+
+        if (!element.hasAttribute("height")) {
+            throw new XMLLoadException("Pattern pane XML tag does not have the mandatory height attribute");
+        }
+
+        int length;
+        int height;
+
+        try {
+            length = Integer.parseInt(element.getAttribute("length"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException("Length attribute is not an integer", exception);
+        }
+
+        try {
+            height = Integer.parseInt(element.getAttribute("height"));
+        } catch (NumberFormatException exception) {
+            throw new XMLLoadException("Height attribute is not an integer", exception);
+        }
+
+        PatternPane patternPane = new PatternPane(length, height, pattern);
+
+        Pane.load(patternPane, instance, element);
+        Flippable.load(patternPane, element);
+        Rotatable.load(patternPane, element);
+
+        if (!element.hasAttribute("populate")) {
+            for (Map.Entry<Integer, GuiItem> entry : bindings.entrySet()) {
+                patternPane.bindItem(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return patternPane;
     }
 
     /**

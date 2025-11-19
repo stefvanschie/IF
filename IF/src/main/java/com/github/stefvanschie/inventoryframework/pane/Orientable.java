@@ -1,5 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
+import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -41,8 +42,12 @@ public interface Orientable {
      */
     static void load(@NotNull Orientable orientable, @NotNull Element element) {
         if (element.hasAttribute("orientation")) {
-            orientable.setOrientation(Orientation.valueOf(element.getAttribute("orientation")
-                .toUpperCase(Locale.getDefault())));
+            try {
+                orientable.setOrientation(Orientation.valueOf(element.getAttribute("orientation")
+                        .toUpperCase(Locale.getDefault())));
+            } catch (IllegalArgumentException exception) {
+                throw new XMLLoadException("Orientation does not have a proper value", exception);
+            }
         }
     }
 
