@@ -341,6 +341,8 @@ public class ToggleButton extends Pane {
             enabledPane.click(gui, inventoryComponent, event, slot, newX, newY, length, height);
         }
 
+        event.setCancelled(true);
+
         gui.update();
 
         return true;
