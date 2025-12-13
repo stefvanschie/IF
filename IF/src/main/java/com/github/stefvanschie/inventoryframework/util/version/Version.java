@@ -1,6 +1,10 @@
 package com.github.stefvanschie.inventoryframework.util.version;
 
 import com.github.stefvanschie.inventoryframework.exception.UnsupportedVersionException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.Contract;
@@ -225,6 +229,7 @@ public enum Version {
     private static final Collection<@NotNull Version> INTERFACE_INVENTORY_VIEW = EnumSet.of(
             V1_21_0, V1_21_1, V1_21_2_3, V1_21_4, V1_21_5, V1_21_6_8, V1_21_9_10
     );
+    private static final Logger log = LogManager.getLogger(Version.class);
 
     /**
      * Checks whether the {@link InventoryView} class is an interface on this version.
@@ -271,7 +276,7 @@ public enum Version {
 
     /**
      * Gets the version currently being used. If the used version is not supported, an
-     * {@link UnsupportedVersionException} will be thrown.
+     * the latest will be used.
      *
      * @return the version of the current instance
      * @since 0.8.0
@@ -342,7 +347,14 @@ public enum Version {
             case "1.21.10":
                 return V1_21_9_10;
             default:
-                throw new UnsupportedVersionException("The server version provided is not supported");
+                log.error("You are running an unsupported version of Minecraft: {}", version);
+                log.error("InventoryFramework will try to run, but you might run into unexpected issues");
+                return getLatest();
         }
+    }
+
+    public static Version getLatest() {
+        Version[] values = values();
+        return values[values.length - 1];
     }
 }
