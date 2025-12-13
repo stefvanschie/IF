@@ -275,7 +275,7 @@ public enum Version {
     }
 
     /**
-     * Gets the version currently being used. If the used version is not supported, an
+     * Gets the version currently being used. If the used version is not supported,
      * the latest will be used.
      *
      * @return the version of the current instance
