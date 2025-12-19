@@ -47,7 +47,7 @@
             <dependency>
                 <groupId>net.kyori</groupId>
                 <artifactId>adventure-text-logger-slf4j</artifactId>
-                <version>4.25.0</version>
+                <version>4.26.1</version>
             </dependency>
             <dependency>
                 <groupId>net.kyori</groupId>
