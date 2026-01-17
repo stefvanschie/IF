@@ -31,7 +31,7 @@ public class PaginatedPane extends Pane {
      * A set of panes for the different pages
      */
     @NotNull
-    private Map<Integer, List<Pane>> panes = new HashMap<>();
+    private final List<List<Pane>> panes = new ArrayList<>();
 
     /**
      * The current page
@@ -95,63 +95,70 @@ public class PaginatedPane extends Pane {
 
     /**
      * Adds the specified pane to a new page. The new page will be at the index one after the highest indexed page
-     * currently in this paginated pane. If the highest index pane is {@code Integer.MAX_VALUE}, this method will throw
-     * an {@link ArithmeticException}. If this paginated pane has no pages, the index of the newly created page will
+     * currently in this paginated pane. If this paginated pane has no pages, the index of the newly created page will
      * be zero.
      *
      * @param pane the pane to add to a new page
      * @since 0.10.8
-     * @throws ArithmeticException if the highest indexed page is the maximum value
      */
     public void addPage(@NotNull Pane pane) {
         List<Pane> list = new ArrayList<>(1);
 
         list.add(pane);
 
-        if (this.panes.isEmpty()) {
-            this.panes.put(0, list);
-
-            return;
-        }
-
-        int highest = Integer.MIN_VALUE;
-
-        for (int page : this.panes.keySet()) {
-            if (page > highest) {
-                highest = page;
-            }
-        }
-
-        if (highest == Integer.MAX_VALUE) {
-            throw new ArithmeticException("Can't increment page index beyond its maximum value");
-        }
-
-        this.panes.put(highest + 1, list);
+        this.panes.add(list);
     }
 
     /**
-     * Assigns a pane to a selected page
+     * Adds a pane to a selected page. If the page does not exist and is exactly one larger than the current highest
+     * page index, this method will create a new page with the specified pane. If the page does not exist and is more
+     * than one larger than the current highest page index, this method will throw an {@link IllegalArgumentException}.
+     * If the page is negative, an {@link IllegalArgumentException} will also be thrown. If there are currently no
+     * pages, only index 0 is valid and will create a new page with the specified pane added to it.
+     * <p>
+     * For example, if the pages 0, 1, ..., n currently exist, then:
+     * <ul>
+     *     <li>Indexes &lt; 0 will throw an exception</li>
+     *     <li>Indexes 0, 1, ..., n will add the pane to the respective page</li>
+     *     <li>Index n + 1 will create a new page with the specified pane</li>
+     *     <li>Indexes &gt; n + 1 will throw an exception</li>
+     * </ul>
      *
      * @param page the page to assign the pane to
      * @param pane the new pane
+     * @throws IllegalArgumentException if the page is less than 0 or more than one larger than the current highest page
+     * index
      */
     public void addPane(int page, @NotNull Pane pane) {
-        if (!this.panes.containsKey(page))
-            this.panes.put(page, new ArrayList<>());
+        if (page < 0) {
+            throw new IllegalArgumentException("Non-positive page indexes are not allowed");
+        }
 
-        this.panes.get(page).add(pane);
+        if (page > this.panes.size()) {
+            throw new IllegalArgumentException("Page index outside range of existing pages");
+        }
 
-        this.panes.get(page).sort(Comparator.comparing(Pane::getPriority));
+        if (page == this.panes.size()) {
+            addPage(pane);
+        } else {
+            this.panes.get(page).add(pane);
+
+            this.panes.get(page).sort(Comparator.comparing(Pane::getPriority));
+        }
     }
 
     /**
-     * Sets the current displayed page
+     * Sets the current displayed page. If the specified page does not exist an {@link ArrayIndexOutOfBoundsException}
+     * is thrown.
      *
      * @param page the page
+     * @throws ArrayIndexOutOfBoundsException if the page does not exist
      */
     public void setPage(int page) {
-		if (!panes.containsKey(page))
-			throw new ArrayIndexOutOfBoundsException("page outside range");
+        if (page < 0 || page >= this.panes.size()) {
+            throw new ArrayIndexOutOfBoundsException("Page outside of range");
+        }
+
 		this.page = page;
     }
 
@@ -274,6 +281,10 @@ public class PaginatedPane extends Pane {
     @Override
     public void display(@NotNull InventoryComponent inventoryComponent, int paneOffsetX, int paneOffsetY, int maxLength,
                         int maxHeight) {
+        if (this.page < 0 || this.page >= this.panes.size()) {
+            return;
+        }
+
         List<Pane> panes = this.panes.get(page);
 
         if (panes == null) {
@@ -324,7 +335,11 @@ public class PaginatedPane extends Pane {
 
         boolean success = false;
 
-        for (Pane pane : new ArrayList<>(this.panes.getOrDefault(page, Collections.emptyList()))) {
+        if (this.page <= 0 || this.page >= this.panes.size()) {
+            return false;
+        }
+
+        for (Pane pane : this.panes.get(this.page)) {
             if (!pane.isVisible()) {
                 continue;
             }
@@ -340,20 +355,22 @@ public class PaginatedPane extends Pane {
     @Contract(pure = true)
     @Override
     public PaginatedPane copy() {
-	    PaginatedPane paginatedPane = new PaginatedPane(getSlot(), length, height, getPriority());
+	    PaginatedPane paginatedPane = new PaginatedPane(getSlot(), this.length, this.height, getPriority());
 
-        for (Map.Entry<Integer, List<Pane>> entry : panes.entrySet()) {
-            for (Pane pane : entry.getValue()) {
-                paginatedPane.addPane(entry.getKey(), pane.copy());
+        for (int page = 0; page < this.panes.size(); page++) {
+            List<? extends Pane> panes = this.panes.get(page);
+
+            for (Pane pane : panes) {
+                paginatedPane.addPane(page, pane.copy());
             }
         }
 
         paginatedPane.setVisible(isVisible());
-        paginatedPane.onClick = onClick;
+        paginatedPane.onClick = this.onClick;
 
-        paginatedPane.uuid = uuid;
+        paginatedPane.uuid = this.uuid;
 
-        paginatedPane.page = page;
+        paginatedPane.page = this.page;
 
         return paginatedPane;
     }
@@ -368,24 +385,11 @@ public class PaginatedPane extends Pane {
      * @since 0.10.5
      */
     public void deletePage(int page) {
-        if (this.panes.remove(page) == null) {
+        if (page < 0 || page >= this.panes.size()) {
             return;
         }
 
-        Map<Integer, List<Pane>> newPanes = new HashMap<>();
-
-        for (Map.Entry<Integer, List<Pane>> entry : this.panes.entrySet()) {
-            int index = entry.getKey();
-            List<Pane> panes = entry.getValue();
-
-            if (index > page) {
-                newPanes.put(index - 1, panes);
-            } else {
-                newPanes.put(index, panes);
-            }
-        }
-
-        this.panes = newPanes;
+        this.panes.remove(page);
     }
 
     @NotNull
@@ -394,10 +398,9 @@ public class PaginatedPane extends Pane {
     public Collection<Pane> getPanes() {
         Collection<Pane> panes = new HashSet<>();
 
-        this.panes.forEach((integer, p) -> {
-            p.forEach(pane -> panes.addAll(pane.getPanes()));
+        for (List<? extends Pane> p : this.panes) {
             panes.addAll(p);
-        });
+        }
 
         return panes;
     }
@@ -418,6 +421,10 @@ public class PaginatedPane extends Pane {
     @NotNull
     @Contract(pure = true)
     public Collection<Pane> getPanes(int page) {
+        if (page < 0 || this.page >= this.panes.size()) {
+            throw new IllegalArgumentException("Invalid page");
+        }
+
         Collection<Pane> panes = this.panes.get(page);
 
         if (panes == null) {
