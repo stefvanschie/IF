@@ -17,32 +17,11 @@ import java.util.EnumSet;
 public enum Version {
 
     /**
-     * Version 1.16.1
+     * Version 1.16.5
      *
-     * @since 0.10.0
+     * @since 0.12.0
      */
-    V1_16_1,
-
-    /**
-     * Version 1.16.2 - 1.16.3
-     *
-     * @since 0.10.0
-     */
-    V1_16_2_3,
-
-    /**
-     * Version 1.16.4 - 1.16.5
-     *
-     * @since 0.10.0
-     */
-    V1_16_4_5,
-
-    /**
-     * Version 1.17
-     *
-     * @since 0.10.0
-     */
-    V1_17_0,
+    V1_16_5,
 
     /**
      * Version 1.17.1
@@ -52,53 +31,11 @@ public enum Version {
     V1_17_1,
 
     /**
-     * Version 1.18.0
-     *
-     * @since 0.10.4
-     */
-    V1_18_0,
-
-    /**
-     * Version 1.18.1
-     *
-     * @since 0.10.4
-     */
-    V1_18_1,
-
-    /**
      * Version 1.18.2
      *
      * @since 0.10.5
      */
     V1_18_2,
-
-    /**
-     * Version 1.19.0
-     *
-     * @since 0.10.6
-     */
-    V1_19_0,
-
-    /**
-     * Version 1.19.1
-     *
-     * @since 0.10.7
-     */
-    V1_19_1,
-
-    /**
-     * Version 1.19.2
-     *
-     * @since 0.10.7
-     */
-    V1_19_2,
-
-    /**
-     * Version 1.19.3
-     *
-     * @since 0.10.8
-     */
-    V1_19_3,
 
     /**
      * Version 1.19.4
@@ -219,10 +156,7 @@ public enum Version {
      */
     @NotNull
     private static final Collection<@NotNull Version> LEGACY_SMITHING_TABLE_VERSIONS = EnumSet.of(
-            V1_16_1, V1_16_2_3, V1_16_4_5,
-            V1_17_0, V1_17_1,
-            V1_18_0, V1_18_1, V1_18_2,
-            V1_19_0, V1_19_1, V1_19_2, V1_19_3, V1_19_4
+            V1_16_5, V1_17_1, V1_18_2, V1_19_4
     );
 
     /**
@@ -289,32 +223,12 @@ public enum Version {
         String version = Bukkit.getBukkitVersion().split("-")[0];
 
         switch (version) {
-            case "1.16.1":
-                return V1_16_1;
-            case "1.16.2":
-            case "1.16.3":
-                return V1_16_2_3;
-            case "1.16.4":
             case "1.16.5":
-                return V1_16_4_5;
-            case "1.17":
-                return V1_17_0;
+                return V1_16_5;
             case "1.17.1":
                 return V1_17_1;
-            case "1.18":
-                return V1_18_0;
-            case "1.18.1":
-                return V1_18_1;
             case "1.18.2":
                 return V1_18_2;
-            case "1.19":
-                return V1_19_0;
-            case "1.19.1":
-                return V1_19_1;
-            case "1.19.2":
-                return V1_19_2;
-            case "1.19.3":
-                return V1_19_3;
             case "1.19.4":
                 return V1_19_4;
             case "1.20":

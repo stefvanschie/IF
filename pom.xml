@@ -22,18 +22,9 @@
         <module>nms/1_20_1</module>
         <module>nms/1_20_0</module>
         <module>nms/1_19_4</module>
-        <module>nms/1_19_3</module>
-        <module>nms/1_19_2</module>
-        <module>nms/1_19_1</module>
-        <module>nms/1_19_0</module>
         <module>nms/1_18_2</module>
-        <module>nms/1_18_1</module>
-        <module>nms/1_18_0</module>
         <module>nms/1_17_1</module>
-        <module>nms/1_17_0</module>
-        <module>nms/1_16_4-5</module>
-        <module>nms/1_16_2-3</module>
-        <module>nms/1_16_1</module>
+        <module>nms/1_16_5</module>
         <module>adventure-support</module>
         <module>inventory-view/iv-abstract-class</module>
         <module>inventory-view/iv-abstraction</module>
