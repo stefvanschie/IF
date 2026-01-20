@@ -1,6 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane.component;
 
-import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
@@ -272,12 +272,11 @@ public class Label extends OutlinePane {
     }
 
     @Override
-    public boolean click(@NotNull Gui gui, @NotNull InventoryComponent inventoryComponent,
-                         @NotNull InventoryClickEvent event, int slot, int paneOffsetX, int paneOffsetY, int maxLength,
-                         int maxHeight) {
+    public boolean click(@NotNull Gui gui, @NotNull GuiComponent guiComponent, @NotNull InventoryClickEvent event,
+                         int slot, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
         event.setCancelled(true);
 
-        return super.click(gui, inventoryComponent, event, slot, paneOffsetX, paneOffsetY, maxLength, maxHeight);
+        return super.click(gui, guiComponent, event, slot, paneOffsetX, paneOffsetY, maxLength, maxHeight);
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane.component;
 
-import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.Flippable;
@@ -128,9 +128,8 @@ public class Slider extends VariableBar {
     }
 
     @Override
-    public boolean click(@NotNull Gui gui, @NotNull InventoryComponent inventoryComponent,
-                         @NotNull InventoryClickEvent event, int slot, int paneOffsetX, int paneOffsetY, int maxLength,
-                         int maxHeight) {
+    public boolean click(@NotNull Gui gui, @NotNull GuiComponent guiComponent, @NotNull InventoryClickEvent event,
+                         int slot, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
@@ -139,7 +138,7 @@ public class Slider extends VariableBar {
         int xPosition = paneSlot.getX(maxLength);
         int yPosition = paneSlot.getY(maxLength);
 
-        int totalLength = inventoryComponent.getLength();
+        int totalLength = guiComponent.getLength();
 
         int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
 
@@ -164,9 +163,9 @@ public class Slider extends VariableBar {
         int newPaneOffsetY = paneOffsetY + yPosition;
 
         boolean success = this.fillPane.click(
-            gui, inventoryComponent, event, slot, newPaneOffsetX, newPaneOffsetY, length, height
+            gui, guiComponent, event, slot, newPaneOffsetX, newPaneOffsetY, length, height
         ) || this.backgroundPane.click(
-            gui, inventoryComponent, event, slot, newPaneOffsetX, newPaneOffsetY, length, height
+            gui, guiComponent, event, slot, newPaneOffsetX, newPaneOffsetY, length, height
         );
 
         gui.update();

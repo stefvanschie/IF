@@ -3,7 +3,7 @@ package com.github.stefvanschie.inventoryframework.gui.type;
 import com.github.stefvanschie.inventoryframework.HumanEntityCache;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
-import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import org.bukkit.Material;
@@ -38,28 +38,28 @@ import java.util.List;
 public class SmokerGui extends NamedGui implements InventoryBased {
 
     /**
-     * Represents the inventory component for the ingredient
+     * Represents the gui component for the ingredient
      */
     @NotNull
-    private InventoryComponent ingredientComponent = new InventoryComponent(1, 1);
+    private GuiComponent ingredientComponent = new GuiComponent(1, 1);
 
     /**
-     * Represents the inventory component for the fuel
+     * Represents the gui component for the fuel
      */
     @NotNull
-    private InventoryComponent fuelComponent = new InventoryComponent(1, 1);
+    private GuiComponent fuelComponent = new GuiComponent(1, 1);
 
     /**
-     * Represents the inventory component for the output
+     * Represents the gui component for the output
      */
     @NotNull
-    private InventoryComponent outputComponent = new InventoryComponent(1, 1);
+    private GuiComponent outputComponent = new GuiComponent(1, 1);
 
     /**
-     * Represents the inventory component for the player inventory
+     * Represents the gui component for the player inventory
      */
     @NotNull
-    private InventoryComponent playerInventoryComponent = new InventoryComponent(9, 4);
+    private GuiComponent playerGuiComponent = new GuiComponent(9, 4);
 
     /**
      * Constructs a new GUI
@@ -127,7 +127,7 @@ public class SmokerGui extends NamedGui implements InventoryBased {
         getIngredientComponent().display(getInventory(), 0);
         getFuelComponent().display(getInventory(), 1);
         getOutputComponent().display(getInventory(), 2);
-        getPlayerInventoryComponent().display();
+        getPlayerGuiComponent().display();
 
         for (HumanEntity viewer : getViewers()) {
             ItemStack cursor = viewer.getItemOnCursor();
@@ -163,14 +163,14 @@ public class SmokerGui extends NamedGui implements InventoryBased {
      * @since 0.11.4
      */
     private void populateBottomInventory(@NotNull HumanEntity humanEntity) {
-        if (getPlayerInventoryComponent().hasItem()) {
+        if (getPlayerGuiComponent().hasItem()) {
             HumanEntityCache humanEntityCache = getHumanEntityCache();
 
             if (!humanEntityCache.contains(humanEntity)) {
                 humanEntityCache.storeAndClear(humanEntity);
             }
 
-            getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
+            getPlayerGuiComponent().placeItems(humanEntity.getInventory(), 0);
         }
     }
 
@@ -183,7 +183,7 @@ public class SmokerGui extends NamedGui implements InventoryBased {
         gui.ingredientComponent = ingredientComponent.copy();
         gui.fuelComponent = fuelComponent.copy();
         gui.outputComponent = outputComponent.copy();
-        gui.playerInventoryComponent = playerInventoryComponent.copy();
+        gui.playerGuiComponent = this.playerGuiComponent.copy();
 
         gui.setOnTopClick(this.onTopClick);
         gui.setOnBottomClick(this.onBottomClick);
@@ -205,7 +205,7 @@ public class SmokerGui extends NamedGui implements InventoryBased {
         } else if (rawSlot == 2) {
             getOutputComponent().click(this, event, 0);
         } else {
-            getPlayerInventoryComponent().click(this, event, rawSlot - 3);
+            getPlayerGuiComponent().click(this, event, rawSlot - 3);
         }
     }
 
@@ -222,7 +222,7 @@ public class SmokerGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public boolean isPlayerInventoryUsed() {
-        return getPlayerInventoryComponent().hasItem();
+        return getPlayerGuiComponent().hasItem();
     }
 
     @NotNull
@@ -246,51 +246,51 @@ public class SmokerGui extends NamedGui implements InventoryBased {
     }
 
     /**
-     * Gets the inventory component representing the ingredient
+     * Gets the gui component representing the ingredient
      *
      * @return the ingredient component
      * @since 0.8.0
      */
     @NotNull
     @Contract(pure = true)
-    public InventoryComponent getIngredientComponent() {
+    public GuiComponent getIngredientComponent() {
         return ingredientComponent;
     }
 
     /**
-     * Gets the inventory component representing the fuel
+     * Gets the gui component representing the fuel
      *
      * @return the fuel component
      * @since 0.8.0
      */
     @NotNull
     @Contract(pure = true)
-    public InventoryComponent getFuelComponent() {
+    public GuiComponent getFuelComponent() {
         return fuelComponent;
     }
 
     /**
-     * Gets the inventory component representing the output
+     * Gets the gui component representing the output
      *
      * @return the output component
      * @since 0.8.0
      */
     @NotNull
     @Contract(pure = true)
-    public InventoryComponent getOutputComponent() {
+    public GuiComponent getOutputComponent() {
         return outputComponent;
     }
 
     /**
-     * Gets the inventory component representing the player inventory
+     * Gets the gui component representing the player inventory
      *
-     * @return the player inventory component
+     * @return the player gui component
      * @since 0.8.0
      */
     @NotNull
     @Contract(pure = true)
-    public InventoryComponent getPlayerInventoryComponent() {
-        return playerInventoryComponent;
+    public GuiComponent getPlayerGuiComponent() {
+        return this.playerGuiComponent;
     }
 
     /**
@@ -361,7 +361,7 @@ public class SmokerGui extends NamedGui implements InventoryBased {
                 throw new XMLLoadException("Component tag does not have a name specified");
             }
 
-            InventoryComponent component;
+            GuiComponent component;
 
             switch (componentElement.getAttribute("name")) {
                 case "ingredient":
@@ -374,7 +374,7 @@ public class SmokerGui extends NamedGui implements InventoryBased {
                     component = smokerGui.getOutputComponent();
                     break;
                 case "player-inventory":
-                    component = smokerGui.getPlayerInventoryComponent();
+                    component = smokerGui.getPlayerGuiComponent();
                     break;
                 default:
                     throw new XMLLoadException("Unknown component name");

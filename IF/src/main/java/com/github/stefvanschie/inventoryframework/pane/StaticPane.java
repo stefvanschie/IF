@@ -1,6 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
-import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
@@ -93,14 +93,14 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
      * If there are multiple items in the same position when displaying the items, either one of those items may be
      * shown. In particular, there is no guarantee that a specific item will be shown.
      *
-     * @param inventoryComponent {@inheritDoc}
+     * @param guiComponent {@inheritDoc}
      * @param paneOffsetX {@inheritDoc}
      * @param paneOffsetY {@inheritDoc}
      * @param maxLength {@inheritDoc}
      * @param maxHeight {@inheritDoc}
      */
 	@Override
-	public void display(@NotNull InventoryComponent inventoryComponent, int paneOffsetX, int paneOffsetY, int maxLength,
+	public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
                         int maxHeight) {
 		int length = Math.min(this.length, maxLength);
 		int height = Math.min(this.height, maxHeight);
@@ -133,7 +133,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
             int finalRow = slot.getY(maxLength) + y + paneOffsetY;
 			int finalColumn = slot.getX(maxLength) + x + paneOffsetX;
 
-			inventoryComponent.setItem(item, finalColumn, finalRow);
+			guiComponent.setItem(item, finalColumn, finalRow);
 		});
 	}
 
@@ -198,9 +198,8 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
     }
 
 	@Override
-	public boolean click(@NotNull Gui gui, @NotNull InventoryComponent inventoryComponent,
-                         @NotNull InventoryClickEvent event, int slot, int paneOffsetX, int paneOffsetY, int maxLength,
-                         int maxHeight) {
+	public boolean click(@NotNull Gui gui, @NotNull GuiComponent guiComponent, @NotNull InventoryClickEvent event,
+                         int slot, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
 		int length = Math.min(this.length, maxLength);
 		int height = Math.min(this.height, maxHeight);
 
@@ -209,7 +208,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
         int xPosition = paneSlot.getX(maxLength);
         int yPosition = paneSlot.getY(maxLength);
 
-        int totalLength = inventoryComponent.getLength();
+        int totalLength = guiComponent.getLength();
 
         int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
 

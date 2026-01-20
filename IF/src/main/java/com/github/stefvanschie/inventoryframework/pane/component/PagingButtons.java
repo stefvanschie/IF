@@ -1,8 +1,8 @@
 package com.github.stefvanschie.inventoryframework.pane.component;
 
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
+import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
-import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
@@ -204,7 +204,7 @@ public class PagingButtons extends Pane {
     @Override
     public boolean click(
         @NotNull Gui gui,
-        @NotNull InventoryComponent inventoryComponent,
+        @NotNull GuiComponent guiComponent,
         @NotNull InventoryClickEvent event,
         int slot,
         int paneOffsetX,
@@ -220,7 +220,7 @@ public class PagingButtons extends Pane {
         int xPosition = paneSlot.getX(maxLength);
         int yPosition = paneSlot.getY(maxLength);
 
-        int totalLength = inventoryComponent.getLength();
+        int totalLength = guiComponent.getLength();
 
         int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
 
@@ -269,7 +269,7 @@ public class PagingButtons extends Pane {
 
     @Override
     public void display(
-            @NotNull InventoryComponent inventoryComponent,
+            @NotNull GuiComponent guiComponent,
             int paneOffsetX,
             int paneOffsetY,
             int maxLength,
@@ -281,11 +281,11 @@ public class PagingButtons extends Pane {
         int y = super.slot.getY(length) + paneOffsetY;
 
         if (this.keepButtonsVisible || this.pages.getPage() > 0) {
-            inventoryComponent.setItem(this.backwardButton, x, y);
+            guiComponent.setItem(this.backwardButton, x, y);
         }
 
         if (this.keepButtonsVisible || this.pages.getPage() < this.pages.getPages() - 1) {
-            inventoryComponent.setItem(this.forwardButton, x + length - 1, y);
+            guiComponent.setItem(this.forwardButton, x + length - 1, y);
         }
     }
 

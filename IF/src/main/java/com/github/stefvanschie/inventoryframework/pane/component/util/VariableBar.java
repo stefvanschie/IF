@@ -1,6 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane.component.util;
 
-import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.pane.Flippable;
 import com.github.stefvanschie.inventoryframework.pane.Orientable;
@@ -334,7 +334,7 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
     }
 
     @Override
-    public void display(@NotNull InventoryComponent inventoryComponent, int paneOffsetX, int paneOffsetY, int maxLength,
+    public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
                         int maxHeight) {
         Slot slot = getSlot();
 
@@ -344,11 +344,11 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         int newMaxHeight = Math.min(maxHeight, getHeight());
 
         if (this.backgroundPane.isVisible()) {
-            this.backgroundPane.display(inventoryComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
+            this.backgroundPane.display(guiComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
         }
 
         if (this.fillPane.isVisible()) {
-            this.fillPane.display(inventoryComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
+            this.fillPane.display(guiComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
         }
     }
 

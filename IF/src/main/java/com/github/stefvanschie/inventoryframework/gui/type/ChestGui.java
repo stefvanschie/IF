@@ -4,8 +4,8 @@ import com.github.stefvanschie.inventoryframework.HumanEntityCache;
 import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
+import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
-import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.MergedGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
@@ -44,10 +44,10 @@ import java.util.stream.Collectors;
 public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
 
     /**
-     * Represents the inventory component for the entire gui
+     * Represents the gui component for the entire gui
      */
     @NotNull
-    private InventoryComponent inventoryComponent;
+    private GuiComponent guiComponent;
 
     /**
      * Whether the amount of rows are dirty i.e. has been changed
@@ -105,7 +105,7 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
             throw new IllegalArgumentException("Rows should be between 1 and 6");
         }
 
-        this.inventoryComponent = new InventoryComponent(9, rows + 4);
+        this.guiComponent = new GuiComponent(9, rows + 4);
     }
 
     @Override
@@ -128,12 +128,12 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
 
         getInventory().clear();
 
-        int height = getInventoryComponent().getHeight();
+        int height = getGuiComponent().getHeight();
 
-        getInventoryComponent().display();
-        getInventoryComponent().excludeRows(height - 4, height - 1).placeItems(getInventory(), 0);
+        getGuiComponent().display();
+        getGuiComponent().excludeRows(height - 4, height - 1).placeItems(getInventory(), 0);
 
-        InventoryComponent bottomComponent = getInventoryComponent().excludeRows(0, height - 5);
+        GuiComponent bottomComponent = getGuiComponent().excludeRows(0, height - 5);
 
         HumanEntityCache humanEntityCache = getHumanEntityCache();
 
@@ -171,8 +171,8 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
      * @since 0.11.4
      */
     private void populateBottomInventory(@NotNull HumanEntity humanEntity) {
-        int height = getInventoryComponent().getHeight();
-        InventoryComponent bottomComponent = getInventoryComponent().excludeRows(0, height - 5);
+        int height = getGuiComponent().getHeight();
+        GuiComponent bottomComponent = getGuiComponent().excludeRows(0, height - 5);
 
         if (bottomComponent.hasItem()) {
             HumanEntityCache humanEntityCache = getHumanEntityCache();
@@ -191,7 +191,7 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
     public ChestGui copy() {
         ChestGui gui = new ChestGui(getRows(), getTitleHolder(), super.plugin);
 
-        gui.inventoryComponent = inventoryComponent.copy();
+        gui.guiComponent = this.guiComponent.copy();
 
         gui.setOnTopClick(this.onTopClick);
         gui.setOnBottomClick(this.onBottomClick);
@@ -204,13 +204,13 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
 
     @Override
     public void click(@NotNull InventoryClickEvent event) {
-        getInventoryComponent().click(this, event, event.getRawSlot());
+        getGuiComponent().click(this, event, event.getRawSlot());
     }
 
     @Contract(pure = true)
     @Override
     public boolean isPlayerInventoryUsed() {
-        return getInventoryComponent().excludeRows(0, getInventoryComponent().getHeight() - 5).hasItem();
+        return getGuiComponent().excludeRows(0, getGuiComponent().getHeight() - 5).hasItem();
     }
 
     /**
@@ -226,13 +226,13 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
             throw new IllegalArgumentException("Rows should be between 1 and 6");
         }
 
-        InventoryComponent inventoryComponent = new InventoryComponent(9, rows + 4);
+        GuiComponent guiComponent = new GuiComponent(9, rows + 4);
 
-        for (Pane pane : this.inventoryComponent.getPanes()) {
-            inventoryComponent.addPane(pane);
+        for (Pane pane : this.guiComponent.getPanes()) {
+            guiComponent.addPane(pane);
         }
 
-        this.inventoryComponent = inventoryComponent;
+        this.guiComponent = guiComponent;
         this.dirtyRows = true;
     }
 
@@ -248,14 +248,14 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
 
     @Override
     public void addPane(@NotNull Pane pane) {
-        this.inventoryComponent.addPane(pane);
+        this.guiComponent.addPane(pane);
     }
 
     @NotNull
     @Contract(pure = true)
     @Override
     public List<Pane> getPanes() {
-        return this.inventoryComponent.getPanes();
+        return this.guiComponent.getPanes();
     }
 
     @NotNull
@@ -280,7 +280,7 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
      */
     @Contract(pure = true)
     public int getRows() {
-        return getInventoryComponent().getHeight() - 4;
+        return getGuiComponent().getHeight() - 4;
     }
 
     @Contract(pure = true)
@@ -299,8 +299,8 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
     @NotNull
     @Contract(pure = true)
     @Override
-    public InventoryComponent getInventoryComponent() {
-        return inventoryComponent;
+    public GuiComponent getGuiComponent() {
+        return this.guiComponent;
     }
 
     /**
@@ -374,12 +374,12 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
             }
 
             Element componentElement = (Element) item;
-            InventoryComponent inventoryComponent = chestGui.getInventoryComponent();
+            GuiComponent guiComponent = chestGui.getGuiComponent();
 
             if (componentElement.getTagName().equalsIgnoreCase("component")) {
-                inventoryComponent.load(instance, componentElement, plugin);
+                guiComponent.load(instance, componentElement, plugin);
             } else {
-                inventoryComponent.load(instance, element, plugin);
+                guiComponent.load(instance, element, plugin);
             }
 
             break;

@@ -2,7 +2,7 @@ package com.github.stefvanschie.inventoryframework.pane;
 
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
-import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
@@ -136,7 +136,7 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
     }
 
     @Override
-    public void display(@NotNull InventoryComponent inventoryComponent, int paneOffsetX, int paneOffsetY, int maxLength,
+    public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
                         int maxHeight) {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
@@ -170,15 +170,14 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
                 int finalRow = slot.getY(maxLength) + newY + paneOffsetY;
                 int finalColumn = slot.getX(maxLength) + newX + paneOffsetX;
 
-                inventoryComponent.setItem(item, finalColumn, finalRow);
+                guiComponent.setItem(item, finalColumn, finalRow);
             }
         }
     }
 
     @Override
-    public boolean click(@NotNull Gui gui, @NotNull InventoryComponent inventoryComponent,
-                         @NotNull InventoryClickEvent event, int slot, int paneOffsetX, int paneOffsetY, int maxLength,
-                         int maxHeight) {
+    public boolean click(@NotNull Gui gui, @NotNull GuiComponent guiComponent, @NotNull InventoryClickEvent event,
+                         int slot, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
@@ -187,7 +186,7 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
         int xPosition = paneSlot.getX(maxLength);
         int yPosition = paneSlot.getY(maxLength);
 
-        int totalLength = inventoryComponent.getLength();
+        int totalLength = guiComponent.getLength();
 
         int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
 

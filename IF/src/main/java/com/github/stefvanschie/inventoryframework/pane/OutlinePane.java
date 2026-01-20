@@ -1,6 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
-import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
@@ -122,7 +122,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
     }
 
     @Override
-    public void display(@NotNull InventoryComponent inventoryComponent, int paneOffsetX, int paneOffsetY, int maxLength,
+    public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
                         int maxHeight) {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
@@ -237,7 +237,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
 
                         GuiItem item = items[index];
                         if (item.isVisible()) {
-                            inventoryComponent.setItem(item, finalColumn, finalRow);
+                            guiComponent.setItem(item, finalColumn, finalRow);
                         }
                     }
                 }
@@ -248,9 +248,8 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
     }
 
     @Override
-    public boolean click(@NotNull Gui gui, @NotNull InventoryComponent inventoryComponent,
-                         @NotNull InventoryClickEvent event, int slot, int paneOffsetX, int paneOffsetY, int maxLength,
-                         int maxHeight) {
+    public boolean click(@NotNull Gui gui, @NotNull GuiComponent guiComponent, @NotNull InventoryClickEvent event,
+                         int slot, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
@@ -259,7 +258,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         int xPosition = paneSlot.getX(maxLength);
         int yPosition = paneSlot.getY(maxLength);
 
-        int totalLength = inventoryComponent.getLength();
+        int totalLength = guiComponent.getLength();
 
         int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
 

@@ -1,7 +1,7 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
-import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
@@ -307,14 +307,14 @@ public abstract class Pane {
     /**
      * Has to set all the items in the right spot inside the inventory
      *
-     * @param inventoryComponent the inventory component in which the items should be displayed
+     * @param guiComponent the gui component in which the items should be displayed
      * @param paneOffsetX the pane's offset on the x axis
      * @param paneOffsetY the pane's offset on the y axis
      * @param maxLength the maximum length of the pane
      * @param maxHeight the maximum height of the pane
      */
-    public abstract void display(@NotNull InventoryComponent inventoryComponent, int paneOffsetX, int paneOffsetY,
-                                 int maxLength, int maxHeight);
+    public abstract void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
+                                 int maxHeight);
 
     /**
      * Returns the pane's visibility state
@@ -339,7 +339,7 @@ public abstract class Pane {
      * Called whenever there is being clicked on this pane
      *
      * @param gui the gui in which was clicked
-     * @param inventoryComponent the inventory component in which this pane resides
+     * @param guiComponent the gui component in which this pane resides
      * @param event the event that occurred while clicking on this item
      * @param slot the slot that was clicked in
      * @param paneOffsetX the pane's offset on the x axis
@@ -348,7 +348,7 @@ public abstract class Pane {
      * @param maxHeight the maximum height of the pane
      * @return whether the item was found or not
      */
-    public abstract boolean click(@NotNull Gui gui, @NotNull InventoryComponent inventoryComponent,
+    public abstract boolean click(@NotNull Gui gui, @NotNull GuiComponent guiComponent,
                                   @NotNull InventoryClickEvent event, int slot, int paneOffsetX, int paneOffsetY,
                                   int maxLength, int maxHeight);
 

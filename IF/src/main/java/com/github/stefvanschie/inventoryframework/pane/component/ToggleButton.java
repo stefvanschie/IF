@@ -1,6 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane.component;
 
-import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
@@ -283,7 +283,7 @@ public class ToggleButton extends Pane {
     }
 
     @Override
-    public void display(@NotNull InventoryComponent inventoryComponent, int paneOffsetX, int paneOffsetY, int maxLength,
+    public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
                         int maxHeight) {
         int newMaxLength = Math.min(maxLength, length);
         int newMaxHeight = Math.min(maxHeight, height);
@@ -292,16 +292,15 @@ public class ToggleButton extends Pane {
         int newPaneOffsetY = this.slot.getY(newMaxHeight) + paneOffsetY;
 
         if (enabled) {
-            this.enabledPane.display(inventoryComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
+            this.enabledPane.display(guiComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
         } else {
-            this.disabledPane.display(inventoryComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
+            this.disabledPane.display(guiComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
         }
     }
 
     @Override
-    public boolean click(@NotNull Gui gui, @NotNull InventoryComponent inventoryComponent,
-                         @NotNull InventoryClickEvent event, int slot, int paneOffsetX, int paneOffsetY, int maxLength,
-                         int maxHeight) {
+    public boolean click(@NotNull Gui gui, @NotNull GuiComponent guiComponent, @NotNull InventoryClickEvent event,
+                         int slot, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
@@ -310,7 +309,7 @@ public class ToggleButton extends Pane {
         int xPosition = paneSlot.getX(maxLength);
         int yPosition = paneSlot.getY(maxLength);
 
-        int totalLength = inventoryComponent.getLength();
+        int totalLength = guiComponent.getLength();
 
         int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
 
@@ -336,9 +335,9 @@ public class ToggleButton extends Pane {
         allowToggle being false, then we should click the pane corresponding to the current state. An XOR achieves this.
          */
         if (enabled == this.allowToggle) {
-            disabledPane.click(gui, inventoryComponent, event, slot, newX, newY, length, height);
+            disabledPane.click(gui, guiComponent, event, slot, newX, newY, length, height);
         } else {
-            enabledPane.click(gui, inventoryComponent, event, slot, newX, newY, length, height);
+            enabledPane.click(gui, guiComponent, event, slot, newX, newY, length, height);
         }
 
         event.setCancelled(true);

@@ -3,7 +3,7 @@ package com.github.stefvanschie.inventoryframework.gui.type;
 import com.github.stefvanschie.inventoryframework.HumanEntityCache;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
-import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import org.bukkit.Material;
@@ -38,16 +38,16 @@ import java.util.List;
 public class CrafterGui extends NamedGui implements InventoryBased {
 
     /**
-     * Represents the inventory component for the input
+     * Represents the gui component for the input
      */
     @NotNull
-    private InventoryComponent inputComponent = new InventoryComponent(3, 3);
+    private GuiComponent inputComponent = new GuiComponent(3, 3);
 
     /**
-     * Represents the inventory component for the player inventory
+     * Represents the gui component for the player inventory
      */
     @NotNull
-    private InventoryComponent playerInventoryComponent = new InventoryComponent(9, 4);
+    private GuiComponent playerGuiComponent = new GuiComponent(9, 4);
 
     /**
      * Constructs a new crafter gui.
@@ -113,7 +113,7 @@ public class CrafterGui extends NamedGui implements InventoryBased {
         getInventory().clear();
 
         getInputComponent().display(getInventory(), 0);
-        getPlayerInventoryComponent().display();
+        getPlayerGuiComponent().display();
 
         for (HumanEntity viewer : getViewers()) {
             ItemStack cursor = viewer.getItemOnCursor();
@@ -149,14 +149,14 @@ public class CrafterGui extends NamedGui implements InventoryBased {
      * @since 0.11.4
      */
     private void populateBottomInventory(@NotNull HumanEntity humanEntity) {
-        if (getPlayerInventoryComponent().hasItem()) {
+        if (getPlayerGuiComponent().hasItem()) {
             HumanEntityCache humanEntityCache = getHumanEntityCache();
 
             if (!humanEntityCache.contains(humanEntity)) {
                 humanEntityCache.storeAndClear(humanEntity);
             }
 
-            getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
+            getPlayerGuiComponent().placeItems(humanEntity.getInventory(), 0);
         }
     }
 
@@ -167,7 +167,7 @@ public class CrafterGui extends NamedGui implements InventoryBased {
         CrafterGui gui = new CrafterGui(getTitleHolder(), super.plugin);
 
         gui.inputComponent = inputComponent.copy();
-        gui.playerInventoryComponent = playerInventoryComponent.copy();
+        gui.playerGuiComponent = this.playerGuiComponent.copy();
 
         gui.setOnTopClick(this.onTopClick);
         gui.setOnBottomClick(this.onBottomClick);
@@ -185,7 +185,7 @@ public class CrafterGui extends NamedGui implements InventoryBased {
         if (rawSlot >= 0 && rawSlot <= 8) {
             getInputComponent().click(this, event, rawSlot);
         } else {
-            getPlayerInventoryComponent().click(this, event, rawSlot - 9);
+            getPlayerGuiComponent().click(this, event, rawSlot - 9);
         }
     }
 
@@ -202,7 +202,7 @@ public class CrafterGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public boolean isPlayerInventoryUsed() {
-        return getPlayerInventoryComponent().hasItem();
+        return getPlayerGuiComponent().hasItem();
     }
 
     @NotNull
@@ -231,27 +231,27 @@ public class CrafterGui extends NamedGui implements InventoryBased {
     }
 
     /**
-     * Gets the inventory component representing the input.
+     * Gets the gui component representing the input.
      *
      * @return the input component
      * @since 0.10.13
      */
     @NotNull
     @Contract(pure = true)
-    public InventoryComponent getInputComponent() {
+    public GuiComponent getInputComponent() {
         return inputComponent;
     }
 
     /**
-     * Gets the inventory component representing the player inventory.
+     * Gets the gui component representing the player inventory.
      *
-     * @return the player inventory component
+     * @return the player gui component
      * @since 0.10.13
      */
     @NotNull
     @Contract(pure = true)
-    public InventoryComponent getPlayerInventoryComponent() {
-        return playerInventoryComponent;
+    public GuiComponent getPlayerGuiComponent() {
+        return playerGuiComponent;
     }
 
     /**
@@ -322,14 +322,14 @@ public class CrafterGui extends NamedGui implements InventoryBased {
                 throw new XMLLoadException("Component tag does not have a name specified");
             }
 
-            InventoryComponent component;
+            GuiComponent component;
 
             switch (componentElement.getAttribute("name")) {
                 case "input":
                     component = crafterGui.getInputComponent();
                     break;
                 case "player-inventory":
-                    component = crafterGui.getPlayerInventoryComponent();
+                    component = crafterGui.getPlayerGuiComponent();
                     break;
                 default:
                     throw new XMLLoadException("Unknown component name");

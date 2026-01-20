@@ -131,7 +131,7 @@ public class GuiItem {
         this.properties = new ArrayList<>();
         this.item = item;
 
-        //remove this call after the removal of InventoryComponent#setItem(ItemStack, int, int)
+        //remove this call after the removal of GuiComponent#setItem(ItemStack, int, int)
         applyUUID();
     }
 

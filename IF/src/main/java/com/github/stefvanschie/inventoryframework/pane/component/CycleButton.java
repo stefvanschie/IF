@@ -1,6 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane.component;
 
-import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
@@ -73,9 +73,8 @@ public class CycleButton extends Pane {
     }
 
     @Override
-    public boolean click(@NotNull Gui gui, @NotNull InventoryComponent inventoryComponent,
-                         @NotNull InventoryClickEvent event, int slot, int paneOffsetX, int paneOffsetY, int maxLength,
-                         int maxHeight) {
+    public boolean click(@NotNull Gui gui, @NotNull GuiComponent guiComponent, @NotNull InventoryClickEvent event,
+                         int slot, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
         int length = Math.min(this.length, maxLength);
         int height = Math.min(this.height, maxHeight);
 
@@ -84,7 +83,7 @@ public class CycleButton extends Pane {
         int xPosition = paneSlot.getX(maxLength);
         int yPosition = paneSlot.getY(maxLength);
 
-        int totalLength = inventoryComponent.getLength();
+        int totalLength = guiComponent.getLength();
 
         int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
 
@@ -108,7 +107,7 @@ public class CycleButton extends Pane {
 
         //use the previous position, since that will have the pane we clicked on
         Pane pane = panes.get(previousPosition);
-        pane.click(gui, inventoryComponent, event, slot, paneOffsetX + x, paneOffsetY + y,
+        pane.click(gui, guiComponent, event, slot, paneOffsetX + x, paneOffsetY + y,
             length, height);
 
         gui.update();
@@ -117,7 +116,7 @@ public class CycleButton extends Pane {
     }
 
     @Override
-    public void display(@NotNull InventoryComponent inventoryComponent, int paneOffsetX, int paneOffsetY, int maxLength,
+    public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
                         int maxHeight) {
         Slot slot = getSlot();
 
@@ -127,7 +126,7 @@ public class CycleButton extends Pane {
         int newMaxLength = Math.min(maxLength, length);
         int newMaxHeight = Math.min(maxHeight, height);
 
-        panes.get(position).display(inventoryComponent, newX, newY, newMaxLength, newMaxHeight);
+        panes.get(position).display(guiComponent, newX, newY, newMaxLength, newMaxHeight);
     }
 
     @NotNull

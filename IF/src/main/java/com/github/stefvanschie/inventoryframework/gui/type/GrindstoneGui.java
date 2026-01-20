@@ -4,7 +4,7 @@ import com.github.stefvanschie.inventoryframework.HumanEntityCache;
 import com.github.stefvanschie.inventoryframework.abstraction.GrindstoneInventory;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
-import com.github.stefvanschie.inventoryframework.gui.InventoryComponent;
+import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.util.version.Version;
@@ -40,22 +40,22 @@ import java.util.List;
 public class GrindstoneGui extends NamedGui implements InventoryBased {
 
     /**
-     * Represents the inventory component for the items
+     * Represents the gui component for the items
      */
     @NotNull
-    private InventoryComponent itemsComponent = new InventoryComponent(1, 2);
+    private GuiComponent itemsComponent = new GuiComponent(1, 2);
 
     /**
-     * Represents the inventory component for the result
+     * Represents the gui component for the result
      */
     @NotNull
-    private InventoryComponent resultComponent = new InventoryComponent(1, 1);
+    private GuiComponent resultComponent = new GuiComponent(1, 1);
 
     /**
-     * Represents the inventory component for the player inventory
+     * Represents the gui component for the player inventory
      */
     @NotNull
-    private InventoryComponent playerInventoryComponent = new InventoryComponent(9, 4);
+    private GuiComponent playerGuiComponent = new GuiComponent(9, 4);
 
     /**
      * An internal grindstone inventory
@@ -128,7 +128,7 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
 
         getItemsComponent().display(getInventory(), 0);
         getResultComponent().display(getInventory(), 2);
-        getPlayerInventoryComponent().display();
+        getPlayerGuiComponent().display();
 
         for (HumanEntity viewer : getViewers()) {
             ItemStack cursor = viewer.getItemOnCursor();
@@ -164,14 +164,14 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
      * @since 0.11.4
      */
     private void populateBottomInventory(@NotNull HumanEntity humanEntity) {
-        if (getPlayerInventoryComponent().hasItem()) {
+        if (getPlayerGuiComponent().hasItem()) {
             HumanEntityCache humanEntityCache = getHumanEntityCache();
 
             if (!humanEntityCache.contains(humanEntity)) {
                 humanEntityCache.storeAndClear(humanEntity);
             }
 
-            getPlayerInventoryComponent().placeItems(humanEntity.getInventory(), 0);
+            getPlayerGuiComponent().placeItems(humanEntity.getInventory(), 0);
         }
     }
 
@@ -183,7 +183,7 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
 
         gui.itemsComponent = itemsComponent.copy();
         gui.resultComponent = resultComponent.copy();
-        gui.playerInventoryComponent = playerInventoryComponent.copy();
+        gui.playerGuiComponent = this.playerGuiComponent.copy();
 
         gui.setOnTopClick(this.onTopClick);
         gui.setOnBottomClick(this.onBottomClick);
@@ -203,7 +203,7 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
         } else if (rawSlot == 2) {
             getResultComponent().click(this, event, 0);
         } else {
-            getPlayerInventoryComponent().click(this, event, rawSlot - 3);
+            getPlayerGuiComponent().click(this, event, rawSlot - 3);
         }
     }
 
@@ -220,7 +220,7 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
     @Contract(pure = true)
     @Override
     public boolean isPlayerInventoryUsed() {
-        return getPlayerInventoryComponent().hasItem();
+        return getPlayerGuiComponent().hasItem();
     }
 
     @NotNull
@@ -248,39 +248,39 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
     }
 
     /**
-     * Gets the inventory component representing the items
+     * Gets the gui component representing the items
      *
      * @return the items component
      * @since 0.8.0
      */
     @NotNull
     @Contract(pure = true)
-    public InventoryComponent getItemsComponent() {
+    public GuiComponent getItemsComponent() {
         return itemsComponent;
     }
 
     /**
-     * Gets the inventory component representing the result
+     * Gets the gui component representing the result
      *
      * @return the result component
      * @since 0.8.0
      */
     @NotNull
     @Contract(pure = true)
-    public InventoryComponent getResultComponent() {
+    public GuiComponent getResultComponent() {
         return resultComponent;
     }
 
     /**
-     * Gets the inventory component representing the player inventory
+     * Gets the gui component representing the player inventory
      *
-     * @return the player inventory component
+     * @return the player gui component
      * @since 0.8.0
      */
     @NotNull
     @Contract(pure = true)
-    public InventoryComponent getPlayerInventoryComponent() {
-        return playerInventoryComponent;
+    public GuiComponent getPlayerGuiComponent() {
+        return this.playerGuiComponent;
     }
 
     /**
@@ -352,7 +352,7 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
                 throw new XMLLoadException("Component tag does not have a name specified");
             }
 
-            InventoryComponent component;
+            GuiComponent component;
 
             switch (componentElement.getAttribute("name")) {
                 case "items":
@@ -362,7 +362,7 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
                     component = grindstoneGui.getResultComponent();
                     break;
                 case "player-inventory":
-                    component = grindstoneGui.getPlayerInventoryComponent();
+                    component = grindstoneGui.getPlayerGuiComponent();
                     break;
                 default:
                     throw new XMLLoadException("Unknown component name");
