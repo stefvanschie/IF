@@ -165,7 +165,7 @@
                 <configuration>
                     <links>
                         <link>https://hub.spigotmc.org/javadocs/bukkit/</link>
-                        <link>https://jd.adventure.kyori.net/api/4.10.0/</link>
+                        <link>https://jd.advntr.dev/api/${adventure.version}/</link>
                     </links>
                 </configuration>
             </plugin>

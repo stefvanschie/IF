@@ -64,49 +64,49 @@ public abstract class Gui {
      * The consumer that will be called once a players clicks in the top-half of the gui
      */
     @Nullable
-    protected Consumer<InventoryClickEvent> onTopClick;
+    protected Consumer<? super InventoryClickEvent> onTopClick;
 
     /**
      * The consumer that will be called once a players clicks in the bottom-half of the gui
      */
     @Nullable
-    protected Consumer<InventoryClickEvent> onBottomClick;
+    protected Consumer<? super InventoryClickEvent> onBottomClick;
 
     /**
      * The consumer that will be called once a players clicks in the gui or in their inventory
      */
     @Nullable
-    protected Consumer<InventoryClickEvent> onGlobalClick;
+    protected Consumer<? super InventoryClickEvent> onGlobalClick;
 
     /**
      * The consumer that will be called once a player clicks outside of the gui screen
      */
     @Nullable
-    protected Consumer<InventoryClickEvent> onOutsideClick;
+    protected Consumer<? super InventoryClickEvent> onOutsideClick;
 
     /**
      * The consumer that will be called once a player drags in the top-half of the gui
      */
     @Nullable
-    protected Consumer<InventoryDragEvent> onTopDrag;
+    protected Consumer<? super InventoryDragEvent> onTopDrag;
 
     /**
      * The consumer that will be called once a player drags in the bottom-half of the gui
      */
     @Nullable
-    protected Consumer<InventoryDragEvent> onBottomDrag;
+    protected Consumer<? super InventoryDragEvent> onBottomDrag;
 
     /**
      * The consumer that will be called once a player drags in the gui or their inventory
      */
     @Nullable
-    protected Consumer<InventoryDragEvent> onGlobalDrag;
+    protected Consumer<? super InventoryDragEvent> onGlobalDrag;
 
     /**
      * The consumer that will be called once a player closes the gui
      */
     @Nullable
-    protected Consumer<InventoryCloseEvent> onClose;
+    protected Consumer<? super InventoryCloseEvent> onClose;
 
     /**
      * Whether this gui is updating (as invoked by {@link #update()}), true if this is the case, false otherwise. This
@@ -402,7 +402,7 @@ public abstract class Gui {
      *
      * @param onTopClick the consumer that gets called
      */
-    public void setOnTopClick(@Nullable Consumer<InventoryClickEvent> onTopClick) {
+    public void setOnTopClick(@Nullable Consumer<? super InventoryClickEvent> onTopClick) {
         this.onTopClick = onTopClick;
     }
 
@@ -423,7 +423,7 @@ public abstract class Gui {
      *
      * @param onBottomClick the consumer that gets called
      */
-    public void setOnBottomClick(@Nullable Consumer<InventoryClickEvent> onBottomClick) {
+    public void setOnBottomClick(@Nullable Consumer<? super InventoryClickEvent> onBottomClick) {
         this.onBottomClick = onBottomClick;
     }
 
@@ -444,7 +444,7 @@ public abstract class Gui {
      *
      * @param onGlobalClick the consumer that gets called
      */
-    public void setOnGlobalClick(@Nullable Consumer<InventoryClickEvent> onGlobalClick) {
+    public void setOnGlobalClick(@Nullable Consumer<? super InventoryClickEvent> onGlobalClick) {
         this.onGlobalClick = onGlobalClick;
     }
 
@@ -466,7 +466,7 @@ public abstract class Gui {
      * @param onOutsideClick the consumer that gets called
      * @since 0.5.7
      */
-    public void setOnOutsideClick(@Nullable Consumer<InventoryClickEvent> onOutsideClick) {
+    public void setOnOutsideClick(@Nullable Consumer<? super InventoryClickEvent> onOutsideClick) {
         this.onOutsideClick = onOutsideClick;
     }
 
@@ -488,7 +488,7 @@ public abstract class Gui {
      * @param onTopDrag the consumer that gets called
      * @since 0.9.0
      */
-    public void setOnTopDrag(@Nullable Consumer<InventoryDragEvent> onTopDrag) {
+    public void setOnTopDrag(@Nullable Consumer<? super InventoryDragEvent> onTopDrag) {
         this.onTopDrag = onTopDrag;
     }
 
@@ -510,7 +510,7 @@ public abstract class Gui {
      * @param onBottomDrag the consumer that gets called
      * @since 0.9.0
      */
-    public void setOnBottomDrag(@Nullable Consumer<InventoryDragEvent> onBottomDrag) {
+    public void setOnBottomDrag(@Nullable Consumer<? super InventoryDragEvent> onBottomDrag) {
         this.onBottomDrag = onBottomDrag;
     }
 
@@ -532,7 +532,7 @@ public abstract class Gui {
      * @param onGlobalDrag the consumer that gets called
      * @since 0.9.0
      */
-    public void setOnGlobalDrag(@Nullable Consumer<InventoryDragEvent> onGlobalDrag) {
+    public void setOnGlobalDrag(@Nullable Consumer<? super InventoryDragEvent> onGlobalDrag) {
         this.onGlobalDrag = onGlobalDrag;
     }
 
@@ -553,7 +553,7 @@ public abstract class Gui {
      *
      * @param onClose the consumer that gets called
      */
-    public void setOnClose(@Nullable Consumer<InventoryCloseEvent> onClose) {
+    public void setOnClose(@Nullable Consumer<? super InventoryCloseEvent> onClose) {
         this.onClose = onClose;
     }
 
@@ -645,7 +645,7 @@ public abstract class Gui {
      *                 into the correct object type.
      * @throws IllegalArgumentException when a property with this name is already registered.
      */
-    public static void registerProperty(@NotNull String attributeName, @NotNull Function<String, Object> function) {
+    public static void registerProperty(@NotNull String attributeName, @NotNull Function<? super String, ?> function) {
         Pane.registerProperty(attributeName, function);
     }
 
@@ -674,7 +674,8 @@ public abstract class Gui {
      * @param biFunction how the pane loading should be processed
      * @throws IllegalArgumentException when a pane with this name is already registered
      */
-    public static void registerPane(@NotNull String name, @NotNull BiFunction<Object, Element, Pane> biFunction) {
+    public static void registerPane(@NotNull String name,
+                                    @NotNull BiFunction<? super Object, ? super Element, ? extends Pane> biFunction) {
         registerPane(name, (object, element, plugin) -> biFunction.apply(object, element));
     }
 

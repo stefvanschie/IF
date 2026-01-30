@@ -73,7 +73,7 @@ public abstract class Pane {
      * The consumer that will be called once a players clicks in this pane
      */
     @Nullable
-    protected Consumer<InventoryClickEvent> onClick;
+    protected Consumer<? super InventoryClickEvent> onClick;
 
     /**
      * A unique identifier for panes to locate them by
@@ -84,7 +84,7 @@ public abstract class Pane {
      * A map containing the mappings for properties for items
      */
     @NotNull
-    private static final Map<String, Function<String, Object>> PROPERTY_MAPPINGS = new HashMap<>();
+    private static final Map<String, Function<? super String, ?>> PROPERTY_MAPPINGS = new HashMap<>();
 
     /**
      * Constructs a new default pane
@@ -442,7 +442,7 @@ public abstract class Pane {
                                         ? innerElementChild.getAttribute("type")
                                         : "string";
 
-                                Function<String, Object> mapping = PROPERTY_MAPPINGS.get(propertyType);
+                                Function<? super String, ?> mapping = PROPERTY_MAPPINGS.get(propertyType);
 
                                 if (mapping == null) {
                                     throw new XMLLoadException("Specified property type is not registered");
@@ -772,7 +772,7 @@ public abstract class Pane {
      * @param onClick the consumer that gets called
      * @since 0.4.0
      */
-    public void setOnClick(@Nullable Consumer<InventoryClickEvent> onClick) {
+    public void setOnClick(@Nullable Consumer<? super InventoryClickEvent> onClick) {
         this.onClick = onClick;
     }
     
@@ -884,7 +884,7 @@ public abstract class Pane {
      *                 into the correct object type.
      * @throws IllegalArgumentException when a property with this name is already registered.
      */
-    public static void registerProperty(@NotNull String attributeName, @NotNull Function<String, Object> function) {
+    public static void registerProperty(@NotNull String attributeName, @NotNull Function<? super String, ?> function) {
         if (PROPERTY_MAPPINGS.containsKey(attributeName)) {
             throw new IllegalArgumentException("property '" + attributeName + "' is already registered");
         }

@@ -72,7 +72,7 @@ public class MerchantGui extends NamedGui implements InventoryBased {
      * price and the original price.
      */
     @NotNull
-    private final List<Map.Entry<MerchantRecipe, Integer>> trades = new ArrayList<>();
+    private final List<Map.Entry<? extends MerchantRecipe, ? extends Integer>> trades = new ArrayList<>();
 
     /**
      * The experience of this merchant. Values below zero indicate that the experience should be hidden.
@@ -254,7 +254,7 @@ public class MerchantGui extends NamedGui implements InventoryBased {
         gui.experience = experience;
         gui.level = level;
 
-        for (Map.Entry<MerchantRecipe, Integer> trade : trades) {
+        for (Map.Entry<? extends MerchantRecipe, ? extends Integer> trade : trades) {
             MerchantRecipe originalRecipe = trade.getKey();
 
             ItemStack result = originalRecipe.getResult().clone();

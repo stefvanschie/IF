@@ -43,7 +43,7 @@ public class GuiItem {
      * An action for the inventory
      */
     @Nullable
-    private Consumer<InventoryClickEvent> action;
+    private Consumer<? super InventoryClickEvent> action;
     
     /**
      * List of item's properties
@@ -77,7 +77,8 @@ public class GuiItem {
      * @see #GuiItem(ItemStack, Consumer)
      * @since 0.10.8
      */
-    public GuiItem(@NotNull ItemStack item, @Nullable Consumer<InventoryClickEvent> action, @NotNull Plugin plugin) {
+    public GuiItem(@NotNull ItemStack item, @Nullable Consumer<? super InventoryClickEvent> action,
+                   @NotNull Plugin plugin) {
         this(item, action, plugin.getLogger(), new NamespacedKey(plugin, "IF-uuid"));
     }
 
@@ -99,7 +100,7 @@ public class GuiItem {
      * @param item the item stack
      * @param action the action called whenever an interaction with this item happens
      */
-    public GuiItem(@NotNull ItemStack item, @Nullable Consumer<InventoryClickEvent> action) {
+    public GuiItem(@NotNull ItemStack item, @Nullable Consumer<? super InventoryClickEvent> action) {
         this(item, action, JavaPlugin.getProvidingPlugin(GuiItem.class));
     }
 
@@ -122,8 +123,8 @@ public class GuiItem {
      * @param key the key to identify this item with
      * @since 0.10.10
      */
-    private GuiItem(@NotNull ItemStack item, @Nullable Consumer<InventoryClickEvent> action, @NotNull Logger logger,
-                    @NotNull NamespacedKey key) {
+    private GuiItem(@NotNull ItemStack item, @Nullable Consumer<? super InventoryClickEvent> action,
+                    @NotNull Logger logger, @NotNull NamespacedKey key) {
         this.logger = logger;
         this.keyUUID = key;
         this.action = action;

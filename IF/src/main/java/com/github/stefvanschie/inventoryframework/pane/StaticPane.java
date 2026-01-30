@@ -282,7 +282,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
      * @see #fillWith(ItemStack, Consumer)
      * @since 0.10.8
 	 */
-	public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<InventoryClickEvent> action,
+	public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<? super InventoryClickEvent> action,
                          @NotNull Plugin plugin) {
 		//The non empty spots
 		Set<Slot> locations = this.items.keySet();
@@ -312,7 +312,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
      * @param action The action called whenever an interaction with the item happens
      * @since 0.5.9
      */
-    public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<InventoryClickEvent> action) {
+    public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<? super InventoryClickEvent> action) {
         fillWith(itemStack, action, JavaPlugin.getProvidingPlugin(StaticPane.class));
     }
 
