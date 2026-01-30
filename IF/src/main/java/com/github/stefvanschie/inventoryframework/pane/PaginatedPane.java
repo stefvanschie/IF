@@ -520,19 +520,4 @@ public class PaginatedPane extends Pane {
 
         return paginatedPane;
     }
-
-    /**
-     * Loads a paginated pane from a given element
-     *
-     * @param instance the instance class
-     * @param element the element
-     * @return the paginated pane
-     * @deprecated this method is no longer used internally and has been superseded by
-     *             {@link #load(Object, Element, Plugin)}
-     */
-    @NotNull
-    @Deprecated
-    public static PaginatedPane load(@NotNull Object instance, @NotNull Element element) {
-        return load(instance, element, JavaPlugin.getProvidingPlugin(PaginatedPane.class));
-    }
 }

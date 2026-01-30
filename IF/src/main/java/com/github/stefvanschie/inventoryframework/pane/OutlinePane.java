@@ -11,7 +11,6 @@ import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -601,21 +600,6 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         }
 
         return outlinePane;
-    }
-
-    /**
-     * Loads an outline pane from a given element
-     *
-     * @param instance the instance class
-     * @param element the element
-     * @return the outline pane
-     * @deprecated this method is no longer used internally and has been superseded by
-     *             {@link #load(Object, Element, Plugin)}
-     */
-    @NotNull
-    @Deprecated
-    public static OutlinePane load(@NotNull Object instance, @NotNull Element element) {
-        return load(instance, element, JavaPlugin.getProvidingPlugin(OutlinePane.class));
     }
 
     /**

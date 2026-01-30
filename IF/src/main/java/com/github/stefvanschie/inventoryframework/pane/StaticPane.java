@@ -474,19 +474,4 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 
         return staticPane;
 	}
-
-    /**
-     * Loads an outline pane from a given element
-     *
-     * @param instance the instance class
-     * @param element  the element
-     * @return the outline pane
-     * @deprecated this method is no longer used internally and has been superseded by
-     *             {@link #load(Object, Element, Plugin)}
-     */
-    @NotNull
-    @Deprecated
-    public static StaticPane load(@NotNull Object instance, @NotNull Element element) {
-        return load(instance, element, JavaPlugin.getProvidingPlugin(StaticPane.class));
-    }
 }

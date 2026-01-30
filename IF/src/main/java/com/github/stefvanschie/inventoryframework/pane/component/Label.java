@@ -365,20 +365,4 @@ public class Label extends OutlinePane {
 
         return label;
     }
-
-    /**
-     * Loads a label from a given element
-     *
-     * @param instance the instance class
-     * @param element the element
-     * @return the percentage bar
-     * @deprecated this method is no longer used internally and has been superseded by
-     *             {@link #load(Object, Element, Plugin)}
-     */
-    @NotNull
-    @Contract(pure = true)
-    @Deprecated
-    public static Label load(@NotNull Object instance, @NotNull Element element) {
-        return load(instance, element, JavaPlugin.getProvidingPlugin(Label.class));
-    }
 }

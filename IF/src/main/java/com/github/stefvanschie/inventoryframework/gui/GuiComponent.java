@@ -8,7 +8,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -231,7 +230,7 @@ public class GuiComponent {
                     continue;
                 }
 
-                guiComponent.setItem(item.clone(), x, y);
+                guiComponent.items[x][y] = item.clone();
             }
         }
 
@@ -283,7 +282,7 @@ public class GuiComponent {
                 }
 
                 if (item != null) {
-                    newGuiComponent.setItem(item, x, newY);
+                    newGuiComponent.items[x][y] = item;
                 }
 
                 newY++;
@@ -291,20 +290,6 @@ public class GuiComponent {
         }
 
         return newGuiComponent;
-    }
-
-    /**
-     * Loads the provided element's child panes onto this component. If the element contains any child panes, this will
-     * mutate this component.
-     *
-     * @param instance the instance to apply field and method references on
-     * @param element the element to load
-     * @since 0.8.0
-     * @deprecated superseded by {@link #load(Object, Element, Plugin)}
-     */
-    @Deprecated
-    public void load(@NotNull Object instance, @NotNull Element element) {
-        load(instance, element, JavaPlugin.getProvidingPlugin(GuiComponent.class));
     }
 
     /**
@@ -439,28 +424,6 @@ public class GuiComponent {
         copy.applyUUID();
 
         this.items[x][y] = copy.getItem();
-    }
-
-    /**
-     * Adds the specified item in the slot at the specified positions. This will override an already set item if it
-     * resides in the same position as specified. If the position specified is outside of the boundaries set by this
-     * component, an {@link IllegalArgumentException} will be thrown.
-     *
-     * @param item the item to place in this gui component
-     * @param x the x coordinate of the item
-     * @param y the y coordinate of the item
-     * @since 0.8.0
-     * @deprecated usage of {@link #setItem(GuiItem, int, int)} is preferred so gui item's item meta can be freely
-     * edited without losing important internal data
-     */
-    @Deprecated
-    public void setItem(@NotNull ItemStack item, int x, int y) {
-        if (!isInBounds(x, y)) {
-            throw new IllegalArgumentException("Coordinates must be in-bounds: x = " + x + ", y = " + y +
-                "; should be below " + getLength() + " and " + getHeight());
-        }
-
-        this.items[x][y] = item;
     }
 
     /**

@@ -10,14 +10,12 @@ import com.github.stefvanschie.inventoryframework.util.TriFunction;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.github.stefvanschie.inventoryframework.util.version.Version;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
@@ -229,27 +227,10 @@ public abstract class Gui {
     @Contract(pure = true)
     public abstract List<HumanEntity> getViewers();
 
-    //TODO: next breaking version, make this method abstract, all implementers override this
     /**
      * Update the gui for everyone
      */
-    public void update() {
-        updating = true;
-
-        for (HumanEntity viewer : getViewers()) {
-            ItemStack cursor = viewer.getItemOnCursor();
-            viewer.setItemOnCursor(new ItemStack(Material.AIR));
-
-            show(viewer);
-
-            viewer.setItemOnCursor(cursor);
-        }
-
-        if (!updating)
-            throw new AssertionError("Gui#isUpdating became false before Gui#update finished");
-
-        updating = false;
-    }
+    public abstract void update();
 
     /**
      * Adds the specified inventory and gui, so we can properly intercept clicks.
@@ -694,21 +675,6 @@ public abstract class Gui {
         }
 
         GUI_MAPPINGS.put(name, triFunction);
-    }
-
-    /**
-     * Registers a type that can be used inside an XML file to specify the gui type
-     *
-     * @param name the name of the type of gui to be used in an XML file
-     * @param biFunction how the gui creation should be processed
-     * @throws IllegalArgumentException when a gui type with this name is already registered
-     * @deprecated this method is no longer used internally and has been superseded by
-     *             {@link #registerPane(String, TriFunction)}
-     */
-    @Deprecated
-    public static void registerGui(@NotNull String name,
-                                   @NotNull BiFunction<? super Object, ? super Element, ? extends Gui> biFunction) {
-        registerGui(name, (object, element, plugin) -> biFunction.apply(object, element));
     }
 
     /**

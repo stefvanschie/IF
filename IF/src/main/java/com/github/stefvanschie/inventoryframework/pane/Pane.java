@@ -42,12 +42,6 @@ import java.util.function.Function;
 public abstract class Pane {
 
     /**
-     * The starting position of this pane, which is 0 by default
-     */
-    @Deprecated
-    protected int x = 0, y = 0;
-
-    /**
      * The position of this pane, which is (0,0) by default
      */
     @NotNull
@@ -206,32 +200,6 @@ public abstract class Pane {
      */
     public void setSlot(@NotNull Slot slot) {
         this.slot = slot;
-
-        //the length should be the length of the parent container, but we don't have that, so just use one
-        this.x = slot.getX(1);
-        this.y = slot.getY(1);
-    }
-
-    /**
-     * Set the x coordinate of this pane
-     *
-     * @param x the new x coordinate
-     */
-    public void setX(int x) {
-        this.x = x;
-
-        this.slot = Slot.fromXY(x, getY());
-    }
-
-    /**
-     * Set the y coordinate of this pane
-     *
-     * @param y the new y coordinate
-     */
-    public void setY(int y) {
-        this.y = y;
-
-        this.slot = Slot.fromXY(getX(), y);
     }
 
     /**
@@ -276,32 +244,6 @@ public abstract class Pane {
     @Contract(pure = true)
     public Slot getSlot() {
         return this.slot;
-    }
-
-    /**
-     * Gets the x coordinate of this pane
-     *
-     * @return the x coordinate
-     * @deprecated when the slot was specified as an indexed position, this may return the wrong value;
-     *             {@link #getSlot()} should be used instead
-     */
-    @Contract(pure = true)
-    @Deprecated
-    public int getX() {
-        return x;
-    }
-
-    /**
-     * Gets the y coordinate of this pane
-     *
-     * @return the y coordinate
-     * @deprecated when the slot was specified as an indexed position, this may return the wrong value;
-     *             {@link #getSlot()} should be used instead
-     */
-    @Contract(pure = true)
-    @Deprecated
-    public int getY() {
-        return y;
     }
 
     /**
@@ -795,7 +737,7 @@ public abstract class Pane {
             throw new RuntimeException(
                     "Exception while handling click event in inventory '"
                     + InventoryViewUtil.getInstance().getTitle(event.getView()) + "', slot=" + event.getSlot() +
-                    ", for " + getClass().getSimpleName() + ", x=" + getX() + ", y=" + getY()
+                    ", for " + getClass().getSimpleName() + ", slot=" + getSlot()
                     + ", length=" + length + ", height=" + height,
                     t
             );

@@ -131,9 +131,6 @@ public class GuiItem {
         this.visible = true;
         this.properties = new ArrayList<>();
         this.item = item;
-
-        //remove this call after the removal of GuiComponent#setItem(ItemStack, int, int)
-        applyUUID();
     }
 
     /**
@@ -152,12 +149,6 @@ public class GuiItem {
         guiItem.visible = visible;
         guiItem.uuid = uuid;
         guiItem.properties = new ArrayList<>(properties);
-        ItemMeta meta = guiItem.item.getItemMeta();
-
-        if (meta != null) {
-            meta.getPersistentDataContainer().set(keyUUID, UUIDTagType.INSTANCE, guiItem.uuid);
-            guiItem.item.setItemMeta(meta);
-        }
 
         return guiItem;
     }

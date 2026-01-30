@@ -7,7 +7,6 @@ import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -120,8 +119,7 @@ public class MasonryPane extends Pane implements Orientable {
                                 }
                             }
 
-                            pane.setX(x);
-                            pane.setY(y);
+                            pane.setSlot(Slot.fromXY(x, y));
 
                             pane.display(
                                     guiComponent,
@@ -158,8 +156,7 @@ public class MasonryPane extends Pane implements Orientable {
                                 }
                             }
 
-                            pane.setX(x);
-                            pane.setY(y);
+                            pane.setSlot(Slot.fromXY(x, y));
 
                             pane.display(
                                     guiComponent,
@@ -334,20 +331,5 @@ public class MasonryPane extends Pane implements Orientable {
         }
 
         return masonryPane;
-    }
-
-    /**
-     * Loads a masonry pane from a given element
-     *
-     * @param instance the instance class
-     * @param element the element
-     * @return the masonry pane
-     * @deprecated this method is no longer used internally and has been superseded by
-     *             {@link #load(Object, Element, Plugin)}
-     */
-    @NotNull
-    @Deprecated
-    public static MasonryPane load(@NotNull Object instance, @NotNull Element element) {
-        return load(instance, element, JavaPlugin.getProvidingPlugin(MasonryPane.class));
     }
 }

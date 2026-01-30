@@ -8,7 +8,6 @@ import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -251,21 +250,5 @@ public class CycleButton extends Pane {
         }
 
         return cycleButton;
-    }
-
-    /**
-     * Loads a cycle button from a given element
-     *
-     * @param instance the instance class
-     * @param element the element
-     * @return the cycle button
-     * @since 0.5.0
-     * @deprecated this method is no longer used internally and has been superseded by
-     *             {@link #load(Object, Element, Plugin)}
-     */
-    @NotNull
-    @Deprecated
-    public static CycleButton load(@NotNull Object instance, @NotNull Element element) {
-        return load(instance, element, JavaPlugin.getProvidingPlugin(CycleButton.class));
     }
 }

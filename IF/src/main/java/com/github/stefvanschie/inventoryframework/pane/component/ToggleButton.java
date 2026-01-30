@@ -494,21 +494,4 @@ public class ToggleButton extends Pane {
 
         return toggleButton;
     }
-
-    /**
-     * Loads a toggle button from an XML element
-     *
-     * @param instance the instance class
-     * @param element the element
-     * @return the toggle button
-     * @since 0.5.0
-     * @deprecated this method is no longer used internally and has been superseded by
-     *             {@link #load(Object, Element, Plugin)}
-     */
-    @NotNull
-    @Contract(pure = true)
-    @Deprecated
-    public static ToggleButton load(@NotNull Object instance, @NotNull Element element) {
-        return load(instance, element, JavaPlugin.getProvidingPlugin(ToggleButton.class));
-    }
 }

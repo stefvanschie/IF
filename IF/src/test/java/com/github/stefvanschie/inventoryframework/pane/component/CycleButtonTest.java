@@ -18,8 +18,7 @@ public class CycleButtonTest {
 
         assertNotSame(original, copy);
 
-        assertEquals(original.getX(), copy.getX());
-        assertEquals(original.getY(), copy.getY());
+        assertEquals(original.getSlot(), copy.getSlot());
         assertEquals(original.getLength(), copy.getLength());
         assertEquals(original.getHeight(), copy.getHeight());
         assertEquals(original.getPriority(), copy.getPriority());

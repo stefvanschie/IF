@@ -201,7 +201,7 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
             }
 
             if (flipHorizontally) {
-                this.fillPane.setX(getLength() - this.fillPane.getLength());
+                this.fillPane.setSlot(Slot.fromXY(getLength() - this.fillPane.getLength(), 0));
             }
         } else if (orientation == Orientation.VERTICAL) {
             int height = Math.round(getHeight() * value);
@@ -214,7 +214,7 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
             }
 
             if (flipVertically) {
-                this.fillPane.setY(getHeight() - this.fillPane.getHeight());
+                this.fillPane.setSlot(Slot.fromXY(0, getHeight() - this.fillPane.getHeight()));
             }
         } else {
             throw new UnsupportedOperationException("Unknown orientation");
@@ -236,7 +236,7 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
             }
 
             if (flipHorizontally) {
-                this.fillPane.setX(getLength() - this.fillPane.getLength());
+                this.fillPane.setSlot(Slot.fromXY(getLength() - this.fillPane.getLength(), 0));
             }
         } else if (orientation == Orientation.VERTICAL) {
             this.fillPane.setLength(length);
@@ -264,7 +264,7 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
             }
 
             if (flipVertically) {
-                this.fillPane.setY(getHeight() - this.fillPane.getHeight());
+                this.fillPane.setSlot(Slot.fromXY(0, getHeight() - this.fillPane.getHeight()));
             }
         } else {
             throw new UnsupportedOperationException("Unknown orientation");
@@ -281,8 +281,6 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
      * @since 0.6.2
      */
     protected void applyContents(@NotNull VariableBar copy) {
-        copy.x = x;
-        copy.y = y;
         copy.slot = slot;
         copy.length = length;
         copy.height = height;
