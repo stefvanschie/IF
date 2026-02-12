@@ -15,6 +15,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.function.BiFunction;
 
 /**
@@ -22,7 +24,7 @@ import java.util.function.BiFunction;
  *
  * @since 0.5.0
  */
-public class Label extends OutlinePane {
+public class Label extends Pane {
 
     /**
      * The character set used for displaying the characters in this label
@@ -35,6 +37,12 @@ public class Label extends OutlinePane {
      */
     @NotNull
     private String text;
+
+    /**
+     * The pane used for displaying the label.
+     */
+    @NotNull
+    private OutlinePane pane;
 
     /**
      * The plugin to be sed for creating items
@@ -57,6 +65,8 @@ public class Label extends OutlinePane {
     public Label(@NotNull Slot slot, int length, int height, @NotNull Priority priority, @NotNull Font font,
                  @NotNull Plugin plugin) {
         super(slot, length, height);
+
+        this.pane = new OutlinePane(slot, length, height, priority);
 
         this.font = font;
         this.text = "";
@@ -229,7 +239,7 @@ public class Label extends OutlinePane {
                 item = font.getDefaultItem();
             }
 
-            addItem(processor.apply(character, item.clone()));
+            this.pane.addItem(processor.apply(character, item.clone()));
         }
     }
 
@@ -250,20 +260,10 @@ public class Label extends OutlinePane {
     public Label copy() {
         Label label = new Label(getSlot(), length, height, getPriority(), font, this.plugin);
 
-        for (GuiItem item : getItems()) {
-            label.addItem(item.copy());
-        }
-
         label.setVisible(isVisible());
         label.onClick = onClick;
 
-        label.setOrientation(getOrientation());
-        label.setRotation(getRotation());
-        label.setGap(getGap());
-        label.setRepeat(doesRepeat());
-        label.flipHorizontally(isFlippedHorizontally());
-        label.flipVertically(isFlippedVertically());
-        label.applyMask(getMask());
+        label.pane = this.pane.copy();
         label.uuid = uuid;
 
         label.text = text;
@@ -276,7 +276,30 @@ public class Label extends OutlinePane {
                          int slot, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
         event.setCancelled(true);
 
-        return super.click(gui, guiComponent, event, slot, paneOffsetX, paneOffsetY, maxLength, maxHeight);
+        return this.pane.click(gui, guiComponent, event, slot, paneOffsetX, paneOffsetY, maxLength, maxHeight);
+    }
+
+    @Override
+    public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
+                        int maxHeight) {
+        this.pane.display(guiComponent, paneOffsetX, paneOffsetY, maxLength, maxHeight);
+    }
+
+    @NotNull
+    @Override
+    public Collection<GuiItem> getItems() {
+        return this.pane.getItems();
+    }
+
+    @Override
+    public void clear() {
+        this.pane.clear();
+    }
+
+    @NotNull
+    @Override
+    public Collection<Pane> getPanes() {
+        return Collections.emptySet();
     }
 
     /**
@@ -351,9 +374,6 @@ public class Label extends OutlinePane {
         Label label = new Label(length, height, font, plugin);
 
         Pane.load(label, instance, element);
-        Orientable.load(label, element);
-        Flippable.load(label, element);
-        Rotatable.load(label, element);
 
         if (element.hasAttribute("populate")) {
             return label;
