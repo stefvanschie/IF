@@ -6,10 +6,10 @@ import com.github.stefvanschie.inventoryframework.adventuresupport.StringHolder;
 import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
+import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
-import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
 import com.github.stefvanschie.inventoryframework.util.version.Version;
 import com.github.stefvanschie.inventoryframework.util.version.VersionMatcher;
@@ -529,7 +529,7 @@ public class MerchantGui extends NamedGui implements InventoryBased {
                                 continue;
                             }
 
-                            ingredients.add(Pane.loadItem(instance, (Element) ingredientNode).getItem());
+                            ingredients.add(GuiItem.loadItem(instance, (Element) ingredientNode).getItem());
                         }
                     } else if (tradeElement.getTagName().equalsIgnoreCase("result")) {
                         NodeList resultNodes = tradeElement.getChildNodes();
@@ -545,7 +545,7 @@ public class MerchantGui extends NamedGui implements InventoryBased {
                                 throw new XMLLoadException("Multiple results specified for the same trade");
                             }
 
-                            result = Pane.loadItem(instance, (Element) resultNode).getItem();
+                            result = GuiItem.loadItem(instance, (Element) resultNode).getItem();
                         }
                     } else {
                         throw new XMLLoadException("Trade element is neither an ingredient nor a result");

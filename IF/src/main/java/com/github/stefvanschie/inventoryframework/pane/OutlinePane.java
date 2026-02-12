@@ -596,7 +596,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
             if (item.getNodeName().equals("empty"))
                 outlinePane.addItem(new GuiItem(new ItemStack(Material.AIR), plugin));
             else
-                outlinePane.addItem(Pane.loadItem(instance, (Element) item, plugin));
+                outlinePane.addItem(GuiItem.loadItem(instance, (Element) item, plugin));
         }
 
         return outlinePane;

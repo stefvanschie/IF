@@ -427,7 +427,7 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
                         throw new XMLLoadException("Binding has multiple inner tags, one expected");
                     }
 
-                    guiItem = Pane.loadItem(instance, (Element) guiItemNode, plugin);
+                    guiItem = GuiItem.loadItem(instance, (Element) guiItemNode, plugin);
                 }
 
                 //guaranteed to only be a single code point

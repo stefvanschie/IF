@@ -2,6 +2,7 @@ package com.github.stefvanschie.inventoryframework.gui.type.util;
 
 import com.github.stefvanschie.inventoryframework.HumanEntityCache;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
+import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.GuiListener;
 import com.github.stefvanschie.inventoryframework.gui.type.*;
 import com.github.stefvanschie.inventoryframework.pane.*;
@@ -627,7 +628,7 @@ public abstract class Gui {
      * @throws IllegalArgumentException when a property with this name is already registered.
      */
     public static void registerProperty(@NotNull String attributeName, @NotNull Function<? super String, ?> function) {
-        Pane.registerProperty(attributeName, function);
+        GuiItem.registerProperty(attributeName, function);
     }
 
     /**

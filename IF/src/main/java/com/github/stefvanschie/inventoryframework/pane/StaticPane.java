@@ -469,7 +469,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 
             Element child = (Element) item;
 
-            staticPane.addItem(Pane.loadItem(instance, child, plugin), Slot.deserialize(child));
+            staticPane.addItem(GuiItem.loadItem(instance, child, plugin), Slot.deserialize(child));
         }
 
         return staticPane;
