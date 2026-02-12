@@ -32,8 +32,7 @@ import java.util.function.Consumer;
 public class StaticPane extends Pane implements Flippable, Rotatable {
 
 	/**
-	 * A map of locations inside this pane and their item. The locations are stored in a way where the x coordinate is
-     * the key and the y coordinate is the value.
+	 * A map of locations inside this pane and their item.
 	 */
 	@NotNull
 	private final Map<Slot, GuiItem> items;
@@ -87,18 +86,6 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
         this(0, 0, length, height);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * If there are multiple items in the same position when displaying the items, either one of those items may be
-     * shown. In particular, there is no guarantee that a specific item will be shown.
-     *
-     * @param guiComponent {@inheritDoc}
-     * @param paneOffsetX {@inheritDoc}
-     * @param paneOffsetY {@inheritDoc}
-     * @param maxLength {@inheritDoc}
-     * @param maxHeight {@inheritDoc}
-     */
 	@Override
 	public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
                         int maxHeight) {
@@ -137,6 +124,23 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 		});
 	}
 
+    /**
+     * Adds a gui item at the specific spot in the pane. If the specified slot is already in use, the previous item will
+     * be overwritten by the new item. This is regardless of the way the slot is specified.
+     *
+     * @param item the item to set
+     * @param slot the position of the item
+     * @since 0.10.8
+     */
+    public void addItem(@NotNull GuiItem item, Slot slot) {
+        int x = slot.getX(getLength());
+        int y = slot.getY(getLength());
+
+        this.items.keySet().removeIf(s -> s.getX(getLength()) == x && s.getY(getLength()) == y);
+
+        this.items.put(slot, item);
+    }
+
 	/**
 	 * Adds a gui item at the specific spot in the pane. If there is another item specified in terms of x and y
      * coordinates that are equal to the coordinates of this item, the old item will be overwritten by this item.
@@ -150,21 +154,6 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 	}
 
     /**
-     * Adds a gui item at the specific spot in the pane. If the slot is specified in terms of an x and y coordinate pair
-     * and this pane contains another item whose position is specified as such and these positions are equal, the old
-     * item will be overwritten by this item. If the slot is specified in terms of an index and this pane contains
-     * another item whose position is specified as such and these positions are equal, the old item will be overwritten
-     * by this item.
-     *
-     * @param item the item to set
-     * @param slot the position of the item
-     * @since 0.10.8
-     */
-    public void addItem(@NotNull GuiItem item, Slot slot) {
-        this.items.put(slot, item);
-    }
-
-    /**
      * Removes the specified item from the pane
      *
      * @param item the item to remove
@@ -175,26 +164,27 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
     }
 
     /**
-     * Removes the specified item from the pane. This will only remove items whose slot was specified in terms of an x
-     * and y coordinate pair which matches the coordinate specified.
+     * Removes the specified item from the pane. This will remove an item regardless of how the slot was specified. If
+     * there is no item at the specified coordinates, this method will do nothing.
      *
      * @param x the x coordinate of the item to remove
      * @param y the y coordinate of the item to remove
      * @since 0.10.0
+     * @see #removeItem(Slot)
      */
     public void removeItem(int x, int y) {
-        this.items.remove(Slot.fromXY(x, y));
+        this.items.keySet().removeIf(s -> s.getX(getLength()) == x && s.getY(getLength()) == y);
     }
 
     /**
-     * Removes the specified item from the pane. This will only remove items whose slot was specified in the same way as
-     * the original slot and whose slot positions match.
+     * Removes the specified item from the pane. This will remove an item regardless of how the slot was specified. If
+     * there is no item at the specified coordinates, this method will do nothing.
      *
      * @param slot the slot of the item to remove
      * @since 0.10.8
      */
     public void removeItem(@NotNull Slot slot) {
-        this.items.remove(slot);
+        removeItem(slot.getX(getLength()), slot.getY(getLength()));
     }
 
 	@Override

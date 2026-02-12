@@ -1,5 +1,6 @@
 package com.github.stefvanschie.inventoryframework.pane;
 
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,5 +28,19 @@ public class StaticPaneTest {
         assertEquals(original.isFlippedHorizontally(), copy.isFlippedHorizontally());
         assertEquals(original.isFlippedVertically(), copy.isFlippedVertically());
         assertEquals(original.getUUID(), copy.getUUID());
+    }
+
+    @Test
+    void testRemoveItemCoordinates() {
+        StaticPane pane = new StaticPane(Slot.fromXY(0, 0), 1, 1);
+
+        assertDoesNotThrow(() -> pane.removeItem(0, 0));
+    }
+
+    @Test
+    void testRemoveItemSlot() {
+        StaticPane pane = new StaticPane(Slot.fromXY(0, 0), 1, 1);
+
+        assertDoesNotThrow(() -> pane.removeItem(Slot.fromXY(0, 0)));
     }
 }
