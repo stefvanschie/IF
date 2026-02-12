@@ -1,10 +1,13 @@
 package com.github.stefvanschie.inventoryframework.gui;
 
+import com.github.stefvanschie.inventoryframework.HumanEntityCache;
 import com.github.stefvanschie.inventoryframework.gui.type.*;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.util.InventoryViewUtil;
+import com.github.stefvanschie.inventoryframework.util.UUIDTagType;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -12,8 +15,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.*;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -236,7 +242,34 @@ public class GuiListener implements Listener {
 
         gui.callOnClose(event);
 
-        gui.getHumanEntityCache().restoreAndForget(humanEntity);
+        HumanEntityCache humanEntityCache = gui.getHumanEntityCache();
+
+        if (humanEntityCache.contains(humanEntity)) {
+            humanEntityCache.restoreAndForget(humanEntity);
+        } else {
+            for (ItemStack itemStack : humanEntity.getInventory()) {
+                if (itemStack == null || !itemStack.hasItemMeta()) {
+                    continue;
+                }
+
+                ItemMeta itemMeta = itemStack.getItemMeta();
+
+                assert itemMeta != null;
+
+                PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
+
+                for (GuiItem item : gui.getItems()) {
+                    NamespacedKey key = item.getKey();
+
+                    if (persistentDataContainer.has(key, UUIDTagType.INSTANCE)) {
+                        persistentDataContainer.remove(key);
+                        break;
+                    }
+                }
+
+                itemStack.setItemMeta(itemMeta);
+            }
+        }
 
         if (gui.getViewerCount() == 1) {
             activeGuiInstances.remove(gui);
@@ -244,6 +277,44 @@ public class GuiListener implements Listener {
 
         //Bukkit doesn't like it if you open an inventory while the previous one is being closed
         Bukkit.getScheduler().runTask(this.plugin, () -> gui.navigateToParent(humanEntity));
+    }
+
+    /**
+     * Handles removing identifiers from gui items when an item is dropped from the gui.
+     *
+     * @param event the event fired
+     * @since 0.12.0
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerDropItem(@NotNull PlayerDropItemEvent event) {
+        Gui gui = getGui(event.getPlayer().getOpenInventory().getTopInventory());
+
+        if (gui == null) {
+            return;
+        }
+
+        ItemStack itemStack = event.getItemDrop().getItemStack();
+
+        if (!itemStack.hasItemMeta()) {
+            return;
+        }
+
+        ItemMeta itemMeta = itemStack.getItemMeta();
+
+        assert itemMeta != null;
+
+        PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
+
+        for (GuiItem item : gui.getItems()) {
+            NamespacedKey key = item.getKey();
+
+            if (persistentDataContainer.has(key, UUIDTagType.INSTANCE)) {
+                persistentDataContainer.remove(key);
+                break;
+            }
+        }
+
+        itemStack.setItemMeta(itemMeta);
     }
 
     /**

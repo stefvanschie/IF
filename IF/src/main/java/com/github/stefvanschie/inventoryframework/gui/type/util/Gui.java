@@ -234,6 +234,16 @@ public abstract class Gui {
     public abstract void update();
 
     /**
+     * Gets all the {@link GuiItem} instances in this gui.
+     *
+     * @return all gui items
+     * @since 0.12.0
+     */
+    @NotNull
+    @Contract(pure = true)
+    public abstract Iterable<? extends GuiItem> getItems();
+
+    /**
      * Adds the specified inventory and gui, so we can properly intercept clicks.
      *
      * @param inventory the inventory for the specified gui
