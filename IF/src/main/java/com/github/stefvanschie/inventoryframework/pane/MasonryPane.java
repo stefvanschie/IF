@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
+import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
@@ -76,13 +77,12 @@ public class MasonryPane extends Pane implements Orientable {
         super(length, height);
     }
 
+    @NotNull
     @Override
-    public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
-                        int maxHeight) {
-        int length = Math.min(this.length, maxLength) - paneOffsetX;
-        int height = Math.min(this.height, maxHeight) - paneOffsetY;
+    public GuiItemContainer display() {
+        GuiItemContainer container = new GuiItemContainer(getLength(), getHeight());
 
-        int[][] positions = new int[length][height];
+        int[][] positions = new int[getLength()][getHeight()];
 
         for (int[] array : positions) {
             Arrays.fill(array, -1);
@@ -97,8 +97,8 @@ public class MasonryPane extends Pane implements Orientable {
 
             if (orientation == Orientation.HORIZONTAL) {
                 outerLoop:
-                for (int y = 0; y < height; y++) {
-                    for (int x = 0; x < length; x++) {
+                for (int y = 0; y < getHeight(); y++) {
+                    for (int x = 0; x < getLength(); x++) {
                         //check whether the pane fits
                         boolean fits = true;
 
@@ -121,21 +121,15 @@ public class MasonryPane extends Pane implements Orientable {
 
                             pane.setSlot(Slot.fromXY(x, y));
 
-                            pane.display(
-                                    guiComponent,
-                                paneOffsetX + getSlot().getX(length),
-                                paneOffsetY + getSlot().getY(length),
-                                Math.min(this.length, maxLength),
-                                Math.min(this.height, maxHeight)
-                            );
+                            container.apply(pane.display(), x, y);
                             break outerLoop;
                         }
                     }
                 }
             } else if (orientation == Orientation.VERTICAL) {
                 outerLoop:
-                for (int x = 0; x < length; x++) {
-                    for (int y = 0; y < height; y++) {
+                for (int x = 0; x < getLength(); x++) {
+                    for (int y = 0; y < getHeight(); y++) {
                         //check whether the pane fits
                         boolean fits = true;
 
@@ -158,19 +152,15 @@ public class MasonryPane extends Pane implements Orientable {
 
                             pane.setSlot(Slot.fromXY(x, y));
 
-                            pane.display(
-                                    guiComponent,
-                                paneOffsetX + getSlot().getX(length),
-                                paneOffsetY + getSlot().getY(length),
-                                Math.min(this.length, maxLength),
-                                Math.min(this.height, maxHeight)
-                            );
+                            container.apply(pane.display(), x, y);
                             break outerLoop;
                         }
                     }
                 }
             }
         }
+
+        return container;
     }
 
     @Override

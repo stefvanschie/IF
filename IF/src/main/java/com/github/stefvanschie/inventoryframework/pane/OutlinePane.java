@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
+import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.Mask;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
@@ -120,11 +121,10 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         this(0, 0, length, height);
     }
 
+    @NotNull
     @Override
-    public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
-                        int maxHeight) {
-        int length = Math.min(this.length, maxLength);
-        int height = Math.min(this.height, maxHeight);
+    public GuiItemContainer display() {
+        GuiItemContainer container = new GuiItemContainer(getLength(), getHeight());
 
         int itemIndex = 0;
         int gapCount = 0;
@@ -132,9 +132,9 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         int size;
 
         if (getOrientation() == Orientation.HORIZONTAL) {
-            size = height;
+            size = getHeight();
         } else if (getOrientation() == Orientation.VERTICAL) {
-            size = length;
+            size = getHeight();
         } else {
             throw new IllegalStateException("Unknown orientation '" + getOrientation() + "'");
         }
@@ -215,28 +215,24 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
                     }
 
                     if (flipHorizontally) {
-                        x = length - x - 1;
+                        x = getLength() - x - 1;
                     }
 
                     if (flipVertically) {
-                        y = height - y - 1;
+                        y = getHeight() - y - 1;
                     }
 
                     Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y,
-                            length, height, rotation);
+                            getLength(), getHeight(), rotation);
 
                     x = coordinates.getKey();
                     y = coordinates.getValue();
 
-                    if (x >= 0 && x < length && y >= 0 && y < height) {
-                        Slot slot = getSlot();
-
-                        int finalRow = slot.getY(maxLength) + y + paneOffsetY;
-                        int finalColumn = slot.getX(maxLength) + x + paneOffsetX;
-
+                    if (x >= 0 && x < getLength() && y >= 0 && y < getHeight()) {
                         GuiItem item = items[index];
+
                         if (item.isVisible()) {
-                            guiComponent.setItem(item, finalColumn, finalRow);
+                            container.setItem(item, x, y);
                         }
                     }
                 }
@@ -244,6 +240,8 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
                 index++;
             }
         }
+
+        return container;
     }
 
     @Override

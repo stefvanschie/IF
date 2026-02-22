@@ -6,6 +6,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.font.util.Font;
 import com.github.stefvanschie.inventoryframework.pane.*;
+import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -279,10 +280,10 @@ public class Label extends Pane {
         return this.pane.click(gui, guiComponent, event, slot, paneOffsetX, paneOffsetY, maxLength, maxHeight);
     }
 
+    @NotNull
     @Override
-    public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
-                        int maxHeight) {
-        this.pane.display(guiComponent, paneOffsetX, paneOffsetY, maxLength, maxHeight);
+    public GuiItemContainer display() {
+        return this.pane.display();
     }
 
     @NotNull

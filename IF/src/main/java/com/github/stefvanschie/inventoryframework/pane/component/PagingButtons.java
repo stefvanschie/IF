@@ -6,6 +6,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -267,26 +268,20 @@ public class PagingButtons extends Pane {
         return false;
     }
 
+    @NotNull
     @Override
-    public void display(
-            @NotNull GuiComponent guiComponent,
-            int paneOffsetX,
-            int paneOffsetY,
-            int maxLength,
-            int maxHeight
-    ) {
-        int length = Math.min(getLength(), maxLength);
-
-        int x = super.slot.getX(length) + paneOffsetX;
-        int y = super.slot.getY(length) + paneOffsetY;
+    public GuiItemContainer display() {
+        GuiItemContainer container = new GuiItemContainer(getLength(), getHeight());
 
         if (this.keepButtonsVisible || this.pages.getPage() > 0) {
-            guiComponent.setItem(this.backwardButton, x, y);
+            container.setItem(this.backwardButton, 0, 0);
         }
 
         if (this.keepButtonsVisible || this.pages.getPage() < this.pages.getPages() - 1) {
-            guiComponent.setItem(this.forwardButton, x + length - 1, y);
+            container.setItem(this.forwardButton, getLength() - 1, 0);
         }
+
+        return container;
     }
 
     /**

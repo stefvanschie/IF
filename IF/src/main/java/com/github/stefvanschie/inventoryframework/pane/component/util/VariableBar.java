@@ -1,11 +1,11 @@
 package com.github.stefvanschie.inventoryframework.pane.component.util;
 
-import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.pane.Flippable;
 import com.github.stefvanschie.inventoryframework.pane.Orientable;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -331,23 +331,24 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         }
     }
 
+    @NotNull
     @Override
-    public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
-                        int maxHeight) {
-        Slot slot = getSlot();
-
-        int newPaneOffsetX = paneOffsetX + slot.getX(maxLength);
-        int newPaneOffsetY = paneOffsetY + slot.getY(maxLength);
-        int newMaxLength = Math.min(maxLength, getLength());
-        int newMaxHeight = Math.min(maxHeight, getHeight());
+    public GuiItemContainer display() {
+        GuiItemContainer container = new GuiItemContainer(getLength(), getHeight());
 
         if (this.backgroundPane.isVisible()) {
-            this.backgroundPane.display(guiComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
+            Slot slot = this.backgroundPane.getSlot();
+
+            container.apply(this.backgroundPane.display(), slot.getX(getLength()), slot.getY(getLength()));
         }
 
         if (this.fillPane.isVisible()) {
-            this.fillPane.display(guiComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
+            Slot slot = this.fillPane.getSlot();
+
+            container.apply(this.fillPane.display(), slot.getX(getLength()), slot.getY(getLength()));
         }
+
+        return container;
     }
 
     /**

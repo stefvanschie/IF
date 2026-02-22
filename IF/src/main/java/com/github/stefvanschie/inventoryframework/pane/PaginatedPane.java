@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
+import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -278,17 +279,19 @@ public class PaginatedPane extends Pane {
         populateWithNames(displayNames, material, JavaPlugin.getProvidingPlugin(PaginatedPane.class));
     }
 
+    @NotNull
     @Override
-    public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
-                        int maxHeight) {
+    public GuiItemContainer display() {
+        GuiItemContainer container = new GuiItemContainer(getLength(), getHeight());
+
         if (this.page < 0 || this.page >= this.panes.size()) {
-            return;
+            return container;
         }
 
         List<Pane> panes = this.panes.get(page);
 
         if (panes == null) {
-            return;
+            return container;
         }
 
         for (Pane pane : panes) {
@@ -296,15 +299,12 @@ public class PaginatedPane extends Pane {
                 continue;
             }
 
-            Slot slot = getSlot();
+            Slot slot = pane.getSlot();
 
-            int newPaneOffsetX = paneOffsetX + slot.getX(maxLength);
-            int newPaneOffsetY = paneOffsetY + slot.getY(maxLength);
-            int newMaxLength = Math.min(length, maxLength);
-            int newMaxHeight = Math.min(height, maxHeight);
-
-            pane.display(guiComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
+            container.apply(pane.display(), slot.getX(getLength()), slot.getY(getLength()));
         }
+
+        return container;
     }
 
     @Override

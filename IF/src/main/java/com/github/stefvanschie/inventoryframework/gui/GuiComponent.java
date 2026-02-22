@@ -3,6 +3,8 @@ package com.github.stefvanschie.inventoryframework.gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -10,7 +12,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -32,15 +33,10 @@ public class GuiComponent {
     protected final List<Pane> panes = new ArrayList<>();
 
     /**
-     * The items this gui component has, stored in row-major order. Slots that are empty are represented as null.
+     * A container for all the items in this component.
      */
-    @Nullable
-    private final ItemStack[][] items;
-
-    /**
-     * The length and height of this gui component
-     */
-    private final int length, height;
+    @NotNull
+    private GuiItemContainer container;
 
     /**
      * Creates a new gui component with the specified length and width. If either the length or the width is less than
@@ -55,10 +51,7 @@ public class GuiComponent {
             throw new IllegalArgumentException("Sizes must be greater or equal to zero");
         }
 
-        this.length = length;
-        this.height = height;
-
-        this.items = new ItemStack[length][height];
+        this.container = new GuiItemContainer(length, height);
     }
 
     /**
@@ -163,7 +156,13 @@ public class GuiComponent {
                     slot = (y + 1) * getLength() + x + offset;
                 }
 
-                inventory.setItem(slot, getItem(x, y));
+                GuiItem item = this.container.getItem(x, y);
+
+                if (item == null) {
+                    continue;
+                }
+
+                inventory.setItem(slot, item.getItem());
             }
         }
     }
@@ -181,7 +180,13 @@ public class GuiComponent {
     public void placeItems(@NotNull Inventory inventory, int offset) {
         for (int x = 0; x < getLength(); x++) {
             for (int y = 0; y < getHeight(); y++) {
-                inventory.setItem(y * getLength() + x + offset, getItem(x, y));
+                GuiItem item = this.container.getItem(x, y);
+
+                if (item == null) {
+                    continue;
+                }
+
+                inventory.setItem(y * getLength() + x + offset, item.getItem());
             }
         }
     }
@@ -222,21 +227,11 @@ public class GuiComponent {
     public GuiComponent copy() {
         GuiComponent guiComponent = new GuiComponent(getLength(), getHeight());
 
-        for (int x = 0; x < getLength(); x++) {
-            for (int y = 0; y < getHeight(); y++) {
-                ItemStack item = getItem(x, y);
-
-                if (item == null) {
-                    continue;
-                }
-
-                guiComponent.items[x][y] = item.clone();
-            }
-        }
-
         for (Pane pane : getPanes()) {
             guiComponent.addPane(pane.copy());
         }
+
+        guiComponent.container = this.container.copy();
 
         return guiComponent;
     }
@@ -262,7 +257,7 @@ public class GuiComponent {
         if (from < 0 || end >= getHeight()) {
             throw new IllegalArgumentException("Specified range includes non-existent rows");
         }
-        
+
         int newHeight = getHeight() - (end - from + 1);
 
         GuiComponent newGuiComponent = new GuiComponent(getLength(), newHeight);
@@ -271,23 +266,7 @@ public class GuiComponent {
             newGuiComponent.addPane(pane);
         }
 
-        for (int x = 0; x < getLength(); x++) {
-            int newY = 0;
-
-            for (int y = 0; y < getHeight(); y++) {
-                ItemStack item = getItem(x, y);
-
-                if (y >= from && y <= end) {
-                    continue;
-                }
-
-                if (item != null) {
-                    newGuiComponent.items[x][y] = item;
-                }
-
-                newY++;
-            }
-        }
+        newGuiComponent.container = this.container.excludeRows(from, end);
 
         return newGuiComponent;
     }
@@ -325,7 +304,7 @@ public class GuiComponent {
     public boolean hasItem() {
         for (int x = 0; x < getLength(); x++) {
             for (int y = 0; y < getHeight(); y++) {
-                if (getItem(x, y) != null) {
+                if (this.container.getItem(x, y) != null) {
                     return true;
                 }
             }
@@ -343,51 +322,17 @@ public class GuiComponent {
      * @see #display(Inventory, int)
      */
     public void display() {
-        clearItems();
+        this.container.clearItems();
 
         for (Pane pane : getPanes()) {
             if (!pane.isVisible()) {
                 continue;
             }
 
-            pane.display(this, 0, 0, getLength(), getHeight());
+            Slot slot = pane.getSlot();
+
+            this.container.apply(pane.display(), slot.getX(getLength()), slot.getY(getLength()));
         }
-    }
-
-    /**
-     * Checks whether the item at the specified coordinates exists. If the specified coordinates are not within this
-     * gui component, an {@link IllegalArgumentException} will be thrown.
-     *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @return true if an item exists at the given coordinates, false otherwise
-     * @since 0.8.0
-     * @throws IllegalArgumentException when the coordinates are out of bounds
-     */
-    @Contract(pure = true)
-    public boolean hasItem(int x, int y) {
-        return getItem(x, y) != null;
-    }
-
-    /**
-     * Gets the item at the specified coordinates, or null if this cell is empty. If the specified coordinates are not
-     * within this gui component, an {@link IllegalArgumentException} will be thrown.
-     *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @return the item or null
-     * @since 0.8.0
-     * @throws IllegalArgumentException when the coordinates are out of bounds
-     */
-    @Nullable
-    @Contract(pure = true)
-    public ItemStack getItem(int x, int y) {
-        if (!isInBounds(x, y)) {
-            throw new IllegalArgumentException("Coordinates must be in-bounds: x = " + x + ", y = " + y +
-                "; should be below " + getLength() + " and " + getHeight());
-        }
-
-        return this.items[x][y];
     }
 
     /**
@@ -405,39 +350,6 @@ public class GuiComponent {
     }
 
     /**
-     * Adds the specified item in the slot at the specified positions. This will override an already set item if it
-     * resides in the same position as specified. If the position specified is outside of the boundaries set by this
-     * component, an {@link IllegalArgumentException} will be thrown.
-     *
-     * @param guiItem the item to place in this gui component
-     * @param x the x coordinate of the item
-     * @param y the y coordinate of the item
-     * @since 0.9.3
-     */
-    public void setItem(@NotNull GuiItem guiItem, int x, int y) {
-        if (!isInBounds(x, y)) {
-            throw new IllegalArgumentException("Coordinates must be in-bounds: x = " + x + ", y = " + y +
-                "; should be below " + getLength() + " and " + getHeight());
-        }
-
-        GuiItem copy = guiItem.copy();
-        copy.applyUUID();
-
-        this.items[x][y] = copy.getItem();
-    }
-
-    /**
-     * Gets the total size of this gui component.
-     *
-     * @return the size
-     * @since 0.8.0
-     */
-    @Contract(pure = true)
-    public int getSize() {
-        return getLength() * getHeight();
-    }
-
-    /**
      * Gets the height of this gui component.
      *
      * @return the height
@@ -445,7 +357,7 @@ public class GuiComponent {
      */
     @Contract(pure = true)
     public int getHeight() {
-        return this.height;
+        return this.container.getHeight();
     }
 
     /**
@@ -456,35 +368,7 @@ public class GuiComponent {
      */
     @Contract(pure = true)
     public int getLength() {
-        return this.length;
-    }
-
-    /**
-     * Clears the items of this gui component.
-     *
-     * @since 0.9.2
-     */
-    private void clearItems() {
-        for (ItemStack[] items : this.items) {
-            Arrays.fill(items, null);
-        }
-    }
-
-    /**
-     * Returns whether the specified coordinates are inside the boundary of this gui component or outside of this gui
-     * component; true is returned for the former case and false for the latter case.
-     *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @return true if the coordinates are in bounds, false otherwise
-     * @since 0.8.0
-     */
-    @Contract(pure = true)
-    private boolean isInBounds(int x, int y) {
-        boolean xBounds = isInBounds(0, getLength() - 1, x);
-        boolean yBounds = isInBounds(0, getHeight() - 1, y);
-
-        return xBounds && yBounds;
+        return this.container.getLength();
     }
 
     /**

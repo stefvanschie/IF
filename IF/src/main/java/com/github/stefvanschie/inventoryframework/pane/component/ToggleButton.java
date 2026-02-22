@@ -6,6 +6,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -282,19 +283,13 @@ public class ToggleButton extends Pane {
         this(length, height, false);
     }
 
+    @NotNull
     @Override
-    public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
-                        int maxHeight) {
-        int newMaxLength = Math.min(maxLength, length);
-        int newMaxHeight = Math.min(maxHeight, height);
-
-        int newPaneOffsetX = this.slot.getX(newMaxLength) + paneOffsetX;
-        int newPaneOffsetY = this.slot.getY(newMaxHeight) + paneOffsetY;
-
+    public GuiItemContainer display() {
         if (enabled) {
-            this.enabledPane.display(guiComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
+            return this.enabledPane.display();
         } else {
-            this.disabledPane.display(guiComponent, newPaneOffsetX, newPaneOffsetY, newMaxLength, newMaxHeight);
+            return this.disabledPane.display();
         }
     }
 

@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
+import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.Mask;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import com.github.stefvanschie.inventoryframework.util.InventoryViewUtil;
@@ -228,16 +229,13 @@ public abstract class Pane {
     }
 
     /**
-     * Has to set all the items in the right spot inside the inventory
+     * Returns a {@link GuiItemContainer} with all the items that should be displayed of this pane.
      *
-     * @param guiComponent the gui component in which the items should be displayed
-     * @param paneOffsetX the pane's offset on the x axis
-     * @param paneOffsetY the pane's offset on the y axis
-     * @param maxLength the maximum length of the pane
-     * @param maxHeight the maximum height of the pane
+     * @return a container containing all the items to be displayed
+     * @since 0.12.0
      */
-    public abstract void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
-                                 int maxHeight);
+    @NotNull
+    public abstract GuiItemContainer display();
 
     /**
      * Returns the pane's visibility state

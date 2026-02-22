@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
+import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -86,11 +87,10 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
         this(0, 0, length, height);
     }
 
+    @NotNull
 	@Override
-	public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
-                        int maxHeight) {
-		int length = Math.min(this.length, maxLength);
-		int height = Math.min(this.height, maxHeight);
+	public GuiItemContainer display() {
+        GuiItemContainer container = new GuiItemContainer(getLength(), getHeight());
 
 		items.entrySet().stream().filter(entry -> entry.getValue().isVisible()).forEach(entry -> {
 			Slot location = entry.getKey();
@@ -104,24 +104,20 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
 			if (flipVertically)
 				y = height - y - 1;
 
-			Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y, length, height,
-				rotation);
+			Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(x, y, getLength(),
+                    getHeight(), rotation);
 
 			x = coordinates.getKey();
 			y = coordinates.getValue();
 
-			if (x < 0 || x >= length || y < 0 || y >= height) {
+			if (x < 0 || x >= getLength() || y < 0 || y >= getHeight()) {
 			    return;
             }
 
-			GuiItem item = entry.getValue();
-
-            Slot slot = getSlot();
-            int finalRow = slot.getY(maxLength) + y + paneOffsetY;
-			int finalColumn = slot.getX(maxLength) + x + paneOffsetX;
-
-			guiComponent.setItem(item, finalColumn, finalRow);
+            container.setItem(entry.getValue(), x, y);
 		});
+
+        return container;
 	}
 
     /**

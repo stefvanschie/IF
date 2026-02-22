@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
+import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
@@ -134,14 +135,13 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
         this(x, y, length, height, Priority.NORMAL, pattern);
     }
 
+    @NotNull
     @Override
-    public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
-                        int maxHeight) {
-        int length = Math.min(this.length, maxLength);
-        int height = Math.min(this.height, maxHeight);
+    public GuiItemContainer display() {
+        GuiItemContainer container = new GuiItemContainer(getLength(), getHeight());
 
-        for (int x = 0; x < length; x++) {
-            for (int y = 0; y < height; y++) {
+        for (int x = 0; x < getLength(); x++) {
+            for (int y = 0; y < getHeight(); y++) {
                 GuiItem item = this.bindings.get(pattern.getCharacter(x, y));
 
                 if (item == null || !item.isVisible()) {
@@ -151,27 +151,21 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
                 int newX = x, newY = y;
 
                 if (isFlippedHorizontally()) {
-                    newX = length - x - 1;
+                    newX = getLength() - x - 1;
                 }
 
                 if (isFlippedVertically()) {
-                    newY = height - y - 1;
+                    newY = getHeight() - y - 1;
                 }
 
-                Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(newX, newY, length,
-                    height, rotation);
+                Map.Entry<Integer, Integer> coordinates = GeometryUtil.processClockwiseRotation(newX, newY, getLength(),
+                    getHeight(), rotation);
 
-                newX = coordinates.getKey();
-                newY = coordinates.getValue();
-
-                Slot slot = getSlot();
-
-                int finalRow = slot.getY(maxLength) + newY + paneOffsetY;
-                int finalColumn = slot.getX(maxLength) + newX + paneOffsetX;
-
-                guiComponent.setItem(item, finalColumn, finalRow);
+                container.setItem(item, coordinates.getKey(), coordinates.getValue());
             }
         }
+
+        return container;
     }
 
     @Override

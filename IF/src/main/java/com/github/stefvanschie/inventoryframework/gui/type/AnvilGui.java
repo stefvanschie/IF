@@ -413,22 +413,6 @@ public class AnvilGui extends NamedGui implements InventoryBased {
     }
 
     /**
-     * Gets the top items
-     *
-     * @return the top items
-     * @since 0.8.0
-     */
-    @Nullable
-    @Contract(pure = true)
-    private ItemStack[] getTopItems() {
-        return new ItemStack[] {
-            getFirstItemComponent().getItem(0, 0),
-            getSecondItemComponent().getItem(0, 0),
-            getResultComponent().getItem(0, 0)
-        };
-    }
-
-    /**
      * Loads an anvil gui from an XML file.
      *
      * @param instance the instance on which to reference fields and methods

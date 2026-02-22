@@ -5,6 +5,7 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
@@ -114,18 +115,17 @@ public class CycleButton extends Pane {
         return true;
     }
 
+    @NotNull
     @Override
-    public void display(@NotNull GuiComponent guiComponent, int paneOffsetX, int paneOffsetY, int maxLength,
-                        int maxHeight) {
-        Slot slot = getSlot();
+    public GuiItemContainer display() {
+        GuiItemContainer container = new GuiItemContainer(getLength(), getHeight());
 
-        int newX = paneOffsetX + slot.getX(maxLength);
-        int newY = paneOffsetY + slot.getY(maxLength);
+        Pane pane = this.panes.get(this.position);
+        Slot slot = pane.getSlot();
 
-        int newMaxLength = Math.min(maxLength, length);
-        int newMaxHeight = Math.min(maxHeight, height);
+        container.apply(pane.display(), slot.getX(getLength()), slot.getY(getLength()));
 
-        panes.get(position).display(guiComponent, newX, newY, newMaxLength, newMaxHeight);
+        return container;
     }
 
     @NotNull

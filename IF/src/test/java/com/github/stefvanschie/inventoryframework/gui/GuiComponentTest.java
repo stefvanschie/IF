@@ -68,7 +68,6 @@ public class GuiComponentTest {
     void testExcludeRowsInvalid() {
         GuiComponent guiComponent = new GuiComponent(0, 5);
 
-        //noinspection ResultOfMethodCallIgnored
         assertThrows(IllegalArgumentException.class, () -> guiComponent.excludeRows(8, 8));
     }
 
@@ -90,10 +89,5 @@ public class GuiComponentTest {
         assertEquals(Pane.Priority.LOW, panes.get(0).getPriority());
         assertEquals(Pane.Priority.HIGHEST, panes.get(1).getPriority());
         assertEquals(Pane.Priority.MONITOR, panes.get(2).getPriority());
-    }
-
-    @Test
-    void testGetSize() {
-        assertEquals(30, new GuiComponent(3, 10).getSize());
     }
 }
