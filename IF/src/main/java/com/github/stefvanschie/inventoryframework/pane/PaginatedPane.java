@@ -334,7 +334,7 @@ public class PaginatedPane extends Pane {
 
         boolean success = false;
 
-        if (this.page <= 0 || this.page >= this.panes.size()) {
+        if (this.page < 0 || this.page >= this.panes.size()) {
             return false;
         }
 
