@@ -295,24 +295,12 @@ public class ToggleButton extends Pane {
 
     @Override
     public boolean click(@NotNull Gui gui, @NotNull GuiComponent guiComponent, @NotNull InventoryClickEvent event,
-                         int slot, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
-        int length = Math.min(this.length, maxLength);
-        int height = Math.min(this.height, maxHeight);
-
-        Slot paneSlot = getSlot();
-
-        int xPosition = paneSlot.getX(maxLength);
-        int yPosition = paneSlot.getY(maxLength);
-
-        int totalLength = guiComponent.getLength();
-
-        int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
-
-        int x = adjustedSlot % totalLength;
-        int y = adjustedSlot / totalLength;
+                         @NotNull Slot slot) {
+        int x = slot.getX(getLength());
+        int y = slot.getY(getLength());
 
         //this isn't our item
-        if (x < 0 || x >= length || y < 0 || y >= height) {
+        if (x < 0 || x >= getLength() || y < 0 || y >= getHeight()) {
             return false;
         }
 
@@ -322,17 +310,20 @@ public class ToggleButton extends Pane {
 
         callOnClick(event);
 
-        int newX = paneOffsetX + xPosition;
-        int newY = paneOffsetY + yPosition;
-
         /*
         Since we've toggled before, the click for the panes should be swapped around. If we haven't toggled due to
         allowToggle being false, then we should click the pane corresponding to the current state. An XOR achieves this.
          */
         if (enabled == this.allowToggle) {
-            disabledPane.click(gui, guiComponent, event, slot, newX, newY, length, height);
+            Slot paneSlot = this.disabledPane.getSlot();
+            Slot innerSlot = Slot.fromXY(x - paneSlot.getX(getLength()), y - paneSlot.getY(getLength()));
+
+            this.disabledPane.click(gui, guiComponent, event, slot);
         } else {
-            enabledPane.click(gui, guiComponent, event, slot, newX, newY, length, height);
+            Slot paneSlot = this.enabledPane.getSlot();
+            Slot innerSlot = Slot.fromXY(x - paneSlot.getX(getLength()), y - paneSlot.getY(getLength()));
+
+            this.enabledPane.click(gui, guiComponent, event, slot);
         }
 
         event.setCancelled(true);

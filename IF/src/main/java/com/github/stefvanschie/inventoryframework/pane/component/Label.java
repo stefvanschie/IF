@@ -274,10 +274,10 @@ public class Label extends Pane {
 
     @Override
     public boolean click(@NotNull Gui gui, @NotNull GuiComponent guiComponent, @NotNull InventoryClickEvent event,
-                         int slot, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
+                         @NotNull Slot slot) {
         event.setCancelled(true);
 
-        return this.pane.click(gui, guiComponent, event, slot, paneOffsetX, paneOffsetY, maxLength, maxHeight);
+        return this.pane.click(gui, guiComponent, event, slot);
     }
 
     @NotNull

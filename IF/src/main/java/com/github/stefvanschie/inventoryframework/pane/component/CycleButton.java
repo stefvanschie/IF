@@ -74,24 +74,12 @@ public class CycleButton extends Pane {
 
     @Override
     public boolean click(@NotNull Gui gui, @NotNull GuiComponent guiComponent, @NotNull InventoryClickEvent event,
-                         int slot, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
-        int length = Math.min(this.length, maxLength);
-        int height = Math.min(this.height, maxHeight);
-
-        Slot paneSlot = getSlot();
-
-        int xPosition = paneSlot.getX(maxLength);
-        int yPosition = paneSlot.getY(maxLength);
-
-        int totalLength = guiComponent.getLength();
-
-        int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
-
-        int x = adjustedSlot % totalLength;
-        int y = adjustedSlot / totalLength;
+                         @NotNull Slot slot) {
+        int x = slot.getX(getLength());
+        int y = slot.getY(getLength());
 
         //this isn't our item
-        if (x < 0 || x >= length || y < 0 || y >= height) {
+        if (x < 0 || x >= getLength() || y < 0 || y >= getHeight()) {
             return false;
         }
 
@@ -107,8 +95,11 @@ public class CycleButton extends Pane {
 
         //use the previous position, since that will have the pane we clicked on
         Pane pane = panes.get(previousPosition);
-        pane.click(gui, guiComponent, event, slot, paneOffsetX + x, paneOffsetY + y,
-            length, height);
+
+        Slot paneSlot = pane.getSlot();
+        Slot innerSlot = Slot.fromXY(x - paneSlot.getX(getLength()), y - paneSlot.getY(getLength()));
+
+        pane.click(gui, guiComponent, event, innerSlot);
 
         gui.update();
 

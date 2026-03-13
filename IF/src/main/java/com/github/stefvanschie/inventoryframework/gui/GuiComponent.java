@@ -193,22 +193,27 @@ public class GuiComponent {
 
     /**
      * Delegates the handling of the specified click event to the panes of this component. This will call
-     * {@link Pane#click(Gui, GuiComponent, InventoryClickEvent, int, int, int, int, int)} on each pane until the
+     * {@link Pane#click(Gui, GuiComponent, InventoryClickEvent, Slot)} on each pane until the
      * right item has been found.
      *
      * @param gui the gui this inventory component belongs to
      * @param event the event to delegate
-     * @param slot the slot that was clicked
+     * @param index the slot that was clicked
      * @since 0.8.0
      */
-    public void click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int slot) {
+    public void click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int index) {
         List<Pane> panes = new ArrayList<>(getPanes());
+
+        int x = index % getLength();
+        int y = index / getLength();
 
         //loop panes in reverse, because the highest priority pane (last in list) is most likely to have the right item
         for (int i = panes.size() - 1; i >= 0; i--) {
-            if (panes.get(i).click(
-                gui, this, event, slot, 0, 0, getLength(), getHeight()
-            )) {
+            Pane pane = panes.get(i);
+            Slot paneSlot = pane.getSlot();
+            Slot innerSlot = Slot.fromXY(x - paneSlot.getX(getLength()), y - paneSlot.getY(getLength()));
+
+            if (pane.click(gui, this, event, innerSlot)) {
                 break;
             }
         }

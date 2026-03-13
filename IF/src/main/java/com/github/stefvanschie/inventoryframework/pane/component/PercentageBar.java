@@ -129,23 +129,11 @@ public class PercentageBar extends VariableBar {
 
     @Override
     public boolean click(@NotNull Gui gui, @NotNull GuiComponent guiComponent, @NotNull InventoryClickEvent event,
-                         int slot, int paneOffsetX, int paneOffsetY, int maxLength, int maxHeight) {
-        int length = Math.min(this.length, maxLength);
-        int height = Math.min(this.height, maxHeight);
+                         @NotNull Slot slot) {
+        int x = slot.getX(getLength());
+        int y = slot.getY(getLength());
 
-        Slot paneSlot = getSlot();
-
-        int xPosition = paneSlot.getX(maxLength);
-        int yPosition = paneSlot.getY(maxLength);
-
-        int totalLength = guiComponent.getLength();
-
-        int adjustedSlot = slot - (xPosition + paneOffsetX) - totalLength * (yPosition + paneOffsetY);
-
-        int x = adjustedSlot % totalLength;
-        int y = adjustedSlot / totalLength;
-
-        if (x < 0 || x >= length || y < 0 || y >= height) {
+        if (x < 0 || x >= getLength() || y < 0 || y >= getHeight()) {
             return false;
         }
 
@@ -153,15 +141,18 @@ public class PercentageBar extends VariableBar {
 
         event.setCancelled(true);
 
-        int newPaneOffsetX = paneOffsetX + xPosition;
-        int newPaneOffsetY = paneOffsetY + yPosition;
+        Slot fillSlot = this.fillPane.getSlot();
+        Slot innerfillSlot = Slot.fromXY(x - fillSlot.getX(getLength()), y - fillSlot.getY(getLength()));
 
+        if (this.fillPane.click(gui, guiComponent, event, innerfillSlot)) {
+            return true;
+        }
 
-        return this.fillPane.click(
-            gui, guiComponent, event, slot, newPaneOffsetX, newPaneOffsetY, length, height
-        ) || this.backgroundPane.click(
-            gui, guiComponent, event, slot, newPaneOffsetX, newPaneOffsetY, length, height
-        );
+        Slot backgroundSlot = this.backgroundPane.getSlot();
+        Slot innerBackgroundSlot = Slot.fromXY(x - backgroundSlot.getX(getLength()),
+                y - backgroundSlot.getY(getLength()));
+
+        return this.backgroundPane.click(gui, guiComponent, event, slot);
     }
 
     /**
