@@ -57,16 +57,15 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
     /**
      * Constructs a new pattern pane.
      *
-     * @param slot the slot of the pane
      * @param length the length of the pane
      * @param height the height of the pane
      * @param priority the priority of the pane
      * @param pattern the pattern of the pane
      * @throws IllegalArgumentException when the pane and pattern dimensions don't match
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public PatternPane(@NotNull Slot slot, int length, int height, @NotNull Priority priority, @NotNull Pattern pattern) {
-        super(slot, length, height, priority);
+    public PatternPane(int length, int height, @NotNull Priority priority, @NotNull Pattern pattern) {
+        super(length, height, priority);
 
         if (pattern.getLength() != length || pattern.getHeight() != height) {
             throw new IllegalArgumentException(
@@ -75,22 +74,6 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
         }
 
         this.pattern = pattern;
-    }
-
-    /**
-     * Constructs a new pattern pane.
-     *
-     * @param x the upper left x coordinate of the pane
-     * @param y the upper left y coordinate of the pane
-     * @param length the length of the pane
-     * @param height the height of the pane
-     * @param priority the priority of the pane
-     * @param pattern the pattern of the pane
-     * @throws IllegalArgumentException when the pane and pattern dimensions don't match
-     * @since 0.9.8
-     */
-    public PatternPane(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Pattern pattern) {
-        this(Slot.fromXY(x, y), length, height, priority, pattern);
     }
 
     /**
@@ -103,36 +86,7 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
      * @since 0.9.8
      */
     public PatternPane(int length, int height, @NotNull Pattern pattern) {
-        this(0, 0, length, height, pattern);
-    }
-
-    /**
-     * Constructs a new pattern pane.
-     *
-     * @param slot the slot of the pane
-     * @param length the length of the pane
-     * @param height the height of the pane
-     * @param pattern the pattern of the pane
-     * @throws IllegalArgumentException when the pane and pattern dimensions don't match
-     * @since 0.10.8
-     */
-    public PatternPane(@NotNull Slot slot, int length, int height, @NotNull Pattern pattern) {
-        this(slot, length, height, Priority.NORMAL, pattern);
-    }
-
-    /**
-     * Constructs a new pattern pane.
-     *
-     * @param x the upper left x coordinate of the pane
-     * @param y the upper left y coordinate of the pane
-     * @param length the length of the pane
-     * @param height the height of the pane
-     * @param pattern the pattern of the pane
-     * @throws IllegalArgumentException when the pane and pattern dimensions don't match
-     * @since 0.9.8
-     */
-    public PatternPane(int x, int y, int length, int height, @NotNull Pattern pattern) {
-        this(x, y, length, height, Priority.NORMAL, pattern);
+        this(length, height, Priority.NORMAL, pattern);
     }
 
     @NotNull
@@ -202,7 +156,7 @@ public class PatternPane extends Pane implements Flippable, Rotatable {
     @Contract(pure = true)
     @Override
     public PatternPane copy() {
-        PatternPane patternPane = new PatternPane(getSlot(), getLength(), getHeight(), getPriority(), getPattern());
+        PatternPane patternPane = new PatternPane(getLength(), getHeight(), getPriority(), getPattern());
 
         patternPane.setVisible(isVisible());
         patternPane.onClick = onClick;

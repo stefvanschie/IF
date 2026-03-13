@@ -9,7 +9,7 @@ public class StaticPaneTest {
 
     @Test
     void testCopy() {
-        StaticPane original = new StaticPane(5, 1, 1, 1, Pane.Priority.MONITOR);
+        StaticPane original = new StaticPane(1, 1, Pane.Priority.MONITOR);
         original.setVisible(false);
         original.setRotation(90);
         original.flipHorizontally(false);
@@ -19,7 +19,6 @@ public class StaticPaneTest {
 
         assertNotSame(original, copy);
 
-        assertEquals(original.getSlot(), copy.getSlot());
         assertEquals(original.getLength(), copy.getLength());
         assertEquals(original.getHeight(), copy.getHeight());
         assertEquals(original.getPriority(), copy.getPriority());
@@ -32,14 +31,14 @@ public class StaticPaneTest {
 
     @Test
     void testRemoveItemCoordinates() {
-        StaticPane pane = new StaticPane(Slot.fromXY(0, 0), 1, 1);
+        StaticPane pane = new StaticPane(1, 1);
 
         assertDoesNotThrow(() -> pane.removeItem(0, 0));
     }
 
     @Test
     void testRemoveItemSlot() {
-        StaticPane pane = new StaticPane(Slot.fromXY(0, 0), 1, 1);
+        StaticPane pane = new StaticPane(1, 1);
 
         assertDoesNotThrow(() -> pane.removeItem(Slot.fromXY(0, 0)));
     }

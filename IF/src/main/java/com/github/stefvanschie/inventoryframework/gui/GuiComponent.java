@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
+import com.github.stefvanschie.inventoryframework.pane.util.PositionedPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -30,7 +31,7 @@ public class GuiComponent {
      * lowest priority to the highest priority. The order of panes with the same priority is unspecified.
      */
     @NotNull
-    protected final List<Pane> panes = new ArrayList<>();
+    protected final List<PositionedPane> panes = new ArrayList<>();
 
     /**
      * A container for all the items in this component.
@@ -57,14 +58,17 @@ public class GuiComponent {
     /**
      * Adds a pane to the current collection of panes.
      *
+     * @param slot the position of the pane
      * @param pane the pane to add
      * @since 0.8.0
      */
-    public void addPane(@NotNull Pane pane) {
-        int size = getPanes().size();
+    public void addPane(@NotNull Slot slot, @NotNull Pane pane) {
+        PositionedPane positionedPane = new PositionedPane(slot, pane);
+
+        int size = this.panes.size();
 
         if (size == 0) {
-            getPanes().add(pane);
+            this.panes.add(positionedPane);
 
             return;
         }
@@ -80,7 +84,7 @@ public class GuiComponent {
             Pane.Priority middlePriority = getPane(middle).getPriority();
 
             if (middlePriority == priority) {
-                getPanes().add(middle, pane);
+                this.panes.add(middle, positionedPane);
 
                 return;
             }
@@ -92,7 +96,7 @@ public class GuiComponent {
             }
         }
 
-        getPanes().add(right + 1, pane);
+        this.panes.add(right + 1, positionedPane);
     }
 
     /**
@@ -202,18 +206,16 @@ public class GuiComponent {
      * @since 0.8.0
      */
     public void click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int index) {
-        List<Pane> panes = new ArrayList<>(getPanes());
-
         int x = index % getLength();
         int y = index / getLength();
 
         //loop panes in reverse, because the highest priority pane (last in list) is most likely to have the right item
-        for (int i = panes.size() - 1; i >= 0; i--) {
-            Pane pane = panes.get(i);
-            Slot paneSlot = pane.getSlot();
+        for (int i = this.panes.size() - 1; i >= 0; i--) {
+            PositionedPane positionedPane = this.panes.get(i);
+            Slot paneSlot = positionedPane.getSlot();
             Slot innerSlot = Slot.fromXY(x - paneSlot.getX(getLength()), y - paneSlot.getY(getLength()));
 
-            if (pane.click(gui, this, event, innerSlot)) {
+            if (positionedPane.getPane().click(gui, this, event, innerSlot)) {
                 break;
             }
         }
@@ -232,8 +234,8 @@ public class GuiComponent {
     public GuiComponent copy() {
         GuiComponent guiComponent = new GuiComponent(getLength(), getHeight());
 
-        for (Pane pane : getPanes()) {
-            guiComponent.addPane(pane.copy());
+        for (PositionedPane positionedPane : this.panes) {
+            guiComponent.addPane(positionedPane.getSlot(), positionedPane.getPane().copy());
         }
 
         guiComponent.container = this.container.copy();
@@ -267,8 +269,8 @@ public class GuiComponent {
 
         GuiComponent newGuiComponent = new GuiComponent(getLength(), newHeight);
 
-        for (Pane pane : getPanes()) {
-            newGuiComponent.addPane(pane);
+        for (PositionedPane positionedPane : this.panes) {
+            newGuiComponent.addPane(positionedPane.getSlot(), positionedPane.getPane());
         }
 
         newGuiComponent.container = this.container.excludeRows(from, end);
@@ -295,7 +297,7 @@ public class GuiComponent {
                 continue;
             }
 
-            addPane(Gui.loadPane(instance, innerItem, plugin));
+            addPane(Slot.deserialize((Element) innerItem), Gui.loadPane(instance, innerItem, plugin));
         }
     }
 
@@ -329,15 +331,33 @@ public class GuiComponent {
     public void display() {
         this.container.clearItems();
 
-        for (Pane pane : getPanes()) {
+        for (PositionedPane positionedPane : this.panes) {
+            Pane pane = positionedPane.getPane();
+
             if (!pane.isVisible()) {
                 continue;
             }
 
-            Slot slot = pane.getSlot();
+            Slot slot = positionedPane.getSlot();
 
             this.container.apply(pane.display(), slot.getX(getLength()), slot.getY(getLength()));
         }
+    }
+
+    /**
+     * Gets a list of panes with their positions this gui component contains. The returned list is unmodifiable. If this
+     * gui component currently does not have any panes, an empty list is returned. This list is guaranteed to be sorted
+     * according to the panes' priorities. The returned collection is not synchronized and no guarantees should be made
+     * as to the safety of concurrently accessing the returned collection. If synchronized behaviour should be allowed,
+     * the returned collection must be synchronized externally.
+     *
+     * @return the panes this component has
+     * @since 0.12.0
+     */
+    @NotNull
+    @Contract(pure = true)
+    public List<? extends PositionedPane> getPositionedPanes() {
+        return this.panes;
     }
 
     /**
@@ -351,8 +371,15 @@ public class GuiComponent {
     @NotNull
     @Contract(pure = true)
     public List<Pane> getPanes() {
-        return this.panes;
+        List<Pane> panes = new ArrayList<>(getPositionedPanes().size());
+
+        for (PositionedPane positionedPane : getPositionedPanes()) {
+            panes.add(positionedPane.getPane());
+        }
+
+        return panes;
     }
+
 
     /**
      * Gets the height of this gui component.
@@ -390,7 +417,7 @@ public class GuiComponent {
             throw new IllegalArgumentException("Index not in pane list");
         }
 
-        return this.panes.get(index);
+        return this.panes.get(index).getPane();
     }
 
     /**

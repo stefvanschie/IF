@@ -27,7 +27,7 @@ public class PatternPaneTest {
 
     @Test
     void testCopy() {
-        PatternPane original = new PatternPane(8, 5, 1, 1, Pane.Priority.HIGHEST, new Pattern("1"));
+        PatternPane original = new PatternPane(1, 1, Pane.Priority.HIGHEST, new Pattern("1"));
         original.setVisible(false);
         original.setRotation(180);
         original.flipHorizontally(true);
@@ -37,7 +37,6 @@ public class PatternPaneTest {
 
         assertNotSame(original, copy);
 
-        assertEquals(original.getSlot(), copy.getSlot());
         assertEquals(original.getLength(), copy.getLength());
         assertEquals(original.getHeight(), copy.getHeight());
         assertEquals(original.getPriority(), copy.getPriority());

@@ -46,18 +46,15 @@ public class ToggleButton extends Pane {
     /**
      * Creates a new toggle button
      *
-     * @param slot the slot
      * @param length the length
      * @param height the height
      * @param priority the priority
      * @param enabled whether the button should start in its enabled or disabled state
      * @param plugin the plugin that will be the owner of this button's items
-     * @see #ToggleButton(int, int, int, int, Priority, boolean)
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public ToggleButton(@NotNull Slot slot, int length, int height, @NotNull Priority priority, boolean enabled,
-                        @NotNull Plugin plugin) {
-        super(slot, length, height, priority);
+    public ToggleButton(int length, int height, @NotNull Priority priority, boolean enabled, @NotNull Plugin plugin) {
+        super(length, height, priority);
 
         this.enabled = enabled;
 
@@ -73,111 +70,14 @@ public class ToggleButton extends Pane {
     /**
      * Creates a new toggle button
      *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param length the length
-     * @param height the height
-     * @param priority the priority
-     * @param enabled whether the button should start in its enabled or disabled state
-     * @param plugin the plugin that will be the owner of this button's items
-     * @see #ToggleButton(int, int, int, int, Priority, boolean)
-     * @since 0.10.8
-     */
-    public ToggleButton(int x, int y, int length, int height, @NotNull Priority priority, boolean enabled,
-                        @NotNull Plugin plugin) {
-        this(Slot.fromXY(x, y), length, height, priority, enabled, plugin);
-    }
-
-    /**
-     * Creates a new toggle button
-     *
-     * @param slot the slot
      * @param length the length
      * @param height the height
      * @param priority the priority
      * @param plugin the plugin that will be the owner of this button's items
-     * @see #ToggleButton(Slot, int, int, Priority)
      * @since 0.10.8
      */
-    public ToggleButton(@NotNull Slot slot, int length, int height, @NotNull Priority priority,
-                        @NotNull Plugin plugin) {
-        this(slot, length, height, priority, false, plugin);
-    }
-
-    /**
-     * Creates a new toggle button
-     *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param length the length
-     * @param height the height
-     * @param priority the priority
-     * @param plugin the plugin that will be the owner of this button's items
-     * @see #ToggleButton(int, int, int, int, Priority)
-     * @since 0.10.8
-     */
-    public ToggleButton(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
-        this(x, y, length, height, priority, false, plugin);
-    }
-
-    /**
-     * Creates a new toggle button
-     *
-     * @param slot the slot
-     * @param length the length
-     * @param height the height
-     * @param enabled whether the button should start in its enabled or disabled state
-     * @param plugin the plugin that will be the owner of this button's items
-     * @see #ToggleButton(Slot, int, int, boolean)
-     * @since 0.10.8
-     */
-    public ToggleButton(@NotNull Slot slot, int length, int height, boolean enabled, @NotNull Plugin plugin) {
-        this(slot, length, height, Priority.NORMAL, enabled, plugin);
-    }
-
-    /**
-     * Creates a new toggle button
-     *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param length the length
-     * @param height the height
-     * @param enabled whether the button should start in its enabled or disabled state
-     * @param plugin the plugin that will be the owner of this button's items
-     * @see #ToggleButton(int, int, int, int, boolean)
-     * @since 0.10.8
-     */
-    public ToggleButton(int x, int y, int length, int height, boolean enabled, @NotNull Plugin plugin) {
-        this(x, y, length, height, Priority.NORMAL, enabled, plugin);
-    }
-
-    /**
-     * Creates a new toggle button
-     *
-     * @param slot the slot
-     * @param length the length
-     * @param height the height
-     * @param plugin the plugin that will be the owner of this button's items
-     * @see #ToggleButton(Slot, int, int)
-     * @since 0.10.8
-     */
-    public ToggleButton(@NotNull Slot slot, int length, int height, @NotNull Plugin plugin) {
-        this(slot, length, height, false, plugin);
-    }
-
-    /**
-     * Creates a new toggle button
-     *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param length the length
-     * @param height the height
-     * @param plugin the plugin that will be the owner of this button's items
-     * @see #ToggleButton(int, int, int, int)
-     * @since 0.10.8
-     */
-    public ToggleButton(int x, int y, int length, int height, @NotNull Plugin plugin) {
-        this(x, y, length, height, false, plugin);
+    public ToggleButton(int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
+        this(length, height, priority, false, plugin);
     }
 
     /**
@@ -187,11 +87,10 @@ public class ToggleButton extends Pane {
      * @param height the height
      * @param enabled whether the button should start in its enabled or disabled state
      * @param plugin the plugin that will be the owner of this button's items
-     * @see #ToggleButton(int, int, boolean)
-     * @since 0.10.8
+     * @since 0.12.0
      */
     public ToggleButton(int length, int height, boolean enabled, @NotNull Plugin plugin) {
-        this(0, 0, length, height, enabled);
+        this(length, height, Priority.NORMAL, enabled, plugin);
     }
 
     /**
@@ -200,85 +99,56 @@ public class ToggleButton extends Pane {
      * @param length the length
      * @param height the height
      * @param plugin the plugin that will be the owner of this button's items
-     * @see #ToggleButton(int, int)
-     * @since 0.10.8
+     * @since 0.12.0
      */
     public ToggleButton(int length, int height, @NotNull Plugin plugin) {
-        this(length, height, false);
+        this(length, height, false, plugin);
     }
 
     /**
      * Creates a new toggle button
      *
-     * @param slot the slot
      * @param length the length
      * @param height the height
      * @param priority the priority
      * @param enabled whether the button should start in its enabled or disabled state
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public ToggleButton(@NotNull Slot slot, int length, int height, @NotNull Priority priority, boolean enabled) {
-        this(slot, length, height, priority, enabled, JavaPlugin.getProvidingPlugin(ToggleButton.class));
-    }
-
-    public ToggleButton(int x, int y, int length, int height, @NotNull Priority priority, boolean enabled) {
-        this(x, y, length, height, priority, enabled, JavaPlugin.getProvidingPlugin(ToggleButton.class));
+    public ToggleButton(int length, int height, @NotNull Priority priority, boolean enabled) {
+        this(length, height, priority, enabled, JavaPlugin.getProvidingPlugin(ToggleButton.class));
     }
 
     /**
      * Creates a new toggle button
      *
-     * @param slot the slot
      * @param length the length
      * @param height the height
      * @param priority the priority
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public ToggleButton(@NotNull Slot slot, int length, int height, @NotNull Priority priority) {
-        this(slot, length, height, priority, false);
-    }
-
-    public ToggleButton(int x, int y, int length, int height, @NotNull Priority priority) {
-        this(x, y, length, height, priority, false);
+    public ToggleButton(int length, int height, @NotNull Priority priority) {
+        this(length, height, priority, false);
     }
 
     /**
      * Creates a new toggle button
      *
-     * @param slot the slot
      * @param length the length
      * @param height the height
      * @param enabled whether the button should start in its enabled or disabled state
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public ToggleButton(@NotNull Slot slot, int length, int height, boolean enabled) {
-        this(slot, length, height, Priority.NORMAL, enabled);
-    }
-
-    public ToggleButton(int x, int y, int length, int height, boolean enabled) {
-        this(x, y, length, height, Priority.NORMAL, enabled);
-    }
-
-    /**
-     * Creates a new toggle button
-     *
-     * @param slot the slot
-     * @param length the length
-     * @param height the height
-     * @since 0.10.8
-     */
-    public ToggleButton(@NotNull Slot slot, int length, int height) {
-        this(slot, length, height, false);
-    }
-
-    public ToggleButton(int x, int y, int length, int height) {
-        this(x, y, length, height, false);
-    }
-
     public ToggleButton(int length, int height, boolean enabled) {
-        this(0, 0, length, height, enabled);
+        this(length, height, Priority.NORMAL, enabled);
     }
 
+    /**
+     * Creates a new toggle button
+     *
+     * @param length the length
+     * @param height the height
+     * @since 0.12.0
+     */
     public ToggleButton(int length, int height) {
         this(length, height, false);
     }
@@ -315,14 +185,8 @@ public class ToggleButton extends Pane {
         allowToggle being false, then we should click the pane corresponding to the current state. An XOR achieves this.
          */
         if (enabled == this.allowToggle) {
-            Slot paneSlot = this.disabledPane.getSlot();
-            Slot innerSlot = Slot.fromXY(x - paneSlot.getX(getLength()), y - paneSlot.getY(getLength()));
-
             this.disabledPane.click(gui, guiComponent, event, slot);
         } else {
-            Slot paneSlot = this.enabledPane.getSlot();
-            Slot innerSlot = Slot.fromXY(x - paneSlot.getX(getLength()), y - paneSlot.getY(getLength()));
-
             this.enabledPane.click(gui, guiComponent, event, slot);
         }
 
@@ -337,7 +201,7 @@ public class ToggleButton extends Pane {
     @Contract(pure = true)
     @Override
     public ToggleButton copy() {
-        ToggleButton toggleButton = new ToggleButton(getSlot(), length, height, getPriority(), enabled);
+        ToggleButton toggleButton = new ToggleButton(getLength(), getHeight(), getPriority(), isEnabled());
 
         toggleButton.allowToggle = this.allowToggle;
 

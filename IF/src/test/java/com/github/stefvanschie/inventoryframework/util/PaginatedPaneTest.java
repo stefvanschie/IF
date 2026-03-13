@@ -3,6 +3,7 @@ package com.github.stefvanschie.inventoryframework.util;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -26,9 +27,9 @@ public class PaginatedPaneTest {
         StaticPane pane1 = new StaticPane(1, 1);
         StaticPane pane2 = new StaticPane(1, 1);
 
-        paginatedPane.addPane(0, pane0);
-        paginatedPane.addPane(0, pane1);
-        paginatedPane.addPane(0, pane2);
+        paginatedPane.addPane(0, Slot.fromXY(0, 0), pane0);
+        paginatedPane.addPane(0, Slot.fromXY(0, 0), pane1);
+        paginatedPane.addPane(0, Slot.fromXY(0, 0), pane2);
 
         Collection<Pane> panes = paginatedPane.getPanes(0);
         assertTrue(panes.contains(pane0));
@@ -44,9 +45,9 @@ public class PaginatedPaneTest {
         StaticPane pane1 = new StaticPane(1, 1);
         StaticPane pane2 = new StaticPane(1, 1);
 
-        paginatedPane.addPane(0, pane0);
-        paginatedPane.addPane(0, pane1);
-        paginatedPane.addPane(0, pane2);
+        paginatedPane.addPane(0, Slot.fromXY(0, 0), pane0);
+        paginatedPane.addPane(0, Slot.fromXY(0, 0), pane1);
+        paginatedPane.addPane(0, Slot.fromXY(0, 0), pane2);
 
         assertEquals(3, paginatedPane.getPanes(0).size());
     }

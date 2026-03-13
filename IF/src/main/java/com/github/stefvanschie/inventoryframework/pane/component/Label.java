@@ -54,20 +54,17 @@ public class Label extends Pane {
     /**
      * Creates a new label
      *
-     * @param slot the slot
      * @param length the length
      * @param height the height
      * @param priority the priority
      * @param font the character set
      * @param plugin the plugin that will be the owner for this label's items
-     * @see #Label(int, int, int, int, Priority, Font)
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public Label(@NotNull Slot slot, int length, int height, @NotNull Priority priority, @NotNull Font font,
-                 @NotNull Plugin plugin) {
-        super(slot, length, height);
+    public Label(int length, int height, @NotNull Priority priority, @NotNull Font font, @NotNull Plugin plugin) {
+        super(length, height);
 
-        this.pane = new OutlinePane(slot, length, height, priority);
+        this.pane = new OutlinePane(length, height, priority);
 
         this.font = font;
         this.text = "";
@@ -80,120 +77,27 @@ public class Label extends Pane {
     /**
      * Creates a new label
      *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param length the length
-     * @param height the height
-     * @param priority the priority
-     * @param font the character set
-     * @param plugin the plugin that will be the owner for this label's items
-     * @see #Label(int, int, int, int, Priority, Font)
-     * @since 0.10.8
-     */
-    public Label(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Font font,
-                 @NotNull Plugin plugin) {
-        this(Slot.fromXY(x, y), length, height, priority, font, plugin);
-    }
-
-    /**
-     * Creates a new label
-     *
-     * @param slot the slot
      * @param length the length
      * @param height the height
      * @param font the character set
      * @param plugin the plugin that will be the owner for this label's items
-     * @see #Label(int, int, int, int, Font)
-     * @since 0.10.8
-     */
-    public Label(@NotNull Slot slot, int length, int height, @NotNull Font font, @NotNull Plugin plugin) {
-        this(slot, length, height, Priority.NORMAL, font, plugin);
-    }
-
-    /**
-     * Creates a new label
-     *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param length the length
-     * @param height the height
-     * @param font the character set
-     * @param plugin the plugin that will be the owner for this label's items
-     * @see #Label(int, int, int, int, Font)
-     * @since 0.10.8
-     */
-    public Label(int x, int y, int length, int height, @NotNull Font font, @NotNull Plugin plugin) {
-        this(x, y, length, height, Priority.NORMAL, font, plugin);
-    }
-
-    /**
-     * Creates a new label
-     *
-     * @param length the length
-     * @param height the height
-     * @param font the character set
-     * @param plugin the plugin that will be the owner for this label's items
-     * @see #Label(int, int, Font)
-     * @since 0.10.8
+     * @since 0.12.0
      */
     public Label(int length, int height, @NotNull Font font, @NotNull Plugin plugin) {
-        this(0, 0, length, height, font, plugin);
+        this(length, height, Priority.NORMAL, font, plugin);
     }
 
     /**
      * Creates a new label
      *
-     * @param slot the slot
      * @param length the length
      * @param height the height
      * @param priority the priority
      * @param font the character set
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public Label(@NotNull Slot slot, int length, int height, @NotNull Priority priority, @NotNull Font font) {
-        this(slot, length, height, priority, font, JavaPlugin.getProvidingPlugin(Label.class));
-    }
-
-    /**
-     * Creates a new label
-     *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param length the length
-     * @param height the height
-     * @param priority the priority
-     * @param font the character set
-     * @since 0.5.0
-     */
-    public Label(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Font font) {
-        this(x, y, length, height, priority, font, JavaPlugin.getProvidingPlugin(Label.class));
-    }
-
-    /**
-     * Creates a new label
-     *
-     * @param slot the slot
-     * @param length the length
-     * @param height the height
-     * @param font the character set
-     * @since 0.10.8
-     */
-    public Label(@NotNull Slot slot, int length, int height, @NotNull Font font) {
-        this(slot, length, height, Priority.NORMAL, font);
-    }
-
-    /**
-     * Creates a new label
-     *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param length the length
-     * @param height the height
-     * @param font the character set
-     * @since 0.5.0
-     */
-    public Label(int x, int y, int length, int height, @NotNull Font font) {
-        this(x, y, length, height, Priority.NORMAL, font);
+    public Label(int length, int height, @NotNull Priority priority, @NotNull Font font) {
+        this(length, height, priority, font, JavaPlugin.getProvidingPlugin(Label.class));
     }
 
     /**
@@ -202,10 +106,10 @@ public class Label extends Pane {
      * @param length the length
      * @param height the height
      * @param font the character set
-     * @since 0.5.0
+     * @since 0.12.0
      */
     public Label(int length, int height, @NotNull Font font) {
-        this(0, 0, length, height, font);
+        this(length, height, Priority.NORMAL, font);
     }
 
     /**
@@ -259,7 +163,7 @@ public class Label extends Pane {
     @Contract(pure = true)
     @Override
     public Label copy() {
-        Label label = new Label(getSlot(), length, height, getPriority(), font, this.plugin);
+        Label label = new Label(getLength(), getHeight(), getPriority(), getFont(), this.plugin);
 
         label.setVisible(isVisible());
         label.onClick = onClick;

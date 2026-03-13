@@ -9,7 +9,7 @@ public class MasonryPaneTest {
 
     @Test
     void testCopy() {
-        MasonryPane original = new MasonryPane(7, 5, 1, 1, Pane.Priority.LOW);
+        MasonryPane original = new MasonryPane(1, 1, Pane.Priority.LOW);
         original.setVisible(false);
         original.setOrientation(Orientable.Orientation.VERTICAL);
 
@@ -23,7 +23,6 @@ public class MasonryPaneTest {
 
         assertNotSame(original, copy);
 
-        assertEquals(original.getSlot(), copy.getSlot());
         assertEquals(original.getLength(), copy.getLength());
         assertEquals(original.getHeight(), copy.getHeight());
         assertEquals(original.getPriority(), copy.getPriority());

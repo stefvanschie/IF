@@ -1,6 +1,7 @@
 package com.github.stefvanschie.inventoryframework.gui;
 
 import com.github.stefvanschie.inventoryframework.pane.*;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class GuiComponentTest {
     void testAddPane() {
         GuiComponent guiComponent = new GuiComponent(0, 0);
 
-        guiComponent.addPane(new StaticPane(1, 1));
+        guiComponent.addPane(Slot.fromXY(0, 0), new StaticPane(1, 1));
 
         List<Pane> panes = guiComponent.getPanes();
 
@@ -33,8 +34,8 @@ public class GuiComponentTest {
     void testCopy() {
         GuiComponent original = new GuiComponent(0, 0);
 
-        original.addPane(new StaticPane(1, 1));
-        original.addPane(new OutlinePane(1, 1));
+        original.addPane(Slot.fromXY(0, 0), new StaticPane(1, 1));
+        original.addPane(Slot.fromXY(0, 0), new OutlinePane(1, 1));
 
         GuiComponent copy = original.copy();
 
@@ -49,10 +50,10 @@ public class GuiComponentTest {
     void testExcludeRowsValid() {
         GuiComponent original = new GuiComponent(0, 6);
 
-        original.addPane(new StaticPane(1, 1));
-        original.addPane(new OutlinePane(1, 1));
-        original.addPane(new PaginatedPane(1, 1));
-        original.addPane(new MasonryPane(1, 1));
+        original.addPane(Slot.fromXY(0, 0), new StaticPane(1, 1));
+        original.addPane(Slot.fromXY(0, 0), new OutlinePane(1, 1));
+        original.addPane(Slot.fromXY(0, 0), new PaginatedPane(1, 1));
+        original.addPane(Slot.fromXY(0, 0), new MasonryPane(1, 1));
 
         GuiComponent shrunk = original.excludeRows(4, 4);
 
@@ -80,9 +81,9 @@ public class GuiComponentTest {
     void testGetPanesSorted() {
         GuiComponent guiComponent = new GuiComponent(0, 0);
 
-        guiComponent.addPane(new StaticPane(0, 0, 1, 1, Pane.Priority.HIGHEST));
-        guiComponent.addPane(new OutlinePane(0, 0, 1, 1, Pane.Priority.LOW));
-        guiComponent.addPane(new PaginatedPane(0, 0, 1, 1, Pane.Priority.MONITOR));
+        guiComponent.addPane(Slot.fromXY(0, 0), new StaticPane(1, 1, Pane.Priority.HIGHEST));
+        guiComponent.addPane(Slot.fromXY(0, 0), new OutlinePane(1, 1, Pane.Priority.LOW));
+        guiComponent.addPane(Slot.fromXY(0, 0), new PaginatedPane(1, 1, Pane.Priority.MONITOR));
 
         List<Pane> panes = guiComponent.getPanes();
 

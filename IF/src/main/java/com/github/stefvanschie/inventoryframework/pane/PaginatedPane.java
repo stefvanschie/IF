@@ -5,6 +5,7 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
+import com.github.stefvanschie.inventoryframework.pane.util.PositionedPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -32,7 +33,7 @@ public class PaginatedPane extends Pane {
      * A set of panes for the different pages
      */
     @NotNull
-    private final List<List<Pane>> panes = new ArrayList<>();
+    private final List<List<PositionedPane>> panes = new ArrayList<>();
 
     /**
      * The current page
@@ -42,38 +43,24 @@ public class PaginatedPane extends Pane {
     /**
      * Creates a new paginated pane
      *
-     * @param slot the slot of the pane
      * @param length the length of the pane
      * @param height the height of the pane
      * @param priority the priority of the pane
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public PaginatedPane(@NotNull Slot slot, int length, int height, @NotNull Priority priority) {
-        super(slot, length, height, priority);
-    }
-
-    public PaginatedPane(int x, int y, int length, int height, @NotNull Priority priority) {
-        this(Slot.fromXY(x, y), length, height, priority);
+    public PaginatedPane(int length, int height, @NotNull Priority priority) {
+        super(length, height, priority);
     }
 
     /**
      * Creates a new paginated pane
      *
-     * @param slot the slot of the pane
      * @param length the length of the pane
      * @param height the height of the pane
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public PaginatedPane(@NotNull Slot slot, int length, int height) {
-        this(slot, length, height, Priority.NORMAL);
-    }
-
-    public PaginatedPane(int x, int y, int length, int height) {
-        super(x, y, length, height);
-    }
-
     public PaginatedPane(int length, int height) {
-        super(length, height);
+        this(length, height, Priority.NORMAL);
     }
 
     /**
@@ -99,13 +86,14 @@ public class PaginatedPane extends Pane {
      * currently in this paginated pane. If this paginated pane has no pages, the index of the newly created page will
      * be zero.
      *
+     * @param slot the slot of the pane
      * @param pane the pane to add to a new page
      * @since 0.10.8
      */
-    public void addPage(@NotNull Pane pane) {
-        List<Pane> list = new ArrayList<>(1);
+    public void addPage(@NotNull Slot slot, @NotNull Pane pane) {
+        List<PositionedPane> list = new ArrayList<>(1);
 
-        list.add(pane);
+        list.add(new PositionedPane(slot, pane));
 
         this.panes.add(list);
     }
@@ -126,11 +114,12 @@ public class PaginatedPane extends Pane {
      * </ul>
      *
      * @param page the page to assign the pane to
+     * @param slot the slot of the pane
      * @param pane the new pane
      * @throws IllegalArgumentException if the page is less than 0 or more than one larger than the current highest page
      * index
      */
-    public void addPane(int page, @NotNull Pane pane) {
+    public void addPane(int page, @NotNull Slot slot, @NotNull Pane pane) {
         if (page < 0) {
             throw new IllegalArgumentException("Non-positive page indexes are not allowed");
         }
@@ -140,11 +129,11 @@ public class PaginatedPane extends Pane {
         }
 
         if (page == this.panes.size()) {
-            addPage(pane);
+            addPage(slot, pane);
         } else {
-            this.panes.get(page).add(pane);
+            this.panes.get(page).add(new PositionedPane(slot, pane));
 
-            this.panes.get(page).sort(Comparator.comparing(Pane::getPriority));
+            this.panes.get(page).sort(Comparator.comparing(positionedPane -> positionedPane.getPane().getPriority()));
         }
     }
 
@@ -182,7 +171,7 @@ public class PaginatedPane extends Pane {
 		int pagesNeeded = (int) Math.max(Math.ceil(items.size() / (double) itemsPerPage), 1);
 
 		for (int i = 0; i < pagesNeeded; i++) {
-			OutlinePane page = new OutlinePane(0, 0, this.length, this.height);
+			OutlinePane page = new OutlinePane(this.length, this.height);
 
 			for (int j = 0; j < itemsPerPage; j++) {
 				//Check if the loop reached the end of the list
@@ -195,7 +184,7 @@ public class PaginatedPane extends Pane {
 				page.addItem(new GuiItem(items.get(index), plugin));
 			}
 
-			this.addPane(i, page);
+			this.addPane(i, Slot.fromIndex(0), page);
 		}
 	}
 
@@ -226,7 +215,7 @@ public class PaginatedPane extends Pane {
         int pagesNeeded = (int) Math.max(Math.ceil(items.size() / (double) itemsPerPage), 1);
 
         for (int i = 0; i < pagesNeeded; i++) {
-            OutlinePane page = new OutlinePane(0, 0, this.length, this.height);
+            OutlinePane page = new OutlinePane(this.length, this.height);
 
             for (int j = 0; j < itemsPerPage; j++) {
                 int index = i * itemsPerPage + j;
@@ -239,7 +228,7 @@ public class PaginatedPane extends Pane {
                 page.addItem(items.get(index));
             }
 
-            this.addPane(i, page);
+            this.addPane(i, Slot.fromIndex(0), page);
         }
     }
 
@@ -288,18 +277,20 @@ public class PaginatedPane extends Pane {
             return container;
         }
 
-        List<Pane> panes = this.panes.get(page);
+        List<PositionedPane> panes = this.panes.get(page);
 
         if (panes == null) {
             return container;
         }
 
-        for (Pane pane : panes) {
+        for (PositionedPane positionedPane : panes) {
+            Pane pane = positionedPane.getPane();
+
             if (!pane.isVisible()) {
                 continue;
             }
 
-            Slot slot = pane.getSlot();
+            Slot slot = positionedPane.getSlot();
 
             container.apply(pane.display(), slot.getX(getLength()), slot.getY(getLength()));
         }
@@ -326,12 +317,14 @@ public class PaginatedPane extends Pane {
             return false;
         }
 
-        for (Pane pane : this.panes.get(this.page)) {
+        for (PositionedPane positionedPane : this.panes.get(this.page)) {
+            Pane pane = positionedPane.getPane();
+
             if (!pane.isVisible()) {
                 continue;
             }
 
-            Slot paneSlot = pane.getSlot();
+            Slot paneSlot = positionedPane.getSlot();
             Slot innerSlot = Slot.fromXY(x - paneSlot.getX(getLength()), y - paneSlot.getY(getLength()));
 
             success = success || pane.click(gui, guiComponent, event, innerSlot);
@@ -344,13 +337,13 @@ public class PaginatedPane extends Pane {
     @Contract(pure = true)
     @Override
     public PaginatedPane copy() {
-	    PaginatedPane paginatedPane = new PaginatedPane(getSlot(), this.length, this.height, getPriority());
+	    PaginatedPane paginatedPane = new PaginatedPane(this.length, this.height, getPriority());
 
         for (int page = 0; page < this.panes.size(); page++) {
-            List<? extends Pane> panes = this.panes.get(page);
+            List<? extends PositionedPane> panes = this.panes.get(page);
 
-            for (Pane pane : panes) {
-                paginatedPane.addPane(page, pane.copy());
+            for (PositionedPane positionedPane : panes) {
+                paginatedPane.addPane(page, positionedPane.getSlot(), positionedPane.getPane().copy());
             }
         }
 
@@ -387,8 +380,10 @@ public class PaginatedPane extends Pane {
     public Collection<Pane> getPanes() {
         Collection<Pane> panes = new HashSet<>();
 
-        for (List<? extends Pane> p : this.panes) {
-            panes.addAll(p);
+        for (List<? extends PositionedPane> positionedPanes : this.panes) {
+            for (PositionedPane positionedPane : positionedPanes) {
+                panes.add(positionedPane.getPane());
+            }
         }
 
         return panes;
@@ -414,10 +409,16 @@ public class PaginatedPane extends Pane {
             throw new IllegalArgumentException("Invalid page");
         }
 
-        Collection<Pane> panes = this.panes.get(page);
+        Collection<? extends PositionedPane> positionedPanes = this.panes.get(page);
 
-        if (panes == null) {
+        if (positionedPanes == null) {
             throw new IllegalArgumentException("Invalid page");
+        }
+
+        Collection<Pane> panes = new HashSet<>(positionedPanes.size());
+
+        for (PositionedPane positionedPane : positionedPanes) {
+            panes.add(positionedPane.getPane());
         }
 
         return Collections.unmodifiableCollection(panes);
@@ -496,13 +497,15 @@ public class PaginatedPane extends Pane {
             NodeList innerNodes = item.getChildNodes();
 
             for (int j = 0; j < innerNodes.getLength(); j++) {
-                Node pane = innerNodes.item(j);
+                Node innerNode = innerNodes.item(j);
 
-                if (pane.getNodeType() != Node.ELEMENT_NODE) {
+                if (innerNode.getNodeType() != Node.ELEMENT_NODE) {
                     continue;
                 }
 
-                paginatedPane.addPane(pageCount, Gui.loadPane(instance, pane, plugin));
+                Pane pane = Gui.loadPane(instance, innerNode, plugin);
+
+                paginatedPane.addPane(pageCount, Slot.deserialize((Element) innerNode), pane);
             }
 
             pageCount++;

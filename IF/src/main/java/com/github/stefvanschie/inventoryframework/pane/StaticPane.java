@@ -51,40 +51,26 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
     /**
      * Creates a new static pane.
      *
-     * @param slot the slot of the pane
      * @param length the length of the pane
      * @param height the height of the pane
      * @param priority the priority of the pane
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public StaticPane(Slot slot, int length, int height, @NotNull Priority priority) {
-        super(slot, length, height, priority);
+    public StaticPane(int length, int height, @NotNull Priority priority) {
+        super(length, height, priority);
 
         this.items = new HashMap<>(length * height);
-    }
-
-    public StaticPane(int x, int y, int length, int height, @NotNull Priority priority) {
-        this(Slot.fromXY(x, y), length, height, priority);
     }
 
     /**
      * Creates a new static pane.
      *
-     * @param slot the slot of the pane
      * @param length the length of the pane
      * @param height the height of the pane
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public StaticPane(Slot slot, int length, int height) {
-        this(slot, length, height, Priority.NORMAL);
-    }
-
-	public StaticPane(int x, int y, int length, int height) {
-		this(x, y, length, height, Priority.NORMAL);
-	}
-
     public StaticPane(int length, int height) {
-        this(0, 0, length, height);
+        this(length, height, Priority.NORMAL);
     }
 
     @NotNull
@@ -217,7 +203,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
     @Contract(pure = true)
 	@Override
     public StaticPane copy() {
-        StaticPane staticPane = new StaticPane(getSlot(), length, height, getPriority());
+        StaticPane staticPane = new StaticPane(getLength(), getHeight(), getPriority());
 
         for (Map.Entry<Slot, GuiItem> entry : items.entrySet()) {
             staticPane.addItem(entry.getValue().copy(), entry.getKey());

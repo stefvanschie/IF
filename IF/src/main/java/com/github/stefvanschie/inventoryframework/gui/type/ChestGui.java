@@ -10,6 +10,8 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.MergedGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.pane.util.PositionedPane;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -228,8 +230,8 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
 
         GuiComponent guiComponent = new GuiComponent(9, rows + 4);
 
-        for (Pane pane : this.guiComponent.getPanes()) {
-            guiComponent.addPane(pane);
+        for (PositionedPane positionedPane : this.guiComponent.getPositionedPanes()) {
+            guiComponent.addPane(positionedPane.getSlot(), positionedPane.getPane());
         }
 
         this.guiComponent = guiComponent;
@@ -247,8 +249,8 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
     }
 
     @Override
-    public void addPane(@NotNull Pane pane) {
-        this.guiComponent.addPane(pane);
+    public void addPane(@NotNull Slot slot, @NotNull Pane pane) {
+        this.guiComponent.addPane(slot, pane);
     }
 
     @NotNull

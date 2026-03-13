@@ -6,7 +6,6 @@ import com.github.stefvanschie.inventoryframework.pane.Orientable;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
-import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -56,29 +55,26 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
      * @since 0.10.8
      */
     protected VariableBar(int length, int height, @NotNull Plugin plugin) {
-        this(0, 0, length, height, plugin);
+        this(length, height, Priority.NORMAL, plugin);
     }
 
     /**
      * Creates a new variable bar
      *
-     * @param slot the slot of the bar
      * @param length the length of the bar
      * @param height the height of the bar
      * @param priority the priority of the bar
      * @param plugin the plugin that will be the owner for this variable bar's items
-     * @see #VariableBar(Slot, int, int, Priority)
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    protected VariableBar(@NotNull Slot slot, int length, int height, @NotNull Priority priority,
-                          @NotNull Plugin plugin) {
-        super(slot, length, height);
+    protected VariableBar(int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
+        super(length, height);
 
         this.value = 0F;
         this.orientation = Orientation.HORIZONTAL;
 
-        this.fillPane = new OutlinePane(0, 0, length, height);
-        this.backgroundPane = new OutlinePane(0, 0, length, height);
+        this.fillPane = new OutlinePane(length, height);
+        this.backgroundPane = new OutlinePane(length, height);
 
         this.fillPane.addItem(new GuiItem(new ItemStack(Material.GREEN_STAINED_GLASS_PANE),
                 event -> event.setCancelled(true), plugin));
@@ -93,86 +89,20 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         setPriority(priority);
     }
 
-    /**
-     * Creates a new variable bar
-     *
-     * @param x the x coordinate of the bar
-     * @param y the y coordinate of the bar
-     * @param length the length of the bar
-     * @param height the height of the bar
-     * @param priority the priority of the bar
-     * @param plugin the plugin that will be the owner for this variable bar's items
-     * @see #VariableBar(int, int)
-     * @since 0.10.8
-     */
-    protected VariableBar(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
-        this(Slot.fromXY(x, y), length, height, priority, plugin);
-    }
-
-    /**
-     * Creates a new variable bar
-     *
-     * @param slot the slot of the bar
-     * @param length the length of the bar
-     * @param height the height of the bar
-     * @param plugin the plugin that will be the owner for this variable bar's items
-     * @see #VariableBar(Slot, int, int)
-     * @since 0.10.8
-     */
-    protected VariableBar(@NotNull Slot slot, int length, int height, @NotNull Plugin plugin) {
-        this(slot, length, height, Priority.NORMAL, plugin);
-    }
-
-    /**
-     * Creates a new variable bar
-     *
-     * @param x the x coordinate of the bar
-     * @param y the y coordinate of the bar
-     * @param length the length of the bar
-     * @param height the height of the bar
-     * @param plugin the plugin that will be the owner for this variable bar's items
-     * @see #VariableBar(int, int)
-     * @since 0.10.8
-     */
-    protected VariableBar(int x, int y, int length, int height, @NotNull Plugin plugin) {
-        this(x, y, length, height, Priority.NORMAL, plugin);
-    }
-
     protected VariableBar(int length, int height) {
-        this(0, 0, length, height);
+        this(length, height, JavaPlugin.getProvidingPlugin(VariableBar.class));
     }
 
     /**
      * Creates a new variable bar
      *
-     * @param slot the slot of the bar
      * @param length the length of the bar
      * @param height the height of the bar
      * @param priority the priority of the bar
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    protected VariableBar(@NotNull Slot slot, int length, int height, @NotNull Priority priority) {
-        this(slot, length, height, priority, JavaPlugin.getProvidingPlugin(VariableBar.class));
-    }
-
-    protected VariableBar(int x, int y, int length, int height, @NotNull Priority priority) {
-        this(x, y, length, height, priority, JavaPlugin.getProvidingPlugin(VariableBar.class));
-    }
-
-    /**
-     * Creates a new variable bar
-     *
-     * @param slot the slot of the bar
-     * @param length the length of the bar
-     * @param height the height of the bar
-     * @since 0.10.8
-     */
-    protected VariableBar(@NotNull Slot slot, int length, int height) {
-        this(slot, length, height, Priority.NORMAL);
-    }
-
-    protected VariableBar(int x, int y, int length, int height) {
-        this(x, y, length, height, Priority.NORMAL);
+    protected VariableBar(int length, int height, @NotNull Priority priority) {
+        this(length, height, priority, JavaPlugin.getProvidingPlugin(VariableBar.class));
     }
 
     /**
@@ -199,10 +129,6 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
             if (positiveLength) {
                 this.fillPane.setLength(length);
             }
-
-            if (flipHorizontally) {
-                this.fillPane.setSlot(Slot.fromXY(getLength() - this.fillPane.getLength(), 0));
-            }
         } else if (orientation == Orientation.VERTICAL) {
             int height = Math.round(getHeight() * value);
             boolean positiveHeight = height != 0;
@@ -211,10 +137,6 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
 
             if (positiveHeight) {
                 this.fillPane.setHeight(height);
-            }
-
-            if (flipVertically) {
-                this.fillPane.setSlot(Slot.fromXY(0, getHeight() - this.fillPane.getHeight()));
             }
         } else {
             throw new UnsupportedOperationException("Unknown orientation");
@@ -225,23 +147,12 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
     public void setLength(int length) {
         super.setLength(length);
 
-        if (orientation == Orientation.HORIZONTAL) {
-            int fillLength = Math.round(length * value);
-            boolean positiveLength = fillLength != 0;
+        boolean isPositive = length != 0;
 
-            this.fillPane.setVisible(positiveLength);
+        this.fillPane.setVisible(isPositive);
 
-            if (positiveLength) {
-                this.fillPane.setLength(fillLength);
-            }
-
-            if (flipHorizontally) {
-                this.fillPane.setSlot(Slot.fromXY(getLength() - this.fillPane.getLength(), 0));
-            }
-        } else if (orientation == Orientation.VERTICAL) {
+        if (isPositive) {
             this.fillPane.setLength(length);
-        } else {
-            throw new UnsupportedOperationException("Unknown orientation");
         }
 
         this.backgroundPane.setLength(length);
@@ -251,23 +162,12 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
     public void setHeight(int height) {
         super.setHeight(height);
 
-        if (orientation == Orientation.HORIZONTAL) {
+        boolean isPositive = height != 0;
+
+        this.fillPane.setVisible(isPositive);
+
+        if (isPositive) {
             this.fillPane.setHeight(height);
-        } else if (orientation == Orientation.VERTICAL) {
-            int fillHeight = Math.round(height * value);
-            boolean positiveHeight = fillHeight != 0;
-
-            this.fillPane.setVisible(positiveHeight);
-
-            if (positiveHeight) {
-                this.fillPane.setHeight(fillHeight);
-            }
-
-            if (flipVertically) {
-                this.fillPane.setSlot(Slot.fromXY(0, getHeight() - this.fillPane.getHeight()));
-            }
-        } else {
-            throw new UnsupportedOperationException("Unknown orientation");
         }
 
         this.backgroundPane.setHeight(height);
@@ -281,7 +181,6 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
      * @since 0.6.2
      */
     protected void applyContents(@NotNull VariableBar copy) {
-        copy.slot = slot;
         copy.length = length;
         copy.height = height;
         copy.setPriority(getPriority());
@@ -305,30 +204,8 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
     public void setOrientation(@NotNull Orientation orientation) {
         this.orientation = orientation;
 
-        if (orientation == Orientation.HORIZONTAL) {
-            int fillLength = Math.round(getLength() * value);
-            boolean positiveLength = fillLength != 0;
-
-            fillPane.setVisible(fillLength != 0);
-
-            if (positiveLength) {
-                fillPane.setLength(fillLength);
-            }
-
-            fillPane.setHeight(getHeight());
-        } else if (orientation == Orientation.VERTICAL) {
-            int fillHeight = Math.round(getHeight() * value);
-            boolean positiveHeight = fillHeight != 0;
-
-            fillPane.setVisible(fillHeight != 0);
-            fillPane.setLength(getLength());
-
-            if (positiveHeight) {
-                fillPane.setHeight(fillHeight);
-            }
-        } else {
-            throw new IllegalArgumentException("Unknown orientation");
-        }
+        this.fillPane.setOrientation(orientation);
+        this.backgroundPane.setOrientation(orientation);
     }
 
     @NotNull
@@ -337,15 +214,11 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         GuiItemContainer container = new GuiItemContainer(getLength(), getHeight());
 
         if (this.backgroundPane.isVisible()) {
-            Slot slot = this.backgroundPane.getSlot();
-
-            container.apply(this.backgroundPane.display(), slot.getX(getLength()), slot.getY(getLength()));
+            container.apply(this.backgroundPane.display(), 0, 0);
         }
 
         if (this.fillPane.isVisible()) {
-            Slot slot = this.fillPane.getSlot();
-
-            container.apply(this.fillPane.display(), slot.getX(getLength()), slot.getY(getLength()));
+            container.apply(this.fillPane.display(), 0, 0);
         }
 
         return container;
@@ -390,11 +263,17 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
     @Override
     public void flipHorizontally(boolean flipHorizontally) {
         this.flipHorizontally = flipHorizontally;
+
+        this.fillPane.flipHorizontally(flipHorizontally);
+        this.backgroundPane.flipHorizontally(flipHorizontally);
     }
 
     @Override
     public void flipVertically(boolean flipVertically) {
         this.flipVertically = flipVertically;
+
+        this.fillPane.flipVertically(flipVertically);
+        this.backgroundPane.flipVertically(flipVertically);
     }
 
     @NotNull

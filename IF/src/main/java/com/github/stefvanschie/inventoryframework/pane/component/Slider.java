@@ -24,57 +24,14 @@ public class Slider extends VariableBar {
     /**
      * Creates a new slider
      *
-     * @param slot the slot of the slider
      * @param length the length of the slider
      * @param height the height of the slider
      * @param priority the priority of the slider
      * @param plugin the plugin that will be the owner of the slider's items
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public Slider(@NotNull Slot slot, int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
-        super(slot, length, height, priority, plugin);
-    }
-
-    /**
-     * Creates a new slider
-     *
-     * @param x the x coordinate of the slider
-     * @param y the y coordinate of the slier
-     * @param length the length of the slider
-     * @param height the height of the slider
-     * @param priority the priority of the slider
-     * @param plugin the plugin that will be the owner of the slider's items
-     * @since 0.10.8
-     */
-    public Slider(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
-        super(x, y, length, height, priority, plugin);
-    }
-
-    /**
-     * Creates a new slider
-     *
-     * @param slot the slot of the slider
-     * @param length the length of the slider
-     * @param height the height of the slider
-     * @param plugin the plugin that will be the owner of the slider's items
-     * @since 0.10.8
-     */
-    public Slider(@NotNull Slot slot, int length, int height, @NotNull Plugin plugin) {
-        super(slot, length, height, plugin);
-    }
-
-    /**
-     * Creates a new slider
-     *
-     * @param x the x coordinate of the slider
-     * @param y the y coordinate of the slier
-     * @param length the length of the slider
-     * @param height the height of the slider
-     * @param plugin the plugin that will be the owner of the slider's items
-     * @since 0.10.8
-     */
-    public Slider(int x, int y, int length, int height, @NotNull Plugin plugin) {
-        super(x, y, length, height, plugin);
+    public Slider(int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
+        super(length, height, priority, plugin);
     }
 
     /**
@@ -83,7 +40,7 @@ public class Slider extends VariableBar {
      * @param length the length of the slider
      * @param height the height of the slider
      * @param plugin the plugin that will be the owner of the slider's items
-     * @since 0.10.8
+     * @since 0.12.0
      */
     public Slider(int length, int height, @NotNull Plugin plugin) {
         super(length, height, plugin);
@@ -92,36 +49,22 @@ public class Slider extends VariableBar {
     /**
      * Creates a new slider
      *
-     * @param slot the slot of the slider
      * @param length the length of the slider
      * @param height the height of the slider
      * @param priority the priority of the slider
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public Slider(@NotNull Slot slot, int length, int height, @NotNull Priority priority) {
-        super(slot, length, height, priority);
-    }
-
-    public Slider(int x, int y, int length, int height, @NotNull Priority priority) {
-        super(x, y, length, height, priority);
+    public Slider(int length, int height, @NotNull Priority priority) {
+        super(length, height, priority);
     }
 
     /**
      * Creates a new slider
      *
-     * @param slot the slot of the slider
      * @param length the length of the slider
      * @param height the height of the slider
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public Slider(@NotNull Slot slot, int length, int height) {
-        super(slot, length, height);
-    }
-
-    public Slider(int x, int y, int length, int height) {
-        super(x, y, length, height);
-    }
-
     public Slider(int length, int height) {
         super(length, height);
     }
@@ -146,16 +89,9 @@ public class Slider extends VariableBar {
 
         callOnClick(event);
 
-        Slot fillSlot = this.fillPane.getSlot();
-        Slot innerfillSlot = Slot.fromXY(x - fillSlot.getX(getLength()), y - fillSlot.getY(getLength()));
-
-        boolean success = this.fillPane.click(gui, guiComponent, event, innerfillSlot);
+        boolean success = this.fillPane.click(gui, guiComponent, event, slot);
 
         if (!success) {
-            Slot backgroundSlot = this.backgroundPane.getSlot();
-            Slot innerBackgroundSlot = Slot.fromXY(x - backgroundSlot.getX(getLength()),
-                    y - backgroundSlot.getY(getLength()));
-
             success = this.backgroundPane.click(gui, guiComponent, event, slot);
         }
 
@@ -181,7 +117,7 @@ public class Slider extends VariableBar {
     @Contract(pure = true)
     @Override
     public Slider copy() {
-        Slider slider = new Slider(getSlot(), length, height, getPriority());
+        Slider slider = new Slider(getLength(), getHeight(), getPriority());
 
         applyContents(slider);
 

@@ -15,7 +15,7 @@ public class OutlinePaneTest {
 
     @Test
     void testCopy() {
-        OutlinePane original = new OutlinePane(8, 5, 1, 1, Pane.Priority.HIGHEST);
+        OutlinePane original = new OutlinePane(1, 1, Pane.Priority.HIGHEST);
         original.setVisible(false);
         original.setOrientation(Orientable.Orientation.VERTICAL);
         original.setRotation(180);
@@ -30,7 +30,6 @@ public class OutlinePaneTest {
 
         assertNotSame(original, copy);
 
-        assertEquals(original.getSlot(), copy.getSlot());
         assertEquals(original.getLength(), copy.getLength());
         assertEquals(original.getHeight(), copy.getHeight());
         assertEquals(original.getPriority(), copy.getPriority());

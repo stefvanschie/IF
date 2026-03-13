@@ -9,6 +9,7 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.MergedGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -203,8 +204,8 @@ public class BarrelGui extends NamedGui implements MergedGui, InventoryBased {
     }
 
     @Override
-    public void addPane(@NotNull Pane pane) {
-        this.guiComponent.addPane(pane);
+    public void addPane(@NotNull Slot slot, @NotNull Pane pane) {
+        this.guiComponent.addPane(slot, pane);
     }
 
     @NotNull

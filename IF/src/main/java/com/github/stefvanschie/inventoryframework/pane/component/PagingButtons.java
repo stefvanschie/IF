@@ -66,22 +66,15 @@ public class PagingButtons extends Pane {
      * item will be an arrow. If the length provided is less than 2, this will throw an
      * {@link IllegalArgumentException}.
      *
-     * @param slot the position of this interface
      * @param length the length of this interface
      * @param priority the priority of this interface
      * @param pages the pages to interact with
      * @param plugin the plugin that will be the owner of this interface's items
-     * @since 0.10.14
+     * @since 0.12.0
      * @throws IllegalArgumentException if the length is less than 2
      */
-    public PagingButtons(
-        @NotNull Slot slot,
-        int length,
-        @NotNull Priority priority,
-        @NotNull PaginatedPane pages,
-        @NotNull Plugin plugin
-    ) {
-        super(slot, length, 1, priority);
+    public PagingButtons(int length, @NotNull Priority priority, @NotNull PaginatedPane pages, @NotNull Plugin plugin) {
+        super(length, 1, priority);
 
         if (length < 2) {
             throw new IllegalArgumentException("Length of paging buttons must be at least 2");
@@ -100,77 +93,14 @@ public class PagingButtons extends Pane {
      * item will be an arrow. If the length provided is less than 2, this will throw an
      * {@link IllegalArgumentException}.
      *
-     * @param slot the position of this interface
      * @param length the length of this interface
      * @param priority the priority of this interface
      * @param pages the pages to interact with
-     * @since 0.10.14
-     * @throws IllegalArgumentException if the length is less than 2
-     */
-    public PagingButtons(@NotNull Slot slot, int length, @NotNull Priority priority, @NotNull PaginatedPane pages) {
-        this(slot, length, priority, pages, JavaPlugin.getProvidingPlugin(PagingButtons.class));
-    }
-
-    /**
-     * Creates a new PagingButtons instance, which controls the provided {@link PaginatedPane}. The backward and forward
-     * item will be an arrow. If the length provided is less than 2, this will throw an
-     * {@link IllegalArgumentException}.
-     *
-     * @param slot the position of this interface
-     * @param length the length of this interface
-     * @param pages the pages to interact with
-     * @param plugin the plugin that will be the owner of this interface's items
-     * @since 0.10.14
-     * @throws IllegalArgumentException if the length is less than 2
-     */
-    public PagingButtons(@NotNull Slot slot, int length, @NotNull PaginatedPane pages, @NotNull Plugin plugin) {
-        this(slot, length, Priority.NORMAL, pages, plugin);
-    }
-
-    /**
-     * Creates a new PagingButtons instance, which controls the provided {@link PaginatedPane}. The backward and forward
-     * item will be an arrow. If the length provided is less than 2, this will throw an
-     * {@link IllegalArgumentException}.
-     *
-     * @param slot the position of this interface
-     * @param length the length of this interface
-     * @param pages the pages to interact with
-     * @since 0.10.14
-     * @throws IllegalArgumentException if the length is less than 2
-     */
-    public PagingButtons(@NotNull Slot slot, int length, @NotNull PaginatedPane pages) {
-        this(slot, length, Priority.NORMAL, pages);
-    }
-
-    /**
-     * Creates a new PagingButtons instance, which controls the provided {@link PaginatedPane}. The backward and forward
-     * item will be an arrow. If the length provided is less than 2, this will throw an
-     * {@link IllegalArgumentException}.
-     *
-     * @param length the length of this interface
-     * @param priority the priority of this interface
-     * @param pages the pages to interact with
-     * @param plugin the plugin that will be the owner of this interface's items
-     * @since 0.10.14
-     * @throws IllegalArgumentException if the length is less than 2
-     */
-    public PagingButtons(int length, @NotNull Priority priority, @NotNull PaginatedPane pages, @NotNull Plugin plugin) {
-        this(Slot.fromXY(0, 0), length, priority, pages, plugin);
-    }
-
-    /**
-     * Creates a new PagingButtons instance, which controls the provided {@link PaginatedPane}. The backward and forward
-     * item will be an arrow. If the length provided is less than 2, this will throw an
-     * {@link IllegalArgumentException}.
-     *
-     * @param length the length of this interface
-     * @param priority the priority of this interface
-     * @param pages the pages to interact with
-     * @since 0.10.14
+     * @since 0.12.0
      * @throws IllegalArgumentException if the length is less than 2
      */
     public PagingButtons(int length, @NotNull Priority priority, @NotNull PaginatedPane pages) {
-        this(Slot.fromXY(0, 0), length, priority, pages, JavaPlugin.getProvidingPlugin(PagingButtons.class));
+        this(length, priority, pages, JavaPlugin.getProvidingPlugin(PagingButtons.class));
     }
 
     /**
@@ -181,11 +111,11 @@ public class PagingButtons extends Pane {
      * @param length the length of this interface
      * @param pages the pages to interact with
      * @param plugin the plugin that will be the owner of this interface's items
-     * @since 0.10.14
+     * @since 0.12.0
      * @throws IllegalArgumentException if the length is less than 2
      */
     public PagingButtons(int length, @NotNull PaginatedPane pages, @NotNull Plugin plugin) {
-        this(Slot.fromXY(0, 0), length, Priority.NORMAL, pages, plugin);
+        this(length, Priority.NORMAL, pages, plugin);
     }
 
     /**
@@ -195,11 +125,11 @@ public class PagingButtons extends Pane {
      *
      * @param length the length of this interface
      * @param pages the pages to interact with
-     * @since 0.10.14
+     * @since 0.12.0
      * @throws IllegalArgumentException if the length is less than 2
      */
     public PagingButtons(int length, @NotNull PaginatedPane pages) {
-        this(Slot.fromXY(0, 0), length, Priority.NORMAL, pages);
+        this(length, Priority.NORMAL, pages);
     }
 
     @Override
@@ -273,7 +203,7 @@ public class PagingButtons extends Pane {
     @Contract(pure = true)
     @Override
     public PagingButtons copy() {
-        PagingButtons pagingButtons = new PagingButtons(getSlot(), getLength(), getPriority(), this.pages, this.plugin);
+        PagingButtons pagingButtons = new PagingButtons(getLength(), getPriority(), this.pages, this.plugin);
 
         pagingButtons.setVisible(isVisible());
         pagingButtons.onClick = super.onClick;

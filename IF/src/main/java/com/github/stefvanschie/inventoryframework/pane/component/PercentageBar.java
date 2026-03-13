@@ -24,58 +24,14 @@ public class PercentageBar extends VariableBar {
     /**
      * Creates a new percentage bar
      *
-     * @param slot the slot of the bar
      * @param length the length of the bar
      * @param height the height of the bar
      * @param priority the priority of the bar
      * @param plugin the plugin that will be the owner for this percentage bar's items
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public PercentageBar(@NotNull Slot slot, int length, int height, @NotNull Priority priority,
-                         @NotNull Plugin plugin) {
-        super(slot, length, height, priority, plugin);
-    }
-
-    /**
-     * Creates a new percentage bar
-     *
-     * @param x the x coordinate of the bar
-     * @param y the y coordinate of the bar
-     * @param length the length of the bar
-     * @param height the height of the bar
-     * @param priority the priority of the bar
-     * @param plugin the plugin that will be the owner for this percentage bar's items
-     * @since 0.10.8
-     */
-    public PercentageBar(int x, int y, int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
-        super(x, y, length, height, priority, plugin);
-    }
-
-    /**
-     * Creates a new percentage bar
-     *
-     * @param slot the slot of the bar
-     * @param length the length of the bar
-     * @param height the height of the bar
-     * @param plugin the plugin that will be the owner for this percentage bar's items
-     * @since 0.10.8
-     */
-    public PercentageBar(@NotNull Slot slot, int length, int height, @NotNull Plugin plugin) {
-        super(slot, length, height, plugin);
-    }
-
-    /**
-     * Creates a new percentage bar
-     *
-     * @param x the x coordinate of the bar
-     * @param y the y coordinate of the bar
-     * @param length the length of the bar
-     * @param height the height of the bar
-     * @param plugin the plugin that will be the owner for this percentage bar's items
-     * @since 0.10.8
-     */
-    public PercentageBar(int x, int y, int length, int height, @NotNull Plugin plugin) {
-        super(x, y, length, height, plugin);
+    public PercentageBar(int length, int height, @NotNull Priority priority, @NotNull Plugin plugin) {
+        super(length, height, priority, plugin);
     }
 
     /**
@@ -84,7 +40,7 @@ public class PercentageBar extends VariableBar {
      * @param length the length of the bar
      * @param height the height of the bar
      * @param plugin the plugin that will be the owner for this percentage bar's items
-     * @since 0.10.8
+     * @since 0.12.0
      */
     public PercentageBar(int length, int height, @NotNull Plugin plugin) {
         super(length, height, plugin);
@@ -93,36 +49,22 @@ public class PercentageBar extends VariableBar {
     /**
      * Creates a new percentage bar
      *
-     * @param slot the slot of the bar
      * @param length the length of the bar
      * @param height the height of the bar
      * @param priority the priority of the bar
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public PercentageBar(@NotNull Slot slot, int length, int height, @NotNull Priority priority) {
-        super(slot, length, height, priority);
-    }
-
-    public PercentageBar(int x, int y, int length, int height, @NotNull Priority priority) {
-        super(x, y, length, height, priority);
+    public PercentageBar(int length, int height, @NotNull Priority priority) {
+        super(length, height, priority);
     }
 
     /**
      * Creates a new percentage bar
      *
-     * @param slot the slot of the bar
      * @param length the length of the bar
      * @param height the height of the bar
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public PercentageBar(@NotNull Slot slot, int length, int height) {
-        super(slot, length, height);
-    }
-
-    public PercentageBar(int x, int y, int length, int height) {
-        super(x, y, length, height);
-    }
-
     public PercentageBar(int length, int height) {
         super(length, height);
     }
@@ -141,16 +83,9 @@ public class PercentageBar extends VariableBar {
 
         event.setCancelled(true);
 
-        Slot fillSlot = this.fillPane.getSlot();
-        Slot innerfillSlot = Slot.fromXY(x - fillSlot.getX(getLength()), y - fillSlot.getY(getLength()));
-
-        if (this.fillPane.click(gui, guiComponent, event, innerfillSlot)) {
+        if (this.fillPane.click(gui, guiComponent, event, slot)) {
             return true;
         }
-
-        Slot backgroundSlot = this.backgroundPane.getSlot();
-        Slot innerBackgroundSlot = Slot.fromXY(x - backgroundSlot.getX(getLength()),
-                y - backgroundSlot.getY(getLength()));
 
         return this.backgroundPane.click(gui, guiComponent, event, slot);
     }
@@ -172,7 +107,7 @@ public class PercentageBar extends VariableBar {
     @Contract(pure = true)
     @Override
     public PercentageBar copy() {
-        PercentageBar percentageBar = new PercentageBar(getSlot(), length, height, getPriority());
+        PercentageBar percentageBar = new PercentageBar(getLength(), getHeight(), getPriority());
 
         applyContents(percentageBar);
 

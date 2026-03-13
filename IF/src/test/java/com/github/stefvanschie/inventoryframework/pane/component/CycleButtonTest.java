@@ -9,7 +9,7 @@ public class CycleButtonTest {
 
     @Test
     void testCopy() {
-        CycleButton original = new CycleButton(6, 2, 2, 3, Pane.Priority.HIGH);
+        CycleButton original = new CycleButton(2, 3, Pane.Priority.HIGH);
         original.setVisible(true);
 
         original.addPane(new CycleButton(1, 1));
@@ -18,7 +18,6 @@ public class CycleButtonTest {
 
         assertNotSame(original, copy);
 
-        assertEquals(original.getSlot(), copy.getSlot());
         assertEquals(original.getLength(), copy.getLength());
         assertEquals(original.getHeight(), copy.getHeight());
         assertEquals(original.getPriority(), copy.getPriority());

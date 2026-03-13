@@ -38,36 +38,22 @@ public class CycleButton extends Pane {
     /**
      * Creates a new cycle button
      *
-     * @param slot the slot of the button
      * @param length the length of the button
      * @param height the height of the button
      * @param priority the priority of the button
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public CycleButton(@NotNull Slot slot, int length, int height, @NotNull Priority priority) {
-        super(slot, length, height, priority);
-    }
-
-    public CycleButton(int x, int y, int length, int height, @NotNull Priority priority) {
-        super(x, y, length, height, priority);
+    public CycleButton(int length, int height, @NotNull Priority priority) {
+        super(length, height, priority);
     }
 
     /**
      * Creates a new cycle button
      *
-     * @param slot the slot of the button
      * @param length the length of the button
      * @param height the height of the button
-     * @since 0.10.8
+     * @since 0.12.0
      */
-    public CycleButton(@NotNull Slot slot, int length, int height) {
-        super(slot, length, height);
-    }
-
-    public CycleButton(int x, int y, int length, int height) {
-        super(x, y, length, height);
-    }
-
     public CycleButton(int length, int height) {
         super(length, height);
     }
@@ -94,12 +80,7 @@ public class CycleButton extends Pane {
         callOnClick(event);
 
         //use the previous position, since that will have the pane we clicked on
-        Pane pane = panes.get(previousPosition);
-
-        Slot paneSlot = pane.getSlot();
-        Slot innerSlot = Slot.fromXY(x - paneSlot.getX(getLength()), y - paneSlot.getY(getLength()));
-
-        pane.click(gui, guiComponent, event, innerSlot);
+        panes.get(previousPosition).click(gui, guiComponent, event, slot);
 
         gui.update();
 
@@ -111,10 +92,7 @@ public class CycleButton extends Pane {
     public GuiItemContainer display() {
         GuiItemContainer container = new GuiItemContainer(getLength(), getHeight());
 
-        Pane pane = this.panes.get(this.position);
-        Slot slot = pane.getSlot();
-
-        container.apply(pane.display(), slot.getX(getLength()), slot.getY(getLength()));
+        container.apply(this.panes.get(this.position).display(), 0, 0);
 
         return container;
     }
@@ -123,7 +101,7 @@ public class CycleButton extends Pane {
     @Contract(pure = true)
     @Override
     public CycleButton copy() {
-        CycleButton cycleButton = new CycleButton(getSlot(), length, height, getPriority());
+        CycleButton cycleButton = new CycleButton(getLength(), getHeight(), getPriority());
 
         for (Pane pane : panes) {
             cycleButton.addPane(pane);
