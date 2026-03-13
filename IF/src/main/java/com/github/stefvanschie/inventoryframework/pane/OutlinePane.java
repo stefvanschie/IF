@@ -247,8 +247,6 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
     @Override
     public boolean click(@NotNull Gui gui, @NotNull GuiComponent guiComponent, @NotNull InventoryClickEvent event,
                          @NotNull Slot slot) {
-        System.out.println("slot = " + slot);
-
         int x = slot.getX(getLength());
         int y = slot.getY(getLength());
 

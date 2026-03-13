@@ -313,9 +313,6 @@ public class PaginatedPane extends Pane {
         int x = slot.getX(getLength());
         int y = slot.getY(getLength());
 
-        System.out.println("x = " + x);
-        System.out.println("y = " + y);
-
         //this isn't our item
         if (x < 0 || x >= getLength() || y < 0 || y >= getHeight()) {
             return false;
