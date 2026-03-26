@@ -124,8 +124,7 @@ jobs:
     - name: 'Run BuildTools 26.1'
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       run: |
+        cd build/
         java -jar BuildTools.jar --rev 26.1 --remapped --disable-java-check
-
-        cd ../
     - name: Build with Maven
       run: mvn -B package --file pom.xml

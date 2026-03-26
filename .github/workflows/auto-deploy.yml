@@ -118,9 +118,8 @@ jobs:
     - name: 'Run BuildTools 26.1'
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       run: |
+        cd build/
         java -jar BuildTools.jar --rev 26.1 --remapped --disable-java-check
-
-        cd ../
     - name: Setup GPG keys
       run: cat <(echo -e "${{ secrets.GPG_KEY }}") | gpg --batch --import
     - name: Automatically deploy the project
