@@ -140,7 +140,14 @@ public enum Version {
      *
      * @since 0.11.6
      */
-    V1_21_11;
+    V1_21_11,
+
+    /**
+     * Version 26.1 or higher.
+     *
+     * @since 0.12.0
+     */
+    V26_1;
 
     /**
      * A collection of versions on which modern smithing tables are available.
@@ -148,7 +155,8 @@ public enum Version {
     private static final Collection<Version> MODERN_SMITHING_TABLE_VERSIONS = EnumSet.of(
             V1_19_4,
             V1_20_0, V1_20_1, V1_20_2, V1_20_3_4, V1_20_5, V1_20_6,
-            V1_21_0, V1_21_1, V1_21_2_3, V1_21_4, V1_21_5, V1_21_6_8, V1_21_9_10, V1_21_11
+            V1_21_0, V1_21_1, V1_21_2_3, V1_21_4, V1_21_5, V1_21_6_8, V1_21_9_10, V1_21_11,
+            V26_1
     );
 
     /**
@@ -164,7 +172,8 @@ public enum Version {
      */
     @NotNull
     private static final Collection<@NotNull Version> INTERFACE_INVENTORY_VIEW = EnumSet.of(
-            V1_21_0, V1_21_1, V1_21_2_3, V1_21_4, V1_21_5, V1_21_6_8, V1_21_9_10, V1_21_11
+            V1_21_0, V1_21_1, V1_21_2_3, V1_21_4, V1_21_5, V1_21_6_8, V1_21_9_10, V1_21_11,
+            V26_1
     );
 
     /**
@@ -221,6 +230,10 @@ public enum Version {
     @Contract(pure = true)
     public static Version getVersion() {
         String version = Bukkit.getBukkitVersion().split("-")[0];
+
+        if (version.indexOf('.') == 2) {
+            return V26_1; //this is a 26.1+ release, so it's V26.1
+        }
 
         switch (version) {
             case "1.16.5":

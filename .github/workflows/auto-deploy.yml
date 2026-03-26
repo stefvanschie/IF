@@ -41,10 +41,10 @@ jobs:
       working-directory: paperclip
       run: |
         mvn install:install-file -Dfile=cache/patched_1.16.5.jar -DgroupId="io.papermc" -DartifactId="paper" -Dversion="1.16.5-R0.1-SNAPSHOT" -Dpackaging="jar" -DgeneratePom="true"
-    - name: Set up JDK 21
+    - name: Set up JDK 25
       uses: actions/setup-java@v1
       with:
-        java-version: 21
+        java-version: 25
     - uses: actions/checkout@v2
       name: Checkout code
     - name: Run paper-nms init
@@ -57,7 +57,7 @@ jobs:
         mvn paper-nms:init -pl nms/1_20_1
         mvn paper-nms:init -pl nms/1_20_2
         mvn paper-nms:init -pl nms/1_20_3-4
-    - name: 'Run BuildTools 1.20.5-1.20.6, 1.21'
+    - name: 'Run BuildTools 1.20.5-1.20.6, 1.21, 26.1'
       if: steps.cache-paperclip-jars.outputs.cache-hit != 'true'
       run: |
         mkdir -p build
@@ -111,6 +111,7 @@ jobs:
         java -jar BuildTools.jar --rev 1.21.8 --remapped --disable-java-check
         java -jar BuildTools.jar --rev 1.21.10 --remapped --disable-java-check
         java -jar BuildTools.jar --rev 1.21.11 --remapped --disable-java-check
+        java -jar BuildTools.jar --rev 26.1 --remapped --disable-java-check
         
         cd ../
     - name: Setup GPG keys
