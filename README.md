@@ -1,6 +1,6 @@
 # IF <a href="https://discord.gg/RXmy4HdR4x"><img align="right" src="https://img.shields.io/discord/780514939293925407" alt="Discord guild"></a>
 
-*This framework works for Minecraft versions 1.16.5, 1.17.1, 1.18.2, 1.19.4, and 1.20-1.21*
+*This framework works for Minecraft versions 1.16.5, 1.17.1, 1.18.2, 1.19.4, 1.20-1.21, and 26.1*
 
 An inventory framework for managing GUIs
 
@@ -14,7 +14,7 @@ To add this project as a dependency to your pom.xml, add the following to your p
 <dependency>
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF</artifactId>
-    <version>0.11.6</version>
+    <version>0.12.0</version>
 </dependency>
 ```
 The project is in the Central Repository, so specifying a repository is not needed.
@@ -50,7 +50,7 @@ Replace [YOUR PACKAGE] with the top-level package of your project.
 To add this project as a dependency for your Gradle project, make sure your `dependencies` section of your build.gradle looks like the following:
 ```Groovy
 dependencies {
-    implementation 'com.github.stefvanschie.inventoryframework:IF:0.11.6'
+    implementation 'com.github.stefvanschie.inventoryframework:IF:0.12.0'
     // ...
 }
 ```
@@ -107,7 +107,7 @@ mvn paper-nms:init -pl nms/1_20_3-4
 ```
 
 ### Installing Spigot via BuildTools
-For versions 1.20.5-1.21.8, we use BuildTools. To install these versions, we run the following commands.
+For versions 1.20.5-1.21.11 and 26.1, we use BuildTools. To install these versions, we run the following commands.
 ```
 wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar -O BuildTools.jar
         
@@ -157,6 +157,8 @@ java -jar BuildTools.jar --rev 1.21.4 --remapped --disable-java-check
 java -jar BuildTools.jar --rev 1.21.5 --remapped --disable-java-check
 java -jar BuildTools.jar --rev 1.21.8 --remapped --disable-java-check
 java -jar BuildTools.jar --rev 1.21.10 --remapped --disable-java-check
+java -jar BuildTools.jar --rev 1.21.11 --remapped --disable-java-check
+java -jar BuildTools.jar --rev 26.1 --remapped --disable-java-check
 ```
 
 Your environment is now set up correctly. To create a build, run the following inside the root folder of the project.
