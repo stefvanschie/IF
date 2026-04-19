@@ -158,7 +158,7 @@ java -jar BuildTools.jar --rev 1.21.5 --remapped --disable-java-check
 java -jar BuildTools.jar --rev 1.21.8 --remapped --disable-java-check
 java -jar BuildTools.jar --rev 1.21.10 --remapped --disable-java-check
 java -jar BuildTools.jar --rev 1.21.11 --remapped --disable-java-check
-java -jar BuildTools.jar --rev 26.1 --remapped --disable-java-check
+java -jar BuildTools.jar --rev 26.1.2 --remapped --disable-java-check
 ```
 
 Your environment is now set up correctly. To create a build, run the following inside the root folder of the project.
