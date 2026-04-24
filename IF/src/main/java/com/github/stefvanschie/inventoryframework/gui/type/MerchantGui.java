@@ -232,7 +232,7 @@ public class MerchantGui extends NamedGui implements InventoryBased {
             throw new IllegalArgumentException("Merchants can only be opened by players");
         }
 
-        if (super.inventory == null) {
+        if (isDirty()) {
             update();
         }
 

@@ -114,6 +114,11 @@ public abstract class Gui {
     protected boolean updating = false;
 
     /**
+     * Whether the gui is dirty i.e., has changed. Dirty by default since it won't have been updated after its creation.
+     */
+    protected boolean dirty = true;
+
+    /**
      * The parent gui. This gui will be navigated to once a player closes this gui. If this is null, the player will not
      * be redirected to another gui once they close this gui.
      */
@@ -614,6 +619,27 @@ public abstract class Gui {
      */
     public void setParent(@NotNull Gui gui) {
         this.parent = gui;
+    }
+
+    /**
+     * Marks that the changes present here have been accepted. This sets dirty to false. If dirty was already false,
+     * this will do nothing.
+     *
+     * @since 0.12.1
+     */
+    public void markChanges() {
+        this.dirty = false;
+    }
+
+    /**
+     * Gets whether this title is dirty or not i.e. whether the title has changed.
+     *
+     * @return whether the title is dirty
+     * @since 0.12.1
+     */
+    @Contract(pure = true)
+    public boolean isDirty() {
+        return this.dirty;
     }
 
     /**

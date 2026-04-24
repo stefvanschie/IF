@@ -135,7 +135,7 @@ public class EnderChestGui extends NamedGui implements MergedGui, InventoryBased
 
     @Override
     public void show(@NotNull HumanEntity humanEntity) {
-        if (super.inventory == null) {
+        if (isDirty()) {
             update();
         }
 
