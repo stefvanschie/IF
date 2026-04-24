@@ -166,7 +166,7 @@
                 <configuration>
                     <links>
                         <link>https://hub.spigotmc.org/javadocs/bukkit/</link>
-                        <link>https://jd.advntr.dev/api/${adventure.version}/</link>
+                        <link>https://jd.papermc.io/adventure/${adventure.version}/</link>
                     </links>
                 </configuration>
             </plugin>
