@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
+import com.github.stefvanschie.inventoryframework.gui.GuiClickEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -70,7 +71,7 @@ public class GuiItem {
      * An action for the inventory
      */
     @Nullable
-    private Consumer<? super InventoryClickEvent> action;
+    private Consumer<? super GuiClickEvent> action;
     
     /**
      * List of item's properties
@@ -104,7 +105,7 @@ public class GuiItem {
      * @see #GuiItem(ItemStack, Consumer)
      * @since 0.10.8
      */
-    public GuiItem(@NotNull ItemStack item, @Nullable Consumer<? super InventoryClickEvent> action,
+    public GuiItem(@NotNull ItemStack item, @Nullable Consumer<? super GuiClickEvent> action,
                    @NotNull Plugin plugin) {
         this(item, action, plugin.getLogger(), new NamespacedKey(plugin, "IF-uuid"));
     }
@@ -118,7 +119,7 @@ public class GuiItem {
      * @since 0.10.8
      */
     public GuiItem(@NotNull ItemStack item, @NotNull Plugin plugin) {
-        this(item, event -> {}, plugin);
+        this(item, (Consumer<? super GuiClickEvent>) null, plugin);
     }
 
     /**
@@ -127,7 +128,7 @@ public class GuiItem {
      * @param item the item stack
      * @param action the action called whenever an interaction with this item happens
      */
-    public GuiItem(@NotNull ItemStack item, @Nullable Consumer<? super InventoryClickEvent> action) {
+    public GuiItem(@NotNull ItemStack item, @Nullable Consumer<? super GuiClickEvent> action) {
         this(item, action, JavaPlugin.getProvidingPlugin(GuiItem.class));
     }
 
@@ -137,7 +138,7 @@ public class GuiItem {
      * @param item the item stack
      */
     public GuiItem(@NotNull ItemStack item) {
-        this(item, event -> {});
+        this(item, (Consumer<? super GuiClickEvent>) null);
     }
 
     /**
@@ -150,7 +151,7 @@ public class GuiItem {
      * @param key the key to identify this item with
      * @since 0.10.10
      */
-    private GuiItem(@NotNull ItemStack item, @Nullable Consumer<? super InventoryClickEvent> action,
+    private GuiItem(@NotNull ItemStack item, @Nullable Consumer<? super GuiClickEvent> action,
                     @NotNull Logger logger, @NotNull NamespacedKey key) {
         this.logger = logger;
         this.keyUUID = key;
@@ -188,7 +189,7 @@ public class GuiItem {
      * @param event the event to handle
      * @since 0.6.0
      */
-    public void callAction(@NotNull InventoryClickEvent event) {
+    public void callAction(@NotNull GuiClickEvent event) {
         if (action == null) {
             return;
         }
@@ -197,8 +198,8 @@ public class GuiItem {
             action.accept(event);
         } catch (Throwable t) {
             this.logger.log(Level.SEVERE, "Exception while handling click event in inventory '"
-                    + InventoryViewUtil.getInstance().getTitle(event.getView()) + "', slot=" + event.getSlot() +
-                    ", item=" + item.getType(), t);
+                    + InventoryViewUtil.getInstance().getTitle(event.getClickEvent().getView()) + "', slot="
+                    + event.getClickEvent().getSlot() + ", item=" + item.getType(), t);
         }
     }
 
@@ -233,7 +234,7 @@ public class GuiItem {
      * @param action the action of this item
      * @since 0.7.1
      */
-    public void setAction(@NotNull Consumer<InventoryClickEvent> action) {
+    public void setAction(@NotNull Consumer<GuiClickEvent> action) {
         this.action = action;
     }
     
@@ -481,7 +482,7 @@ public class GuiItem {
             }
         }
 
-        Consumer<InventoryClickEvent> action = null;
+        Consumer<InventoryClickEvent> rawAction = null;
 
         if (element.hasAttribute("onClick")) {
             String methodName = element.getAttribute("onClick");
@@ -496,9 +497,8 @@ public class GuiItem {
                 Class<?>[] parameterTypes = method.getParameterTypes();
 
                 if (parameterCount == 0) {
-                    action = event -> {
+                    rawAction = event -> {
                         try {
-                            //because reflection with lambdas is stupid
                             method.setAccessible(true);
                             method.invoke(instance);
                         } catch (IllegalAccessException | InvocationTargetException exception) {
@@ -508,9 +508,8 @@ public class GuiItem {
                     found = true;
                 } else if (parameterTypes[0].isAssignableFrom(InventoryClickEvent.class)) {
                     if (parameterCount == 1) {
-                        action = event -> {
+                        rawAction = event -> {
                             try {
-                                //because reflection with lambdas is stupid
                                 method.setAccessible(true);
                                 method.invoke(instance, event);
                             } catch (IllegalAccessException | InvocationTargetException exception) {
@@ -531,16 +530,13 @@ public class GuiItem {
                         }
 
                         if (correct) {
-                            action = event -> {
+                            rawAction = event -> {
                                 try {
-                                    //don't ask me why we need to do this, just roll with it (actually I do know why, but it's stupid)
                                     properties.add(0, event);
 
-                                    //because reflection with lambdas is stupid
                                     method.setAccessible(true);
                                     method.invoke(instance, properties.toArray(new Object[0]));
 
-                                    //since we'll append the event to the list next time again, we need to remove it here again
                                     properties.remove(0);
                                 } catch (IllegalAccessException | InvocationTargetException exception) {
                                     throw new XMLReflectionException(exception);
@@ -558,6 +554,8 @@ public class GuiItem {
                 throw new XMLLoadException("Specified method could not be found");
             }
         }
+
+        Consumer<GuiClickEvent> action = rawAction == null ? null : e -> rawAction.accept(e.getClickEvent());
 
         GuiItem item = new GuiItem(itemStack, action, plugin);
 

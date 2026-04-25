@@ -7,6 +7,7 @@ import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
+import com.github.stefvanschie.inventoryframework.gui.GuiClickEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -180,7 +181,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
             return false;
         }
 
-		callOnClick(event);
+		callOnClick(new GuiClickEvent(event, slot));
 
         ItemStack itemStack = event.getCurrentItem();
 
@@ -194,7 +195,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
             return false;
         }
 
-        clickedItem.callAction(event);
+        clickedItem.callAction(new GuiClickEvent(event, slot));
 
         return true;
 	}
@@ -242,7 +243,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
      * @see #fillWith(ItemStack, Consumer)
      * @since 0.10.8
 	 */
-	public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<? super InventoryClickEvent> action,
+	public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<? super GuiClickEvent> action,
                          @NotNull Plugin plugin) {
 		//The non empty spots
 		Set<Slot> locations = this.items.keySet();
@@ -272,7 +273,7 @@ public class StaticPane extends Pane implements Flippable, Rotatable {
      * @param action The action called whenever an interaction with the item happens
      * @since 0.5.9
      */
-    public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<? super InventoryClickEvent> action) {
+    public void fillWith(@NotNull ItemStack itemStack, @Nullable Consumer<? super GuiClickEvent> action) {
         fillWith(itemStack, action, JavaPlugin.getProvidingPlugin(StaticPane.class));
     }
 

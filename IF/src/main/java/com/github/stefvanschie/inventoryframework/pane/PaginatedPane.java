@@ -9,6 +9,7 @@ import com.github.stefvanschie.inventoryframework.pane.util.PositionedPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import com.github.stefvanschie.inventoryframework.gui.GuiClickEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -309,7 +310,7 @@ public class PaginatedPane extends Pane {
             return false;
         }
 
-		callOnClick(event);
+		callOnClick(new GuiClickEvent(event, slot));
 
         boolean success = false;
 

@@ -6,6 +6,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
+import com.github.stefvanschie.inventoryframework.gui.GuiClickEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
@@ -162,7 +163,7 @@ public class MasonryPane extends Pane implements Orientable {
             return false;
         }
 
-        callOnClick(event);
+        callOnClick(new GuiClickEvent(event, slot));
 
         boolean success = false;
 

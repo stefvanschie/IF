@@ -9,6 +9,7 @@ import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.Material;
+import com.github.stefvanschie.inventoryframework.gui.GuiClickEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -143,7 +144,7 @@ public class PagingButtons extends Pane {
             return false;
         }
 
-        callOnClick(event);
+        callOnClick(new GuiClickEvent(event, slot));
 
         ItemStack itemStack = event.getCurrentItem();
 
@@ -155,7 +156,7 @@ public class PagingButtons extends Pane {
             try {
                 this.pages.setPage(this.pages.getPage() - 1);
 
-                this.backwardButton.callAction(event);
+                this.backwardButton.callAction(new GuiClickEvent(event, slot));
 
                 gui.update();
             } catch (ArrayIndexOutOfBoundsException ignored) {}
@@ -167,7 +168,7 @@ public class PagingButtons extends Pane {
             try {
                 this.pages.setPage(this.pages.getPage() + 1);
 
-                this.forwardButton.callAction(event);
+                this.forwardButton.callAction(new GuiClickEvent(event, slot));
 
                 gui.update();
             } catch (ArrayIndexOutOfBoundsException ignored) {}
