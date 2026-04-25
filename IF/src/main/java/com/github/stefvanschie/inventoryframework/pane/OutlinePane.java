@@ -9,11 +9,13 @@ import com.github.stefvanschie.inventoryframework.pane.util.Mask;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import com.github.stefvanschie.inventoryframework.util.GeometryUtil;
 import org.bukkit.Material;
+import com.github.stefvanschie.inventoryframework.gui.GuiClickEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -241,7 +243,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
             return false;
         }
 
-        callOnClick(event);
+        callOnClick(new GuiClickEvent(event, slot));
 
         ItemStack itemStack = event.getCurrentItem();
 
@@ -255,7 +257,7 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
             return false;
         }
 
-        item.callAction(event);
+        item.callAction(new GuiClickEvent(event, slot));
 
         return true;
     }
@@ -450,6 +452,19 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
     @Override
     public List<GuiItem> getItems() {
         return items;
+    }
+
+    @Nullable
+    @Contract(pure = true)
+    public GuiItem getGuiItem(@NotNull Slot slot) {
+        int x = slot.getX(getLength());
+        int y = slot.getY(getLength());
+
+        if (x < 0 || x >= getLength() || y < 0 || y >= getHeight()) {
+            return null;
+        }
+
+        return display().getItem(x, y);
     }
 
     /**

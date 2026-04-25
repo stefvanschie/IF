@@ -10,6 +10,7 @@ import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import com.github.stefvanschie.inventoryframework.util.InventoryViewUtil;
 import com.github.stefvanschie.inventoryframework.util.UUIDTagType;
 import com.github.stefvanschie.inventoryframework.util.XMLUtil;
+import com.github.stefvanschie.inventoryframework.gui.GuiClickEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -49,7 +50,7 @@ public abstract class Pane {
      * The consumer that will be called once a players clicks in this pane
      */
     @Nullable
-    protected Consumer<? super InventoryClickEvent> onClick;
+    protected Consumer<? super GuiClickEvent> onClick;
 
     /**
      * A unique identifier for panes to locate them by
@@ -225,8 +226,10 @@ public abstract class Pane {
         if (element.hasAttribute("field"))
             XMLUtil.loadFieldAttribute(instance, element, pane);
 
-        if (element.hasAttribute("onClick"))
-            pane.setOnClick(XMLUtil.loadOnEventAttribute(instance, element, InventoryClickEvent.class, "onClick"));
+        if (element.hasAttribute("onClick")) {
+            Consumer<InventoryClickEvent> rawOnClick = XMLUtil.loadOnEventAttribute(instance, element, InventoryClickEvent.class, "onClick");
+            pane.setOnClick(rawOnClick == null ? null : e -> rawOnClick.accept(e.getClickEvent()));
+        }
 
         if (element.hasAttribute("populate")) {
             String attribute = element.getAttribute("populate");
@@ -346,7 +349,7 @@ public abstract class Pane {
      * @param onClick the consumer that gets called
      * @since 0.4.0
      */
-    public void setOnClick(@Nullable Consumer<? super InventoryClickEvent> onClick) {
+    public void setOnClick(@Nullable Consumer<? super GuiClickEvent> onClick) {
         this.onClick = onClick;
     }
     
@@ -357,19 +360,19 @@ public abstract class Pane {
      * @param event the event to handle
      * @since 0.6.0
      */
-    protected void callOnClick(@NotNull InventoryClickEvent event) {
+    protected void callOnClick(@NotNull GuiClickEvent event) {
         if (onClick == null) {
             return;
         }
-
 
         try {
             onClick.accept(event);
         } catch (Throwable t) {
             throw new RuntimeException(
                     "Exception while handling click event in inventory '"
-                    + InventoryViewUtil.getInstance().getTitle(event.getView()) + "', slot=" + event.getSlot() +
-                    ", for " + getClass().getSimpleName() + ", length=" + length + ", height=" + height,
+                    + InventoryViewUtil.getInstance().getTitle(event.getClickEvent().getView()) + "', slot="
+                    + event.getClickEvent().getSlot() + ", for " + getClass().getSimpleName() + ", length=" + length
+                    + ", height=" + height,
                     t
             );
         }
