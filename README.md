@@ -46,6 +46,17 @@ Now in order to shade the project into your project, add the following to your p
 ```
 Replace [YOUR PACKAGE] with the top-level package of your project.
 
+If your plugin is a Paper plugin targeting a Minecraft version before 26.1, you must set the `paperweight-mappings-namespace` in `META-INF/MANIFEST.MF` to `spigot`. You can do this by adding the following transformer configuration inside the shade plugin’s `<configuration>` section:
+```XML
+<transformers>
+    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+        <manifestEntries>
+            <paperweight-mappings-namespace>spigot</paperweight-mappings-namespace>
+        </manifestEntries>
+    </transformer>
+</transformers>
+```
+
 ## Gradle dependency
 To add this project as a dependency for your Gradle project, make sure your `dependencies` section of your build.gradle looks like the following:
 ```Groovy
@@ -72,6 +83,17 @@ To relocate the project's classes to your own namespace, add the following, with
 ```Groovy
 shadowJar {
     relocate 'com.github.stefvanschie.inventoryframework', '[YOUR PACKAGE].inventoryframework'
+}
+```
+
+If your plugin is a Paper plugin targeting a Minecraft version before 26.1, you must set the `paperweight-mappings-namespace` in `META-INF/MANIFEST.MF` to `spigot`. You can do this by changing your `shadowJar` block to look like the following:
+```Groovy
+shadowJar {
+    relocate 'com.github.stefvanschie.inventoryframework', '[YOUR PACKAGE].inventoryframework'
+
+    manifest {
+        attributes 'paperweight-mappings-namespace': 'spigot'
+    }
 }
 ```
 
