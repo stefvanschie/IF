@@ -227,8 +227,7 @@ public abstract class Pane {
             XMLUtil.loadFieldAttribute(instance, element, pane);
 
         if (element.hasAttribute("onClick")) {
-            Consumer<InventoryClickEvent> rawOnClick = XMLUtil.loadOnEventAttribute(instance, element, InventoryClickEvent.class, "onClick");
-            pane.setOnClick(rawOnClick == null ? null : e -> rawOnClick.accept(e.getClickEvent()));
+            pane.setOnClick(XMLUtil.loadOnEventAttribute(instance, element, GuiClickEvent.class, "onClick"));
         }
 
         if (element.hasAttribute("populate")) {

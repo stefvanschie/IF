@@ -15,7 +15,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
 import com.github.stefvanschie.inventoryframework.gui.GuiClickEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -182,7 +181,7 @@ public class GuiItem {
     }
 
     /**
-     * Calls the handler of the {@link InventoryClickEvent}
+     * Calls the handler of the {@link GuiClickEvent}
      * if such a handler was specified in the constructor.
      * Catches and logs all exceptions the handler might throw.
      *
@@ -482,7 +481,7 @@ public class GuiItem {
             }
         }
 
-        Consumer<InventoryClickEvent> rawAction = null;
+        Consumer<GuiClickEvent> action = null;
 
         if (element.hasAttribute("onClick")) {
             String methodName = element.getAttribute("onClick");
@@ -497,7 +496,7 @@ public class GuiItem {
                 Class<?>[] parameterTypes = method.getParameterTypes();
 
                 if (parameterCount == 0) {
-                    rawAction = event -> {
+                    action = event -> {
                         try {
                             method.setAccessible(true);
                             method.invoke(instance);
@@ -506,9 +505,9 @@ public class GuiItem {
                         }
                     };
                     found = true;
-                } else if (parameterTypes[0].isAssignableFrom(InventoryClickEvent.class)) {
+                } else if (parameterTypes[0].isAssignableFrom(GuiClickEvent.class)) {
                     if (parameterCount == 1) {
-                        rawAction = event -> {
+                        action = event -> {
                             try {
                                 method.setAccessible(true);
                                 method.invoke(instance, event);
@@ -530,7 +529,7 @@ public class GuiItem {
                         }
 
                         if (correct) {
-                            rawAction = event -> {
+                            action = event -> {
                                 try {
                                     properties.add(0, event);
 
@@ -554,8 +553,6 @@ public class GuiItem {
                 throw new XMLLoadException("Specified method could not be found");
             }
         }
-
-        Consumer<GuiClickEvent> action = rawAction == null ? null : e -> rawAction.accept(e.getClickEvent());
 
         GuiItem item = new GuiItem(itemStack, action, plugin);
 

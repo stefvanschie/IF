@@ -102,7 +102,7 @@ jobs:
         cd ..
 
         cd Spigot
-        git checkout fb8fb722a327a2f9f097f2ded700ac5de8157408
+        git checkout fb8fb722a327a2f9f097f2ded700ac5de8157408w
         cd ..
 
         cd BuildData
