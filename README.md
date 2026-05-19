@@ -76,7 +76,7 @@ In order to include the project in your own project, you will need to use the `s
 ```Groovy
 plugins {
     // ...
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "com.gradleup.shadow" version "9.4.1"
 }
 ```
 To relocate the project's classes to your own namespace, add the following, with [YOUR PACKAGE] being the top-level package of your project:
