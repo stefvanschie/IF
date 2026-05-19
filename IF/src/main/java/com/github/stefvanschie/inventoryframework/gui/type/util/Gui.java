@@ -31,6 +31,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -145,7 +146,7 @@ public abstract class Gui {
      * inventory holder for beacons is already being set properly via NMS, but this contains the other inventory types.
      */
     @NotNull
-    private static final Map<Inventory, Gui> GUI_INVENTORIES = new WeakHashMap<>();
+    private static final Map<Inventory, WeakReference<Gui>> GUI_INVENTORIES = new WeakHashMap<>();
 
     /**
      * Whether listeners have ben registered by some gui
@@ -256,7 +257,7 @@ public abstract class Gui {
      * @since 0.8.1
      */
     protected void addInventory(@NotNull Inventory inventory, @NotNull Gui gui) {
-        GUI_INVENTORIES.put(inventory, gui);
+        GUI_INVENTORIES.put(inventory, new WeakReference<>(gui));
     }
 
     /**
@@ -270,7 +271,19 @@ public abstract class Gui {
     @Nullable
     @Contract(pure = true)
     public static Gui getGui(@NotNull Inventory inventory) {
-        return GUI_INVENTORIES.get(inventory);
+        WeakReference<Gui> reference = GUI_INVENTORIES.get(inventory);
+
+        if (reference == null) {
+            return null;
+        }
+
+        Gui gui = reference.get();
+
+        if (gui == null) {
+            GUI_INVENTORIES.remove(inventory, reference);
+        }
+
+        return gui;
     }
 
     /**
