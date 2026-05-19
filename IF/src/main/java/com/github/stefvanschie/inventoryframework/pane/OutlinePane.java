@@ -122,12 +122,14 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
         if (getOrientation() == Orientation.HORIZONTAL) {
             size = getHeight();
         } else if (getOrientation() == Orientation.VERTICAL) {
-            size = getHeight();
+            size = getLength();
         } else {
             throw new IllegalStateException("Unknown orientation '" + getOrientation() + "'");
         }
 
-        for (int vectorIndex = 0; vectorIndex < size && getItems().size() > itemIndex; vectorIndex++) {
+        List<GuiItem> allItems = getItems();
+
+        for (int vectorIndex = 0; vectorIndex < size && allItems.size() > itemIndex; vectorIndex++) {
             boolean[] maskLine;
 
             if (getOrientation() == Orientation.HORIZONTAL) {
@@ -151,18 +153,18 @@ public class OutlinePane extends Pane implements Flippable, Orientable, Rotatabl
             if (doesRepeat()) {
                 items = new GuiItem[enabled];
             } else {
-                int remainingPositions = gapCount + (getItems().size() - itemIndex - 1) * (getGap() + 1) + 1;
+                int remainingPositions = gapCount + (allItems.size() - itemIndex - 1) * (getGap() + 1) + 1;
 
                 items = new GuiItem[Math.min(enabled, remainingPositions)];
             }
 
             for (int index = 0; index < items.length; index++) {
                 if (gapCount == 0) {
-                    items[index] = getItems().get(itemIndex);
+                    items[index] = allItems.get(itemIndex);
 
                     itemIndex++;
 
-                    if (doesRepeat() && itemIndex >= getItems().size()) {
+                    if (doesRepeat() && itemIndex >= allItems.size()) {
                         itemIndex = 0;
                     }
 

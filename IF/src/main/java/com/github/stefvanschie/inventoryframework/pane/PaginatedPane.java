@@ -406,7 +406,7 @@ public class PaginatedPane extends Pane {
     @NotNull
     @Contract(pure = true)
     public Collection<Pane> getPanes(int page) {
-        if (page < 0 || this.page >= this.panes.size()) {
+        if (page < 0 || page >= this.panes.size()) {
             throw new IllegalArgumentException("Invalid page");
         }
 

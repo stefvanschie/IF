@@ -146,10 +146,9 @@ public class GuiItemContainer {
                     "; should be below " + getLength() + " and " + getHeight());
         }
 
-        GuiItem copy = guiItem.copy();
-        copy.applyUUID();
+        guiItem.applyUUID();
 
-        this.items[x][y] = copy;
+        this.items[x][y] = guiItem;
     }
 
     /**

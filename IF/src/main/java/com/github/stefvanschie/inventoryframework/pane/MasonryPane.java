@@ -165,6 +165,10 @@ public class MasonryPane extends Pane implements Orientable {
 
         callOnClick(new GuiClickEvent(event, slot));
 
+        if (this.cachedPositions == null) {
+            return false;
+        }
+
         boolean success = false;
 
         for (int index = 0; index < this.panes.size(); index++) {

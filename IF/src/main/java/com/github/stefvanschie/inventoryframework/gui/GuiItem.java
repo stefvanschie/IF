@@ -333,7 +333,6 @@ public class GuiItem {
             throw new XMLLoadException("Can't find material for '" + id + "'");
         }
 
-        boolean hasDamage = element.hasAttribute("damage");
         int amount = 1;
 
         if (element.hasAttribute("amount")) {
@@ -348,7 +347,7 @@ public class GuiItem {
 
         if (element.hasAttribute("damage")) {
             try {
-                amount = Short.parseShort(element.getAttribute("damage"));
+                damage = Short.parseShort(element.getAttribute("damage"));
             } catch (NumberFormatException exception) {
                 throw new XMLLoadException("Damage attribute is not a short", exception);
             }
