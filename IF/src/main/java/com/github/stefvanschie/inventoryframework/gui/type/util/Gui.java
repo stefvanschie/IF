@@ -815,6 +815,8 @@ public abstract class Gui {
                 (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) GrindstoneGui::load);
         registerGui("hopper",
                 (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) HopperGui::load);
+        registerGui("loom",
+                (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) LoomGui::load);
         registerGui("merchant",
                 (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) MerchantGui::load);
         registerGui("shulker-box",
