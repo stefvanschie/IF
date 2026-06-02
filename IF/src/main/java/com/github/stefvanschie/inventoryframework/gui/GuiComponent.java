@@ -3,6 +3,7 @@ package com.github.stefvanschie.inventoryframework.gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import com.github.stefvanschie.inventoryframework.pane.util.PositionedPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
@@ -13,6 +14,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -34,6 +36,12 @@ public class GuiComponent {
     protected final List<PositionedPane> panes = new ArrayList<>();
 
     /**
+     * All items that are directly applied to this component, rather than via a pane.
+     */
+    @Nullable
+    private StaticPane items;
+
+    /**
      * A container for all the items in this component.
      */
     @NotNull
@@ -53,6 +61,10 @@ public class GuiComponent {
         }
 
         this.container = new GuiItemContainer(length, height);
+
+        if (length != 0 && height != 0) {
+            this.items = new StaticPane(length, height);
+        }
     }
 
     /**
@@ -206,6 +218,10 @@ public class GuiComponent {
      * @since 0.8.0
      */
     public void click(@NotNull Gui gui, @NotNull InventoryClickEvent event, int index) {
+        if (this.items != null && this.items.click(gui, this, event, Slot.fromIndex(index))) {
+            return;
+        }
+
         int x = index % getLength();
         int y = index / getLength();
 
@@ -236,6 +252,10 @@ public class GuiComponent {
 
         for (PositionedPane positionedPane : this.panes) {
             guiComponent.addPane(positionedPane.getSlot(), positionedPane.getPane().copy());
+        }
+
+        if (this.items != null) {
+            guiComponent.items = this.items.copy();
         }
 
         guiComponent.container = this.container.copy();
@@ -271,6 +291,25 @@ public class GuiComponent {
 
         for (PositionedPane positionedPane : this.panes) {
             newGuiComponent.addPane(positionedPane.getSlot(), positionedPane.getPane());
+        }
+
+        if (this.items != null) {
+            newGuiComponent.items = new StaticPane(getLength(), newHeight);
+
+            for (int x = 0; x < getLength(); x++) {
+                int newY = 0;
+
+                for (int y = 0; y < getHeight(); y++) {
+                    GuiItem item = this.items.getItem(Slot.fromXY(x, y));
+
+                    if (item == null || (y >= from && y <= end)) {
+                        continue;
+                    }
+
+                    newGuiComponent.items.addItem(item, x, newY);
+                    newY++;
+                }
+            }
         }
 
         newGuiComponent.container = this.container.excludeRows(from, end);
@@ -331,6 +370,10 @@ public class GuiComponent {
     public void display() {
         this.container.clearItems();
 
+        if (this.items != null) {
+            this.container.apply(this.items.display(), 0, 0);
+        }
+
         for (PositionedPane positionedPane : this.panes) {
             Pane pane = positionedPane.getPane();
 
@@ -342,6 +385,34 @@ public class GuiComponent {
 
             this.container.apply(pane.display(), slot.getX(getLength()), slot.getY(getLength()));
         }
+    }
+
+    /**
+     * Sets a {@link GuiItem} at the specific slot in this component. If the specified slot is already in use, the
+     * previous item will be overwritten by the new item. This is regardless of the way the slot is specified. The items
+     * will always render with the lowest priority, before any panes this component might have.
+     * <p>
+     * If the slot is outside the boundaries of the component, an {@link IllegalArgumentException} will be thrown.
+     *
+     * @param item the item to set
+     * @param slot the slot to place the item at
+     * @since 0.12.1
+     * @throws IllegalArgumentException if the slot is out of bounds
+     */
+    public void setItem(@NotNull GuiItem item, @NotNull Slot slot) {
+        int length = getLength();
+        int height = getHeight();
+
+        int x = slot.getX(length);
+        int y = slot.getY(length);
+
+        if (!isInBounds(0, length - 1, x) || !isInBounds(0, height - 1, y)) {
+            throw new IllegalArgumentException("Slot is out of bounds");
+        }
+
+        assert this.items != null;
+
+        this.items.addItem(item, slot);
     }
 
     /**
@@ -379,7 +450,6 @@ public class GuiComponent {
 
         return panes;
     }
-
 
     /**
      * Gets the height of this gui component.
