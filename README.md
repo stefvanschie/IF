@@ -1,6 +1,6 @@
 # IF <a href="https://discord.gg/RXmy4HdR4x"><img align="right" src="https://img.shields.io/discord/780514939293925407" alt="Discord guild"></a>
 
-*This framework works for Minecraft versions 1.16.5, 1.17.1, 1.18.2, 1.19.4, 1.20-1.21, and 26.1*
+*This framework works for Minecraft versions 1.16.5, 1.17.1, 1.18.2, 1.19.4, 1.20-1.21, and 26*
 
 An inventory framework for managing GUIs
 
