@@ -174,11 +174,7 @@ public class GuiComponent {
 
                 GuiItem item = this.container.getItem(x, y);
 
-                if (item == null) {
-                    continue;
-                }
-
-                inventory.setItem(slot, item.getItem());
+                inventory.setItem(slot, item == null ? null : item.getItem());
             }
         }
     }
@@ -198,11 +194,7 @@ public class GuiComponent {
             for (int y = 0; y < getHeight(); y++) {
                 GuiItem item = this.container.getItem(x, y);
 
-                if (item == null) {
-                    continue;
-                }
-
-                inventory.setItem(y * getLength() + x + offset, item.getItem());
+                inventory.setItem(y * getLength() + x + offset, item == null ? null : item.getItem());
             }
         }
     }
