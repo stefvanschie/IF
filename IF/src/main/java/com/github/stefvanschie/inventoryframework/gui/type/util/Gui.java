@@ -1,6 +1,16 @@
 package com.github.stefvanschie.inventoryframework.gui.type.util;
 
 import com.github.stefvanschie.inventoryframework.HumanEntityCache;
+import com.github.stefvanschie.inventoryframework.annotation.exception.InvalidParametersException;
+import com.github.stefvanschie.inventoryframework.annotation.exception.MultipleAnnotationsException;
+import com.github.stefvanschie.inventoryframework.annotation.CloseHandler;
+import com.github.stefvanschie.inventoryframework.annotation.click.BottomClickHandler;
+import com.github.stefvanschie.inventoryframework.annotation.click.GlobalClickHandler;
+import com.github.stefvanschie.inventoryframework.annotation.click.OutsideClickHandler;
+import com.github.stefvanschie.inventoryframework.annotation.click.TopClickHandler;
+import com.github.stefvanschie.inventoryframework.annotation.drag.BottomDragHandler;
+import com.github.stefvanschie.inventoryframework.annotation.drag.GlobalDragHandler;
+import com.github.stefvanschie.inventoryframework.annotation.drag.TopDragHandler;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.GuiListener;
@@ -31,8 +41,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -141,6 +155,27 @@ public abstract class Gui {
         GUI_MAPPINGS = new HashMap<>();
 
     /**
+     * A map containing all the annotations and their associated actions for click handlers.
+     */
+    @NotNull
+    private static final Map<Class<? extends Annotation>,
+            BiConsumer<? super Gui, Consumer<? super InventoryClickEvent>>> CLICK_ANNOTATIONS = new HashMap<>();
+
+    /**
+     * A map containing all the annotations and their associated actions for drag handlers.
+     */
+    @NotNull
+    private static final Map<Class<? extends Annotation>,
+            BiConsumer<? super Gui, Consumer<? super InventoryDragEvent>>> DRAG_ANNOTATIONS = new HashMap<>();
+
+    /**
+     * A map containing all the annotations and their associated actions for close handlers.
+     */
+    @NotNull
+    private static final Map<Class<? extends Annotation>,
+            BiConsumer<? super Gui, Consumer<? super InventoryCloseEvent>>> CLOSE_ANNOTATIONS = new HashMap<>();
+
+    /**
      * A map containing the relations between inventories and their respective gui. This is needed because Bukkit and
      * Spigot ignore inventory holders for beacons, brewing stands, dispensers, droppers, furnaces and hoppers. The
      * inventory holder for beacons is already being set properly via NMS, but this contains the other inventory types.
@@ -172,6 +207,8 @@ public abstract class Gui {
 
             hasRegisteredListeners = true;
         }
+
+        processAnnotations();
     }
 
     /**
@@ -761,6 +798,65 @@ public abstract class Gui {
         return loadPane(instance, node, JavaPlugin.getProvidingPlugin(Gui.class));
     }
 
+    /**
+     * Processes the annotations that appear on method bodies. The annotations that are specified and the action that
+     * corresponds to these annotations are specified in the map. The type parameter specifies which parameter type may
+     * appear in the method for these annotations.
+     *
+     * @param map the map of annotations and their associated action
+     * @param type the class of parameter that is accepted as a parameter
+     * @param <T> the type of parameter that is accepted as a parameter
+     * @since 0.12.1
+     */
+    private <T> void processMethodAnnotations(@NotNull Map<? extends Class<? extends Annotation>, BiConsumer<? super Gui, Consumer<? super T>>> map,
+                                              @NotNull Class<T> type) {
+        Set<Class<?>> processed = new HashSet<>();
+
+        for (Method method : getClass().getDeclaredMethods()) {
+            int parameterCount = method.getParameterCount();
+            Class<?> parameter = method.getParameterTypes()[0];
+
+            for (Map.Entry<? extends Class<? extends Annotation>, BiConsumer<? super Gui, Consumer<? super T>>> entry : map.entrySet()) {
+                Class<? extends Annotation> annotation = entry.getKey();
+
+                if (method.isAnnotationPresent(annotation)) {
+                    if (processed.contains(annotation)) {
+                        throw new MultipleAnnotationsException(annotation.getSimpleName() + " appears multiple times");
+                    }
+
+                    processed.add(annotation);
+
+                    if (parameterCount != 0 && (parameterCount != 1 || !parameter.isAssignableFrom(type))) {
+                        throw new InvalidParametersException("Invalid parameters for " + annotation.getSimpleName());
+                    }
+
+                    entry.getValue().accept(this, event -> {
+                        try {
+                            if (parameterCount == 0) {
+                                method.invoke(this);
+                            } else {
+                                method.invoke(this, event);
+                            }
+                        } catch (IllegalAccessException | InvocationTargetException exception) {
+                            throw new RuntimeException(exception);
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    /**
+     * Processes all the annotations that might be present in a subclass of this class.
+     *
+     * @since 0.12.1
+     */
+    private void processAnnotations() {
+        processMethodAnnotations(CLICK_ANNOTATIONS, InventoryClickEvent.class);
+        processMethodAnnotations(DRAG_ANNOTATIONS, InventoryDragEvent.class);
+        processMethodAnnotations(CLOSE_ANNOTATIONS, InventoryCloseEvent.class);
+    }
+
     static {
         registerPane("masonrypane",
                 (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Pane>) MasonryPane::load);
@@ -827,5 +923,16 @@ public abstract class Gui {
                 (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) SmokerGui::load);
         registerGui("stonecutter",
                 (TriFunction<? super Object, ? super Element, ? super Plugin, ? extends Gui>) StonecutterGui::load);
+
+        CLICK_ANNOTATIONS.put(BottomClickHandler.class, Gui::setOnBottomClick);
+        CLICK_ANNOTATIONS.put(GlobalClickHandler.class, Gui::setOnGlobalClick);
+        CLICK_ANNOTATIONS.put(OutsideClickHandler.class, Gui::setOnOutsideClick);
+        CLICK_ANNOTATIONS.put(TopClickHandler.class, Gui::setOnTopClick);
+
+        DRAG_ANNOTATIONS.put(BottomDragHandler.class, Gui::setOnBottomDrag);
+        DRAG_ANNOTATIONS.put(GlobalDragHandler.class, Gui::setOnGlobalDrag);
+        DRAG_ANNOTATIONS.put(TopDragHandler.class, Gui::setOnTopDrag);
+
+        CLOSE_ANNOTATIONS.put(CloseHandler.class, Gui::setOnClose);
     }
 }
