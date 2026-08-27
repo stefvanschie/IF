@@ -14,7 +14,7 @@ To add this project as a dependency to your pom.xml, add the following to your p
 <dependency>
     <groupId>com.github.stefvanschie.inventoryframework</groupId>
     <artifactId>IF</artifactId>
-    <version>0.12.0</version>
+    <version>0.12.1</version>
 </dependency>
 ```
 The project is in the Central Repository, so specifying a repository is not needed.
@@ -61,7 +61,7 @@ If your plugin is a Paper plugin targeting a Minecraft version before 26.1, you 
 To add this project as a dependency for your Gradle project, make sure your `dependencies` section of your build.gradle looks like the following:
 ```Groovy
 dependencies {
-    implementation 'com.github.stefvanschie.inventoryframework:IF:0.12.0'
+    implementation 'com.github.stefvanschie.inventoryframework:IF:0.12.1'
     // ...
 }
 ```
