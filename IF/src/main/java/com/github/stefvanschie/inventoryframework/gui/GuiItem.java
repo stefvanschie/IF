@@ -150,7 +150,7 @@ public class GuiItem {
      * @param key the key to identify this item with
      * @since 0.10.10
      */
-    private GuiItem(@NotNull ItemStack item, @Nullable Consumer<? super InventoryClickEvent> action,
+    public GuiItem(@NotNull ItemStack item, @Nullable Consumer<? super InventoryClickEvent> action,
                     @NotNull Logger logger, @NotNull NamespacedKey key) {
         this.logger = logger;
         this.keyUUID = key;
