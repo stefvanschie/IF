@@ -814,7 +814,7 @@ public abstract class Gui {
 
         for (Method method : getClass().getDeclaredMethods()) {
             int parameterCount = method.getParameterCount();
-            Class<?> parameter = method.getParameterTypes()[0];
+            Class<?> parameter = parameterCount != 0 ? method.getParameterTypes()[0] : null;
 
             for (Map.Entry<? extends Class<? extends Annotation>, BiConsumer<? super Gui, Consumer<? super T>>> entry : map.entrySet()) {
                 Class<? extends Annotation> annotation = entry.getKey();
