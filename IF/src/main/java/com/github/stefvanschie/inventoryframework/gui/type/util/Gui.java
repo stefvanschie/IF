@@ -814,7 +814,7 @@ public abstract class Gui {
 
         for (Method method : getClass().getDeclaredMethods()) {
             int parameterCount = method.getParameterCount();
-            Class<?> parameter = method.getParameterTypes()[0];
+            Class<?> parameter = parameterCount == 0 ? null : method.getParameterTypes()[0];
 
             for (Map.Entry<? extends Class<? extends Annotation>, BiConsumer<? super Gui, Consumer<? super T>>> entry : map.entrySet()) {
                 Class<? extends Annotation> annotation = entry.getKey();
@@ -826,7 +826,7 @@ public abstract class Gui {
 
                     processed.add(annotation);
 
-                    if (parameterCount != 0 && (parameterCount != 1 || !parameter.isAssignableFrom(type))) {
+                    if (parameterCount != 0 && (parameterCount != 1 || parameter == null || !parameter.isAssignableFrom(type))) {
                         throw new InvalidParametersException("Invalid parameters for " + annotation.getSimpleName());
                     }
 
