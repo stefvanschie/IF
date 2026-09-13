@@ -124,7 +124,7 @@ public class BeaconGui extends Gui implements InventoryBased {
 
     @Override
     public void show(@NotNull HumanEntity humanEntity) {
-        if (super.inventory == null) {
+        if (isDirty()) {
             update();
         }
 

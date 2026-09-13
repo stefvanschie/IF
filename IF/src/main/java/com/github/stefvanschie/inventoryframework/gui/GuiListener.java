@@ -287,7 +287,7 @@ public class GuiListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerDropItem(@NotNull PlayerDropItemEvent event) {
-        Gui gui = getGui(event.getPlayer().getOpenInventory().getTopInventory());
+        Gui gui = getGui(InventoryViewUtil.getInstance().getTopInventory(event.getPlayer().getOpenInventory()));
 
         if (gui == null) {
             return;

@@ -173,7 +173,7 @@ public class GrindstoneGui extends NamedGui implements InventoryBased {
 
     @Override
     public void show(@NotNull HumanEntity humanEntity) {
-        if (super.inventory == null) {
+        if (isDirty()) {
             update();
         }
 

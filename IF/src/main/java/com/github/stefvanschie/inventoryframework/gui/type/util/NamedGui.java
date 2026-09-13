@@ -16,11 +16,6 @@ public abstract class NamedGui extends Gui {
     private TextHolder title;
 
     /**
-     * Whether the title is dirty i.e., has changed
-     */
-    private boolean dirty = false;
-
-    /**
      * Constructs a new gui with a title
      *
      * @param title the title/name of this gui
@@ -113,21 +108,26 @@ public abstract class NamedGui extends Gui {
     /**
      * Gets whether this title is dirty or not i.e. whether the title has changed.
      *
+     * @deprecated use {@link Gui#isDirty()} instead.
      * @return whether the title is dirty
      * @since 0.10.0
      */
     @Contract(pure = true)
+    @Deprecated
     public boolean isDirty() {
-        return dirty;
+        return super.dirty;
     }
 
     /**
      * Marks that the changes present here have been accepted. This sets dirty to false. If dirty was already false,
      * this will do nothing.
      *
+     * @deprecated use {@link Gui#markChanges()} instead.
      * @since 0.10.0
      */
+    @Override
+    @Deprecated
     public void markChanges() {
-        this.dirty = false;
+        super.dirty = false;
     }
 }

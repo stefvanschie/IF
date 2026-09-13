@@ -6,6 +6,7 @@ import com.github.stefvanschie.inventoryframework.adventuresupport.TextHolder;
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.gui.GuiComponent;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.InventoryBased;
 import com.github.stefvanschie.inventoryframework.gui.type.util.MergedGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.NamedGui;
@@ -114,7 +115,7 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
     public void update() {
         super.updating = true;
 
-        if (isDirty() || dirtyRows) {
+        if (isDirty()) {
             Inventory oldInventory = this.inventory;
             this.inventory = createInventory();
             this.dirtyRows = false;
@@ -157,7 +158,7 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
 
     @Override
     public void show(@NotNull HumanEntity humanEntity) {
-        if (super.inventory == null) {
+        if (isDirty()) {
             update();
         }
 
@@ -236,6 +237,7 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
 
         this.guiComponent = guiComponent;
         this.dirtyRows = true;
+        super.dirty = true;
     }
 
     @NotNull
@@ -417,6 +419,10 @@ public class ChestGui extends NamedGui implements MergedGui, InventoryBased {
         return load(instance, element, JavaPlugin.getProvidingPlugin(ChestGui.class));
     }
 
+    /**
+     * @deprecated use {@link Gui#isDirty()} instead
+     */
+    @Deprecated
     public boolean isDirtyRows() {
         return dirtyRows;
     }
