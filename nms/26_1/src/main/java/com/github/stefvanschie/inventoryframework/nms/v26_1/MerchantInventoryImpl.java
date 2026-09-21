@@ -254,7 +254,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
 
             Slot slot = super.slots.get(2);
 
-            Slot newSlot = new Slot(container, slot.slot, slot.x, slot.y) {
+            Slot newSlot = new Slot(container, slot.getContainerSlot(), slot.x, slot.y) {
                 @Contract(value = "_ -> false", pure = true)
                 @Override
                 public boolean mayPickup(@Nullable Player player) {
@@ -312,7 +312,7 @@ public class MerchantInventoryImpl extends MerchantInventory {
         private void updateSlot(int slotIndex, @NotNull Container container) {
             Slot slot = super.slots.get(slotIndex);
 
-            Slot newSlot = new Slot(container, slot.slot, slot.x, slot.y);
+            Slot newSlot = new Slot(container, slot.getContainerSlot(), slot.x, slot.y);
             newSlot.index = slot.index;
 
             super.slots.set(slotIndex, newSlot);
