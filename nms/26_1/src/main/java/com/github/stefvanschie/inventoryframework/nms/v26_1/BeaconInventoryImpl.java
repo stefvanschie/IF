@@ -131,7 +131,7 @@ public class BeaconInventoryImpl extends BeaconInventory {
 
             Slot slot = super.slots.get(0);
 
-            Slot newSlot = new Slot(inputSlot, slot.slot, slot.x, slot.y);
+            Slot newSlot = new Slot(inputSlot, slot.getContainerSlot(), slot.x, slot.y);
             newSlot.index = slot.index;
 
             super.slots.set(0, newSlot);

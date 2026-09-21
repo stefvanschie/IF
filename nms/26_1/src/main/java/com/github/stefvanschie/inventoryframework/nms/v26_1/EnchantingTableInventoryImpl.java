@@ -171,7 +171,7 @@ public class EnchantingTableInventoryImpl extends EnchantingTableInventory {
         private void updateSlot(int slotIndex, @NotNull Container container) {
             Slot slot = super.slots.get(slotIndex);
 
-            Slot newSlot = new Slot(container, slot.slot, slot.x, slot.y);
+            Slot newSlot = new Slot(container, slot.getContainerSlot(), slot.x, slot.y);
             newSlot.index = slot.index;
 
             super.slots.set(slotIndex, newSlot);
