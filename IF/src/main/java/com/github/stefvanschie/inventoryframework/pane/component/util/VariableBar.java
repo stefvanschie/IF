@@ -9,6 +9,7 @@ import com.github.stefvanschie.inventoryframework.pane.util.GuiItemContainer;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import com.github.stefvanschie.inventoryframework.gui.GuiClickEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -77,9 +78,9 @@ public abstract class VariableBar extends Pane implements Orientable, Flippable 
         this.backgroundPane = new OutlinePane(length, height);
 
         this.fillPane.addItem(new GuiItem(new ItemStack(Material.GREEN_STAINED_GLASS_PANE),
-                event -> event.setCancelled(true), plugin));
+                event -> event.getClickEvent().setCancelled(true), plugin));
         this.backgroundPane.addItem(new GuiItem(new ItemStack(Material.RED_STAINED_GLASS_PANE),
-                event -> event.setCancelled(true), plugin));
+                event -> event.getClickEvent().setCancelled(true), plugin));
 
         this.fillPane.setRepeat(true);
         this.backgroundPane.setRepeat(true);

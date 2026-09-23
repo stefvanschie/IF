@@ -8,6 +8,7 @@ import com.github.stefvanschie.inventoryframework.pane.Orientable;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.component.util.VariableBar;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
+import com.github.stefvanschie.inventoryframework.gui.GuiClickEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
@@ -87,7 +88,7 @@ public class Slider extends VariableBar {
             throw new UnsupportedOperationException("Unknown orientation");
         }
 
-        callOnClick(event);
+        callOnClick(new GuiClickEvent(event, slot));
 
         boolean success = this.fillPane.click(gui, guiComponent, event, slot);
 

@@ -2,7 +2,6 @@ package com.github.stefvanschie.inventoryframework.util;
 
 import com.github.stefvanschie.inventoryframework.exception.XMLLoadException;
 import com.github.stefvanschie.inventoryframework.exception.XMLReflectionException;
-import org.bukkit.event.Event;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,8 +26,8 @@ public class XMLUtil {
      */
     @Nullable
     @Contract(pure = true)
-    public static <T extends Event> Consumer<T> loadOnEventAttribute(@NotNull Object instance, @NotNull Element element,
-                                                                     @NotNull Class<T> eventType, @NotNull String name) {
+    public static <T> Consumer<T> loadOnEventAttribute(@NotNull Object instance, @NotNull Element element,
+                                                       @NotNull Class<T> eventType, @NotNull String name) {
         String attribute = element.getAttribute(name);
         for (Method method : instance.getClass().getMethods()) {
             if (!method.getName().equals(attribute))

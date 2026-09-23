@@ -8,6 +8,7 @@ import com.github.stefvanschie.inventoryframework.pane.Orientable;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.component.util.VariableBar;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
+import com.github.stefvanschie.inventoryframework.gui.GuiClickEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
@@ -79,7 +80,7 @@ public class PercentageBar extends VariableBar {
             return false;
         }
 
-        callOnClick(event);
+        callOnClick(new GuiClickEvent(event, slot));
 
         event.setCancelled(true);
 
